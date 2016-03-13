@@ -185,6 +185,13 @@ public class DictCollectionLocalServiceImpl extends
 		return dictCollectionPersistence.findByPrimaryKey(dictCollectionId);
 	}
 
+	public DictCollection getDictCollection(String collectionCode){
+		try {
+			return dictCollectionPersistence.findByCollectionCode(collectionCode);
+		} catch (NoSuchDictCollectionException | SystemException e) {
+			return null;
+		}
+	}
 	/**
 	 * <p>
 	 * Get DictCollection

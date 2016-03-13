@@ -64,7 +64,7 @@ public class DictCollectionSearch extends SearchContainer<DictCollection> {
 	public DictCollectionSearch(PortletRequest portletRequest, int delta, PortletURL iteratorURL) {
 
 		super(portletRequest, new DictCollectionDisplayTerms(portletRequest),
-				new DictCollectionSearchTerms(portletRequest), DEFAULT_CUR_PARAM, DEFAULT_DELTA, iteratorURL,
+				new DictCollectionSearchTerms(portletRequest), DEFAULT_CUR_PARAM, delta, iteratorURL,
 				headerNames, EMPTY_RESULTS_MESSAGE);
 
 		DictCollectionDisplayTerms displayTerms = (DictCollectionDisplayTerms) getDisplayTerms();
@@ -99,7 +99,7 @@ public class DictCollectionSearch extends SearchContainer<DictCollection> {
 		}
 	}
 
-	public DictCollectionSearch(PortletRequest portletRequest, PortletURL iteratorURL) {
+	public DictCollectionSearch(PortletRequest portletRequest,PortletURL iteratorURL) {
 
 		this(portletRequest, DEFAULT_DELTA, iteratorURL);
 	}

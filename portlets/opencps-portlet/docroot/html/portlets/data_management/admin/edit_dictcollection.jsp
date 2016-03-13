@@ -22,7 +22,6 @@
 %>
 
 <%@ include file="../init.jsp"%>
-
 <portlet:actionURL var="addDictCollectionURL" name="addDictCollection" ></portlet:actionURL>
 
 <%

@@ -41,11 +41,13 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
-import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 /**
@@ -92,8 +94,6 @@ public class DataMamagementPortlet extends MVCPortlet {
 
 	public void addDictCollection(ActionRequest request, ActionResponse response)
 			throws PortalException, SystemException {
-		// String dictCollName = ParamUtil.getString(request,
-		// DictCollectionDisplayTerms.COLLECTION_NAME);
 		long collectionId = ParamUtil.getLong(request,
 				DictCollectionDisplayTerms.DICTCOLLECTION_ID, 0L);
 
@@ -106,21 +106,34 @@ public class DataMamagementPortlet extends MVCPortlet {
 				.getLocalizationMap(request,
 						DictCollectionDisplayTerms.COLLECTION_NAME);
 
-		ThemeDisplay themeDisplay = (ThemeDisplay) request
-				.getAttribute(WebKeys.THEME_DISPLAY);
+		SessionMessages.add(request, PortalUtil.getPortletId(request) + SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE); 
 
 		ServiceContext serviceContext = ServiceContextFactory
 				.getInstance(request);
-		// long collectionIdLong = Long.valueOf(collectionId);
-
 		if (collectionId == 0) {
-			DictCollectionLocalServiceUtil.addDictCollection(
-					serviceContext.getUserId(), dictCollCode,
-					dictCollectionNameMap, dictCollDes, serviceContext);
+			DictCollection dictCollection = DictCollectionLocalServiceUtil
+					.getDictCollection(dictCollCode);
+			if (dictCollection == null) {
+				DictCollectionLocalServiceUtil.addDictCollection(
+						serviceContext.getUserId(), dictCollCode,
+						dictCollectionNameMap, dictCollDes, serviceContext);
+				SessionMessages.add(request, "addCollSuccess");
+			} else {
+				SessionErrors.add(request, "dictCollCodeErr");
+			}
+
 		} else {
-			DictCollectionLocalServiceUtil.updateDictCollection(collectionId,
-					serviceContext.getUserId(), dictCollCode,
-					dictCollectionNameMap, dictCollDes, serviceContext);
+			DictCollection dictCollection = DictCollectionLocalServiceUtil
+					.getDictCollection(collectionId);
+			if (dictCollection != null
+					&& dictCollection.getCollectionCode().equals(dictCollCode)) {
+				DictCollectionLocalServiceUtil.updateDictCollection(
+						collectionId, serviceContext.getUserId(), dictCollCode,
+						dictCollectionNameMap, dictCollDes, serviceContext);
+				SessionMessages.add(request, "addCollSuccess");
+			} else {
+				SessionErrors.add(request, "dictCollCodeErr");
+			}
 		}
 
 	}
