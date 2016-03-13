@@ -42,7 +42,7 @@
 
 
 <liferay-ui:search-container emptyResultsMessage="No data found"  iteratorURL="<%=iteratorURL %>" 
-searchContainer="<%= new DictCollectionSearch(renderRequest,5, iteratorURL) %>">
+searchContainer="<%= new DictCollectionSearch(renderRequest, 5 , iteratorURL) %>">
 	<liferay-ui:search-container-results>
 		<%
 			List<DictCollection> lstCollection = DictCollectionLocalServiceUtil.getDictCollections(searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator());
