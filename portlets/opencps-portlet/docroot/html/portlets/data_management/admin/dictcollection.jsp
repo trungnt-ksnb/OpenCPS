@@ -27,6 +27,8 @@
 
 <%@ include file="../init.jsp"%>
 
+
+
 <%
 	String dictCollName = ParamUtil.getString(request, "dictCollNameReq");
 	String dictCollCode = ParamUtil.getString(request, "dictCollCodeReq");
@@ -41,7 +43,7 @@
 %>
 
 
-<liferay-ui:search-container emptyResultsMessage="No data found"  iteratorURL="<%=iteratorURL %>" 
+<liferay-ui:search-container emptyResultsMessage="No data found" delta="5"
 searchContainer="<%= new DictCollectionSearch(renderRequest, 5 , iteratorURL) %>">
 	<liferay-ui:search-container-results>
 		<%
@@ -55,7 +57,7 @@ searchContainer="<%= new DictCollectionSearch(renderRequest, 5 , iteratorURL) %>
 		<liferay-ui:search-container-row className="org.opencps.datamgt.model.DictCollection" 
 		modelVar="dictCollection" keyProperty="dictCollectionId">
 			
-			<%
+		 	<%
 		
 			row.addText(String.valueOf(dictCollection.getDictCollectionId()), "");
 			row.addText(dictCollection.getCollectionCode(), "");
@@ -67,9 +69,9 @@ searchContainer="<%= new DictCollectionSearch(renderRequest, 5 , iteratorURL) %>
 			
 			row.addJSP("right",SearchEntry.DEFAULT_VALIGN,"/html/portlets/data_management/admin/dictcollection_actions.jsp", config.getServletContext(), request, response);
 			%>
-			<%-- <liferay-ui:search-container-column-text
-			 value="<%=dictCollection.getCollectionName() %>" 
-			 name="name1" orderable="<%=true %>"/>
+		    <%--<liferay-ui:search-container-column-text
+			value="<%=dictCollection.getCollectionName() %>" 
+			 name="Collection Name" orderable="<%=true %>"/>
 			<liferay-ui:search-container-column-text name="Collection Code" value="<%=dictCollection.getCollectionCode() %>" />
 			<liferay-ui:search-container-column-text name="Collection Description" value="<%=dictCollection.getDescription()%>" />
 			<liferay-ui:search-container-column-text name="Collection UserID" value="<%=String.valueOf(dictCollection.getUserId())%>" />
@@ -79,7 +81,7 @@ searchContainer="<%= new DictCollectionSearch(renderRequest, 5 , iteratorURL) %>
 			<liferay-ui:search-container-column-text name="Collection Modified Date" value="<%=dictCollection.getModifiedDate().toString()%>" />
 	
 			<liferay-ui:search-container-column-jsp  name ="Action" path="/html/portlets/data_management/admin/dictcollection_actions.jsp"></liferay-ui:search-container-column-jsp>
- --%>			
+		 --%>
 		
 		</liferay-ui:search-container-row> 
 	

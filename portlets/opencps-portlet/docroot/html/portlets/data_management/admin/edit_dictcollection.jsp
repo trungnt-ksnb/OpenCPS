@@ -22,8 +22,6 @@
 %>
 
 <%@ include file="../init.jsp"%>
-
-<liferay-ui:error message="Dict Collection Code Existed" key="dictCollCodeErr" />
 <portlet:actionURL var="addDictCollectionURL" name="addDictCollection" ></portlet:actionURL>
 
 <%

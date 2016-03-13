@@ -18,5 +18,17 @@
 %>
 
 <%@ include file="../init.jsp"%>
-<liferay-util:include page="/html/portlets/data_management/admin/edit_dictcollection.jsp" servletContext="<%=application %>" />
-<liferay-util:include page="/html/portlets/data_management/admin/dictcollection.jsp" servletContext="<%=application %>" />
+	<liferay-ui:tabs names="DictColection,DictVersion,DictItem" refresh="false" tabsValues="DictColection,DictVersion,DictItem" type="pills">
+    <liferay-ui:section>
+       <liferay-ui:success message="Request Success" key="addCollSuccess"/>
+       <liferay-ui:error message="Dict Collection Code Has Existed" key="dictCollCodeErr" />
+       <liferay-util:include page="/html/portlets/data_management/admin/edit_dictcollection.jsp" servletContext="<%=application %>" />
+	   <liferay-util:include page="/html/portlets/data_management/admin/dictcollection.jsp" servletContext="<%=application %>" />	
+    </liferay-ui:section>
+    <liferay-ui:section>
+        Text for Tab 2.
+    </liferay-ui:section>
+    <liferay-ui:section>
+        Text for Tab 3.
+    </liferay-ui:section>
+</liferay-ui:tabs>
