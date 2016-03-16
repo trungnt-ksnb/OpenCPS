@@ -168,5 +168,9 @@
 		<exception>OutOfLengthJobTitle</exception>
 		<exception>OutOfLengthFullName</exception>
 		<exception>OutOfLengthDescription</exception>
+		<exception>CityCodeNotFound</exception>
+		<exception>DistrictCodeNotFound</exception>
+		<exception>WardCodeNotFound</exception>
+		<exception>MappingOrganisationIdFail</exception>
 	</exceptions>
 </service-builder>

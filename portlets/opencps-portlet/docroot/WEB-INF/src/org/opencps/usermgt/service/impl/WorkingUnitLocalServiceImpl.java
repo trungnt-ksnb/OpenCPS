@@ -17,7 +17,19 @@
 
 package org.opencps.usermgt.service.impl;
 
+import java.util.Locale;
+import java.util.Map;
+
+import org.opencps.datamgt.model.DictItem;
+import org.opencps.datamgt.permissions.DictItemPermission;
+import org.opencps.datamgt.service.DictItemLocalServiceUtil;
+import org.opencps.datamgt.service.persistence.DictItemPersistence;
+import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.base.WorkingUnitLocalServiceBaseImpl;
+
+import com.liferay.portal.model.Organization;
+import com.liferay.portal.service.OrganizationLocalServiceUtil;
+import com.liferay.portal.service.ServiceContext;
 
 /**
  * The implementation of the working unit local service.
@@ -39,4 +51,11 @@ public class WorkingUnitLocalServiceImpl extends WorkingUnitLocalServiceBaseImpl
 	 *
 	 * Never reference this interface directly. Always use {@link org.opencps.usermgt.service.WorkingUnitLocalServiceUtil} to access the working unit local service.
 	 */
+	
+	/*public WorkingUnit addWorkingUnit(long userId, ServiceContext serviceContext, Map<Locale, String>name, Map<Locale, String> enName,
+			String govAgencyCode, long parentWorkingUnitId, String address, String cityCode, String districtCode, String wardCode,
+			String telNo, String faxNo, String email, String website, boolean isEmployer, long mappingOrganisationId) {
+		//Organization org = OrganizationLocalServiceUtil.addOrganization(userId, parentOrganizationId, name, type, regionId, countryId, statusId, comments, site, serviceContext)
+			
+	}*/
 }
