@@ -25,6 +25,7 @@ import com.liferay.util.portlet.PortletProps;
  */
 public class PortletPropsValues {
 
+	// Data Management Validate
 	public static final int DATAMGT_DICTCOLLECTION_CODE_LENGHT = GetterUtil
 		.getInteger(PortletProps
 			.get(PortletPropsKeys.DATAMGT_DICTCOLLECTION_CODE_LENGHT), 100);
@@ -37,7 +38,14 @@ public class PortletPropsValues {
 	public static final int DATAMGT_DICTITEM_NAME_LENGHT = GetterUtil
 		.getInteger(PortletProps
 			.get(PortletPropsKeys.DATAMGT_DICTITEM_NAME_LENGHT), 255);
+
+	// Data Management Master data
 	public static final String[] DATAMGT_MASTERDATA_CODE = GetterUtil
 		.getStringValues(PortletProps
 			.get(PortletPropsKeys.DATAMGT_MASTERDATA_CODE), new String[0]);
+
+	// User Management
+	public static final String[] USERMGT_JOBPOS_LEADER = GetterUtil
+		.getStringValues(PortletProps
+			.get(PortletPropsKeys.USERMGT_JOBPOS_LEADER), new String[0]);
 }

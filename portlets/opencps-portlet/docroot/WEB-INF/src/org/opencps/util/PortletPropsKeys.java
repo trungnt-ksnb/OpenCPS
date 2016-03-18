@@ -23,6 +23,7 @@ package org.opencps.util;
 
 public class PortletPropsKeys {
 
+	// Data Management validate
 	public static final String DATAMGT_DICTCOLLECTION_CODE_LENGHT =
 		"opencps.datamgt.dictcollection.code.length";
 	public static final String DATAMGT_DICTCOLLECTION_NAME_LENGHT =
@@ -31,6 +32,13 @@ public class PortletPropsKeys {
 		"opencps.datamgt.dictitem.code.length";
 	public static final String DATAMGT_DICTITEM_NAME_LENGHT =
 		"opencps.datamgt.dictitem.name.lengths";
+
+	// Data Management Master Data
 	public static final String DATAMGT_MASTERDATA_CODE =
 		"opencps.datamgt.masterdata.code";
+
+	// User Management
+	public static final String USERMGT_JOBPOS_LEADER =
+		"opencps.usermgt.jobpos.leader";
+
 }
