@@ -59,6 +59,8 @@
 	
 %>
 
+
+
 <liferay-ui:search-container searchContainer="<%= new DictItemSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
 
 	<liferay-ui:search-container-results>
