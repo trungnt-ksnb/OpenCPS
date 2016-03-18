@@ -21,25 +21,31 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.util.portlet.PortletProps;
 
 /**
- * @author trungnt 
+ * @author trungnt
  */
 public class PortletPropsValues {
+
+	// Data Management Validate
 	public static final int DATAMGT_DICTCOLLECTION_CODE_LENGHT = GetterUtil
-			.getInteger(PortletProps.get(PortletPropsKeys.DATAMGT_DICTCOLLECTION_CODE_LENGHT), 100);
+		.getInteger(PortletProps
+			.get(PortletPropsKeys.DATAMGT_DICTCOLLECTION_CODE_LENGHT), 100);
 	public static final int DATAMGT_DICTCOLLECTION_NAME_LENGHT = GetterUtil
-			.getInteger(PortletProps.get(PortletPropsKeys.DATAMGT_DICTCOLLECTION_NAME_LENGHT), 255);
+		.getInteger(PortletProps
+			.get(PortletPropsKeys.DATAMGT_DICTCOLLECTION_NAME_LENGHT), 255);
 	public static final int DATAMGT_DICTITEM_CODE_LENGHT = GetterUtil
-			.getInteger(PortletProps.get(PortletPropsKeys.DATAMGT_DICTITEM_CODE_LENGHT), 100);
+		.getInteger(PortletProps
+			.get(PortletPropsKeys.DATAMGT_DICTITEM_CODE_LENGHT), 100);
 	public static final int DATAMGT_DICTITEM_NAME_LENGHT = GetterUtil
-			.getInteger(PortletProps.get(PortletPropsKeys.DATAMGT_DICTITEM_NAME_LENGHT), 255);
+		.getInteger(PortletProps
+			.get(PortletPropsKeys.DATAMGT_DICTITEM_NAME_LENGHT), 255);
+
+	// Data Management Master data
 	public static final String[] DATAMGT_MASTERDATA_CODE = GetterUtil
-			.getStringValues(PortletProps.get(PortletPropsKeys.DATAMGT_MASTERDATA_CODE), new String[0]);
-	public static final String JOBPOS_CAPPHO = GetterUtil
-			.getString(PortletProps.get(PortletPropsKeys.JOBPOS_ROLE_NAME_CAPPHO));
-	public static final String JOBPOS_CAPTRUONG = GetterUtil
-			.getString(PortletProps.get(PortletPropsKeys.JOBPOS_ROLE_NAME_CAPTRUONG));
-	public static final String JOBPOS_THONGTHUONG = GetterUtil
-			.getString(PortletProps.get(PortletPropsKeys.JOBPOS_ROLE_NAME_THONGTHuONG));
-	
-	
+		.getStringValues(PortletProps
+			.get(PortletPropsKeys.DATAMGT_MASTERDATA_CODE), new String[0]);
+
+	// User Management
+	public static final String[] USERMGT_JOBPOS_LEADER = GetterUtil
+		.getStringValues(PortletProps
+			.get(PortletPropsKeys.USERMGT_JOBPOS_LEADER), new String[0]);
 }

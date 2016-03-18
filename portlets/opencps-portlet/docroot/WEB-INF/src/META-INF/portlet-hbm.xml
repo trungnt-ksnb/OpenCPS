@@ -77,10 +77,11 @@
 		<property name="email" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="workingStatus" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
 		<property name="mainJobPosId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="mappingUserId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 	</class>
 	<class name="org.opencps.usermgt.model.impl.JobPosImpl" table="opencps_jobpos">
 		<cache usage="read-write" />
-		<id name="jobposId" type="long">
+		<id name="jobPosId" type="long">
 			<generator class="assigned" />
 		</id>
 		<property name="companyId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
@@ -108,8 +109,10 @@
 		<property name="name" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="enName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="govAgencyCode" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="managerWorkingUnitId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property name="parentWorkingUnitId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
-		<property name="treeIndex" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="sibling" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
+		<property name="treeIndex" type="com.liferay.portal.dao.orm.hibernate.DoubleType" />
 		<property name="address" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="cityCode" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property name="districtCode" type="com.liferay.portal.dao.orm.hibernate.StringType" />

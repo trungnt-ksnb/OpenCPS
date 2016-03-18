@@ -109,6 +109,8 @@
 			<basic name="email" />
 			<basic name="workingStatus" />
 			<basic name="mainJobPosId" />
+			<basic name="mappingUserId" />
+			<transient name="mappingUserUuid" />
 			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
@@ -117,7 +119,7 @@
 	</mapped-superclass>
 	<mapped-superclass class="org.opencps.usermgt.model.impl.JobPosModelImpl">
 		<attributes>
-			<id name="jobposId" />
+			<id name="jobPosId" />
 			<basic name="companyId" />
 			<basic name="groupId" />
 			<basic name="userId" />
@@ -154,7 +156,9 @@
 			<basic name="name" />
 			<basic name="enName" />
 			<basic name="govAgencyCode" />
+			<basic name="managerWorkingUnitId" />
 			<basic name="parentWorkingUnitId" />
+			<basic name="sibling" />
 			<basic name="treeIndex" />
 			<basic name="address" />
 			<basic name="cityCode" />

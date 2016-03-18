@@ -18,16 +18,27 @@
 package org.opencps.util;
 
 /**
- * @author trungnt 
+ * @author trungnt
  */
 
 public class PortletPropsKeys {
-	public static final String DATAMGT_DICTCOLLECTION_CODE_LENGHT = "opencps.datamgt.dictcollection.code.length";
-	public static final String DATAMGT_DICTCOLLECTION_NAME_LENGHT = "opencps.datamgt.dictcollection.name.length";
-	public static final String DATAMGT_DICTITEM_CODE_LENGHT = "opencps.datamgt.dictitem.code.length";
-	public static final String DATAMGT_DICTITEM_NAME_LENGHT = "opencps.datamgt.dictitem.name.lengths";
-	public static final String DATAMGT_MASTERDATA_CODE = "opencps.datamgt.masterdata.code";
-	public static final String JOBPOS_ROLE_NAME_THONGTHuONG = "opencps.usermgt.workingunit.rolename.thongthuong";
-	public static final String JOBPOS_ROLE_NAME_CAPTRUONG = "opencps.usermgt.workingunit.rolename.captruong";
-	public static final String JOBPOS_ROLE_NAME_CAPPHO = "opencps.usermgt.workingunit.rolename.cappho";
+
+	// Data Management validate
+	public static final String DATAMGT_DICTCOLLECTION_CODE_LENGHT =
+		"opencps.datamgt.dictcollection.code.length";
+	public static final String DATAMGT_DICTCOLLECTION_NAME_LENGHT =
+		"opencps.datamgt.dictcollection.name.length";
+	public static final String DATAMGT_DICTITEM_CODE_LENGHT =
+		"opencps.datamgt.dictitem.code.length";
+	public static final String DATAMGT_DICTITEM_NAME_LENGHT =
+		"opencps.datamgt.dictitem.name.lengths";
+
+	// Data Management Master Data
+	public static final String DATAMGT_MASTERDATA_CODE =
+		"opencps.datamgt.masterdata.code";
+
+	// User Management
+	public static final String USERMGT_JOBPOS_LEADER =
+		"opencps.usermgt.jobpos.leader";
+
 }
