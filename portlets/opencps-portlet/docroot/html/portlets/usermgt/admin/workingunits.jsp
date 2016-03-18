@@ -17,4 +17,3 @@
  */
 %>
 <%@ include file="../init.jsp"%>
-UserMgt Admin.

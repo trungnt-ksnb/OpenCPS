@@ -25,7 +25,6 @@
 					servletContext="<%=application %>" />
 <liferay-util:include page="/html/portlet/staff_management/admin/toptabs.jsp" 
 					servletContext="<%=application %>" />
-
 <%
 	PortletURL portletURL = renderResponse.createRenderURL();
 	

@@ -39,4 +39,5 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 	 *
 	 * Never reference this interface directly. Always use {@link org.opencps.usermgt.service.JobPosLocalServiceUtil} to access the job pos local service.
 	 */
+	
 }

@@ -27,4 +27,7 @@ public class PortletPropsKeys {
 	public static final String DATAMGT_DICTITEM_CODE_LENGHT = "opencps.datamgt.dictitem.code.length";
 	public static final String DATAMGT_DICTITEM_NAME_LENGHT = "opencps.datamgt.dictitem.name.lengths";
 	public static final String DATAMGT_MASTERDATA_CODE = "opencps.datamgt.masterdata.code";
+	public static final String JOBPOS_ROLE_NAME_THONGTHuONG = "opencps.usermgt.workingunit.rolename.thongthuong";
+	public static final String JOBPOS_ROLE_NAME_CAPTRUONG = "opencps.usermgt.workingunit.rolename.captruong";
+	public static final String JOBPOS_ROLE_NAME_CAPPHO = "opencps.usermgt.workingunit.rolename.cappho";
 }
