@@ -18,7 +18,7 @@
 package org.opencps.util;
 
 /**
- * @author trungnt
+ * @author trungnt 
  */
 
 public class PortletPropsKeys {

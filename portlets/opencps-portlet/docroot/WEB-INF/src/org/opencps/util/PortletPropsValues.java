@@ -21,7 +21,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.util.portlet.PortletProps;
 
 /**
- * @author trungnt
+ * @author trungnt 
  */
 public class PortletPropsValues {
 	public static final int DATAMGT_DICTCOLLECTION_CODE_LENGHT = GetterUtil
