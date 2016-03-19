@@ -41,4 +41,13 @@ public class PortletPropsKeys {
 	public static final String USERMGT_JOBPOS_LEADER =
 		"opencps.usermgt.jobpos.leader";
 
+	public static final String USERMGT_USERGROUP_NAME_EMPLOYEE =
+		"opencps.usermgt.usergroup.name.employee";
+
+	public static final String USERMGT_USERGROUP_NAME_BUSINESS =
+		"opencps.usermgt.usergroup.name.business";
+
+	public static final String USERMGT_USERGROUP_NAME_CITIZEN =
+		"opencps.usermgt.usergroup.name.citizen";
+
 }

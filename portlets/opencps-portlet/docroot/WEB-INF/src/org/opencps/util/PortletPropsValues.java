@@ -48,4 +48,13 @@ public class PortletPropsValues {
 	public static final String[] USERMGT_JOBPOS_LEADER = GetterUtil
 		.getStringValues(PortletProps
 			.get(PortletPropsKeys.USERMGT_JOBPOS_LEADER), new String[0]);
+
+	public static final String USERMGT_USERGROUP_NAME_EMPLOYEE = GetterUtil
+		.getString(PortletPropsKeys.USERMGT_USERGROUP_NAME_EMPLOYEE);
+
+	public static final String USERMGT_USERGROUP_NAME_BUSINESS = GetterUtil
+		.getString(PortletPropsKeys.USERMGT_USERGROUP_NAME_BUSINESS);
+
+	public static final String USERMGT_USERGROUP_NAME_CITIZEN = GetterUtil
+		.getString(PortletPropsKeys.USERMGT_USERGROUP_NAME_CITIZEN);
 }
