@@ -17,40 +17,46 @@
 
 package org.opencps.usermgt.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import org.opencps.usermgt.NoSuchEmployeeException;
 import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
-import org.opencps.usermgt.model.WorkingUnit;
-import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
 import org.opencps.usermgt.service.base.EmployeeLocalServiceBaseImpl;
+import org.opencps.util.PortletConstants;
+import org.opencps.util.PortletUtil;
 
 import com.liferay.counter.service.CounterLocalServiceUtil;
-import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.model.GroupConstants;
-import com.liferay.portal.model.Role;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.model.Address;
+import com.liferay.portal.model.Contact;
+import com.liferay.portal.model.EmailAddress;
+import com.liferay.portal.model.Phone;
 import com.liferay.portal.model.User;
-import com.liferay.portal.model.UserGroupConstants;
-import com.liferay.portal.service.RoleLocalServiceUtil;
+import com.liferay.portal.model.Website;
+import com.liferay.portal.service.ContactLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portlet.announcements.model.AnnouncementsDelivery;
 
 /**
- * The implementation of the employee local service. <p> All custom service
- * methods should be put in this class. Whenever methods are added, rerun
- * ServiceBuilder to copy their definitions into the
- * {@link org.opencps.usermgt.service.EmployeeLocalService} interface. <p> This
- * is a local service. Methods of this service will not have security checks
- * based on the propagated JAAS credentials because this service can only be
- * accessed from within the same VM. </p>
+ * The implementation of the employee local service.
+ * <p>
+ * All custom service methods should be put in this class. Whenever methods are
+ * added, rerun ServiceBuilder to copy their definitions into the
+ * {@link org.opencps.usermgt.service.EmployeeLocalService} interface.
+ * <p>
+ * This is a local service. Methods of this service will not have security
+ * checks based on the propagated JAAS credentials because this service can only
+ * be accessed from within the same VM.
+ * </p>
  *
  * @author khoavd
+ * @author trungnt
  * @see org.opencps.usermgt.service.base.EmployeeLocalServiceBaseImpl
  * @see org.opencps.usermgt.service.EmployeeLocalServiceUtil
  */
@@ -61,202 +67,187 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 	 * {@link org.opencps.usermgt.service.EmployeeLocalServiceUtil} to access
 	 * the employee local service.
 	 */
-	public Employee addEmployee(
-		long userId, ServiceContext serviceContext, long workingUnitId,
-		String employeeNo, String fullName, int gender, Date birthdate,
-		String telNo, String mobile, String email, int workingStatus,
-		long mainJobPosId)
-		throws SystemException, PortalException {
 
-		long mainEmployeeId = CounterLocalServiceUtil
-			.increment(Employee.class
-				.getName());
-		Employee employee = EmployeeLocalServiceUtil
-			.createEmployee(mainEmployeeId);
+	public Employee addEmployee(long userId, long workingUnitId,
+			String employeeNo, String fullName, int gender, Date birthDate,
+			String telNo, String mobile, String email, String screenName,
+			String password, String reTypePassword, int workingStatus,
+			long mainJobPosId, long mappingUserId, long[] groupIds,
+			long[] organizationIds, long[] roleIds, long[] userGroupIds,
+			ServiceContext serviceContext)
+			throws SystemException, PortalException {
 
-		Date currentDate = new Date();
-		boolean booleanGender = false;
-		if (gender == 1) {
-			booleanGender = true;
+		long employeeId = CounterLocalServiceUtil
+				.increment(Employee.class.getName());
+
+		Employee employee = employeePersistence.create(employeeId);
+
+		Date now = new Date();
+
+		JobPos jobPos = jobPosPersistence.findByPrimaryKey(mainJobPosId);
+
+		PortletUtil.SplitDate spd = PortletUtil.splitDate(birthDate);
+		PortletUtil.SplitName spn = PortletUtil.splitName(fullName);
+
+		User user = userService.addUserWithWorkflow(
+				serviceContext.getCompanyId(), false, password, reTypePassword,
+				false, screenName, email, 0L, StringPool.BLANK,
+				LocaleUtil.getDefault(), spn.getFirstName(), spn.getMidName(),
+				spn.getLastName(), 0, 0, (gender == 1), spd.getMonth(),
+				spd.getDayOfMoth(), spd.getYear(), jobPos.getTitle(), groupIds,
+				organizationIds, roleIds, userGroupIds,
+				new ArrayList<Address>(), new ArrayList<EmailAddress>(),
+				new ArrayList<Phone>(), new ArrayList<Website>(),
+				new ArrayList<AnnouncementsDelivery>(), false, serviceContext);
+
+		if (user != null) {
+
+			employee.setUserId(userId);
+			employee.setGroupId(serviceContext.getScopeGroupId());
+			employee.setCompanyId(serviceContext.getCompanyId());
+			employee.setCreateDate(now);
+			employee.setModifiedDate(now);
+			employee.setWorkingUnitId(workingUnitId);
+			employee.setEmployeeNo(employeeNo);
+			employee.setFullName(fullName);
+			employee.setGender(gender);
+			employee.setBirthdate(birthDate);
+			employee.setTelNo(telNo);
+			employee.setMobile(mobile);
+			employee.setEmail(email);
+			employee.setWorkingStatus(workingStatus);
+			employee.setMainJobPosId(mainJobPosId);
+			employee.setMappingUserId(user.getUserId());
 		}
 
-		JobPos jobPos = jobPosPersistence
-			.findByPrimaryKey(mainJobPosId);
-
-		Role role = RoleLocalServiceUtil
-			.fetchRole(jobPos
-				.getMappingRoleId());
-
-		WorkingUnit workingUnit = workingUnitPersistence
-			.findByPrimaryKey(workingUnitId);
-
-		long[] collectionGroupId = {
-			GroupConstants.DEFAULT_LIVE_GROUP_ID
-		};
-		long[] collectionOrganisationId = {
-			workingUnit
-				.getMappingOrganisationId()
-		};
-		long[] collectionRoleId = {
-			role
-				.getRoleId()
-		};
-		long[] collectionUserGroupId = {
-			UserGroupConstants.DEFAULT_PARENT_USER_GROUP_ID
-		};
-
-		User user = UserLocalServiceUtil
-			.addUser(userId, role
-				.getCompanyId(), false, null, null, false, fullName, email, 0,
-				null, Locale.US, fullName, fullName, fullName, 0, 0,
-				booleanGender, 0, 0, 0, null, collectionGroupId,
-				collectionOrganisationId, collectionRoleId,
-				collectionUserGroupId, false, serviceContext);
-
-		employee
-			.setUserId(userId);
-		employee
-			.setGroupId(serviceContext
-				.getScopeGroupId());
-		employee
-			.setCompanyId(serviceContext
-				.getCompanyId());
-		employee
-			.setCreateDate(currentDate);
-		employee
-			.setModifiedDate(currentDate);
-		employee
-			.setWorkingUnitId(workingUnitId);
-		employee
-			.setEmployeeNo(employeeNo);
-		employee
-			.setFullName(fullName);
-		employee
-			.setGender(gender);
-		employee
-			.setBirthdate(birthdate);
-		employee
-			.setTelNo(telNo);
-		employee
-			.setMobile(mobile);
-		employee
-			.setEmail(email);
-		employee
-			.setWorkingStatus(workingStatus);
-		employee
-			.setMainJobPosId(mainJobPosId);
-		employee
-			.setMappingUserId(user
-				.getUserId());
-
-		return employeePersistence
-			.update(employee);
+		return employeePersistence.update(employee);
 	}
 
-	public Employee updateEmployee(
-		long employeeId, long userId, ServiceContext serviceContext,
-		long workingUnitId, String employeeNo, String fullName, int gender,
-		Date birthdate, String telNo, String mobile, String email,
-		int workingStatus, long mainJobPosId)
-		throws NoSuchEmployeeException, SystemException, NoSuchUserException {
+	public Employee updateEmployee(long employeeId, long userId,
+			String employeeNo, String screenName, String fullName, int gender,
+			Date birthDate, String telNo, String mobile, String email,
+			boolean isChangePassWord, String oldPassWord, String newPassWord,
+			String reTypePassWord, long mainJobPosId,
+			ServiceContext serviceContext)
+			throws SystemException, PortalException {
 
-		Employee employee = employeePersistence
-			.findByPrimaryKey(employeeId);
+		Employee employee = employeePersistence.findByPrimaryKey(employeeId);
+
 		User user = userPersistence
-			.findByPrimaryKey(employee
-				.getMappingUserId());
-		Date currentDate = new Date();
+				.findByPrimaryKey(employee.getMappingUserId());
 
-		employee
-			.setUserId(userId);
-		employee
-			.setGroupId(serviceContext
-				.getScopeGroupId());
-		employee
-			.setCompanyId(serviceContext
-				.getCompanyId());
-		employee
-			.setCreateDate(currentDate);
-		employee
-			.setModifiedDate(currentDate);
-		employee
-			.setWorkingUnitId(workingUnitId);
-		employee
-			.setEmployeeNo(employeeNo);
-		employee
-			.setFullName(fullName);
-		employee
-			.setGender(gender);
-		employee
-			.setBirthdate(birthdate);
-		employee
-			.setTelNo(telNo);
-		employee
-			.setMobile(mobile);
-		employee
-			.setEmail(email);
-		employee
-			.setWorkingStatus(workingStatus);
-		employee
-			.setMainJobPosId(mainJobPosId);
-		employee
-			.setMappingUserId(user
-				.getUserId());
+		Date now = new Date();
 
-		return employeePersistence
-			.update(employee);
+		User mappingUser = userLocalService
+				.getUserById(employee.getMappingUserId());
+
+		// Change password
+		if (isChangePassWord) {
+			long userIdTemp = userLocalService.authenticateForBasic(
+					serviceContext.getCompanyId(), email,
+					user.getEmailAddress(), oldPassWord);
+
+			if (userIdTemp > 0 && userIdTemp == employee.getMappingUserId()) {
+				mappingUser = userLocalService.updatePassword(
+						serviceContext.getUserId(), newPassWord, reTypePassWord,
+						false);
+			}
+		}
+
+		// Change user name
+		if (!fullName.equals(employee.getFullName())) {
+
+			PortletUtil.SplitName spn = PortletUtil.splitName(fullName);
+
+			mappingUser.setFirstName(spn.getFirstName());
+			mappingUser.setLastName(spn.getLastName());
+			mappingUser.setMiddleName(spn.getMidName());
+		}
+
+		// update job title
+		JobPos jobPos = jobPosPersistence.findByPrimaryKey(mainJobPosId);
+
+		if (!jobPos.getTitle().equals(mappingUser.getJobTitle())) {
+			mappingUser.setJobTitle(jobPos.getTitle());
+		}
+
+		mappingUser.setScreenName(screenName);
+
+		mappingUser = userLocalService.updateUser(mappingUser);
+
+		// update birth date
+		Contact contact = ContactLocalServiceUtil
+				.getContact(mappingUser.getContactId());
+
+		if (contact != null) {
+			contact.setBirthday(birthDate);
+			contact = ContactLocalServiceUtil.updateContact(contact);
+		}
+
+		// update employee
+		employee.setUserId(userId);
+		employee.setGroupId(serviceContext.getScopeGroupId());
+		employee.setCompanyId(serviceContext.getCompanyId());
+		employee.setModifiedDate(now);
+		employee.setEmployeeNo(employeeNo);
+		employee.setFullName(fullName);
+		employee.setGender(gender);
+		employee.setBirthdate(birthDate);
+		employee.setTelNo(telNo);
+		employee.setMobile(mobile);
+		employee.setMainJobPosId(mainJobPosId);
+
+		return employeePersistence.update(employee);
 
 	}
 
-	public void deleteEmployeeById(long employeeId)
-		throws NoSuchEmployeeException, SystemException {
+	public void updateEmployee(long employeeId, int workingStatus,
+			ServiceContext serviceContext)
+			throws SystemException, PortalException {
 
-		employeePersistence
-			.remove(employeeId);
+		Employee employee = employeePersistence.findByPrimaryKey(employeeId);
+
+		User mappingUse = userLocalService.getUser(employee.getMappingUserId());
+
+		Date now = new Date();
+
+		if (workingStatus == PortletConstants.WORKING_STATUS_ACTIVATE
+				|| workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
+
+			int status = WorkflowConstants.STATUS_APPROVED;
+
+			if (workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
+				status = WorkflowConstants.STATUS_INACTIVE;
+			}
+
+			mappingUse.setStatus(status);
+
+			userLocalService.updateUser(mappingUse);
+
+			employee.setWorkingStatus(workingStatus);
+
+			employee.setUserId(serviceContext.getUserId());
+			employee.setGroupId(serviceContext.getScopeGroupId());
+			employee.setCompanyId(serviceContext.getCompanyId());
+			employee.setModifiedDate(now);
+
+			employeePersistence.update(employee);
+		}
+
 	}
 
-	public int countAll()
-		throws SystemException {
-
-		return employeePersistence
-			.countAll();
-	}
-
-	public List<Employee> getAll(int start, int end, OrderByComparator odc)
-		throws SystemException {
-
-		return employeePersistence
-			.findAll(start, end, odc);
-	}
 
 	public List<Employee> getEmployees(long groupId, long mainJobPosId)
-		throws SystemException {
+			throws SystemException {
 
-		return employeePersistence
-			.findByG_W(groupId, mainJobPosId);
+		return employeePersistence.findByG_W(groupId, mainJobPosId);
 	}
 
-	public List<Employee> getEmployees(
-		long groupId, long workingUnitId, long mainJobPosId)
-		throws SystemException {
+	public List<Employee> getEmployees(long groupId, long workingUnitId,
+			long mainJobPosId) throws SystemException {
 
-		return employeePersistence
-			.findByG_W_MJP(groupId, workingUnitId, mainJobPosId);
+		return employeePersistence.findByG_W_MJP(groupId, workingUnitId,
+				mainJobPosId);
 	}
 
-	public void mapOneEmployeeToMutilpliJobPos(
-		long employeeId, long[] jobPosIds)
-		throws SystemException {
-
-		employeePersistence
-			.addJobPoses(employeeId, jobPosIds);
-	}
-
-	public void deleteMapOneEmployeeToMutilpliJobPos(
-		long employeeId, long[] jobPosIds)
-		throws SystemException {
-
-		employeePersistence
-			.removeJobPoses(employeeId, jobPosIds);
-	}
 }
