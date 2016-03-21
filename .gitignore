@@ -78,4 +78,4 @@ hooks/opencps-hook/.settings/
 portlets/opencps-portlet/.settings/org.eclipse.jdt.ui.prefs
 portlets/opencps-portlet/docroot/WEB-INF/server-config.wsdd
 portlets/opencps-portlet/.project
-port;ets/opencps-sample-portlet/.project
+portets/opencps-sample-portlet/.project
