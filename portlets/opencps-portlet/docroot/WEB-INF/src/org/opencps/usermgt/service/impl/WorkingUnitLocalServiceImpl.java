@@ -69,92 +69,65 @@ public class WorkingUnitLocalServiceImpl
 
 		int sibling = 0;
 
-		List<WorkingUnit> workingUnits = workingUnitPersistence
-			.findAll();
-		if (workingUnits
-			.isEmpty()) {
+		Organization org = null;
+		if (parentWorkingUnitId == 0) {
+			org =
+				OrganizationLocalServiceUtil.addOrganization(
+					userId,
+					OrganizationConstants.DEFAULT_PARENT_ORGANIZATION_ID, name,
+					OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0,
+					ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, enName,
+					true, serviceContext);
+
+		}
+		else {
+			org =
+				OrganizationLocalServiceUtil.addOrganization(
+					userId, parentWorkingUnitId, name,
+					OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0,
+					ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, enName,
+					true, serviceContext);
+
+		}
+
+		Date currentDate = new Date();
+
+		List<WorkingUnit> workingUnits = workingUnitPersistence.findAll();
+		if (workingUnits.isEmpty()) {
 			sibling = 1;
 		}
 		else {
 			sibling = getNextSibling(workingUnits);
 		}
 
-		Organization org = null;
-		if (parentWorkingUnitId == 0) {
-			org = OrganizationLocalServiceUtil
-				.addOrganization(userId,
-					OrganizationConstants.DEFAULT_PARENT_ORGANIZATION_ID, name,
-					OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0,
-					ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, enName, true,
-					serviceContext);
+		long workingUnitId =
+			CounterLocalServiceUtil.increment(WorkingUnit.class.getName());
 
-		}
-		else {
-			org = OrganizationLocalServiceUtil
-				.addOrganization(userId, parentWorkingUnitId, name,
-					OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0,
-					ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, enName, true,
-					serviceContext);
+		WorkingUnit workingUnit = workingUnitPersistence.create(workingUnitId);
 
-		}
+		String treeIndex =
+			getTreeIndex(workingUnitId, parentWorkingUnitId, sibling);
 
-		long workingUnitId = CounterLocalServiceUtil
-			.increment(WorkingUnit.class
-				.getName());
-
-		WorkingUnit workingUnit = workingUnitPersistence
-			.create(workingUnitId);
-
-		Date currentDate = new Date();
-
-		String treeIndexString =
-			getTreeIndex(workingUnitId, parentWorkingUnitId);
-
-		double treeIndex = Double
-			.parseDouble(treeIndexString);
-
-		workingUnit
-			.setCreateDate(currentDate);
-		workingUnit
-			.setModifiedDate(currentDate);
-		workingUnit
-			.setTreeIndex(treeIndex);
-		workingUnit
-			.setUserId(userId);
-		workingUnit
-			.setCompanyId(serviceContext
-				.getCompanyId());
-		workingUnit
-			.setGroupId(serviceContext
-				.getScopeGroupId());
-		workingUnit
-			.setName(name);
-		workingUnit
-			.setEnName(enName);
-		workingUnit
-			.setGovAgencyCode(govAgencyCode);
-		workingUnit
-			.setParentWorkingUnitId(parentWorkingUnitId);
-		workingUnit
-			.setAddress(address);
-		workingUnit
-			.setCityCode(cityCode);
-		workingUnit
-			.setDistrictCode(districtCode);
-		workingUnit
-			.setWardCode(wardCode);
-		workingUnit
-			.setTelNo(telNo);
-		workingUnit
-			.setFaxNo(faxNo);
-		workingUnit
-			.setEmail(email);
-		workingUnit
-			.setWebsite(website);
-		workingUnit
-			.setIsEmployer(isEmployer);
-		return workingUnitPersistence
-			.update(workingUnit);
+		workingUnit.setCreateDate(currentDate);
+		workingUnit.setModifiedDate(currentDate);
+		workingUnit.setTreeIndex(treeIndex);
+		workingUnit.setUserId(userId);
+		workingUnit.setCompanyId(serviceContext.getCompanyId());
+		workingUnit.setGroupId(serviceContext.getScopeGroupId());
+		workingUnit.setName(name);
+		workingUnit.setEnName(enName);
+		workingUnit.setGovAgencyCode(govAgencyCode);
+		workingUnit.setParentWorkingUnitId(parentWorkingUnitId);
+		workingUnit.setAddress(address);
+		workingUnit.setCityCode(cityCode);
+		workingUnit.setDistrictCode(districtCode);
+		workingUnit.setWardCode(wardCode);
+		workingUnit.setTelNo(telNo);
+		workingUnit.setFaxNo(faxNo);
+		workingUnit.setEmail(email);
+		workingUnit.setWebsite(website);
+		workingUnit.setIsEmployer(isEmployer);
+		return workingUnitPersistence.update(workingUnit);
 
 	}
 
@@ -166,13 +139,14 @@ public class WorkingUnitLocalServiceImpl
 		String faxNo, String email, String website, boolean isEmployer)
 		throws SystemException, PortalException {
 
-		WorkingUnit workingUnit = workingUnitPersistence
-			.findByPrimaryKey(workingUnitId);
+		WorkingUnit workingUnit =
+			workingUnitPersistence.findByPrimaryKey(workingUnitId);
 
 		Organization org = null;
 		if (parentWorkingUnitId == 0) {
-			org = OrganizationLocalServiceUtil
-				.addOrganization(userId,
+			org =
+				OrganizationLocalServiceUtil.addOrganization(
+					userId,
 					OrganizationConstants.DEFAULT_PARENT_ORGANIZATION_ID,
 					"CQNN", OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0,
 					0, ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, "no",
@@ -180,97 +154,75 @@ public class WorkingUnitLocalServiceImpl
 
 		}
 		else {
-			org = OrganizationLocalServiceUtil
-				.fetchOrganization(organizationId);
+			org =
+				OrganizationLocalServiceUtil.fetchOrganization(organizationId);
 
 		}
 
-		long mappingOrganisationId = org
-			.getOrganizationId();
+		long mappingOrganisationId = org.getOrganizationId();
 
 		Date currentDate = new Date();
 
-		String treeIndexString =
-			getTreeIndex(workingUnitId, parentWorkingUnitId);
+		int sibling = 0;
 
-		double treeIndex = Double
-			.parseDouble(treeIndexString);
+		List<WorkingUnit> workingUnits = workingUnitPersistence.findAll();
+		if (workingUnits.isEmpty()) {
+			sibling = 1;
+		}
+		else {
+			sibling = getNextSibling(workingUnits);
+		}
 
-		workingUnit
-			.setCreateDate(currentDate);
-		workingUnit
-			.setModifiedDate(currentDate);
-		workingUnit
-			.setTreeIndex(treeIndex);
-		workingUnit
-			.setUserId(userId);
-		workingUnit
-			.setCompanyId(serviceContext
-				.getCompanyId());
-		workingUnit
-			.setGroupId(serviceContext
-				.getScopeGroupId());
-		workingUnit
-			.setName(name);
-		workingUnit
-			.setEnName(enName);
-		workingUnit
-			.setGovAgencyCode(govAgencyCode);
-		workingUnit
-			.setParentWorkingUnitId(parentWorkingUnitId);
-		workingUnit
-			.setAddress(address);
-		workingUnit
-			.setCityCode(cityCode);
-		workingUnit
-			.setDistrictCode(districtCode);
-		workingUnit
-			.setWardCode(wardCode);
-		workingUnit
-			.setTelNo(telNo);
-		workingUnit
-			.setFaxNo(faxNo);
-		workingUnit
-			.setEmail(email);
-		workingUnit
-			.setWebsite(website);
-		workingUnit
-			.setIsEmployer(isEmployer);
-		workingUnit
-			.setMappingOrganisationId(mappingOrganisationId);
+		String treeIndex =
+			getTreeIndex(workingUnitId, parentWorkingUnitId, sibling);
 
-		return workingUnitPersistence
-			.update(workingUnit);
+		workingUnit.setCreateDate(currentDate);
+		workingUnit.setModifiedDate(currentDate);
+		workingUnit.setTreeIndex(treeIndex);
+		workingUnit.setUserId(userId);
+		workingUnit.setCompanyId(serviceContext.getCompanyId());
+		workingUnit.setGroupId(serviceContext.getScopeGroupId());
+		workingUnit.setName(name);
+		workingUnit.setEnName(enName);
+		workingUnit.setGovAgencyCode(govAgencyCode);
+		workingUnit.setParentWorkingUnitId(parentWorkingUnitId);
+		workingUnit.setAddress(address);
+		workingUnit.setCityCode(cityCode);
+		workingUnit.setDistrictCode(districtCode);
+		workingUnit.setWardCode(wardCode);
+		workingUnit.setTelNo(telNo);
+		workingUnit.setFaxNo(faxNo);
+		workingUnit.setEmail(email);
+		workingUnit.setWebsite(website);
+		workingUnit.setIsEmployer(isEmployer);
+		workingUnit.setMappingOrganisationId(mappingOrganisationId);
+
+		return workingUnitPersistence.update(workingUnit);
 	}
 
 	public void deleteWorkingUnitByWorkingUnitId(long workingUnitId)
 		throws NoSuchWorkingUnitException, SystemException {
 
-		List<Employee> employees = employeePersistence
-			.findByWorkingUnitId(workingUnitId);
-		List<JobPos> jobPos = jobPosPersistence
-			.findByWorkingUnitId(workingUnitId);
-		if (employees
-			.isEmpty() && jobPos
-				.isEmpty()) {
-			workingUnitPersistence
-				.remove(workingUnitId);
+		List<Employee> employees =
+			employeePersistence.findByWorkingUnitId(workingUnitId);
+		List<JobPos> jobPos =
+			jobPosPersistence.findByWorkingUnitId(workingUnitId);
+		if (employees.isEmpty() && jobPos.isEmpty()) {
+			workingUnitPersistence.remove(workingUnitId);
 		}
 	}
 
 	public int countAll()
 		throws SystemException {
 
-		return workingUnitPersistence
-			.countAll();
+		return workingUnitPersistence.countAll();
 	}
 
 	public List<WorkingUnit> getWorkingUnit(
 		int start, int end, OrderByComparator odc)
 		throws SystemException {
 
-		return workingUnitPersistence
-			.findAll(start, end, odc);
+		return workingUnitPersistence.findAll(start, end, odc);
 	}
 
 	protected String getTreeIndex(
@@ -278,15 +230,13 @@ public class WorkingUnitLocalServiceImpl
 		throws NoSuchWorkingUnitException, SystemException {
 
 		if (parentWorkingUnitId == 0) {
-			return String
-				.valueOf(sibling);
+			return String.valueOf(sibling);
 		}
 		else if (parentWorkingUnitId > 0) {
-			WorkingUnit workingUnit = workingUnitPersistence
-				.findByPrimaryKey(parentWorkingUnitId);
-			return workingUnit
-				.getTreeIndex() + StringPool.PERIOD + String
-					.valueOf(workingunitId);
+			WorkingUnit workingUnit =
+				workingUnitPersistence.findByPrimaryKey(parentWorkingUnitId);
+			return workingUnit.getTreeIndex() + StringPool.PERIOD +
+				String.valueOf(workingunitId);
 		}
 		else {
 			throw new NoSuchWorkingUnitException();
@@ -297,33 +247,29 @@ public class WorkingUnitLocalServiceImpl
 		long groupId, boolean isEmployee, long parentWorkingUnitId)
 		throws SystemException {
 
-		return workingUnitPersistence
-			.findByG_E_P(groupId, isEmployee, parentWorkingUnitId);
+		return workingUnitPersistence.findByG_E_P(
+			groupId, isEmployee, parentWorkingUnitId);
 	}
 
 	public List<WorkingUnit> getWorkingUnit(long groupId, boolean isEmployee)
 		throws SystemException {
 
-		return workingUnitPersistence
-			.findByG_E(groupId, isEmployee);
+		return workingUnitPersistence.findByG_E(groupId, isEmployee);
 	}
 
 	public void mapMultipleJobPosWorkingUnitToOneWorkingUnit(
 		long workingUnitId, long[] jobPosIds)
 		throws SystemException {
 
-		workingUnitPersistence
-			.addJobPoses(workingUnitId, jobPosIds);
+		workingUnitPersistence.addJobPoses(workingUnitId, jobPosIds);
 	}
 
 	public int getNextSibling(List<WorkingUnit> workingUnits) {
 
 		int MAX = 0;
 		for (WorkingUnit workingUnit : workingUnits) {
-			if (MAX <= workingUnit
-				.getSibling()) {
-				MAX = workingUnit
-					.getSibling();
+			if (MAX <= workingUnit.getSibling()) {
+				MAX = workingUnit.getSibling();
 			}
 		}
 		return MAX + 1;
