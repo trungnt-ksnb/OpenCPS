@@ -47,14 +47,14 @@ import com.liferay.portal.service.ServiceContext;
  * checks based on the propagated JAAS credentials because this service can only
  * be accessed from within the same VM. </p>
  *
- * @author khoavd
+ * @author khoavd 
  * @see org.opencps.usermgt.service.base.WorkingUnitLocalServiceBaseImpl
  * @see org.opencps.usermgt.service.WorkingUnitLocalServiceUtil
  */
 public class WorkingUnitLocalServiceImpl
 	extends WorkingUnitLocalServiceBaseImpl {
 
-	/*
+	/* 
 	 * NOTE FOR DEVELOPERS: Never reference this interface directly. Always use
 	 * {@link org.opencps.usermgt.service.WorkingUnitLocalServiceUtil} to access
 	 * the working unit local service.
