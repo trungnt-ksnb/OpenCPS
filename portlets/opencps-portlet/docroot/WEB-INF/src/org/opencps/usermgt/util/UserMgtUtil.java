@@ -17,11 +17,43 @@
 
 package org.opencps.usermgt.util;
 
+import org.opencps.usermgt.search.WorkingUnitDisplayTerms;
+import org.opencps.usermgt.util.comparator.WorkingUnitAdressComporator;
+import org.opencps.usermgt.util.comparator.WorkingUnitEmailComparator;
+import org.opencps.usermgt.util.comparator.WorkingUnitNameComparator;
+import org.opencps.usermgt.util.comparator.WorkingUnitTelNoComparator;
+
+import com.liferay.portal.kernel.util.OrderByComparator;
+
+
 /**
  * @author trungnt
  */
 public class UserMgtUtil {
-
 	public static final String TOP_TABS_EMPLOYEE = "employee";
 	public static final String TOP_TABS_WORKINGUNIT = "working-unit";
+	public static final String[] _EMPLOYESS_CATEGORY_NAMES = {"employee-info"};
+	public static OrderByComparator getWorkingUnitOrderByComparator(String orderByCol, String orderByType) {		
+
+		boolean orderByAsc = false;
+
+		if (orderByType
+			.equals("asc")) {
+			orderByAsc = true;
+		}
+		OrderByComparator orderByComparator = null;
+		
+		if(orderByCol.equals(WorkingUnitDisplayTerms.WORKINGUNIT_NAME)) {
+			orderByComparator = new WorkingUnitNameComparator(orderByAsc);
+		} else if (orderByCol.equals(WorkingUnitDisplayTerms.WORKINGUNIT_ADDRESS)) {
+			orderByComparator = new WorkingUnitAdressComporator(orderByAsc);
+		} else if(orderByCol.equals(WorkingUnitDisplayTerms.WORKINGUNIT_TELNO)) {
+			orderByComparator = new WorkingUnitTelNoComparator(orderByAsc);
+		} else if(orderByCol.equals(WorkingUnitDisplayTerms.WORKINGUNIT_EMAIL)) {
+			orderByComparator = new WorkingUnitEmailComparator(orderByAsc);
+		}
+		
+		
+		return orderByComparator;
+	}
 }
