@@ -46,7 +46,6 @@
 		
 		<order>
 			<order-column name="name" order-by="asc" />
-			<order-column name="sibling" order-by="desc" />
 		</order>
 		
 		<!-- Finder methods -->
