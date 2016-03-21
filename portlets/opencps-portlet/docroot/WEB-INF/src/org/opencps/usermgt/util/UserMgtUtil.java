@@ -21,7 +21,7 @@ package org.opencps.usermgt.util;
  * @author trungnt
  */
 public class UserMgtUtil {
-
 	public static final String TOP_TABS_EMPLOYEE = "employee";
 	public static final String TOP_TABS_WORKINGUNIT = "working-unit";
+	public static final String[] _EMPLOYESS_CATEGORY_NAMES = {"employee-info"};
 }
