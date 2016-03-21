@@ -118,4 +118,6 @@ public class DateTimeUtil {
 	public static final String _TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	public static final String _VN_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
+	
+	public static final String _VN_DATE_FORMAT = "dd/MM/yyyy";
 }
