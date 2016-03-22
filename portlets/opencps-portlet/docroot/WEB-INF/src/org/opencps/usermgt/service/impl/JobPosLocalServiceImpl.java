@@ -1,4 +1,4 @@
-/**
+/** 
  * OpenCPS is the open source Core Public Services software
  * Copyright (C) 2016-present OpenCPS community
  * 
@@ -75,13 +75,13 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 
 		String roleName = "";
 		if (leader == 0) {
-			roleName = PortletPropsValues.JOBPOS_THONGTHUONG;
+			roleName = "thong thuong" /*PortletPropsValues.JOBPOS_THONGTHUONG*/;
 		}
 		else if (leader == 1) {
-			roleName = PortletPropsValues.JOBPOS_CAPTRUONG;
+			roleName = "cap truong"/*PortletPropsValues.JOBPOS_CAPTRUONG*/ ;
 		}
 		else if (leader == 2) {
-			roleName = PortletPropsValues.JOBPOS_CAPPHO;
+			roleName =  "cap pho"/*PortletPropsValues.JOBPOS_CAPPHO*/;
 		}
 
 		Map<Locale, String> titleMap = new HashMap<Locale, String>();
@@ -147,14 +147,15 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 
 		String roleName = "";
 		if (leader == 0) {
-			roleName = PortletPropsValues.JOBPOS_THONGTHUONG;
+			roleName = "thong thuong" /*PortletPropsValues.JOBPOS_THONGTHUONG*/;
 		}
 		else if (leader == 1) {
-			roleName = PortletPropsValues.JOBPOS_CAPTRUONG;
+			roleName = "cap truong"/*PortletPropsValues.JOBPOS_CAPTRUONG*/ ;
 		}
 		else if (leader == 2) {
-			roleName = PortletPropsValues.JOBPOS_CAPPHO;
+			roleName =  "cap pho"/*PortletPropsValues.JOBPOS_CAPPHO*/;
 		}
+
 
 		jobPos
 			.setUserId(userId);
