@@ -19,7 +19,9 @@ package org.opencps.util;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -40,7 +42,6 @@ public class PortletUtil {
 				.isNotNull(fullName)) {
 				String[] splitNames = StringUtil
 					.split(fullName, StringPool.SPACE);
-
 				if (splitNames != null && splitNames.length > 0) {
 					_lastName = splitNames[0];
 
@@ -51,13 +52,9 @@ public class PortletUtil {
 							_midName += splitNames[i] + StringPool.SPACE;
 						}
 					}
-
-					this
-						.setLastName(_lastName);
-					this
-						.setFirstName(_firstName);
-					this
-						.setMidName(_midName);
+					this.setLastName(_lastName);
+					this.setFirstName(_firstName);
+					this.setMidName(_midName);
 				}
 			}
 		}
@@ -101,31 +98,19 @@ public class PortletUtil {
 
 		public SplitDate(Date date) {
 			if (date != null) {
-				Calendar calendar = Calendar
-					.getInstance();
-				calendar
-					.setTime(date);
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(date);
 
-				_miniSecond = calendar
-					.get(Calendar.MILLISECOND);
-				_second = calendar
-					.get(Calendar.SECOND);
-				_minute = calendar
-					.get(Calendar.MINUTE);
-				_hour = calendar
-					.get(Calendar.HOUR);
-				_dayOfMoth = calendar
-					.get(Calendar.DAY_OF_MONTH);
-				_dayOfYear = calendar
-					.get(Calendar.DAY_OF_YEAR);
-				_weekOfMonth = calendar
-					.get(Calendar.WEEK_OF_MONTH);
-				_weekOfYear = calendar
-					.get(Calendar.WEEK_OF_YEAR);
-				_month = calendar
-					.get(Calendar.MONTH);
-				_year = calendar
-					.get(Calendar.YEAR);
+				_miniSecond = calendar.get(Calendar.MILLISECOND);
+				_second = calendar.get(Calendar.SECOND);
+				_minute = calendar.get(Calendar.MINUTE);
+				_hour = calendar.get(Calendar.HOUR);
+				_dayOfMoth = calendar.get(Calendar.DAY_OF_MONTH);
+				_dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+				_weekOfMonth = calendar.get(Calendar.WEEK_OF_MONTH);
+				_weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+				_month = calendar.get(Calendar.MONTH);
+				_year = calendar.get(Calendar.YEAR);
 			}
 		}
 
@@ -250,4 +235,23 @@ public class PortletUtil {
 
 		return new SplitName(fullName);
 	};
+
+	public static String getGender(int value, Locale locale) {
+
+		String genderLabel = StringPool.BLANK;
+
+		switch (value) {
+			case 0 :
+				genderLabel = LanguageUtil.get(locale, "female");
+				break;
+			case 1 :
+				genderLabel = LanguageUtil.get(locale, "male");
+				break;
+			default :
+				genderLabel = LanguageUtil.get(locale, "male");
+				break;
+		}
+
+		return genderLabel;
+	}
 }

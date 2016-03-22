@@ -1,3 +1,5 @@
+<%@page import="java.util.Date"%>
+<%@page import="org.opencps.util.PortletUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -17,6 +19,11 @@
  */
 %>
 <%@ include file="../init.jsp"%>
-UserMgt Admin 
-<%-- <liferay-util:include page="/html/portlets/usermgt/admin/workingunit_edit.jsp" servletContext="<%=application %>" />
- --%>
+<%
+	PortletUtil.SplitDate spd = PortletUtil.splitDate(new Date());
+	System.out.println(spd.getMonth());
+	System.out.println(spd.getDayOfMoth());
+	System.out.println(spd.getYear());
+%>
+
+<liferay-util:include page="/html/portlets/usermgt/admin/edit_employee.jsp" servletContext="<%=application %>" />
