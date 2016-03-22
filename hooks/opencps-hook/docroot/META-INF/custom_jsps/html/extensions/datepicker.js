@@ -34,7 +34,7 @@ AUI.add(
 						AUI({ lang: lang }).use(
 						  'aui-datepicker',
 						  function(A) {
-						    var datepicker = new Y.DatePicker(
+						    var datepicker = new A.DatePicker(
 						      {
 						        trigger: trigger,
 						        mask: mask,
