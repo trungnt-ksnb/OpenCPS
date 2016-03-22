@@ -1,4 +1,3 @@
-
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -17,7 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-<%@ include file="../init.jsp"%>
 <%@page import="com.liferay.portal.UserLockoutException"%>
 <%@page import="com.liferay.portal.service.UserLocalServiceUtil"%>
 <%@page import="com.liferay.portal.service.PasswordPolicyLocalServiceUtil"%>
@@ -27,6 +25,8 @@
 <%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%@page import="java.util.Date"%>
 <%@page import="org.opencps.util.PortletUtil"%>
+<%@ include file="../init.jsp"%>
+
 
 <%
 	String backURL = ParamUtil.getString(request, "backURL");
@@ -105,23 +105,3 @@
        }
    ).render();
 </aui:script>
-
-<%-- <aui:script>
-	AUI().ready(function(){
-		<portlet:namespace/>renderPicker();
-	});
-	
-	Liferay.provide(window, '<portlet:namespace/>renderPicker', function() {
-		var A = AUI();
-		
-		var picker = new Liferay.RenderDatePicker(
-        {
-        	trigger : '.datePicker',
-			lang : 'vi',
-			mask : '%d/%m/%Y',
-			defaultValue : '',
-			zIndex : 1
-        }
- 	).render();
-	},['render-datepicker']);
-</aui:script> --%>
