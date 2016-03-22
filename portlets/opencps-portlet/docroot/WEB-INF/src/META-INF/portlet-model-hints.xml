@@ -80,9 +80,10 @@
 		<field name="email" type="String" />
 		<field name="workingStatus" type="int" />
 		<field name="mainJobPosId" type="long" />
+		<field name="mappingUserId" type="long" />
 	</model>
 	<model name="org.opencps.usermgt.model.JobPos">
-		<field name="jobposId" type="long" />
+		<field name="jobPosId" type="long" />
 		<field name="companyId" type="long" />
 		<field name="groupId" type="long" />
 		<field name="userId" type="long" />
@@ -113,7 +114,9 @@
 			<hint name="max-length">255</hint>
 		</field>
 		<field name="govAgencyCode" type="String" />
+		<field name="managerWorkingUnitId" type="long" />
 		<field name="parentWorkingUnitId" type="long" />
+		<field name="sibling" type="int" />
 		<field name="treeIndex" type="String" />
 		<field name="address" type="String" />
 		<field name="cityCode" type="String" />

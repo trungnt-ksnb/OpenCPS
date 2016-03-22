@@ -68,6 +68,53 @@ public class DateTimeUtil {
 		return dateFormat;
 	}
 
+	public int getDayFromDate(Date date) {
+
+		int day = 1;
+
+		if (date != null) {
+			Calendar calendar = Calendar
+				.getInstance();
+			calendar
+				.setTime(date);
+			day = calendar
+				.get(Calendar.DAY_OF_MONTH);
+		}
+
+		return day;
+	}
+
+	public int getMonthFromDate(Date date) {
+
+		int month = 1;
+
+		if (date != null) {
+			Calendar calendar = Calendar
+				.getInstance();
+			calendar
+				.setTime(date);
+			month = calendar
+				.get(Calendar.MONTH);
+		}
+
+		return month;
+	}
+
+	public int getYearFromDate(Date date) {
+
+		int year = 1990;
+		if (date != null) {
+			Calendar calendar = Calendar
+				.getInstance();
+			calendar
+				.setTime(date);
+			year = calendar
+				.get(Calendar.YEAR);
+		}
+
+		return year;
+	}
+
 	public static final String _TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	public static final String _VN_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";

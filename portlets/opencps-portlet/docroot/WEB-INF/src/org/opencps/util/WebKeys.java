@@ -26,4 +26,6 @@ public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 	public static final String DICT_VERSION_ENTRY = "DICT_VERSION_ENTRY";
 	
 	public static final String DICT_ITEM_ENTRY = "DICT_ITEM_ENTRY";
+	
+	public static final String WORKING_UNIT_ENTRY = "WORKING_UNIT_ENTRY";
 }
