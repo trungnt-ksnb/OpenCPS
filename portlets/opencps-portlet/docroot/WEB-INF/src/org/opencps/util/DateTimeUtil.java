@@ -66,13 +66,10 @@ public class DateTimeUtil {
 		int day = 1;
 
 		if (date != null) {
-			Calendar calendar = Calendar
-				.getInstance();
-			calendar
-				.setTime(date);
-			day = calendar
-				.get(Calendar.DAY_OF_MONTH);
 			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			day = calendar.get(Calendar.DAY_OF_MONTH);
+
 			calendar.setTime(date);
 			day = calendar.get(Calendar.DAY_OF_MONTH);
 		}
@@ -85,13 +82,10 @@ public class DateTimeUtil {
 		int month = 1;
 
 		if (date != null) {
-			Calendar calendar = Calendar
-				.getInstance();
-			calendar
-				.setTime(date);
-			month = calendar
-				.get(Calendar.MONTH);
-			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			month = calendar.get(Calendar.MONTH);
+
 			calendar.setTime(date);
 			month = calendar.get(Calendar.MONTH);
 		}
@@ -103,13 +97,10 @@ public class DateTimeUtil {
 
 		int year = 1990;
 		if (date != null) {
-			Calendar calendar = Calendar
-				.getInstance();
-			calendar
-				.setTime(date);
-			year = calendar
-				.get(Calendar.YEAR);
 			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			year = calendar.get(Calendar.YEAR);
+
 			calendar.setTime(date);
 			year = calendar.get(Calendar.YEAR);
 		}
