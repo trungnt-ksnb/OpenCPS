@@ -49,5 +49,7 @@ public class PortletPropsKeys {
 	public static final String USERMGT_EMPLOYEE_EMPLOYEENO_LENGTH = "opencps.usermgt.employee.employeeno.length";
 	public static final String USERMGT_EMPLOYEE_TELNO_LENGTH = "opencps.usermgt.employee.telno.length";
 	public static final String USERMGT_EMPLOYEE_MOBILE_LENGTH = "opencps.usermgt.employee.mobile.length";
+	
+	public static final String USERMGT_GENDER_VALUES2 = "opencps.usermgt.gender.values";
 
 }
