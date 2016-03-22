@@ -1,0 +1,8 @@
+.classpath
+.settings/org.eclipse.wst.common.component
+portlets/opencps-portlet/docroot/WEB-INF/src/META-INF/portlet-hbm.xml
+portlets/opencps-portlet/docroot/WEB-INF/src/META-INF/portlet-model-hints.xml
+portlets/opencps-portlet/docroot/WEB-INF/src/META-INF/portlet-orm.xml
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/usermgt/portlet/UserMgtPortlet.java
+portlets/opencps-portlet/docroot/WEB-INF/src/portlet.properties
+

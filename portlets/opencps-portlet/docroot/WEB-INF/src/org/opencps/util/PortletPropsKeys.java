@@ -41,11 +41,13 @@ public class PortletPropsKeys {
 
 	public static final String USERMGT_USERGROUP_NAME_CITIZEN = "opencps.usermgt.usergroup.name.citizen";
 
+	public static final String USERMGT_GENDER_VALUES = "opencps.usermgt.gender.values";
+
 	// User Management validate
 	public static final String USERMGT_EMPLOYEE_FULLNAME_LENGTH = "opencps.usermgt.employee.fullname.length";
 	public static final String USERMGT_EMPLOYEE_EMAIL_LENGTH = "opencps.usermgt.employee.email.length";
 	public static final String USERMGT_EMPLOYEE_EMPLOYEENO_LENGTH = "opencps.usermgt.employee.employeeno.length";
 	public static final String USERMGT_EMPLOYEE_TELNO_LENGTH = "opencps.usermgt.employee.telno.length";
 	public static final String USERMGT_EMPLOYEE_MOBILE_LENGTH = "opencps.usermgt.employee.mobile.length";
-	
+
 }

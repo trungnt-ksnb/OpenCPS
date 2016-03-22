@@ -18,6 +18,7 @@
 package org.opencps.util;
 
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.util.portlet.PortletProps;
 
 /**
@@ -67,6 +68,12 @@ public class PortletPropsValues {
 
 	public static final String USERMGT_USERGROUP_NAME_CITIZEN = GetterUtil
 			.getString(PortletPropsKeys.USERMGT_USERGROUP_NAME_CITIZEN);
+
+	public static final int[] USERMGT_GENDER_VALUES = GetterUtil
+			.getIntegerValues(
+					PortletProps
+							.getArray(PortletPropsKeys.USERMGT_GENDER_VALUES),
+					new int[0]);
 
 	// User Management Validate
 	public static final int USERMGT_EMPLOYEE_FULLNAME_LENGTH = GetterUtil
