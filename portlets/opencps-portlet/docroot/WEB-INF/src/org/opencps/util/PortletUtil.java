@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.sun.org.apache.regexp.internal.recompile;
 
 /**
  * @author trungnt
@@ -39,10 +38,10 @@ public class PortletUtil {
 			_lastName = StringPool.BLANK;
 			_midName = StringPool.BLANK;
 
-			if (Validator.isNotNull(fullName)) {
-				String[] splitNames = StringUtil.split(fullName,
-						StringPool.SPACE);
-
+			if (Validator
+				.isNotNull(fullName)) {
+				String[] splitNames = StringUtil
+					.split(fullName, StringPool.SPACE);
 				if (splitNames != null && splitNames.length > 0) {
 					_lastName = splitNames[0];
 
@@ -53,7 +52,6 @@ public class PortletUtil {
 							_midName += splitNames[i] + StringPool.SPACE;
 						}
 					}
-
 					this.setLastName(_lastName);
 					this.setFirstName(_firstName);
 					this.setMidName(_midName);

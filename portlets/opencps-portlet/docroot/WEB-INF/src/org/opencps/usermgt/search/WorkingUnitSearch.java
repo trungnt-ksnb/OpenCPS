@@ -45,7 +45,6 @@ public class WorkingUnitSearch extends SearchContainer<WorkingUnit> {
 		headerNames.add("tel-number");
 		headerNames.add("email");
 		headerNames.add("website");
-
 		headerNames.add("action");
 
 		orderableHeaders.put("name", WorkingUnitDisplayTerms.WORKINGUNIT_NAME);
@@ -62,8 +61,10 @@ public class WorkingUnitSearch extends SearchContainer<WorkingUnit> {
 	public WorkingUnitSearch(
 		PortletRequest portletRequest, int delta, PortletURL iteratorURL) {
 
-		super(portletRequest, new WorkingUnitDisplayTerms(portletRequest), new WorkingUnitSearchTerms(
-			portletRequest), DEFAULT_CUR_PARAM, delta, iteratorURL, headerNames, EMPTY_RESULTS_MESSAGE);
+		super(portletRequest, new WorkingUnitDisplayTerms(portletRequest), 
+			new WorkingUnitSearchTerms(
+			portletRequest), DEFAULT_CUR_PARAM, delta, iteratorURL, 
+			headerNames, EMPTY_RESULTS_MESSAGE);
 
 		WorkingUnitDisplayTerms displayTerms =
 			(WorkingUnitDisplayTerms) getDisplayTerms();

@@ -29,6 +29,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 
 public class WorkingUnitDisplayTerms extends DisplayTerms {
 	
+	public static final String WORKINGUNIT_MANAGERWORKINGUNITID = "managerWorkingUnitId";
 	public static final String WORKINGUNIT_PARENTWORKINGUNITID = "parentWorkingUnitId";
 	public static final String WORKINGUNIT_ID = "workingunitId";
 	public static final String WORKINGUNIT_NAME = "name";
@@ -51,6 +52,8 @@ public class WorkingUnitDisplayTerms extends DisplayTerms {
 	public WorkingUnitDisplayTerms(PortletRequest request) {
 
 		super(request);
+		
+		managerWorkingUnitId = ParamUtil.getLong(request, WORKINGUNIT_MANAGERWORKINGUNITID);
 		workingUnitId = ParamUtil.getLong(request, WORKINGUNIT_ID);
 		name = ParamUtil.getString(request, WORKINGUNIT_NAME);
 		enNamme = ParamUtil.getString(request, WORKINGUNIT_ENNAME);
@@ -269,6 +272,19 @@ public class WorkingUnitDisplayTerms extends DisplayTerms {
 		this.parentWorkingUnitId = parentWorkingUnitId;
 	}
 
+
+	protected long managerWorkingUnitId;
+	
+	public long getManagerWorkingUnitId() {
+	
+		return managerWorkingUnitId;
+	}
+
+	
+	public void setManagerWorkingUnitId(long managerWorkingUnitId) {
+	
+		this.managerWorkingUnitId = managerWorkingUnitId;
+	}
 
 
 	protected long parentWorkingUnitId;

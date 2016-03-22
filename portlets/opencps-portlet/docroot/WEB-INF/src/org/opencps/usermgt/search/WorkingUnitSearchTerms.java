@@ -28,6 +28,9 @@ public class WorkingUnitSearchTerms extends WorkingUnitDisplayTerms {
 	public WorkingUnitSearchTerms(PortletRequest request) {
 
 		super(request);
+		
+		managerWorkingUnitId = ParamUtil.getLong(request, WORKINGUNIT_MANAGERWORKINGUNITID);
+		parentWorkingUnitId = ParamUtil.getLong(request, WORKINGUNIT_PARENTWORKINGUNITID);
 		workingUnitId = ParamUtil.getLong(request, WORKINGUNIT_ID);
 		name = ParamUtil.getString(request, WORKINGUNIT_NAME);
 		enNamme = ParamUtil.getString(request, WORKINGUNIT_ENNAME);
@@ -213,6 +216,34 @@ public class WorkingUnitSearchTerms extends WorkingUnitDisplayTerms {
 
 		this.workingUnitId = workingUnitId;
 	}
+	
+	
+	
+	public long getParentWorkingUnitId() {
+	
+		return parentWorkingUnitId;
+	}
+
+	
+	public void setParentWorkingUnitId(long parentWorkingUnitId) {
+	
+		this.parentWorkingUnitId = parentWorkingUnitId;
+	}
+
+	protected long managerWorkingUnitId;
+	
+	public long getManagerWorkingUnitId() {
+	
+		return managerWorkingUnitId;
+	}
+
+	
+	public void setManagerWorkingUnitId(long managerWorkingUnitId) {
+	
+		this.managerWorkingUnitId = managerWorkingUnitId;
+	}
+
+	protected long parentWorkingUnitId;
 	protected long workingUnitId;
 	protected long groupId;
 	protected String treeIndex;

@@ -20,7 +20,7 @@
 		<footer-portlet-javascript>
 			/js/main.js
 		</footer-portlet-javascript>
-		<css-class-wrapper>2-opencps-usermgt-portlet</css-class-wrapper>
+		<css-class-wrapper>2-opencps-usermgt-portlet</css-class-wrapper>	
 	</portlet>
 	<portlet>
 		<portlet-name>3</portlet-name>

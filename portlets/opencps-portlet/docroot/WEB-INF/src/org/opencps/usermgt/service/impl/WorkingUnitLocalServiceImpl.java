@@ -64,7 +64,8 @@ public class WorkingUnitLocalServiceImpl
 		long userId, ServiceContext serviceContext, String name, String enName,
 		String govAgencyCode, long parentWorkingUnitId, String address,
 		String cityCode, String districtCode, String wardCode, String telNo,
-		String faxNo, String email, String website, boolean isEmployer)
+		String faxNo, String email, String website, boolean isEmployer, 
+		long managerWorkingUnitId)
 		throws SystemException, PortalException {
 
 		int sibling = 0;
@@ -127,16 +128,18 @@ public class WorkingUnitLocalServiceImpl
 		workingUnit.setEmail(email);
 		workingUnit.setWebsite(website);
 		workingUnit.setIsEmployer(isEmployer);
+		workingUnit.setManagerWorkingUnitId(managerWorkingUnitId);
 		return workingUnitPersistence.update(workingUnit);
 
 	}
 
 	public WorkingUnit updateWorkingUnit(
-		long organizationId, long workingUnitId, long userId,
+		long workingUnitId, long userId,
 		ServiceContext serviceContext, String name, String enName,
 		String govAgencyCode, long parentWorkingUnitId, String address,
 		String cityCode, String districtCode, String wardCode, String telNo,
-		String faxNo, String email, String website, boolean isEmployer)
+		String faxNo, String email, String website, boolean isEmployer, 
+		long managerWorkingUnitId)
 		throws SystemException, PortalException {
 
 		WorkingUnit workingUnit =
@@ -151,11 +154,6 @@ public class WorkingUnitLocalServiceImpl
 					"CQNN", OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0,
 					0, ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, "no",
 					true, serviceContext);
-
-		}
-		else {
-			org =
-				OrganizationLocalServiceUtil.fetchOrganization(organizationId);
 
 		}
 
@@ -196,7 +194,7 @@ public class WorkingUnitLocalServiceImpl
 		workingUnit.setWebsite(website);
 		workingUnit.setIsEmployer(isEmployer);
 		workingUnit.setMappingOrganisationId(mappingOrganisationId);
-
+		workingUnit.setManagerWorkingUnitId(managerWorkingUnitId);
 		return workingUnitPersistence.update(workingUnit);
 	}
 
@@ -257,6 +255,10 @@ public class WorkingUnitLocalServiceImpl
 		return workingUnitPersistence.findByG_E(groupId, isEmployee);
 	}
 
+	public List<WorkingUnit> getWorkingUnits(long groupId, long parentWorkingUnitId) throws SystemException {
+		return workingUnitPersistence.findByG_P(groupId, parentWorkingUnitId);
+	}
+	
 	public void mapMultipleJobPosWorkingUnitToOneWorkingUnit(
 		long workingUnitId, long[] jobPosIds)
 		throws SystemException {

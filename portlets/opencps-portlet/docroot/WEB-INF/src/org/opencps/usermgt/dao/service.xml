@@ -55,6 +55,11 @@
 			<finder-column name="isEmployer" />
 		</finder>
 		
+		<finder return-type="Collection" name="G_P">
+			<finder-column name="groupId" />
+			<finder-column name="parentWorkingUnitId" />
+		</finder>
+		
 		<finder name="G_E_P" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="isEmployer" />
