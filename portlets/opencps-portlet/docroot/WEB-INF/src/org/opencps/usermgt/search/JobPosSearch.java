@@ -41,6 +41,7 @@ public class JobPosSearch extends SearchContainer<JobPos> {
 	static {
 		headerNames.add("title");
 		headerNames.add("leader");
+		headerNames.add("action");
 		orderableHeaders.put("title", JobPosSearchTerms.TITLE_JOBPOS);
 		orderableHeaders.put("leader", JobPosSearchTerms.LEADER_JOBPOS);
 	}

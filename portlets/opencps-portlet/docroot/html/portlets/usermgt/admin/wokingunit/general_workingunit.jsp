@@ -47,6 +47,7 @@
 <aui:model-context bean="<%=workingUnit%>" model="<%=WorkingUnit.class%>" />
 <aui:row>
 	<aui:select name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_PARENTWORKINGUNITID%>">
+		<aui:option value="<%=0%>"></aui:option>
 		<%
 			for(WorkingUnit unit : workingUnits) {
 				%>

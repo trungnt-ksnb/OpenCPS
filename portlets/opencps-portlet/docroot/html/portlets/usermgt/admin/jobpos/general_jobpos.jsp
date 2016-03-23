@@ -33,10 +33,12 @@
 <%@ include file="../../init.jsp"%>
 
 <%
-	long workingUnitId = ParamUtil.getLong(request, "workingunitRefId");
+	JobPos jobPos =
+	(JobPos) request.getAttribute(WebKeys.JOBPOS_ENTRY);
+	long jobposId = jobPos != null ? jobPos.getJobPosId() : 0L;
 	int[] rowIndexes = null;	
 	rowIndexes = new int[]{0};
-	System.out.println("===workingUnitId " + workingUnitId);
+	System.out.println("===jobposId " + jobposId);
 	
 %>
 
@@ -94,7 +96,7 @@
 </aui:script>
 	
 <%!
-	private Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.edit_jobpos.jsp");
+	private Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.jobpos.general_jobpos.jsp");
 %>
 
 

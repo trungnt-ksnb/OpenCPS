@@ -28,24 +28,24 @@
 %>
 
 <liferay-ui:icon-menu>
-	<portlet:renderURL var="updateWorkingUnit">
+	<portlet:renderURL var="updateJobPos">
 		<portlet:param name="mvcPath"
-			value="/html/portlets/usermgt/admin/edit_workingunit.jsp" />
+			value="/html/portlets/usermgt/admin/edit_jobpos.jsp" />
 		<portlet:param name="<%=JobPosDisplayTerms.ID_JOBPOS%>"
 			value="<%=String.valueOf(jobPos.getJobPosId())%>" />
 		<portlet:param name="backURL" value="<%=currentURL%>" />
 	</portlet:renderURL>
 
 	<liferay-ui:icon image="edit" message="edit"
-		url="<%=updateWorkingUnit.toString()%>" />
+		url="<%=updateJobPos.toString()%>" />
 
-	<portlet:actionURL var="deleteWorkingUnitURL" name="deleteWorkingUnit">
+	<portlet:actionURL var="deleteJobPosURL" name="deleteJobPos">
 		<portlet:param name="<%=JobPosDisplayTerms.ID_JOBPOS%>"
 			value="<%=String.valueOf(jobPos.getJobPosId())%>" />
 		<portlet:param name="redirectURL" value="<%=currentURL%>" />
 	</portlet:actionURL>
 
 	<liferay-ui:icon image="delete" message="delete"
-		url="<%=deleteWorkingUnitURL.toString()%>" />
+		url="<%=deleteJobPosURL.toString()%>" />
 
 </liferay-ui:icon-menu>

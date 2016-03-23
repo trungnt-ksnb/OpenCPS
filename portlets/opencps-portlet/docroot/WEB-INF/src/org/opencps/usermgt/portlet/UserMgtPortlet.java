@@ -31,6 +31,7 @@ import org.opencps.usermgt.NoSuchWorkingUnitException;
 import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.search.EmployeeDisplayTerm;
+import org.opencps.usermgt.search.JobPosDisplayTerms;
 import org.opencps.usermgt.search.JobPosSearchTerms;
 import org.opencps.usermgt.search.WorkingUnitDisplayTerms;
 import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
@@ -87,8 +88,10 @@ public class UserMgtPortlet extends MVCPortlet {
 			String vitri = request
 					.getParameter(JobPosSearchTerms.LEADER_JOBPOS
 							+ indexOfRows[index].trim());
+			long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
 			System.out.println("====chucvu " + chucvu + " vitri " + vitri
-					+ " indexOfRows " + indexOfRows + " index " + index);
+					+ " indexOfRows " + indexOfRows + " index " + index
+					+ " jobPosId " + jobPosId);
 		}
 	}
 

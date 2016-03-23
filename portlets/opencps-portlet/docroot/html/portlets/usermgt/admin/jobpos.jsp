@@ -1,3 +1,4 @@
+<%@page import="com.liferay.portal.kernel.dao.search.SearchContainer"%>
 <%@page import="com.liferay.portal.kernel.dao.search.SearchEntry"%>
 <%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.search.JobPosSearchTerms"%>
@@ -35,18 +36,19 @@
 %>
 
 <liferay-ui:search-container searchContainer="<%= 
-new JobPosSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
+	new JobPosSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
+	
 	<liferay-ui:search-container-results>
 		<%@include file="/html/portlets/usermgt/admin/result_search_jobpos.jspf"%>
 	</liferay-ui:search-container-results>
 	<liferay-ui:search-container-row 
 		className="org.opencps.usermgt.model.JobPos" 
-		modelVar="jobPos" 
+		modelVar="jobPosSearch" 
 		keyProperty="jobposId"
 	>
 		<%
-			row.addText(jobPos.getTitle());
-			row.addText(String.valueOf(jobPos.getLeader()));
+			row.addText(jobPosSearch.getTitle());
+			row.addText(String.valueOf(jobPosSearch.getLeader()));
 			row.addJSP("center", SearchEntry.DEFAULT_VALIGN,  templatePath +
 				"jobpos-action.jsp", config.getServletContext(),
 				request, response);

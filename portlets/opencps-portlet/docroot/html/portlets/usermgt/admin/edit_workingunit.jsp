@@ -1,3 +1,5 @@
+<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.log.Log"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -42,8 +44,7 @@
 <portlet:actionURL var="updateWorkingUnitURL" name="updateWorkingUnit"/>
 
 <portlet:renderURL	var="dialogURL"	windowState="<%=LiferayWindowState.POP_UP.toString()%>">
-	<portlet:param name="mvcPath" value='<%= templatePath + "edit_jobpos.jsp" %>' />
-	<portlet:param name="workingunitRefId" value="<%=String.valueOf(workingUnitId)%>" />
+	<portlet:param name="mvcPath" value='<%= templatePath + "jobpos.jsp" %>' />
 </portlet:renderURL>
 
 <liferay-util:buffer var="htmlTop">
@@ -91,3 +92,7 @@
 		}
 	});
 </aui:script>
+
+<%!
+	private Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.edit_workingunit.jsp");
+%>
