@@ -84,7 +84,7 @@ public class UserMgtPortlet extends MVCPortlet {
 		super.render(renderRequest, renderResponse);
 	}
 
-	public void workingUnitAdd(ActionRequest request, ActionResponse response)
+	public void updateWorkingUnit(ActionRequest request, ActionResponse response)
 			throws PortalException, SystemException {
 		long managerWorkingUnitId = ParamUtil.getLong(request,
 				WorkingUnitDisplayTerms.WORKINGUNIT_MANAGERWORKINGUNITID);
@@ -149,7 +149,7 @@ public class UserMgtPortlet extends MVCPortlet {
 				.deleteWorkingUnitByWorkingUnitId(workingUnitId);
 	}
 
-	public void jobPosAdd(ActionRequest request, ActionResponse response) {
+	public void addJobPosURL(ActionRequest request, ActionResponse response) {
 
 		String rowIndexes = request.getParameter("rowIndexes");
 		System.out.println("===rowIndexes " + rowIndexes);

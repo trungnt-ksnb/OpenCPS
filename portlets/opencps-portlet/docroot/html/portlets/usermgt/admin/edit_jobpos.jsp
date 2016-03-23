@@ -63,9 +63,9 @@
 	}
 %>
 
-<portlet:actionURL var="jobPosAddURL" name="jobPosAdd" />
+<portlet:actionURL var="addJobPosURL" name="jobPosAdd" />
 
-<aui:form action="<%=jobPosAddURL.toString()%>" method="POST">
+<aui:form action="<%=addJobPosURL.toString()%>" method="POST">
 	<aui:row>
 		<div id="member-fields">
 

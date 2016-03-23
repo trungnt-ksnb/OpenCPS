@@ -1,3 +1,6 @@
+<%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
+<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
+<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -19,16 +22,35 @@
 <%@ include file="../init.jsp"%>
 <%
 	String backURL = ParamUtil.getString(request, "backURL");
+	long workingUnitId = ParamUtil.getLong(request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);
+	String [] workingunitSections = new String[3];
+	if(workingUnitId == 0) {
+		workingunitSections[0] = "general_workingunit";
+		workingunitSections[1] = "contact_workingunit";
+		workingunitSections[2] = "----";
+	} else {
+		workingunitSections[0] = "general_workingunit";
+		workingunitSections[1] = "contact_workingunit";
+		workingunitSections[2] = "jobpos";
+	}
+	
+				
+	String[][] categorySections = {workingunitSections};
 %>
 <portlet:actionURL var="updateWorkingUnitURL" name="updateWorkingUnit"/>
+
+<portlet:renderURL	var="dialogURL"	windowState="<%=LiferayWindowState.POP_UP.toString()%>">
+	<portlet:param name="mvcPath" value='<%= templatePath + "edit_jobpos.jsp" %>' />
+	<portlet:param name="workingunitRefId" value="<%=String.valueOf(workingUnitId)%>" />
+</portlet:renderURL>
 
 <liferay-util:buffer var="htmlTop">
 	
 </liferay-util:buffer>
 
 <liferay-util:buffer var="htmlBot">
-	<aui:button type="submit" name="submit" value="submit"></aui:button>
-	<aui:button type="reset" value="clear"/>
+	<%-- <aui:button type="submit" name="submit" value="submit"></aui:button>
+	<aui:button type="reset" value="clear"/> --%>
 </liferay-util:buffer>
 
 <aui:form name="fm" 
@@ -36,9 +58,35 @@
 	action="<%=updateWorkingUnitURL.toString() %>">
 	<liferay-ui:form-navigator 
 		backURL="<%= backURL %>"
-		categoryNames=<%= UserMgtUtil. %>	>
-		
+		categoryNames= "<%= UserMgtUtil._WORKING_UNIT_CATEGORY_NAMES %>"	
+		categorySections="<%=categorySections %>" 
+		htmlBottom="<%= htmlBot %>"
+		htmlTop="<%= htmlTop %>"
+		jspPath='<%=templatePath + "wokingunit/" %>'
+		>	
 	</liferay-ui:form-navigator>
-
-
+	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID %>" 
+		type="hidden"
+	></aui:input>
 </aui:form>
+
+<aui:script use="liferay-util-window">
+	AUI().ready(function(A){
+		var onclickJobPos = A.one('#<portlet:namespace/>jobposLink');
+		if(onclickJobPos) {
+			onclickJobPos.on('click', function(event) {
+				Liferay.Util.openWindow({
+					dialog : {
+						centered : true,
+						height : 1000,
+						modal : true,
+						width : 900
+					},
+					id : '<portlet:namespace/>dialog',
+					title : 'Edit-JobPos',
+					uri : '<%=dialogURL %>'
+				});
+			});
+		}
+	});
+</aui:script>
