@@ -1,3 +1,4 @@
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -28,11 +29,16 @@
 <%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%@page import="java.util.Date"%>
 <%@page import="org.opencps.util.PortletUtil"%>
+<%@page import="org.opencps.util.WebKeys"%>
+<%@page import="org.opencps.usermgt.model.Employee"%>
 <%@ include file="../init.jsp"%>
 
 
 <%
+	Employee employee = (Employee)request.getAttribute(WebKeys.EMPLOYEE_ENTRY);
+
 	String backURL = ParamUtil.getString(request, "backURL");
+
 	User mappingUser = (User)request.getAttribute("");
 	
 	PasswordPolicy passwordPolicy = null;
@@ -47,7 +53,16 @@
 	String[] employeeSections = new String[]{"general_info", "working_unit", "account_info"};
 	
 	String[][] categorySections = {employeeSections};
+	
+	
 %>
+
+<liferay-ui:header
+	backURL="<%= backURL %>"
+	title='<%= (employee == null) ? "add-employee" : "update-employee" %>'
+/>
+
+<portlet:actionURL var="updateEmployeeURL" name="updateEmployee"/>
 
 <portlet:renderURL var="renderWorkingUnitJobPosURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString()%>">
 	<portlet:param name="mvcPath" value='<%=templatePath + "ajax/render_workingunit_jobpos.jsp" %>'/>
@@ -93,14 +108,17 @@
 	</c:if>
 </liferay-util:buffer>
 
-<aui:form name="fm">
+<aui:form name="fm" action="<%=updateEmployeeURL %>" method="post">
+
+	<aui:model-context bean="<%=employee %>" model="<%=Employee.class %>" />
+	
 	<liferay-ui:form-navigator
 		backURL="<%= backURL %>"
 		categoryNames="<%= UserMgtUtil._EMPLOYESS_CATEGORY_NAMES %>"
 		categorySections="<%= categorySections %>"
 		htmlBottom="<%= htmlBottom %>"
 		htmlTop="<%= htmlTop %>"
-		jspPath="/html/portlets/usermgt/admin/employees/"
+		jspPath='<%=templatePath + "employees/" %>'
 	/>
 </aui:form>
 
