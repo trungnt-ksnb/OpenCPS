@@ -38,10 +38,9 @@ public class PortletUtil {
 			_lastName = StringPool.BLANK;
 			_midName = StringPool.BLANK;
 
-			if (Validator
-				.isNotNull(fullName)) {
-				String[] splitNames = StringUtil
-					.split(fullName, StringPool.SPACE);
+			if (Validator.isNotNull(fullName)) {
+				String[] splitNames = StringUtil.split(fullName,
+						StringPool.SPACE);
 				if (splitNames != null && splitNames.length > 0) {
 					_lastName = splitNames[0];
 
@@ -253,5 +252,27 @@ public class PortletUtil {
 		}
 
 		return genderLabel;
+	}
+
+	public static String getLeaderLabel(int value, Locale locale) {
+
+		String leaderLabel = StringPool.BLANK;
+
+		switch (value) {
+			case 0 :
+				leaderLabel = LanguageUtil.get(locale, "normal");
+				break;
+			case 1 :
+				leaderLabel = LanguageUtil.get(locale, "leader");
+				break;
+			case 2 :
+				leaderLabel = LanguageUtil.get(locale, "deputy");
+				break;
+			default :
+				leaderLabel = LanguageUtil.get(locale, "normal");
+				break;
+		}
+
+		return leaderLabel;
 	}
 }
