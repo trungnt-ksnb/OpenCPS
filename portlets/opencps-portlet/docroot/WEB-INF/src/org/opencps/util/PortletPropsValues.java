@@ -55,10 +55,10 @@ public class PortletPropsValues {
 					new String[0]);
 
 	// User Management
-	public static final String[] USERMGT_JOBPOS_LEADER = GetterUtil
-			.getStringValues(
+	public static final int[] USERMGT_JOBPOS_LEADER = GetterUtil
+			.getIntegerValues(
 					PortletProps.get(PortletPropsKeys.USERMGT_JOBPOS_LEADER),
-					new String[0]);
+					new int[0]);
 
 	public static final String USERMGT_USERGROUP_NAME_EMPLOYEE = GetterUtil
 			.getString(PortletPropsKeys.USERMGT_USERGROUP_NAME_EMPLOYEE);
