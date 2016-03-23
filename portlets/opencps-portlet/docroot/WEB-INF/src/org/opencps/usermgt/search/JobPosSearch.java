@@ -41,8 +41,9 @@ public class JobPosSearch extends SearchContainer<JobPos> {
 	static {
 		headerNames.add("title");
 		headerNames.add("leader");
-		orderableHeaders.put("title", JobPosDisplaySearchTerms.TITLE_JOBPOS);
-		orderableHeaders.put("leader", JobPosDisplaySearchTerms.LEADER_JOBPOS);
+		headerNames.add("action");
+		orderableHeaders.put("title", JobPosSearchTerms.TITLE_JOBPOS);
+		orderableHeaders.put("leader", JobPosSearchTerms.LEADER_JOBPOS);
 	}
 
 	public static final String EMPTY_RESULTS_MESSAGE =
@@ -50,16 +51,17 @@ public class JobPosSearch extends SearchContainer<JobPos> {
 	
 	public JobPosSearch(
 		PortletRequest portletRequest, int delta, PortletURL iteratorURL) {
-		super(portletRequest, new WorkingUnitDisplayTerms(portletRequest), 
-			new WorkingUnitSearchTerms(
+		
+		super(portletRequest, new JobPosSearchTerms(portletRequest), 
+			new JobPosSearchTerms(
 			portletRequest), DEFAULT_CUR_PARAM, delta, iteratorURL, 
 			headerNames, EMPTY_RESULTS_MESSAGE);
 		
 		JobPosDisplayTerms displayTerms = (JobPosDisplayTerms) getDisplayTerms();
 		
-		iteratorURL.setParameter(JobPosDisplaySearchTerms.TITLE_JOBPOS, 
+		iteratorURL.setParameter(JobPosSearchTerms.TITLE_JOBPOS, 
 			displayTerms.getTitle());
-		iteratorURL.setParameter(JobPosDisplaySearchTerms.LEADER_JOBPOS, 
+		iteratorURL.setParameter(JobPosSearchTerms.LEADER_JOBPOS, 
 			String.valueOf(displayTerms.getLeader()));
 	
 

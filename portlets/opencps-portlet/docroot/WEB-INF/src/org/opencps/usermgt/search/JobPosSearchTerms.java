@@ -25,9 +25,9 @@ import org.opencps.util.DateTimeUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 
 
-public class JobPosDisplaySearchTerms extends JobPosDisplayTerms{
+public class JobPosSearchTerms extends JobPosDisplayTerms{
 	
-	public JobPosDisplaySearchTerms(PortletRequest request) {
+	public JobPosSearchTerms(PortletRequest request) {
 
 		super(request);
 		jobPosId = ParamUtil.getLong(request, ID_JOBPOS);
@@ -52,9 +52,6 @@ public class JobPosDisplaySearchTerms extends JobPosDisplayTerms{
 							DateTimeUtil.getDateTimeFormat(DateTimeUtil._VN_DATE_TIME_FORMAT));
 		groupId = setGroupId(request);
 	}
-	
-	
-	
 	
 	public long getJobPosId() {
 	

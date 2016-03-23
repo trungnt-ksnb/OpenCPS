@@ -1,6 +1,5 @@
-<%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
-<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
-<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
+<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.log.Log"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -20,6 +19,9 @@
 	 */
 %>
 <%@ include file="../init.jsp"%>
+<%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
+<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
+<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%
 	String backURL = ParamUtil.getString(request, "backURL");
 	long workingUnitId = ParamUtil.getLong(request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);
@@ -42,8 +44,7 @@
 <portlet:actionURL var="updateWorkingUnitURL" name="updateWorkingUnit"/>
 
 <portlet:renderURL	var="dialogURL"	windowState="<%=LiferayWindowState.POP_UP.toString()%>">
-	<portlet:param name="mvcPath" value='<%= templatePath + "edit_jobpos.jsp" %>' />
-	<portlet:param name="workingunitRefId" value="<%=String.valueOf(workingUnitId)%>" />
+	<portlet:param name="mvcPath" value='<%= templatePath + "jobpos.jsp" %>' />
 </portlet:renderURL>
 
 <liferay-util:buffer var="htmlTop">
@@ -51,8 +52,7 @@
 </liferay-util:buffer>
 
 <liferay-util:buffer var="htmlBot">
-	<%-- <aui:button type="submit" name="submit" value="submit"></aui:button>
-	<aui:button type="reset" value="clear"/> --%>
+
 </liferay-util:buffer>
 
 <aui:form name="fm" 
@@ -92,3 +92,7 @@
 		}
 	});
 </aui:script>
+
+<%!
+	private Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.edit_workingunit.jsp");
+%>
