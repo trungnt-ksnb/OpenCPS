@@ -71,6 +71,17 @@ public class PortletPropsValues {
 	public static final String USERMGT_USERGROUP_NAME_CITIZEN = GetterUtil
 			.getString(PortletProps
 					.get(PortletPropsKeys.USERMGT_USERGROUP_NAME_CITIZEN));
+	
+	public static final String USERMGT_JOBPOS_NOMAL = GetterUtil
+					.getString(PortletProps
+						.get(PortletPropsKeys.JOBPOS_NOMAL));
+	public static final String USERMGT_JOBPOS_BOSS = GetterUtil
+					.getString(PortletProps
+						.get(PortletPropsKeys.JOBPOS_NOMAL));
+	public static final String USERMGT_JOBPOS_DEPUTY = GetterUtil
+					.getString(PortletProps
+						.get(PortletPropsKeys.JOBPOS_DEPUTY));
+	
 
 	public static final int[] USERMGT_GENDER_VALUES = GetterUtil
 			.getIntegerValues(
