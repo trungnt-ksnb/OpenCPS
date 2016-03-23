@@ -62,7 +62,7 @@
 				<span class="user-name"><%= HtmlUtil.escape(mappingUser.getFullName()) %></span>
 			</div>
 		</div>
-	</c:if>
+	</c:if> 
 </liferay-util:buffer>
 
 <liferay-util:buffer var="htmlBottom">
