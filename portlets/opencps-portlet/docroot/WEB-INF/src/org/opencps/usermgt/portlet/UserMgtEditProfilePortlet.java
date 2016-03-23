@@ -11,7 +11,7 @@ import javax.portlet.RenderResponse;
 
 import org.opencps.usermgt.NoSuchWorkingUnitException;
 import org.opencps.usermgt.model.WorkingUnit;
-import org.opencps.usermgt.search.JobPosDisplaySearchTerms;
+import org.opencps.usermgt.search.JobPosSearchTerms;
 import org.opencps.usermgt.search.WorkingUnitDisplayTerms;
 import org.opencps.usermgt.service.WorkingUnitLocalServiceUtil;
 import org.opencps.util.MessageKeys;
@@ -146,10 +146,10 @@ public class UserMgtEditProfilePortlet extends MVCPortlet {
 
 		for (int index = 0; index < indexOfRows.length; index++) {
 			String chucvu =
-				request.getParameter(JobPosDisplaySearchTerms.TITLE_JOBPOS +
+				request.getParameter(JobPosSearchTerms.TITLE_JOBPOS +
 					indexOfRows[index].trim());
 			String vitri =
-				request.getParameter(JobPosDisplaySearchTerms.LEADER_JOBPOS +
+				request.getParameter(JobPosSearchTerms.LEADER_JOBPOS +
 					indexOfRows[index].trim());
 
 			System.out.println("====chucvu " + chucvu + " vitri " + vitri +
