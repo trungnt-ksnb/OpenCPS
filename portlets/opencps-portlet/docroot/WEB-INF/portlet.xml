@@ -50,7 +50,7 @@
 		</portlet-class>
 		<init-param>
 			<name>view-template</name>
-			<value>/html/portlets/usermgt/admin/employees.jsp</value>
+			<value>/html/portlets/usermgt/admin/workingunits.jsp</value>
 		</init-param>
 		<init-param>
 			<name>template-path</name>

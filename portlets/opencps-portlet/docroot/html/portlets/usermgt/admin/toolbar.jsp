@@ -1,4 +1,6 @@
 
+<%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
+<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -19,3 +21,28 @@
 %>
 
 <%@ include file="../init.jsp"%>
+
+<%
+	String tabs1 = ParamUtil.getString(request, "tabs1", UserMgtUtil.TOP_TABS_WORKINGUNIT);
+%>
+
+<c:choose>
+	<c:when test="<%= tabs1.equals(UserMgtUtil.TOP_TABS_WORKINGUNIT)%>">
+		<portlet:renderURL var="editWorkingUnitURL">
+			<portlet:param name="mvcPath" value='<%= templatePath + "edit_workingunit.jsp" %>'/>
+		</portlet:renderURL>
+		<aui:button name="add-workingunit" value="add-workingunit" href="<%= editWorkingUnitURL%>"/>
+	</c:when>
+	
+	<c:when test="<%= tabs1.equals(UserMgtUtil.TOP_TABS_EMPLOYEE)%>">
+		<aui:col><aui:input name="keywords" type="text" label=""/></aui:col>
+		<aui:col><aui:select name="<%=EmployeeDisplayTerm.WORKING_UNIT_ID %>" label=""></aui:select></aui:col>
+		<aui:col><aui:button name="add-employee" value="add-employee" href="#"/></aui:col>
+	</c:when>
+	
+	<c:otherwise>
+	
+	</c:otherwise>
+</c:choose>
+
+

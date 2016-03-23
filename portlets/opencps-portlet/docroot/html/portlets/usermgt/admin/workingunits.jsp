@@ -42,11 +42,6 @@
 	int totalCount = 0;
 %>
 
-<portlet:renderURL var="editWorkingUnitURL">
-	<portlet:param name="mvcPath" value='<%= templatePath + "edit_workingunit.jsp" %>'/>
-</portlet:renderURL>
-
-<a href= "<%=editWorkingUnitURL.toString() %>" ><span style="color: red">add-workingunit</span></a>
 
 <liferay-ui:search-container searchContainer="<%= new WorkingUnitSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
 	<liferay-ui:search-container-results>
