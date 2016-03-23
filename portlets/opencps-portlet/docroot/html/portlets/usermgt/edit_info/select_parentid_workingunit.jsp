@@ -1,4 +1,5 @@
 
+<%@page import="java.util.ArrayList"%>
 <%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.model.WorkingUnit"%>
 <%@page import="java.util.List"%>
@@ -25,15 +26,30 @@
 <%
 	long mngworkingUnitId =
 		ParamUtil.getLong(request, "mngworkingUnitId");
-	List<WorkingUnit> units =
-		WorkingUnitLocalServiceUtil.getWorkingUnits(
+	List<WorkingUnit> unitsRoot = new ArrayList<WorkingUnit>();
+	List<WorkingUnit> units = new ArrayList<WorkingUnit>();
+			units = WorkingUnitLocalServiceUtil.getWorkingUnits(
 			scopeGroupId, mngworkingUnitId);
+	if(units.isEmpty()) {
+		WorkingUnit workingUnit1 = WorkingUnitLocalServiceUtil
+						.fetchWorkingUnit(mngworkingUnitId);
+		if(workingUnit1 != null ) {
+			unitsRoot.add(0, workingUnit1);
+		}
+	} else {
+		WorkingUnit workingUnit1 = WorkingUnitLocalServiceUtil
+						.fetchWorkingUnit(mngworkingUnitId);
+		if(workingUnit1 != null ) {
+			unitsRoot.add(0, workingUnit1);
+		}
+		unitsRoot = units;
+	}
 %>
 
 <aui:select
 	name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_PARENTWORKINGUNITID%>">
 	<%
-		if (units.isEmpty()) {
+		if (unitsRoot.isEmpty()) {
 	%>
 	<aui:option value="<%=0%>">---</aui:option>
 
@@ -41,7 +57,7 @@
 		}
 			else {
 
-				for (WorkingUnit unitt : units) {
+				for (WorkingUnit unitt : unitsRoot) {
 	%>
 	<aui:option value="<%=unitt.getWorkingunitId()%>"><%=unitt.getWorkingunitId()%></aui:option>
 

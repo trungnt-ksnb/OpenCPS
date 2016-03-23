@@ -90,7 +90,7 @@ public class WorkingUnitLocalServiceImpl
 					true, serviceContext);
 
 		}
-
+		long mappingOrganisationId = org.getOrganizationId();
 		Date currentDate = new Date();
 
 		List<WorkingUnit> workingUnits = workingUnitPersistence.findAll();
@@ -121,6 +121,7 @@ public class WorkingUnitLocalServiceImpl
 		workingUnit.setParentWorkingUnitId(parentWorkingUnitId);
 		workingUnit.setAddress(address);
 		workingUnit.setCityCode(cityCode);
+		workingUnit.setSibling(sibling);
 		workingUnit.setDistrictCode(districtCode);
 		workingUnit.setWardCode(wardCode);
 		workingUnit.setTelNo(telNo);
@@ -128,6 +129,7 @@ public class WorkingUnitLocalServiceImpl
 		workingUnit.setEmail(email);
 		workingUnit.setWebsite(website);
 		workingUnit.setIsEmployer(isEmployer);
+		workingUnit.setMappingOrganisationId(mappingOrganisationId);
 		workingUnit.setManagerWorkingUnitId(managerWorkingUnitId);
 		return workingUnitPersistence.update(workingUnit);
 
@@ -146,6 +148,7 @@ public class WorkingUnitLocalServiceImpl
 			workingUnitPersistence.findByPrimaryKey(workingUnitId);
 
 		Organization org = null;
+		long mappingOrganisationId = 0;
 		if (parentWorkingUnitId == 0) {
 			org =
 				OrganizationLocalServiceUtil.addOrganization(
@@ -154,29 +157,18 @@ public class WorkingUnitLocalServiceImpl
 					"CQNN", OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0,
 					0, ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, "no",
 					true, serviceContext);
-
+			mappingOrganisationId = org.getOrganizationId();
+			
+		} else {
+			mappingOrganisationId = workingUnit.getMappingOrganisationId();
 		}
 
-		long mappingOrganisationId = org.getOrganizationId();
+		
 
 		Date currentDate = new Date();
 
-		int sibling = 0;
-
-		List<WorkingUnit> workingUnits = workingUnitPersistence.findAll();
-		if (workingUnits.isEmpty()) {
-			sibling = 1;
-		}
-		else {
-			sibling = getNextSibling(workingUnits);
-		}
-
-		String treeIndex =
-			getTreeIndex(workingUnitId, parentWorkingUnitId, sibling);
-
 		workingUnit.setCreateDate(currentDate);
 		workingUnit.setModifiedDate(currentDate);
-		workingUnit.setTreeIndex(treeIndex);
 		workingUnit.setUserId(userId);
 		workingUnit.setCompanyId(serviceContext.getCompanyId());
 		workingUnit.setGroupId(serviceContext.getScopeGroupId());
@@ -206,6 +198,14 @@ public class WorkingUnitLocalServiceImpl
 		List<JobPos> jobPos =
 			jobPosPersistence.findByWorkingUnitId(workingUnitId);
 		if (employees.isEmpty() && jobPos.isEmpty()) {
+			WorkingUnit unit = workingUnitPersistence.findByPrimaryKey(workingUnitId);
+			try {
+				OrganizationLocalServiceUtil.deleteOrganization(unit.getMappingOrganisationId());
+			}
+			catch (Exception e) {
+			
+			}
+			
 			workingUnitPersistence.remove(workingUnitId);
 		}
 	}

@@ -40,6 +40,7 @@
 
 <portlet:renderURL var="refAddWorkingUnitURL">
 	<portlet:param name="mvcPath" value="/html/portlets/usermgt/edit_info/edit_workingunit.jsp"/>
+	<portlet:param name="<%=WorkingUnitSearchTerms.WORKINGUNIT_ID %>" value="<%=String.valueOf(0) %>"/>
 </portlet:renderURL>
 
 <a href= "<%=refAddWorkingUnitURL.toString() %>" ><span style="color: red">add-workingunit</span></a>
