@@ -1,4 +1,3 @@
-<%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -17,7 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-
+<%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
+<%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
+<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
+<%@page import="java.util.List"%>
 <%@ include file="../../init.jsp"%>
 <%
 	int[] jobPosIndexes = null;
@@ -27,19 +29,28 @@
 	if (Validator.isNotNull(jobPosIndexesParam)) {
 		
 		jobPosIndexes = StringUtil.split(jobPosIndexesParam, 0);
-	
-		
 	}
 	else {
-
 		if (jobPosIndexes == null) {
 			jobPosIndexes = new int[] {0};
 		}
 	}
+	
+	List<WorkingUnit> workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnit(scopeGroupId, true);
 %>
 <aui:row>
 	<aui:col width="100">
-		<aui:select name="<%= EmployeeDisplayTerm.WORKING_UNIT_ID %>" cssClass="input100"></aui:select>
+		<aui:select name="<%= EmployeeDisplayTerm.WORKING_UNIT_ID %>" cssClass="input100">
+			<%
+				if(workingUnits != null){
+					for(WorkingUnit workingUnit : workingUnits){
+						%>
+							<aui:option value="<%= workingUnit.getWorkingunitId()%>"><%=workingUnit.getName() %></aui:option>
+						<%
+					}
+				}
+			%>
+		</aui:select>
 	</aui:col>
 </aui:row>
 
@@ -51,17 +62,29 @@
 </aui:row>
 
 <aui:row id="opencps-usermgt-employee-jobpos">
-	<aui:fieldset>
+	<aui:fieldset id="boundingBox">
 	<%
 		for(int i = 0; i < jobPosIndexes.length; i++){
 			int jobPosIndex = jobPosIndexes[i];
 			%>
 				<div class="lfr-form-row lfr-form-row-inline">
 					<div class="row-fields">
-						
-						<aui:select inlineField="<%= true %>" label="type"  name='<%= "phoneTypeId" + jobPosIndex %>' />
-		
-						<aui:select inlineField="<%= true %>" label="type"  name='<%= "phoneTypeId2" + jobPosIndex %>' />
+						<aui:col width="50">
+							<aui:select 
+								name='<%= "workingUnitId" + jobPosIndex %>' 
+								label="<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>" 
+								onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
+								required="<%=true %>"
+								showEmptyOption="<%= true %>"
+							>
+								
+							</aui:select>
+						</aui:col>
+						<aui:col width="50">
+							<aui:select name='<%= "jobPosId" + jobPosIndex %>' label="<%= EmployeeDisplayTerm.JOBPOS_ID%>">
+								
+							</aui:select>
+						</aui:col>
 					</div>
 				</div>
 				
@@ -69,7 +92,8 @@
 		}
 	%>
 	</aui:fieldset>
-	<aui:input name="jobPosIndexes" type="hidden" value="" />
+	
+	<aui:input name="jobPosIndexes" type="hidden" value="<%= StringUtil.merge(jobPosIndexes)%>" />
 </aui:row>
 
 

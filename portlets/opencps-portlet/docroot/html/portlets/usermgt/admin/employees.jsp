@@ -27,3 +27,7 @@
 %>
 
 <liferay-util:include page="/html/portlets/usermgt/admin/edit_employee.jsp" servletContext="<%=application %>" />
+
+<%-- <liferay-util:include page="/html/portlets/usermgt/edit_info/edit_workingunit.jsp" servletContext="<%=application %>" /> --%>
+
+
