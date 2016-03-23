@@ -66,9 +66,9 @@
 		</supports>
 		<resource-bundle>content.Language_2</resource-bundle>
 		<portlet-info>
-			<title>Data Management</title>
-			<short-title>Data Management</short-title>
-			<keywords>Data Management</keywords>
+			<title>User Management</title>
+			<short-title>User Management</short-title>
+			<keywords>User Management</keywords>
 		</portlet-info>
 		<security-role-ref>
 			<role-name>administrator</role-name>
