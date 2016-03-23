@@ -195,10 +195,18 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 	}
 
 	public void deletejobPos(long jobPosId)
-		throws NoSuchJobPosException, SystemException {
-
-		jobPosPersistence
+		throws SystemException, NoSuchJobPosException {
+		JobPos jobPos = jobPosPersistence.findByPrimaryKey(jobPosId);
+		
+		try {
+			RoleLocalServiceUtil.deleteRole(jobPos.getMappingRoleId());
+			jobPosPersistence
 			.remove(jobPosId);
+		}
+		catch (PortalException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	public int countAll()

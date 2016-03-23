@@ -77,7 +77,7 @@ public class PortletPropsValues {
 						.get(PortletPropsKeys.JOBPOS_NOMAL));
 	public static final String USERMGT_JOBPOS_BOSS = GetterUtil
 					.getString(PortletProps
-						.get(PortletPropsKeys.JOBPOS_NOMAL));
+						.get(PortletPropsKeys.JOBPOS_LEADER));
 	public static final String USERMGT_JOBPOS_DEPUTY = GetterUtil
 					.getString(PortletProps
 						.get(PortletPropsKeys.JOBPOS_DEPUTY));
