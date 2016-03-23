@@ -34,6 +34,8 @@
 	List<JobPos> jobPos = new ArrayList<JobPos>();
 	int totalCount = 0;
 %>
+
+<liferay-ui:error key="DELETE_JOBPOS_ERROR" message="DELETE JOBPOS ERROR" />
 <portlet:renderURL var="updateJobPosURL">
 	<portlet:param name="mvcPath" value='<%=templatePath + "edit_jobpos.jsp" %>'/>
 	<portlet:param name="workingUnitId" value="<%=String.valueOf(workingUnitId) %>"/>

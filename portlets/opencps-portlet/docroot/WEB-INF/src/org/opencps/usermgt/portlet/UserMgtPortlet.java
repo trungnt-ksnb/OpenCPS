@@ -27,6 +27,7 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.opencps.usermgt.NoSuchJobPosException;
 import org.opencps.usermgt.NoSuchWorkingUnitException;
 import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
@@ -117,38 +118,15 @@ public class UserMgtPortlet extends MVCPortlet {
 		}
 	}
 
-	@Override
-	public void render(RenderRequest renderRequest,
-			RenderResponse renderResponse)
-			throws PortletException, IOException {
-
-		long workingUnitId = ParamUtil.getLong(renderRequest,
-				WorkingUnitDisplayTerms.WORKINGUNIT_ID);
-
-		long employeeId = ParamUtil.getLong(renderRequest,
-				EmployeeDisplayTerm.EMPLOYEE_ID);
-
-		try {
-			if (workingUnitId > 0) {
-				WorkingUnit workingUnit = WorkingUnitLocalServiceUtil
-						.getWorkingUnit(workingUnitId);
-				renderRequest.setAttribute(WebKeys.WORKING_UNIT_ENTRY,
-						workingUnit);
-			}
-
-			if (employeeId > 0) {
-				Employee employee = EmployeeLocalServiceUtil
-						.getEmployee(employeeId);
-
-				renderRequest.setAttribute(WebKeys.EMPLOYEE_ENTRY, employee);
-			}
-		} catch (Exception e) {
-			_log.error(e);
+	public void deleteJobPos(ActionRequest request, ActionResponse response) throws NoSuchJobPosException, SystemException {
+		long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
+		if(jobPosId > 0) {
+			JobPosLocalServiceUtil.deletejobPos(jobPosId);
+		} else {
+			SessionErrors.add(request, "DELETE_JOBPOS_ERROR");
 		}
-
-		super.render(renderRequest, renderResponse);
 	}
-
+	
 	public void updateEmployee(ActionRequest actionRequest,
 			ActionResponse actionResponse) throws IOException {
 
@@ -312,6 +290,39 @@ public class UserMgtPortlet extends MVCPortlet {
 		}
 
 	}
+	
+	@Override
+	public void render(RenderRequest renderRequest,
+			RenderResponse renderResponse)
+			throws PortletException, IOException {
+
+		long workingUnitId = ParamUtil.getLong(renderRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_ID);
+
+		long employeeId = ParamUtil.getLong(renderRequest,
+				EmployeeDisplayTerm.EMPLOYEE_ID);
+
+		try {
+			if (workingUnitId > 0) {
+				WorkingUnit workingUnit = WorkingUnitLocalServiceUtil
+						.getWorkingUnit(workingUnitId);
+				renderRequest.setAttribute(WebKeys.WORKING_UNIT_ENTRY,
+						workingUnit);
+			}
+
+			if (employeeId > 0) {
+				Employee employee = EmployeeLocalServiceUtil
+						.getEmployee(employeeId);
+
+				renderRequest.setAttribute(WebKeys.EMPLOYEE_ENTRY, employee);
+			}
+		} catch (Exception e) {
+			_log.error(e);
+		}
+
+		super.render(renderRequest, renderResponse);
+	}
+
 	
 	
 }
