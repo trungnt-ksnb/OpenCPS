@@ -23,6 +23,7 @@ import org.opencps.usermgt.util.comparator.JobPosLeaderComparator;
 import org.opencps.usermgt.util.comparator.JobPosTitleComparator;
 import org.opencps.usermgt.util.comparator.WorkingUnitAdressComporator;
 import org.opencps.usermgt.util.comparator.WorkingUnitEmailComparator;
+import org.opencps.usermgt.util.comparator.WorkingUnitGovagencyCodeComparator;
 import org.opencps.usermgt.util.comparator.WorkingUnitNameComparator;
 import org.opencps.usermgt.util.comparator.WorkingUnitTelNoComparator;
 
@@ -32,6 +33,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
  * @author trungnt
  */
 public class UserMgtUtil {
+
 	public static final String TOP_TABS_EMPLOYEE = "employee";
 	public static final String TOP_TABS_WORKINGUNIT = "working-unit";
 	public static final String[] _EMPLOYESS_CATEGORY_NAMES = {
@@ -43,7 +45,7 @@ public class UserMgtUtil {
 	public static final String[] _JOBPOS_CATEGORY_NAMES = {
 		"jobpos-info"
 	};
-	
+
 	public static OrderByComparator getWorkingUnitOrderByComparator(
 		String orderByCol, String orderByType) {
 
@@ -66,26 +68,31 @@ public class UserMgtUtil {
 		else if (orderByCol.equals(WorkingUnitDisplayTerms.WORKINGUNIT_EMAIL)) {
 			orderByComparator = new WorkingUnitEmailComparator(orderByAsc);
 		}
+		else if (orderByCol.equals(WorkingUnitDisplayTerms.WORKINGUNIT_GOVAGENCYCODE)) {
+			orderByComparator =
+				new WorkingUnitGovagencyCodeComparator(orderByAsc);
+		}
 
 		return orderByComparator;
 	}
-	
+
 	public static OrderByComparator getJobPosOrderByComparator(
 		String orderByCol, String orderByType) {
-		
+
 		boolean orderByAsc = false;
 
 		if (orderByType.equals("asc")) {
 			orderByAsc = true;
 		}
 		OrderByComparator orderByComparator = null;
-		
-		if(orderByCol.equals(JobPosDisplayTerms.TITLE_JOBPOS)) {
+
+		if (orderByCol.equals(JobPosDisplayTerms.TITLE_JOBPOS)) {
 			orderByComparator = new JobPosTitleComparator(orderByAsc);
-		} else if(orderByCol.equals(JobPosDisplayTerms.LEADER_JOBPOS)) {
+		}
+		else if (orderByCol.equals(JobPosDisplayTerms.LEADER_JOBPOS)) {
 			orderByComparator = new JobPosLeaderComparator(orderByAsc);
 		}
-		
+
 		return orderByComparator;
 	}
 }
