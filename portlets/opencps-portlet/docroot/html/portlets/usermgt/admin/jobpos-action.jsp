@@ -30,7 +30,7 @@
 <liferay-ui:icon-menu>
 	<portlet:renderURL var="updateJobPos">
 		<portlet:param name="mvcPath"
-			value="/html/portlets/usermgt/admin/edit_jobpos.jsp" />
+			value="/html/portlets/usermgt/admin/update_jobpos.jsp" />
 		<portlet:param name="<%=JobPosDisplayTerms.ID_JOBPOS%>"
 			value="<%=String.valueOf(jobPos.getJobPosId())%>" />
 		<portlet:param name="backURL" value="<%=currentURL%>" />

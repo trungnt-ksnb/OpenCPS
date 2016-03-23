@@ -48,7 +48,7 @@
 </portlet:renderURL>
 
 <liferay-util:buffer var="htmlTop">
-	
+	<liferay-ui:icon iconCssClass="icon-home" />
 </liferay-util:buffer>
 
 <liferay-util:buffer var="htmlBot">

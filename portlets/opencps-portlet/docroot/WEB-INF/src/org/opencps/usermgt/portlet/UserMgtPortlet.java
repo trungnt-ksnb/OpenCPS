@@ -293,4 +293,10 @@ public class UserMgtPortlet extends MVCPortlet {
 		}
 
 	}
+	
+	public void editJobPos(ActionRequest request, ActionResponse response) {
+		long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
+		int leader = ParamUtil.getInteger(request, JobPosDisplayTerms.LEADER_JOBPOS);
+		System.out.println("jobPosId==== " + jobPosId + " ==leader  " + leader);
+	}
 }

@@ -34,10 +34,16 @@
 	List<JobPos> jobPos = new ArrayList<JobPos>();
 	int totalCount = 0;
 %>
+<portlet:renderURL var="updateJobPosURL">
+	<portlet:param name="mvcPath" value='<%=templatePath + "jobpos/general_jobpos.jsp" %>'/>
+</portlet:renderURL>
+
+<liferay-ui:icon iconCssClass="icon-plus-sign" label="update-jobpos" 
+	url="<%=updateJobPosURL.toString() %>"/>
 
 <liferay-ui:search-container searchContainer="<%= 
 	new JobPosSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
-	
+		
 	<liferay-ui:search-container-results>
 		<%@include file="/html/portlets/usermgt/admin/result_search_jobpos.jspf"%>
 	</liferay-ui:search-container-results>

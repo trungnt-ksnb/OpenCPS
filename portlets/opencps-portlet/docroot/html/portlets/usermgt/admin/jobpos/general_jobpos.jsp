@@ -33,9 +33,7 @@
 <%@ include file="../../init.jsp"%>
 
 <%
-	JobPos jobPos =
-	(JobPos) request.getAttribute(WebKeys.JOBPOS_ENTRY);
-	long jobposId = jobPos != null ? jobPos.getJobPosId() : 0L;
+	long jobposId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
 	int[] rowIndexes = null;	
 	rowIndexes = new int[]{0};
 	System.out.println("===jobposId " + jobposId);
@@ -61,7 +59,6 @@
 							<aui:column columnWidth="30">
 								<aui:select name='<%=JobPosDisplayTerms.LEADER_JOBPOS + rowIndex%>'>
 									<%
-										System.out.println("===PortletPropsValues.USERMGT_JOBPOS_LEADER.length " + PortletPropsValues.USERMGT_JOBPOS_LEADER.length);
 										for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){
 											%>
 												<aui:option value="<%=PortletPropsValues.USERMGT_JOBPOS_LEADER[j] %>">
