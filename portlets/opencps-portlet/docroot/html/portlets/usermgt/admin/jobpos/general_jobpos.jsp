@@ -19,7 +19,7 @@
 
 <%@page import="org.opencps.util.PortletPropsValues"%>
 <%@page import="org.opencps.util.PortletUtil"%>
-<%@page import="org.opencps.usermgt.search.JobPosDisplaySearchTerms"%>
+<%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
 <%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.model.JobPos"%>
 <%@page import="java.util.ArrayList"%>
@@ -30,37 +30,14 @@
 <%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
 <%@page import="com.liferay.portal.kernel.log.Log"%>
 
-<%@ include file="../init.jsp"%>
+<%@ include file="../../init.jsp"%>
 
 <%
 	long workingUnitId = ParamUtil.getLong(request, "workingunitRefId");
-	int[] rowIndexes = null;
+	int[] rowIndexes = null;	
+	rowIndexes = new int[]{0};
+	System.out.println("===workingUnitId " + workingUnitId);
 	
-	WorkingUnit workingUnit = null;
-	
-	List<JobPos> jobPos = new ArrayList<JobPos>();
-	List<WorkingUnit> workingUnits = new ArrayList<WorkingUnit>();
-	
-	
-	try{
-		workingUnit = WorkingUnitLocalServiceUtil.getWorkingUnit(workingUnitId);
-		jobPos = JobPosLocalServiceUtil.getJobPoss(workingUnit.getUserId(), workingUnitId);
-		
-	}catch(Exception e){
-		_log.error(e);
-	}
-	
-	if(jobPos.isEmpty()){
-		//Add new
-		rowIndexes = new int[]{0};
-	}else{
-		rowIndexes = new int[]{jobPos.size()};
-	}
-	
-
-	if (workingUnitId != 0) {
-		workingUnits =	WorkingUnitLocalServiceUtil.getWorkingUnit(workingUnit.getGroupId(), workingUnit.getIsEmployer());
-	}
 %>
 
 <portlet:actionURL var="addJobPosURL" name="jobPosAdd" />
@@ -76,10 +53,11 @@
 				%>
 						<aui:row>
 							<aui:column>
-								<aui:input type="text" name='<%=JobPosDisplaySearchTerms.TITLE_JOBPOS + rowIndex %>'></aui:input>
+								<aui:input type="text" name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>'></aui:input>
+								<aui:input type="hidden" name='<%=JobPosDisplayTerms.ID_JOBPOS + rowIndex %>'></aui:input>
 							</aui:column>
 							<aui:column columnWidth="30">
-								<aui:select name='<%=JobPosDisplaySearchTerms.LEADER_JOBPOS + rowIndex%>'>
+								<aui:select name='<%=JobPosDisplayTerms.LEADER_JOBPOS + rowIndex%>'>
 									<%
 										System.out.println("===PortletPropsValues.USERMGT_JOBPOS_LEADER.length " + PortletPropsValues.USERMGT_JOBPOS_LEADER.length);
 										for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){
@@ -104,9 +82,6 @@
 
 	</aui:row>
 
-	<aui:row>
-		<aui:button type="submit" name="submit" value="submit"/>
-	</aui:row>
 </aui:form>
 
 <aui:script>

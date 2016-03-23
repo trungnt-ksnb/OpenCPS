@@ -11,6 +11,7 @@ import javax.portlet.RenderResponse;
 
 import org.opencps.usermgt.NoSuchWorkingUnitException;
 import org.opencps.usermgt.model.WorkingUnit;
+import org.opencps.usermgt.search.JobPosDisplayTerms;
 import org.opencps.usermgt.search.JobPosSearchTerms;
 import org.opencps.usermgt.search.WorkingUnitDisplayTerms;
 import org.opencps.usermgt.service.WorkingUnitLocalServiceUtil;
@@ -141,19 +142,19 @@ public class UserMgtEditProfilePortlet extends MVCPortlet {
 	public void jobPosAdd(ActionRequest request, ActionResponse response) {
 
 		String rowIndexes = request.getParameter("rowIndexes");
-		System.out.println("===rowIndexes " + rowIndexes);
 		String[] indexOfRows = rowIndexes.split(",");
 
 		for (int index = 0; index < indexOfRows.length; index++) {
 			String chucvu =
-				request.getParameter(JobPosSearchTerms.TITLE_JOBPOS +
+				request.getParameter(JobPosDisplayTerms.TITLE_JOBPOS +
 					indexOfRows[index].trim());
 			String vitri =
-				request.getParameter(JobPosSearchTerms.LEADER_JOBPOS +
+				request.getParameter(JobPosDisplayTerms.LEADER_JOBPOS +
 					indexOfRows[index].trim());
+			long jobposId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
 
 			System.out.println("====chucvu " + chucvu + " vitri " + vitri +
-				" indexOfRows " + indexOfRows + " index " + index);
+				" indexOfRows " + indexOfRows + " index " + index + " jobposId " +jobposId);
 		}
 	}
 	private Log _log =

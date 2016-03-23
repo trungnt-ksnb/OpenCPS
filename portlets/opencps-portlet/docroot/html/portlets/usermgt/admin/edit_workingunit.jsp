@@ -42,7 +42,7 @@
 <portlet:actionURL var="updateWorkingUnitURL" name="updateWorkingUnit"/>
 
 <portlet:renderURL	var="dialogURL"	windowState="<%=LiferayWindowState.POP_UP.toString()%>">
-	<portlet:param name="mvcPath" value='<%= templatePath + "jobpos.jsp" %>' />
+	<portlet:param name="mvcPath" value='<%= templatePath + "edit_jobpos.jsp" %>' />
 	<portlet:param name="workingunitRefId" value="<%=String.valueOf(workingUnitId)%>" />
 </portlet:renderURL>
 
@@ -51,8 +51,7 @@
 </liferay-util:buffer>
 
 <liferay-util:buffer var="htmlBot">
-	<%-- <aui:button type="submit" name="submit" value="submit"></aui:button>
-	<aui:button type="reset" value="clear"/> --%>
+
 </liferay-util:buffer>
 
 <aui:form name="fm" 

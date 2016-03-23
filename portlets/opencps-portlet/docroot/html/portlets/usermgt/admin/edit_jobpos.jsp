@@ -1,3 +1,4 @@
+<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
 <%
 /**
@@ -19,5 +20,36 @@
 %>
 <%@ include file="../init.jsp"%>
 <%
-	int jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
+	long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
+	String backURL = ParamUtil.getString(request, "backURL");
+	String [] jobPosSections = {"general_jobpos","role_jobpos"};
+	String [][] categorySections = {jobPosSections};
 %>
+
+<portlet:actionURL var="updateJobPosURL" name="updateJobPos"/>
+
+<liferay-util:buffer var="htmlTop">
+
+</liferay-util:buffer>
+
+<liferay-util:buffer var="htmlBot">
+
+</liferay-util:buffer>
+
+<aui:form name="fm" 
+	method="post" 
+	action="<%=updateJobPosURL.toString() %>">
+	<liferay-ui:form-navigator 
+		backURL="<%= backURL %>"
+		categoryNames= "<%= UserMgtUtil._JOBPOS_CATEGORY_NAMES %>"	
+		categorySections="<%=categorySections %>" 
+		htmlBottom="<%= htmlBot %>"
+		htmlTop="<%= htmlTop %>"
+		jspPath='<%=templatePath + "jobpos/" %>'
+		>	
+	</liferay-ui:form-navigator>
+	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" 
+		type="hidden"
+	></aui:input>
+</aui:form>
+

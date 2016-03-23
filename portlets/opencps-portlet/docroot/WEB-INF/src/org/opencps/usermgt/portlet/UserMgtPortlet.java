@@ -74,12 +74,12 @@ public class UserMgtPortlet extends MVCPortlet {
 				.deleteWorkingUnitByWorkingUnitId(workingUnitId);
 	}
 
-	public void jobPosAdd(ActionRequest request, ActionResponse response) {
+	public void updateJobPos(ActionRequest request, ActionResponse response) {
 
 		String rowIndexes = request.getParameter("rowIndexes");
 		System.out.println("===rowIndexes " + rowIndexes);
 		String[] indexOfRows = rowIndexes.split(",");
-
+		
 		for (int index = 0; index < indexOfRows.length; index++) {
 			String chucvu = request
 					.getParameter(JobPosSearchTerms.TITLE_JOBPOS
@@ -87,7 +87,6 @@ public class UserMgtPortlet extends MVCPortlet {
 			String vitri = request
 					.getParameter(JobPosSearchTerms.LEADER_JOBPOS
 							+ indexOfRows[index].trim());
-
 			System.out.println("====chucvu " + chucvu + " vitri " + vitri
 					+ " indexOfRows " + indexOfRows + " index " + index);
 		}
