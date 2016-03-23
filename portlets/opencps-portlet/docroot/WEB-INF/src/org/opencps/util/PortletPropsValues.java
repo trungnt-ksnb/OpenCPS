@@ -56,7 +56,8 @@ public class PortletPropsValues {
 	// User Management
 	public static final int[] USERMGT_JOBPOS_LEADER = GetterUtil
 			.getIntegerValues(
-					PortletProps.get(PortletPropsKeys.USERMGT_JOBPOS_LEADER),
+					PortletProps
+							.getArray(PortletPropsKeys.USERMGT_JOBPOS_LEADER),
 					new int[0]);
 
 	public static final String USERMGT_USERGROUP_NAME_EMPLOYEE = GetterUtil

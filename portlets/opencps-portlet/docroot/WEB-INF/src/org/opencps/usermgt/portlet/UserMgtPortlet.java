@@ -172,16 +172,16 @@ public class UserMgtPortlet extends MVCPortlet {
 
 		String returnURL = ParamUtil.getString(actionRequest, "returnURL");
 
-		int[] jobPosIndexs = StringUtil
-				.split(ParamUtil.getString(actionRequest, "jobPosIndexs"), -1);
+		int[] jobPosIndexes = StringUtil
+				.split(ParamUtil.getString(actionRequest, "jobPosIndexes"), -1);
 
 		List<Long> jobPosIds = new ArrayList<Long>();
 
-		if (jobPosIndexs != null && jobPosIndexs.length > 0) {
-			for (int i = 0; i < jobPosIndexs.length; i++) {
-				if (jobPosIndexs[i] >= 0) {
+		if (jobPosIndexes != null && jobPosIndexes.length > 0) {
+			for (int i = 0; i < jobPosIndexes.length; i++) {
+				if (jobPosIndexes[i] >= 0) {
 					long jobPosIdTemp = ParamUtil.getLong(actionRequest,
-							EmployeeDisplayTerm.JOBPOS_ID + jobPosIndexs[i]);
+							EmployeeDisplayTerm.JOBPOS_ID + jobPosIndexes[i]);
 					jobPosIds.add(jobPosIdTemp);
 				}
 
