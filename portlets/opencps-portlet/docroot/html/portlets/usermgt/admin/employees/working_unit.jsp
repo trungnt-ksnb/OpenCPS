@@ -75,7 +75,10 @@
 		</aui:select>
 	</aui:col>
 	<aui:col width="50">
-		<aui:select name='<%=EmployeeDisplayTerm.MAIN_JOBPOS_ID %>' label="<%= EmployeeDisplayTerm.JOBPOS_ID%>">
+		<aui:select 
+			name='<%=EmployeeDisplayTerm.MAIN_JOBPOS_ID %>' 
+			label="<%= EmployeeDisplayTerm.JOBPOS_ID%>" 
+			required="<%=true %>">
 			
 		</aui:select>
 	</aui:col>
