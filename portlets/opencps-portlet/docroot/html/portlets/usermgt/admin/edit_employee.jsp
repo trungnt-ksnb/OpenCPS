@@ -70,6 +70,10 @@
 	<portlet:param name="mvcPath" value='<%=templatePath + "ajax/render_jobpos_by_workingunitid.jsp" %>'/>
 </portlet:renderURL>
 
+<portlet:renderURL var="renderWorkingUnitMainJobPosURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString()%>">
+	<portlet:param name="mvcPath" value='<%=templatePath + "ajax/render_workingunit_mainjobpos.jsp" %>'/>
+</portlet:renderURL>
+
 <liferay-util:buffer var="htmlTop">
 	<c:if test="<%= mappingUser != null %>">
 		<div class="user-info">
@@ -142,9 +146,11 @@
 	AUI().ready(function(A){
 		
 		<portlet:namespace/>renderWorkingUnitJobPos();
+		<portlet:namespace/>renderWorkingUnitMainJobPos();
 		
 		workingUnitInput.on('change', function(){
 			<portlet:namespace/>renderWorkingUnitJobPos();
+			<portlet:namespace/>renderWorkingUnitMainJobPos();s
 		});
 		
 	});
@@ -184,15 +190,42 @@
 							var instance = this;
 							var res = instance.get('responseData');
 							
+							if(jobPosAutoFieldBoundingBox){
+								jobPosAutoFieldBoundingBox.empty();
+								jobPosAutoFieldBoundingBox.html(res);
+							}
+
+						},
+				    	error: function(){}
+					}
+				}
+			);
+		}
+	});
+	
+	Liferay.provide(window, '<portlet:namespace/>renderWorkingUnitMainJobPos', function() {
+		
+		var A = AUI();
+		
+		if(workingUnitInput){
+			var value = workingUnitInput.val();
+			 A.io.request(
+				'<%= renderWorkingUnitMainJobPosURL.toString()%>',
+				{
+				    dataType : 'json',
+				    data:{    	
+				    	workingUnitId : value,
+				    },   
+				    on: {
+				        success: function(event, id, obj) {
+							var instance = this;
+							var res = instance.get('responseData');
+							
 							if(mainJobPosBoundingBox){
 								mainJobPosBoundingBox.empty();
 								mainJobPosBoundingBox.html(res);
 							}
 							
-							if(jobPosAutoFieldBoundingBox){
-								jobPosAutoFieldBoundingBox.empty();
-								jobPosAutoFieldBoundingBox.html(res);
-							}
 
 						},
 				    	error: function(){}

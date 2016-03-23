@@ -65,6 +65,9 @@
 			<finder-column name="isEmployer" />
 			<finder-column name="parentWorkingUnitId" />
 		</finder>
+        <finder name="GroupId" return-type="Collection">
+            <finder-column name="groupId"></finder-column>
+        </finder>
 	</entity>
 
 	<entity name="JobPos" local-service="true" remote-service="true"
