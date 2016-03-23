@@ -1,5 +1,3 @@
-<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
-<%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -19,7 +17,10 @@
  */
 %>
 <%@ include file="../init.jsp"%>
+<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
+<%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
 <%
+	long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
 	long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
 	String backURL = ParamUtil.getString(request, "backURL");
 	String [] jobPosSections = {"general_jobpos","role_jobpos"};
@@ -49,7 +50,6 @@
 		>	
 	</liferay-ui:form-navigator>
 	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" 
-		type="hidden"
-	></aui:input>
+		type="hidden" />
 </aui:form>
 

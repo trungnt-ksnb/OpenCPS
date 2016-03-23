@@ -1,4 +1,4 @@
-<%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -21,7 +21,9 @@
 <%@page import="org.opencps.usermgt.model.JobPos"%>
 <%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
 <%@page import="org.opencps.util.WebKeys"%>
+<%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
 <%
+	long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
 	ResultRow row =
 		(ResultRow) request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 	JobPos jobPos = (JobPos)row.getObject();
@@ -33,6 +35,8 @@
 			value="/html/portlets/usermgt/admin/update_jobpos.jsp" />
 		<portlet:param name="<%=JobPosDisplayTerms.ID_JOBPOS%>"
 			value="<%=String.valueOf(jobPos.getJobPosId())%>" />
+		<portlet:param name="workingUnitId" 
+			value="<%=String.valueOf(workingUnitId) %>"/>
 		<portlet:param name="backURL" value="<%=currentURL%>" />
 	</portlet:renderURL>
 

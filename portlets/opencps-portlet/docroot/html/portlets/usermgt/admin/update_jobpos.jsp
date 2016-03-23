@@ -1,10 +1,3 @@
-<%@page import="org.opencps.util.PortletPropsValues"%>
-<%@page import="org.opencps.util.PortletUtil"%>
-<%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
-<%@page import="org.opencps.usermgt.model.JobPos"%>
-<%@page import="com.liferay.portal.kernel.log.Log"%>
-<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
-<%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -24,6 +17,15 @@
  */
 %>
 <%@ include file="../init.jsp"%>
+<%@page import="org.opencps.util.WebKeys"%>
+<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
+<%@page import="org.opencps.util.PortletPropsValues"%>
+<%@page import="org.opencps.util.PortletUtil"%>
+<%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
+<%@page import="org.opencps.usermgt.model.JobPos"%>
+<%@page import="com.liferay.portal.kernel.log.Log"%>
+<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
+<%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
 
 <%
 	long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
@@ -41,7 +43,9 @@
 	 name="fm">
 	<aui:model-context bean="<%=jobPos %>" model="<%=JobPos.class %>" />
 	<aui:input name="<%=JobPosDisplayTerms.TITLE_JOBPOS %>"></aui:input>
-	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" type="hidden"></aui:input>
+	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" type="hidden" />
+	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" type="hidden" />
+		type="hidden" />
 	<aui:select name="<%=JobPosDisplayTerms.LEADER_JOBPOS %>">
 		<%
 			for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){

@@ -74,14 +74,16 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		Date currentDate = new Date();
 
 		String roleName = "";
-		if (leader == 0) {
-			roleName = "thong thuong" /*PortletPropsValues.JOBPOS_THONGTHUONG*/;
-		}
-		else if (leader == 1) {
-			roleName = "cap truong"/*PortletPropsValues.JOBPOS_CAPTRUONG*/ ;
-		}
-		else if (leader == 2) {
-			roleName =  "cap pho"/*PortletPropsValues.JOBPOS_CAPPHO*/;
+		for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){
+			if (leader == 0) {
+				roleName = PortletPropsValues.USERMGT_JOBPOS_NOMAL;
+			}
+			else if (leader == 1) {
+				roleName = PortletPropsValues.USERMGT_JOBPOS_BOSS ;
+			}
+			else if (leader == 2) {
+				roleName =  PortletPropsValues.USERMGT_JOBPOS_DEPUTY;
+			}
 		}
 
 		Map<Locale, String> titleMap = new HashMap<Locale, String>();
@@ -219,6 +221,13 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		return jobPosPersistence
 			.findByWorkingUnitId(workingUnitId);
 	}
+	
+	public List<JobPos> getJobPoss(long workingUnitId, OrderByComparator odc)
+					throws SystemException {
+
+					return jobPosPersistence
+						.findByWorkingUnitId(workingUnitId);
+				}
 
 	public List<JobPos> getJobPoss(long groupId, long workingUnitId)
 		throws SystemException {

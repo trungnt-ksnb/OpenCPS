@@ -33,11 +33,11 @@
 <%@ include file="../../init.jsp"%>
 
 <%
+	long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
+	System.out.println("gen_job " + workingUnitId);
 	long jobposId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
 	int[] rowIndexes = null;	
 	rowIndexes = new int[]{0};
-	System.out.println("===jobposId " + jobposId);
-	
 %>
 
 <portlet:actionURL var="addJobPosURL" name="jobPosAdd" />
@@ -53,8 +53,10 @@
 				%>
 						<aui:row>
 							<aui:column>
-								<aui:input type="text" name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>'></aui:input>
-								<aui:input type="hidden" name='<%=JobPosDisplayTerms.ID_JOBPOS + rowIndex %>'></aui:input>
+								<aui:input type="text" name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>' />
+								<aui:input type="hidden" name='<%=JobPosDisplayTerms.ID_JOBPOS + rowIndex %>' />
+								<aui:input name='<%="workingUnitId" + rowIndex %>' value="<%=String.valueOf(workingUnitId) %>"
+									type="hidden" />
 							</aui:column>
 							<aui:column columnWidth="30">
 								<aui:select name='<%=JobPosDisplayTerms.LEADER_JOBPOS + rowIndex%>'>

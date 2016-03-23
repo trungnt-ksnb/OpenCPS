@@ -1,5 +1,3 @@
-<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
-<%@page import="com.liferay.portal.kernel.log.Log"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -22,6 +20,9 @@
 <%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
 <%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
 <%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
+<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.log.Log"%>
+
 <%
 	String backURL = ParamUtil.getString(request, "backURL");
 	long workingUnitId = ParamUtil.getLong(request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);
@@ -41,10 +42,12 @@
 				
 	String[][] categorySections = {workingunitSections};
 %>
+<liferay-ui:error key="UPDATE_JOBPOS_ERROR" message="UPDATE JOBPOS ERROR!" />
 <portlet:actionURL var="updateWorkingUnitURL" name="updateWorkingUnit"/>
 
 <portlet:renderURL	var="dialogURL"	windowState="<%=LiferayWindowState.POP_UP.toString()%>">
 	<portlet:param name="mvcPath" value='<%= templatePath + "jobpos.jsp" %>' />
+	<portlet:param name="workingUnitId" value="<%=String.valueOf(workingUnitId) %>"/>
 </portlet:renderURL>
 
 <liferay-util:buffer var="htmlTop">

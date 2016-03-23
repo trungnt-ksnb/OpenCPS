@@ -29,12 +29,14 @@ import javax.portlet.RenderResponse;
 
 import org.opencps.usermgt.NoSuchWorkingUnitException;
 import org.opencps.usermgt.model.Employee;
+import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.search.EmployeeDisplayTerm;
 import org.opencps.usermgt.search.JobPosDisplayTerms;
 import org.opencps.usermgt.search.JobPosSearchTerms;
 import org.opencps.usermgt.search.WorkingUnitDisplayTerms;
 import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
+import org.opencps.usermgt.service.JobPosLocalServiceUtil;
 import org.opencps.usermgt.service.WorkingUnitLocalServiceUtil;
 import org.opencps.util.MessageKeys;
 import org.opencps.util.PortletPropsValues;
@@ -75,23 +77,43 @@ public class UserMgtPortlet extends MVCPortlet {
 				.deleteWorkingUnitByWorkingUnitId(workingUnitId);
 	}
 
-	public void updateJobPos(ActionRequest request, ActionResponse response) {
+	public void updateJobPos(ActionRequest request, ActionResponse response) throws NumberFormatException, PortalException, SystemException {
 
 		String rowIndexes = request.getParameter("rowIndexes");
-		System.out.println("===rowIndexes " + rowIndexes);
 		String[] indexOfRows = rowIndexes.split(",");
 		
+		ServiceContext serviceContext = ServiceContextFactory
+						.getInstance(request);
 		for (int index = 0; index < indexOfRows.length; index++) {
-			String chucvu = request
+			String title = request
 					.getParameter(JobPosSearchTerms.TITLE_JOBPOS
 							+ indexOfRows[index].trim());
-			String vitri = request
+			String leader = request
 					.getParameter(JobPosSearchTerms.LEADER_JOBPOS
 							+ indexOfRows[index].trim());
-			long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
-			System.out.println("====chucvu " + chucvu + " vitri " + vitri
-					+ " indexOfRows " + indexOfRows + " index " + index
-					+ " jobPosId " + jobPosId);
+			long workingUnitId = ParamUtil.getLong(request, "workingUnitId" + 0);
+			JobPosLocalServiceUtil.addJobPos(serviceContext.getUserId(), 
+				serviceContext, title, "", workingUnitId, 0, Integer.valueOf(leader));
+		}
+		
+	}
+	
+	public void editJobPos(ActionRequest request, ActionResponse response) throws PortalException, SystemException {
+		long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
+		
+		int leader = ParamUtil.getInteger(request, 
+			JobPosDisplayTerms.LEADER_JOBPOS);
+		String title = ParamUtil.getString(request, JobPosDisplayTerms.TITLE_JOBPOS);
+		ServiceContext serviceContext = ServiceContextFactory
+						.getInstance(request);
+		JobPos jobPos = null;
+		if(jobPosId > 0) {
+			jobPos = JobPosLocalServiceUtil.fetchJobPos(jobPosId);
+			jobPos = JobPosLocalServiceUtil.updateJobPos(jobPosId, 
+				serviceContext.getUserId(), serviceContext, title, 
+				"", jobPos.getWorkingUnitId(), 0, leader);
+		} else {
+			SessionErrors.add(request, "UPDATE_JOBPOS_ERROR");
 		}
 	}
 
@@ -272,9 +294,6 @@ public class UserMgtPortlet extends MVCPortlet {
 				WorkingUnitDisplayTerms.WORKINGUNIT_WARDCODE);
 		ServiceContext serviceContext = ServiceContextFactory
 				.getInstance(request);
-		System.out.println("====workingUnitId  " + workingUnitId
-				+ " parentWorkingUnitId " + parentWorkingUnitId
-				+ " managerWorkingUnitId " + managerWorkingUnitId);
 
 		if (workingUnitId == 0) {
 			WorkingUnitLocalServiceUtil.addWorkingUnit(
@@ -294,9 +313,5 @@ public class UserMgtPortlet extends MVCPortlet {
 
 	}
 	
-	public void editJobPos(ActionRequest request, ActionResponse response) {
-		long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
-		int leader = ParamUtil.getInteger(request, JobPosDisplayTerms.LEADER_JOBPOS);
-		System.out.println("jobPosId==== " + jobPosId + " ==leader  " + leader);
-	}
+	
 }

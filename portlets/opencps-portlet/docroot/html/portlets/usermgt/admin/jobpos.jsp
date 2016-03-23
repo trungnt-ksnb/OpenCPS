@@ -1,8 +1,3 @@
-<%@page import="com.liferay.portal.kernel.dao.search.SearchContainer"%>
-<%@page import="com.liferay.portal.kernel.dao.search.SearchEntry"%>
-<%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
-<%@page import="org.opencps.usermgt.search.JobPosSearchTerms"%>
-<%@page import="org.opencps.usermgt.search.JobPosSearch"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -26,16 +21,22 @@
 <%@page import="org.opencps.usermgt.model.JobPos"%>
 <%@page import="java.util.List"%>
 <%@page import="javax.portlet.PortletURL"%>
+<%@page import="org.opencps.util.PortletPropsValues"%>
+<%@page import="com.liferay.portal.kernel.dao.search.SearchContainer"%>
+<%@page import="com.liferay.portal.kernel.dao.search.SearchEntry"%>
+<%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
+<%@page import="org.opencps.usermgt.search.JobPosSearchTerms"%>
+<%@page import="org.opencps.usermgt.search.JobPosSearch"%>
 <%
-
+	long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
 	PortletURL iteratorURL = renderResponse.createRenderURL();
 	iteratorURL.setParameter("mvcPath", templatePath + "jobpos.jsp");
-	
 	List<JobPos> jobPos = new ArrayList<JobPos>();
 	int totalCount = 0;
 %>
 <portlet:renderURL var="updateJobPosURL">
-	<portlet:param name="mvcPath" value='<%=templatePath + "jobpos/general_jobpos.jsp" %>'/>
+	<portlet:param name="mvcPath" value='<%=templatePath + "edit_jobpos.jsp" %>'/>
+	<portlet:param name="workingUnitId" value="<%=String.valueOf(workingUnitId) %>"/>
 </portlet:renderURL>
 
 <liferay-ui:icon iconCssClass="icon-plus-sign" label="update-jobpos" 
@@ -43,6 +44,9 @@
 
 <liferay-ui:search-container searchContainer="<%= 
 	new JobPosSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
+	<%
+		
+	%>
 		
 	<liferay-ui:search-container-results>
 		<%@include file="/html/portlets/usermgt/admin/result_search_jobpos.jspf"%>
@@ -50,11 +54,19 @@
 	<liferay-ui:search-container-row 
 		className="org.opencps.usermgt.model.JobPos" 
 		modelVar="jobPosSearch" 
-		keyProperty="jobposId"
+		keyProperty="jobPosId"
 	>
 		<%
+			String leaderName = "";
+			if(jobPosSearch.getLeader() == 0) {
+				leaderName = PortletPropsValues.USERMGT_JOBPOS_NOMAL;;
+			} else if (jobPosSearch.getLeader() == 1) {
+				leaderName = PortletPropsValues.USERMGT_JOBPOS_BOSS ;
+			} else if (jobPosSearch.getLeader() == 2) {
+				leaderName =  PortletPropsValues.USERMGT_JOBPOS_DEPUTY;
+			}
 			row.addText(jobPosSearch.getTitle());
-			row.addText(String.valueOf(jobPosSearch.getLeader()));
+			row.addText(leaderName);
 			row.addJSP("center", SearchEntry.DEFAULT_VALIGN,  templatePath +
 				"jobpos-action.jsp", config.getServletContext(),
 				request, response);
