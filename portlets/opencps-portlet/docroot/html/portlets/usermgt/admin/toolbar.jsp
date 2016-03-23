@@ -37,6 +37,7 @@
 	
 		<portlet:renderURL var="editEmployeeURL">
 			<portlet:param name="mvcPath" value='<%= templatePath + "edit_employee.jsp" %>'/>
+			<portlet:param name="backURL" value="<%=currentURL %>"/>
 		</portlet:renderURL>
 		
 		<aui:row>
