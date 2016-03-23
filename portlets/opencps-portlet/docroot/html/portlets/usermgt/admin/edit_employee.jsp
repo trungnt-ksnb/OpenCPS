@@ -118,7 +118,7 @@
 		categorySections="<%= categorySections %>"
 		htmlBottom="<%= htmlBottom %>"
 		htmlTop="<%= htmlTop %>"
-		jspPath="/html/portlets/usermgt/admin/employees/"
+		jspPath='<%=templatePath + "employees/" %>'
 	/>
 </aui:form>
 
