@@ -43,6 +43,7 @@ public class EmployeeDisplayTerm extends DisplayTerms {
 	public static final String GENDER = "gender";
 	public static final String GROUP_ID = "groupId";
 	public static final String MAIN_JOBPOS_ID = "mainJobPosId";
+	public static final String JOBPOS_ID = "jobPosId";
 	public static final String MOBILE = "mobile";
 	public static final String MODIFIED_DATE = "modifiedDate";
 	public static final String TEL_NO = "telNo";
