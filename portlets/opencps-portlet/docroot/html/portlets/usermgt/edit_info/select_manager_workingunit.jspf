@@ -21,7 +21,7 @@
 <aui:select
 	name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_MANAGERWORKINGUNITID%>">
 	
-	<aui:option value="<%=0 %>">----</aui:option>
+	<aui:option value="<%=-1 %>">----</aui:option>
 	<%
 		for (WorkingUnit unit3 : workingUnits3) {
 	%>

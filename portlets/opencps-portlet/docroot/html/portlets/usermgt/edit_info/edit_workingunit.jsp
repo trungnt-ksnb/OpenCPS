@@ -28,11 +28,12 @@
 <%
 	WorkingUnit workingUnit =
 		(WorkingUnit) request.getAttribute(WebKeys.WORKING_UNIT_ENTRY);
+
 	long workingUnitId =
 		(workingUnit != null) ? workingUnit.getWorkingunitId() : 0L;
-
 	List<WorkingUnit> workingUnits = new ArrayList<WorkingUnit>();
-	List<WorkingUnit> workingUnits3 = WorkingUnitLocalServiceUtil.getWorkingUnit(scopeGroupId, true);
+	List<WorkingUnit> workingUnits3 =  new ArrayList<WorkingUnit>();
+	workingUnits3 = WorkingUnitLocalServiceUtil.getWorkingUnit(scopeGroupId, true);
 
 	if (workingUnitId != 0) {
 		workingUnits =
@@ -161,6 +162,8 @@
 			<aui:button type="submit" name="submit" value="submit"></aui:button>
 		</aui:row>
 	</c:if>
+	<aui:input type="hidden" name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID %>"
+	value="<%=String.valueOf(workingUnitId) %>"></aui:input>
 </aui:form>
 
 <%-- <aui:button name="openDialog" type="button" value="Chuc vu" /> --%>

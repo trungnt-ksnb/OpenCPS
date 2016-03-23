@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.usermgt.search.JobPosDisplaySearchTerms"%>
 <%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.model.JobPos"%>
 <%@page import="java.util.ArrayList"%>
@@ -36,16 +37,13 @@
 	jobPos = JobPosLocalServiceUtil.getJobPoss(workingUnit.getUserId(), workingUnitId);
 	
 	if(jobPos.isEmpty()){
-		
-		if(jobPos.isEmpty()){
-	rowIndexes = new int[]{0};
-		}else{
-	rowIndexes = new int[jobPos.size()];	
-		}
-		
-	}else{
 		//them moi
+		System.out.println("add new");
 		rowIndexes = new int[]{0};
+	}else{
+		
+		rowIndexes = new int[]{jobPos.size()};
+		System.out.println("update " + jobPos.size());
 	}
 	
 	
@@ -70,15 +68,16 @@
 				%>
 				<aui:row>
 					<aui:column>
-						<aui:input type="text" name='<%="chucvu" + row%>'
-							label="chuc vu"></aui:input>
+						<aui:input type="text"
+							name='<%=JobPosDisplaySearchTerms.TITLE_JOBPOS%>'></aui:input>
 					</aui:column>
 					<aui:column columnWidth="30">
-						<aui:select name='<%="vitri" + row%>' label="vi tri">
-							<aui:option value="<%=0%>" label="thong thuong"></aui:option>
-							<aui:option value="<%=1%>" label="truong phong"></aui:option>
-							<aui:option value="<%=0%>" label="pho phong"></aui:option>
+						<aui:select name='<%=JobPosDisplaySearchTerms.LEADER_JOBPOS%>'>
+							<aui:option value="<%= 0%>" label="thong thuong"></aui:option>
+							<aui:option value="<%= 1%>" label="truong phong"></aui:option>
+							<aui:option value="<%= 0%>" label="pho phong"></aui:option>
 						</aui:select>
+						<aui:input type="hidden" name ="rowIndexes" value="<%=StringUtil.merge(rowIndexes) %>"></aui:input>
 					</aui:column>
 				</aui:row>
 				<%
@@ -106,6 +105,8 @@
 	});
 </aui:script>
 	
+
+
 
 
 
