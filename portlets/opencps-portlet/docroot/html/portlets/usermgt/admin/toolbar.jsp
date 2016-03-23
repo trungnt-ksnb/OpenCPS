@@ -41,8 +41,8 @@
 		
 		<aui:row>
 			<aui:col width="30"><aui:input name="keywords" type="text" label=""/></aui:col>
-			<aui:col width="60"><aui:select name="<%=EmployeeDisplayTerm.WORKING_UNIT_ID %>" label=""></aui:select></aui:col>
-			<aui:col width="10"><aui:button name="add-employee" value="add-employee" href="<%=editEmployeeURL %>"/></aui:col>
+			<aui:col width="30"><aui:select name="<%=EmployeeDisplayTerm.WORKING_UNIT_ID %>" label=""></aui:select></aui:col>
+			<aui:col width="30"><aui:button name="add-employee" value="add-employee" href="<%=editEmployeeURL %>"/></aui:col>
 		</aui:row>
 	</c:when>
 	
