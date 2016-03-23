@@ -63,9 +63,9 @@
 	}
 %>
 
-<portlet:actionURL var="jobPosAddURL" name="jobPosAdd" />
+<portlet:actionURL var="addJobPosURL" name="jobPosAdd" />
 
-<aui:form action="<%=jobPosAddURL.toString()%>" method="POST">
+<aui:form action="<%=addJobPosURL.toString()%>" method="POST">
 	<aui:row>
 		<div id="member-fields">
 
@@ -81,6 +81,7 @@
 							<aui:column columnWidth="30">
 								<aui:select name='<%=JobPosDisplaySearchTerms.LEADER_JOBPOS + rowIndex%>'>
 									<%
+										System.out.println("===PortletPropsValues.USERMGT_JOBPOS_LEADER.length " + PortletPropsValues.USERMGT_JOBPOS_LEADER.length);
 										for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){
 											%>
 												<aui:option value="<%=PortletPropsValues.USERMGT_JOBPOS_LEADER[j] %>">

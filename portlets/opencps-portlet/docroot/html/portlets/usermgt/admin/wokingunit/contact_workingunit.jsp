@@ -17,7 +17,17 @@
  */
 %>
 <%@ include file="../../init.jsp"%>
+<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
 <%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
+<%@page import="org.opencps.util.WebKeys"%>
+<%
+	WorkingUnit workingUnit =
+		(WorkingUnit) request.getAttribute(WebKeys.WORKING_UNIT_ENTRY);
+
+long workingUnitId = workingUnit != null ? workingUnit.getWorkingunitId() : 0L;
+%>
+
+<aui:model-context bean="<%=workingUnit%>" model="<%=WorkingUnit.class%>" />
 <aui:row>
 	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ADDRESS%>"></aui:input>
 	
