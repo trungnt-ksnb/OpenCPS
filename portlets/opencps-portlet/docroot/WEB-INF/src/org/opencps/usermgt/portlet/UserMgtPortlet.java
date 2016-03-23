@@ -1,3 +1,19 @@
+/**
+* OpenCPS is the open source Core Public Services software
+* Copyright (C) 2016-present OpenCPS community
+
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* any later version.
+
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>
+*/
 
 package org.opencps.usermgt.portlet;
 
@@ -10,9 +26,12 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.opencps.usermgt.NoSuchWorkingUnitException;
+import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.WorkingUnit;
+import org.opencps.usermgt.search.EmployeeDisplayTerm;
 import org.opencps.usermgt.search.JobPosDisplaySearchTerms;
 import org.opencps.usermgt.search.WorkingUnitDisplayTerms;
+import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
 import org.opencps.usermgt.service.WorkingUnitLocalServiceUtil;
 import org.opencps.util.MessageKeys;
 import org.opencps.util.WebKeys;
@@ -27,6 +46,10 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
+/**
+ * @author trungnt
+ */
+
 public class UserMgtPortlet extends MVCPortlet {
 
 	@Override
@@ -36,7 +59,10 @@ public class UserMgtPortlet extends MVCPortlet {
 
 		long workingUnitId = ParamUtil.getLong(renderRequest,
 				WorkingUnitDisplayTerms.WORKINGUNIT_ID);
-		System.out.println("add-workingunit " + workingUnitId);
+
+		long employeeId = ParamUtil.getLong(renderRequest,
+				EmployeeDisplayTerm.EMPLOYEE_ID);
+		
 		try {
 			if (workingUnitId > 0) {
 				WorkingUnit workingUnit = WorkingUnitLocalServiceUtil
@@ -44,9 +70,17 @@ public class UserMgtPortlet extends MVCPortlet {
 				renderRequest.setAttribute(WebKeys.WORKING_UNIT_ENTRY,
 						workingUnit);
 			}
+
+			if (employeeId > 0) {
+				Employee employee = EmployeeLocalServiceUtil
+						.getEmployee(employeeId);
+
+				renderRequest.setAttribute(WebKeys.EMPLOYEE_ENTRY, employee);
+			}
 		} catch (Exception e) {
 			_log.error(e);
 		}
+		
 		super.render(renderRequest, renderResponse);
 	}
 
