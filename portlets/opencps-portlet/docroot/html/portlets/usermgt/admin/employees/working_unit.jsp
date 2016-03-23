@@ -61,6 +61,27 @@
 	</aui:col>
 </aui:row>
 
+<label><liferay-ui:message key="main-jobpos"/></label>
+<aui:row id="mainJobPosBoundingBox">
+	<aui:col width="50">
+		<aui:select 
+			name='<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>' 
+			label="<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>" 
+			onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
+			required="<%=true %>"
+			showEmptyOption="<%= true %>"
+		>
+			
+		</aui:select>
+	</aui:col>
+	<aui:col width="50">
+		<aui:select name='<%=EmployeeDisplayTerm.MAIN_JOBPOS_ID %>' label="<%= EmployeeDisplayTerm.JOBPOS_ID%>">
+			
+		</aui:select>
+	</aui:col>
+</aui:row>
+
+<label><liferay-ui:message key="other-jobpos"/></label>
 <aui:row id="opencps-usermgt-employee-jobpos">
 	<aui:fieldset id="boundingBox">
 	<%

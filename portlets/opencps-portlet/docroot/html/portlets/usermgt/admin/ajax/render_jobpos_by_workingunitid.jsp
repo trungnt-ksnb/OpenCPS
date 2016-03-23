@@ -18,36 +18,38 @@
 %>
 <%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
 <%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
-<%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.model.WorkingUnit"%>
 <%@page import="java.util.List"%>
-
+<%@page import="java.util.ArrayList"%>
+<%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
+<%@page import="org.opencps.usermgt.model.JobPos"%>
+<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.log.Log"%>
 <%@ include file="../../init.jsp"%>
 <%
 	long workingUnitId = ParamUtil.getLong(request, EmployeeDisplayTerm.WORKING_UNIT_ID, 0L);
-	List<WorkingUnit> workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnit(scopeGroupId, true);
+	List<JobPos> jobPoses = new ArrayList<JobPos>();
+	
+	if(workingUnitId > 0){
+		try{
+			jobPoses = JobPosLocalServiceUtil.getJobPoss(scopeGroupId, workingUnitId);
+		}catch(Exception e){
+			_log.error(e);
+		}
+	}
+	
+	if(jobPoses != null){
+		
+		for(JobPos jobPos : jobPoses){
+			%>
+				<option value="<%=jobPos.getJobPosId()%>"><%=jobPos.getTitle() %></option>
+			<%
+		}
+	}
 %>
 
-<aui:col width="50">
-	<aui:select 
-		name='<%=EmployeeDisplayTerm.WORKING_UNIT_ID + 0 %>' 
-		label="<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>" 
-		onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
-		required="<%=true %>"
-		showEmptyOption="<%= true %>"
-	>
-		<%
-			if(workingUnits != null){
-				for(WorkingUnit workingUnit : workingUnits){
-					%>
-						<aui:option value="<%= workingUnit.getWorkingunitId()%>"><%=workingUnit.getName() %></aui:option>
-					<%
-				}
-			}
-		%>
-	</aui:select>
-</aui:col>
 
-<aui:col width="50">
-	<aui:select name="jobPosId0" label="<%= EmployeeDisplayTerm.JOBPOS_ID%>"/>
-</aui:col>
+
+<%!
+	private Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.ajax.render_jobpos_by_workingunitid.jsp");
+%>
