@@ -1,3 +1,4 @@
+
 package org.opencps.usermgt.portlet;
 
 import java.io.IOException;
@@ -26,11 +27,12 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
+public class UserMgtEditProfilePortlet extends MVCPortlet {
 
-public class UserMgtEditProfilePortlet extends MVCPortlet{
 	@Override
 	public void render(
-		RenderRequest renderRequest, RenderResponse renderResponse) throws PortletException, IOException {
+		RenderRequest renderRequest, RenderResponse renderResponse)
+		throws PortletException, IOException {
 
 		long workingUnitId =
 			ParamUtil.getLong(
@@ -49,84 +51,111 @@ public class UserMgtEditProfilePortlet extends MVCPortlet{
 		}
 		super.render(renderRequest, renderResponse);
 	}
-	
-	
-	public void workingUnitAdd(ActionRequest request, ActionResponse response) throws PortalException, SystemException {
-		long managerWorkingUnitId = ParamUtil.getLong(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_MANAGERWORKINGUNITID);
-		long workingUnitId = ParamUtil.getLong(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);
-		long parentWorkingUnitId = ParamUtil.getLong(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_PARENTWORKINGUNITID);
-		String name = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_NAME);
-		String enName = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME);
-		String address = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_ADDRESS);
-		String telNo = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_TELNO);
-		String faxNo = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_FAXNO);
-		String email = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_EMAIL);
-		String website = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_WEBSITE);
-		boolean isEmployer = ParamUtil.getBoolean(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER);
-		String govAgencyCode = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_GOVAGENCYCODE);
-		String cityCode = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_CITYCODE);
-		String districtCode = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_DISTRICTCODE);
-		String wardCode = ParamUtil.getString(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_WARDCODE);
-		ServiceContext serviceContext = ServiceContextFactory
-						.getInstance(request);
-		System.out.println("====workingUnitId  " + workingUnitId
-			+" parentWorkingUnitId " + parentWorkingUnitId 
-			+ " managerWorkingUnitId " + managerWorkingUnitId);
-		
-		if(workingUnitId == 0) {
+
+	public void workingUnitAdd(ActionRequest request, ActionResponse response)
+		throws PortalException, SystemException {
+
+		long managerWorkingUnitId =
+			ParamUtil.getLong(
+				request,
+				WorkingUnitDisplayTerms.WORKINGUNIT_MANAGERWORKINGUNITID);
+		long workingUnitId =
+			ParamUtil.getLong(request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);
+		long parentWorkingUnitId =
+			ParamUtil.getLong(
+				request,
+				WorkingUnitDisplayTerms.WORKINGUNIT_PARENTWORKINGUNITID);
+		String name =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_NAME);
+		String enName =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME);
+		String address =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_ADDRESS);
+		String telNo =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_TELNO);
+		String faxNo =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_FAXNO);
+		String email =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_EMAIL);
+		String website =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_WEBSITE);
+		boolean isEmployer =
+			ParamUtil.getBoolean(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER);
+		String govAgencyCode =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_GOVAGENCYCODE);
+		String cityCode =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_CITYCODE);
+		String districtCode =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_DISTRICTCODE);
+		String wardCode =
+			ParamUtil.getString(
+				request, WorkingUnitDisplayTerms.WORKINGUNIT_WARDCODE);
+		ServiceContext serviceContext =
+			ServiceContextFactory.getInstance(request);
+
+		if (managerWorkingUnitId == -1) {
+			managerWorkingUnitId = 0;
+		}
+		System.out.println("====workingUnitId  " + workingUnitId +
+			" parentWorkingUnitId " + parentWorkingUnitId +
+			" managerWorkingUnitId " + managerWorkingUnitId);
+
+		if (workingUnitId == 0) {
 			WorkingUnitLocalServiceUtil.addWorkingUnit(
-				serviceContext.getUserId(), serviceContext, name, enName, 
-				govAgencyCode, parentWorkingUnitId, address, cityCode, 
-				districtCode, wardCode, telNo, faxNo, email, website, 
+				serviceContext.getUserId(), serviceContext, name, enName,
+				govAgencyCode, parentWorkingUnitId, address, cityCode,
+				districtCode, wardCode, telNo, faxNo, email, website,
 				isEmployer, managerWorkingUnitId);
 			SessionMessages.add(request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
-		} else {
-			WorkingUnitLocalServiceUtil.updateWorkingUnit(workingUnitId, 
-				serviceContext.getUserId(), serviceContext, name, enName, 
-				govAgencyCode, parentWorkingUnitId, address, cityCode, 
-				districtCode, wardCode, telNo, faxNo, email, website, 
-				isEmployer, managerWorkingUnitId);			
+		}
+		else {
+			WorkingUnitLocalServiceUtil.updateWorkingUnit(
+				workingUnitId, serviceContext.getUserId(), serviceContext,
+				name, enName, govAgencyCode, parentWorkingUnitId, address,
+				cityCode, districtCode, wardCode, telNo, faxNo, email, website,
+				isEmployer, managerWorkingUnitId);
 			SessionMessages.add(request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 		}
-		
-		
+
 	}
-	
-	public void deleteWorkingUnit(ActionRequest request, ActionResponse response) throws NoSuchWorkingUnitException, SystemException {
-		long workingUnitId = ParamUtil.getLong(
-			request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);
+
+	public void deleteWorkingUnit(ActionRequest request, ActionResponse response)
+		throws NoSuchWorkingUnitException, SystemException {
+
+		long workingUnitId =
+			ParamUtil.getLong(request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);
 		WorkingUnitLocalServiceUtil.deleteWorkingUnitByWorkingUnitId(workingUnitId);
 	}
-	
+
 	public void jobPosAdd(ActionRequest request, ActionResponse response) {
-		
+
 		String rowIndexes = request.getParameter("rowIndexes");
 		System.out.println("===rowIndexes " + rowIndexes);
-		String [] indexOfRows = rowIndexes.split(",");
-		
-		for(int index = 0; index < indexOfRows.length; index ++) {
-			String chucvu = request.getParameter(
-				JobPosDisplaySearchTerms.TITLE_JOBPOS + indexOfRows[index].trim());
-			String vitri = request.getParameter(
-				JobPosDisplaySearchTerms.LEADER_JOBPOS + indexOfRows[index].trim());
-			
-			System.out.println("====chucvu " + chucvu + " vitri " + vitri + " indexOfRows " + indexOfRows + " index " + index);
+		String[] indexOfRows = rowIndexes.split(",");
+
+		for (int index = 0; index < indexOfRows.length; index++) {
+			String chucvu =
+				request.getParameter(JobPosDisplaySearchTerms.TITLE_JOBPOS +
+					indexOfRows[index].trim());
+			String vitri =
+				request.getParameter(JobPosDisplaySearchTerms.LEADER_JOBPOS +
+					indexOfRows[index].trim());
+
+			System.out.println("====chucvu " + chucvu + " vitri " + vitri +
+				" indexOfRows " + indexOfRows + " index " + index);
 		}
- 	}
-	private Log _log = LogFactoryUtil.getLog(UserMgtEditProfilePortlet.class.getName());
+	}
+	private Log _log =
+		LogFactoryUtil.getLog(UserMgtEditProfilePortlet.class.getName());
 }

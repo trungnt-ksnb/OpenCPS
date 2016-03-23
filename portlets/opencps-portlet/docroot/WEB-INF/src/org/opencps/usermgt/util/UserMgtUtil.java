@@ -37,7 +37,10 @@ public class UserMgtUtil {
 	public static final String[] _EMPLOYESS_CATEGORY_NAMES = {
 		"employee-info"
 	};
-
+	public static final String[] _WORKING_UNIT_CATEGORY_NAMES = {
+		"workingunit-info"
+	};
+	
 	public static OrderByComparator getWorkingUnitOrderByComparator(
 		String orderByCol, String orderByType) {
 
