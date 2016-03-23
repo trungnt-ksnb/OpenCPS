@@ -28,20 +28,18 @@
 		ParamUtil.getLong(request, "mngworkingUnitId");
 	List<WorkingUnit> unitsRoot = new ArrayList<WorkingUnit>();
 	List<WorkingUnit> units = new ArrayList<WorkingUnit>();
-			units = WorkingUnitLocalServiceUtil.getWorkingUnits(
+	units =
+		WorkingUnitLocalServiceUtil.getWorkingUnits(
 			scopeGroupId, mngworkingUnitId);
-	if(units.isEmpty()) {
-		WorkingUnit workingUnit1 = WorkingUnitLocalServiceUtil
-						.fetchWorkingUnit(mngworkingUnitId);
-		if(workingUnit1 != null ) {
+	WorkingUnit workingUnit1 = null;
+	if (units.isEmpty()) {
+		workingUnit1 =
+			WorkingUnitLocalServiceUtil.fetchWorkingUnit(mngworkingUnitId);
+		if (workingUnit1 != null) {
 			unitsRoot.add(0, workingUnit1);
 		}
-	} else {
-		WorkingUnit workingUnit1 = WorkingUnitLocalServiceUtil
-						.fetchWorkingUnit(mngworkingUnitId);
-		if(workingUnit1 != null ) {
-			unitsRoot.add(0, workingUnit1);
-		}
+	}
+	else {
 		unitsRoot = units;
 	}
 %>
@@ -56,10 +54,19 @@
 	<%
 		}
 			else {
+				if (workingUnit1 != null) {
+	%>
+		<aui:option value="<%=workingUnit1.getWorkingunitId()%>">
+			<%=workingUnit1.getWorkingunitId()%>
+		</aui:option>
+	<%
+		}
 
 				for (WorkingUnit unitt : unitsRoot) {
 	%>
-	<aui:option value="<%=unitt.getWorkingunitId()%>"><%=unitt.getWorkingunitId()%></aui:option>
+	<aui:option value="<%=unitt.getWorkingunitId()%>">
+		<%=unitt.getWorkingunitId()%>
+	</aui:option>
 
 	<%
 		}
