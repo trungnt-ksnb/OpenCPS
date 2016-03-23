@@ -133,7 +133,9 @@
 
 	var workingUnitInput = AUI().one('#<portlet:namespace/><%= EmployeeDisplayTerm.WORKING_UNIT_ID%>');
 	
-	var boundingBox = AUI().one('#<portlet:namespace/>boundingBox .row-fields');
+	var mainJobPosBoundingBox = AUI().one('#<portlet:namespace/>mainJobPosBoundingBox');
+	
+	var jobPosAutoFieldBoundingBox = AUI().one('#<portlet:namespace/>boundingBox .row-fields');
 
 	var autoFieldRows = AUI().all('#<portlet:namespace/>boundingBox .lfr-form-row-inline');
 	
@@ -162,8 +164,6 @@
 
 		if(autoFieldRows){
 			autoFieldRows.each(function(node, index){
-				console.log(autoFieldRows.size());
-				console.log(index);
 				if(index != 0){
 					node.remove();	
 				}		
@@ -184,11 +184,16 @@
 							var instance = this;
 							var res = instance.get('responseData');
 							
-							if(boundingBox){
-								boundingBox.empty();
-								boundingBox.html(res);
+							if(mainJobPosBoundingBox){
+								mainJobPosBoundingBox.empty();
+								mainJobPosBoundingBox.html(res);
 							}
-								
+							
+							if(jobPosAutoFieldBoundingBox){
+								jobPosAutoFieldBoundingBox.empty();
+								jobPosAutoFieldBoundingBox.html(res);
+							}
+
 						},
 				    	error: function(){}
 					}
@@ -207,7 +212,11 @@
 		
 		var name = instance.attr('name');
 		
-		var index = name.substring(name.length -1, name.length);
+		var index = name.substring(name.length - 1, name.length);
+		
+		if(isNaN(index)){
+			index = '';
+		}
 	
 		var jobPosBoundingBox = A.one('#<portlet:namespace/><%= EmployeeDisplayTerm.JOBPOS_ID%>' + index);
 		
