@@ -35,6 +35,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 
 public class EmployeeDisplayTerm extends DisplayTerms {
 
+	public static final String EMPLOYEE_ID = "employeeId";
 	public static final String BIRTH_DATE = "birthDate";
 	public static final String CREATE_DATE = "createDate";
 	public static final String EMAIL = "email";
