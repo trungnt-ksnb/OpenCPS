@@ -1,6 +1,3 @@
-<%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
-<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
-<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -20,6 +17,9 @@
 	 */
 %>
 <%@ include file="../init.jsp"%>
+<%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
+<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
+<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%
 	String backURL = ParamUtil.getString(request, "backURL");
 	long workingUnitId = ParamUtil.getLong(request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);

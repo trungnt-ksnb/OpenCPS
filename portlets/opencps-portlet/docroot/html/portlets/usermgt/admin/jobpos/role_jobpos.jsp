@@ -1,5 +1,3 @@
-<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
-<%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -18,18 +16,3 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-
-<%@ include file="../../init.jsp"%>
-<%
-	long workingUnitId = ParamUtil.getLong(request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);
-%>
-
-<portlet:renderURL 	var="dialogURL"	windowState="<%=LiferayWindowState.POP_UP.toString()%>">
-	<portlet:param name="mvcPath" value='<%= templatePath + "edit_jobpos.jsp" %>' />
-	<portlet:param name="workingunitRefId" value="<%=String.valueOf(workingUnitId)%>" />
-</portlet:renderURL>
-
-<c:if test="<%=workingUnitId !=0 %>">
-	<%@include file="/html/portlets/usermgt/admin/link_popup.jspf" %>
-</c:if>
-
