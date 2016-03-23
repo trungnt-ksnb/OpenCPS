@@ -53,13 +53,13 @@
 			<liferay-ui:message key="birth-date"/>
 		</label>
 		<liferay-ui:input-date
-			dayParam="sbirthDateDay"
+			dayParam="<%=EmployeeDisplayTerm.BIRTH_DATE_DAY %>"
 			dayValue="<%= spd.getDayOfMoth() %>"
 			disabled="<%= false %>"
-			monthParam="birthDateMonth"
+			monthParam="<%=EmployeeDisplayTerm.BIRTH_DATE_MONTH %>"
 			monthValue="<%= spd.getMonth() %>"
 			name="<%=EmployeeDisplayTerm.BIRTH_DATE %>"
-			yearParam="birthDateYear"
+			yearParam="<%=EmployeeDisplayTerm.BIRTH_DATE_YEAR %>"
 			yearValue="<%= spd.getYear() %>"
 			formName="fm"
 			autoFocus="<%=true %>"

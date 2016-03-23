@@ -71,7 +71,7 @@
 					<div class="row-fields">
 						<aui:col width="50">
 							<aui:select 
-								name='<%= "workingUnitId" + jobPosIndex %>' 
+								name='<%= EmployeeDisplayTerm.WORKING_UNIT_ID + jobPosIndex %>' 
 								label="<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>" 
 								onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
 								required="<%=true %>"
