@@ -256,8 +256,10 @@ public class WorkingUnitLocalServiceImpl
 	}
 
 	public WorkingUnit getWorkingUnitsByGroupId(long groupId,
-			OrderByComparator orderByComparator) throws NoSuchWorkingUnitException, SystemException {
-		return workingUnitPersistence.findByGroupId_First(groupId, orderByComparator);
+			OrderByComparator orderByComparator)
+			throws NoSuchWorkingUnitException, SystemException {
+		return workingUnitPersistence.findByGroupId_First(groupId,
+				orderByComparator);
 	}
 
 	public int getNextSibling(List<WorkingUnit> workingUnits) {
