@@ -16,6 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
+
+<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
+<%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
 <%@page import="com.liferay.portal.UserLockoutException"%>
 <%@page import="com.liferay.portal.service.UserLocalServiceUtil"%>
 <%@page import="com.liferay.portal.service.PasswordPolicyLocalServiceUtil"%>
@@ -45,6 +48,10 @@
 	
 	String[][] categorySections = {employeeSections};
 %>
+
+<portlet:renderURL var="renderWorkingUnitJobPosURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString()%>">
+	<portlet:param name="mvcPath" value='<%=templatePath + "ajax/render_workingunit_jobpos.jsp" %>'/>
+</portlet:renderURL>
 
 <liferay-util:buffer var="htmlTop">
 	<c:if test="<%= mappingUser != null %>">
@@ -98,10 +105,112 @@
 </aui:form>
 
 <aui:script use="liferay-auto-fields">
- new Liferay.AutoFields(
+
+	var workingUnitInput = AUI().one('#<portlet:namespace/><%= EmployeeDisplayTerm.WORKING_UNIT_ID%>');
+	
+	var boundingBox = AUI().one('#<portlet:namespace/>boundingBox .row-fields');
+
+	var autoFieldRows = AUI().all('#<portlet:namespace/>boundingBox .lfr-form-row-inline');
+	
+	AUI().ready(function(A){
+		
+		<portlet:namespace/>renderWorkingUnitJobPos();
+		
+		workingUnitInput.on('change', function(){
+			<portlet:namespace/>renderWorkingUnitJobPos();
+		});
+		
+	});
+	
+	new Liferay.AutoFields(
        {
            contentBox: '#<portlet:namespace />opencps-usermgt-employee-jobpos > fieldset',
            fieldIndexes: '<portlet:namespace />jobPosIndexes'
        }
-   ).render();
+	).render();
+ 
+	Liferay.provide(window, '<portlet:namespace/>renderWorkingUnitJobPos', function() {
+		
+		var A = AUI();
+
+		autoFieldRows = A.all('#<portlet:namespace/>boundingBox .lfr-form-row-inline');
+
+		if(autoFieldRows){
+			autoFieldRows.each(function(node, index){
+				console.log(autoFieldRows.size());
+				console.log(index);
+				if(index != 0){
+					node.remove();	
+				}		
+			});
+		}
+		
+		if(workingUnitInput){
+			var value = workingUnitInput.val();
+			 A.io.request(
+				'<%= renderWorkingUnitJobPosURL.toString()%>',
+				{
+				    dataType : 'json',
+				    data:{    	
+				    	workingUnitId : value,
+				    },   
+				    on: {
+				        success: function(event, id, obj) {
+							var instance = this;
+							var res = instance.get('responseData');
+							
+							if(boundingBox){
+								boundingBox.empty();
+								boundingBox.html(res);
+							}
+								
+						},
+				    	error: function(){}
+					}
+				}
+			);
+		}
+	});
+	
+	Liferay.provide(window, '<portlet:namespace/>getJobPosByWorkingUnitId', function(e) {
+			
+		var A = AUI();
+		
+		var instance = A.one(e);
+		
+		var value = instance.val();
+		
+		var name = instance.attr('name');
+		
+		var index = name.substring(name.length -1, name.length);
+
+		console.log(index);
+		
+		var jobPosBoundingBox = A.one('#<portlet:namespace/><%= EmployeeDisplayTerm.JOBPOS_ID%>' + index);
+		
+		console.log(jobPosBoundingBox);
+		
+		A.io.request(
+			'<%= renderWorkingUnitJobPosURL.toString()%>',
+			{
+			    dataType : 'json',
+			    data:{    	
+			    	workingUnitId : value,
+			    },   
+			    on: {
+			        success: function(event, id, obj) {
+						var instance = this;
+						var res = instance.get('responseData');
+						
+						if(jobPosBoundingBox){
+							jobPosBoundingBox.empty();
+							jobPosBoundingBox.html('<option>XXX</option>');
+						}
+							
+					},
+			    	error: function(){}
+				}
+			}
+		);
+	});
 </aui:script>
