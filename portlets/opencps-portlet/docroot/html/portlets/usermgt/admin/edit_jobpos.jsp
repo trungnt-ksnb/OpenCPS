@@ -81,6 +81,7 @@
 							<aui:column columnWidth="30">
 								<aui:select name='<%=JobPosDisplaySearchTerms.LEADER_JOBPOS + rowIndex%>'>
 									<%
+										System.out.println("===PortletPropsValues.USERMGT_JOBPOS_LEADER.length " + PortletPropsValues.USERMGT_JOBPOS_LEADER.length);
 										for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){
 											%>
 												<aui:option value="<%=PortletPropsValues.USERMGT_JOBPOS_LEADER[j] %>">

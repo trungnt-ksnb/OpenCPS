@@ -23,12 +23,14 @@
 <%
 	String backURL = ParamUtil.getString(request, "backURL");
 	long workingUnitId = ParamUtil.getLong(request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);
-	String [] workingunitSections = new String[3];
+	String [] workingunitSections = null;
 	if(workingUnitId == 0) {
+		workingunitSections = new String[2];
 		workingunitSections[0] = "general_workingunit";
 		workingunitSections[1] = "contact_workingunit";
-		workingunitSections[2] = "----";
+		
 	} else {
+		workingunitSections = new String[3];
 		workingunitSections[0] = "general_workingunit";
 		workingunitSections[1] = "contact_workingunit";
 		workingunitSections[2] = "jobpos";

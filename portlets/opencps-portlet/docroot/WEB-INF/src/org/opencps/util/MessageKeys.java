@@ -23,10 +23,11 @@ package org.opencps.util;
 public class MessageKeys {
 
 	public static final String DATAMGT_ADD_SUCESS = "datamgt.add.sucess";
-	public static final String DATAMGT_SYSTEM_EXCEPTION_OCCURRED =
-		"datamgt.system.exception.occurred";
+	public static final String DATAMGT_SYSTEM_EXCEPTION_OCCURRED = "datamgt.system.exception.occurred";
 	public static final String DATAMGT_UPDATE_SUCESS = "datamgt.update.sucess";
-	public static final String WORKINGUNIT_UPDATE_SUCESS =
-		"workingunit.update.success";
+	public static final String WORKINGUNIT_UPDATE_SUCESS = "workingunit.update.success";
+	public static final String USERMGT_ADD_SUCCESS = "usermgt.add.sucess";
+	public static final String USERMGT_SYSTEM_EXCEPTION_OCCURRED = "usermgt.system.exception.occurred";
+	public static final String USERMGT_UPDATE_SUCCESS = "usermgt.update.sucess";
 
 }

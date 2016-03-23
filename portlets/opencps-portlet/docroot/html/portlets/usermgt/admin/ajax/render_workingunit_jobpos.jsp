@@ -24,14 +24,14 @@
 
 <%@ include file="../../init.jsp"%>
 <%
-	long workingUnitId = ParamUtil.getLong(request, "workingUnitId", 0L);
+	long workingUnitId = ParamUtil.getLong(request, EmployeeDisplayTerm.WORKING_UNIT_ID, 0L);
 	List<WorkingUnit> workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnit(scopeGroupId, true);
 %>
 <div class="lfr-form-row lfr-form-row-inline">
 	<div class="row-fields">
 		<aui:col width="50">
 			<aui:select 
-				name="workingUnitId0" 
+				name='<%=EmployeeDisplayTerm.WORKING_UNIT_ID + 0 %>' 
 				label="<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>" 
 				onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
 				required="<%=true %>"

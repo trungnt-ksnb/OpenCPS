@@ -45,17 +45,7 @@
 
 <liferay-ui:search-container searchContainer="<%= new WorkingUnitSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
 	<liferay-ui:search-container-results>
-		<%
-			WorkingUnitSearchTerms searchTerms = (WorkingUnitSearchTerms) searchContainer.getSearchTerms();
-			
-			workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnit(searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator());
-			
-			totalCount = WorkingUnitLocalServiceUtil.countAll();
-			total = totalCount;
-			results = workingUnits;
-			pageContext.setAttribute("results", results);
-			pageContext.setAttribute("total", total);
-		%>
+		<%@include file="/html/portlets/usermgt/admin/result_search_workingunit.jspf" %>
 	
 	</liferay-ui:search-container-results>
 	

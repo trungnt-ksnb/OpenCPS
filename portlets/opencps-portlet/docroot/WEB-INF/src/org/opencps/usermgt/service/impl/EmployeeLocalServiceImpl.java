@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
+import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.base.EmployeeLocalServiceBaseImpl;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.PortletUtil;
@@ -69,11 +70,11 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 	 */
 
 	public Employee addEmployee(long userId, long workingUnitId,
-			String employeeNo, String fullName, int gender, Date birthDate,
-			String telNo, String mobile, String email, String screenName,
-			String password, String reTypePassword, int workingStatus,
-			long mainJobPosId, long mappingUserId, long[] groupIds,
-			long[] organizationIds, long[] roleIds, long[] userGroupIds,
+			String employeeNo, String fullName, int gender, String telNo,
+			String mobile, String email, String screenName, int workingStatus,
+			long mainJobPosId, long[] jobPosIds, int birthDateDay,
+			int birthDateMonth, int birthDateYear, String password,
+			String reTypePassword, long[] groupIds, long[] userGroupIds,
 			ServiceContext serviceContext)
 			throws SystemException, PortalException {
 
@@ -82,19 +83,49 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 
 		Employee employee = employeePersistence.create(employeeId);
 
-		Date now = new Date();
-
+		// Get main JobPos
 		JobPos jobPos = jobPosPersistence.findByPrimaryKey(mainJobPosId);
 
-		PortletUtil.SplitDate spd = PortletUtil.splitDate(birthDate);
+		// Get Working Unit
+		WorkingUnit workingUnit = workingUnitPersistence
+				.findByPrimaryKey(workingUnitId);
+
+		// Get OrganizationId
+		long[] organizationIds = null;
+
+		if (workingUnit != null) {
+			organizationIds = new long[]{
+					workingUnit.getMappingOrganisationId()};
+		}
+
+		long[] roleIds = null;
+
+		if (jobPosIds != null && jobPosIds.length > 0) {
+
+			roleIds = new long[jobPosIds.length];
+
+			for (int job = 0; job < jobPosIds.length; job++) {
+				JobPos jobPosTemp = jobPosPersistence
+						.findByPrimaryKey(jobPosIds[job]);
+				if (jobPosTemp != null) {
+					roleIds[job] = jobPosTemp.getMappingRoleId();
+				}
+			}
+		}
+
+		Date now = new Date();
+
 		PortletUtil.SplitName spn = PortletUtil.splitName(fullName);
+
+		Date birthDate = PortletUtil.getDate(birthDateDay, birthDateMonth,
+				birthDateYear);
 
 		User user = userService.addUserWithWorkflow(
 				serviceContext.getCompanyId(), false, password, reTypePassword,
 				false, screenName, email, 0L, StringPool.BLANK,
 				LocaleUtil.getDefault(), spn.getFirstName(), spn.getMidName(),
-				spn.getLastName(), 0, 0, (gender == 1), spd.getMonth(),
-				spd.getDayOfMoth(), spd.getYear(), jobPos.getTitle(), groupIds,
+				spn.getLastName(), 0, 0, (gender == 1), birthDateDay,
+				birthDateMonth, birthDateYear, jobPos.getTitle(), groupIds,
 				organizationIds, roleIds, userGroupIds,
 				new ArrayList<Address>(), new ArrayList<EmailAddress>(),
 				new ArrayList<Phone>(), new ArrayList<Website>(),
@@ -118,16 +149,20 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 			employee.setWorkingStatus(workingStatus);
 			employee.setMainJobPosId(mainJobPosId);
 			employee.setMappingUserId(user.getUserId());
+			employeePersistence.setJobPoses(employeeId, jobPosIds);
 		}
 
 		return employeePersistence.update(employee);
 	}
 
 	public Employee updateEmployee(long employeeId, long userId,
-			String employeeNo, String screenName, String fullName, int gender,
-			Date birthDate, String telNo, String mobile, String email,
-			boolean isChangePassWord, String oldPassWord, String newPassWord,
-			String reTypePassWord, long mainJobPosId,
+			long workingUnitId, String employeeNo, String fullName, int gender,
+			String telNo, String mobile, String email, String screenName,
+			int workingStatus, long mainJobPosId, long mappingUserId,
+			long[] jobPosIds, boolean isChangePassWord, int birthDateDay,
+			int birthDateMonth, int birthDateYear, String oldPassWord,
+			String password, String reTypePassword, long[] groupIds,
+			long[] organizationIds, long[] roleIds, long[] userGroupIds,
 			ServiceContext serviceContext)
 			throws SystemException, PortalException {
 
@@ -149,7 +184,7 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 
 			if (userIdTemp > 0 && userIdTemp == employee.getMappingUserId()) {
 				mappingUser = userLocalService.updatePassword(
-						serviceContext.getUserId(), newPassWord, reTypePassWord,
+						serviceContext.getUserId(), password, reTypePassword,
 						false);
 			}
 		}
@@ -176,6 +211,9 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		mappingUser = userLocalService.updateUser(mappingUser);
 
 		// update birth date
+		Date birthDate = PortletUtil.getDate(birthDateDay, birthDateMonth,
+				birthDateYear);
+
 		Contact contact = ContactLocalServiceUtil
 				.getContact(mappingUser.getContactId());
 
@@ -235,7 +273,6 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		}
 
 	}
-
 
 	public List<Employee> getEmployees(long groupId, long mainJobPosId)
 			throws SystemException {

@@ -1,4 +1,3 @@
-
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -53,8 +52,7 @@
 	String[] employeeSections = new String[]{"general_info", "working_unit", "account_info"};
 	
 	String[][] categorySections = {employeeSections};
-	
-	
+
 %>
 
 <liferay-ui:header
@@ -66,6 +64,10 @@
 
 <portlet:renderURL var="renderWorkingUnitJobPosURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString()%>">
 	<portlet:param name="mvcPath" value='<%=templatePath + "ajax/render_workingunit_jobpos.jsp" %>'/>
+</portlet:renderURL>
+
+<portlet:renderURL var="renderJobPosByWorkingUnitIdURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString()%>">
+	<portlet:param name="mvcPath" value='<%=templatePath + "ajax/render_jobpos_by_workingunitid.jsp" %>'/>
 </portlet:renderURL>
 
 <liferay-util:buffer var="htmlTop">
@@ -111,7 +113,12 @@
 <aui:form name="fm" action="<%=updateEmployeeURL %>" method="post">
 
 	<aui:model-context bean="<%=employee %>" model="<%=Employee.class %>" />
+	<aui:input name="redirectURL" type="hidden" value="<%= backURL%>"/>
+	<aui:input name="returnURL" type="hidden" value="<%= currentURL%>"/>
 	
+	<aui:input name="<%=EmployeeDisplayTerm.GROUP_ID %>" type="hidden" value="<%= scopeGroupId%>"/>
+	<aui:input name="<%=EmployeeDisplayTerm.COMPANY_ID %>" type="hidden" value="<%= company.getCompanyId()%>"/>
+
 	<liferay-ui:form-navigator
 		backURL="<%= backURL %>"
 		categoryNames="<%= UserMgtUtil._EMPLOYESS_CATEGORY_NAMES %>"
@@ -201,15 +208,11 @@
 		var name = instance.attr('name');
 		
 		var index = name.substring(name.length -1, name.length);
-
-		console.log(index);
-		
+	
 		var jobPosBoundingBox = A.one('#<portlet:namespace/><%= EmployeeDisplayTerm.JOBPOS_ID%>' + index);
 		
-		console.log(jobPosBoundingBox);
-		
 		A.io.request(
-			'<%= renderWorkingUnitJobPosURL.toString()%>',
+			'<%= renderJobPosByWorkingUnitIdURL.toString()%>',
 			{
 			    dataType : 'json',
 			    data:{    	
@@ -222,7 +225,7 @@
 						
 						if(jobPosBoundingBox){
 							jobPosBoundingBox.empty();
-							jobPosBoundingBox.html('<option>XXX</option>');
+							jobPosBoundingBox.html(res);
 						}
 							
 					},
