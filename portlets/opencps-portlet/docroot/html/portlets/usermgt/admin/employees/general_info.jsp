@@ -21,17 +21,26 @@
 <%@page import="java.util.Date"%>
 <%@page import="org.opencps.util.PortletPropsValues"%>
 <%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
+<%@page import="org.opencps.util.WebKeys"%>
+<%@page import="org.opencps.usermgt.model.Employee"%>
 <%@ include file="../../init.jsp"%>
 
 
 <%
-	Date defaultBirthDate = DateTimeUtil.convertStringToDate("01/01/1970");
+	Employee employee = (Employee)request.getAttribute(WebKeys.EMPLOYEE_ENTRY);
+
+	Date defaultBirthDate = employee != null && employee.getBirthdate() != null ? 
+			employee.getBirthdate() : DateTimeUtil.convertStringToDate("01/01/1970");
 	PortletUtil.SplitDate spd = new PortletUtil.SplitDate(defaultBirthDate);
 %>
 
 <aui:row>
 	<aui:col width="50">
-		<aui:input name="<%=EmployeeDisplayTerm.EMPLOYEE_NO %>" type="text">
+		<aui:input 
+			name="<%=EmployeeDisplayTerm.EMPLOYEE_NO %>" 
+			type="text" 
+			value="<%=employee != null ? employee.getEmployeeNo() : StringPool.BLANK %>"
+		>
 			<aui:validator name="required"/>
 			<aui:validator name="maxLength">
 				<%=PortletPropsValues.USERMGT_EMPLOYEE_EMPLOYEENO_LENGTH %>
@@ -42,16 +51,21 @@
 </aui:row>
 <aui:row>
 	<aui:col width="50">
-		<aui:input name="<%=EmployeeDisplayTerm.FULL_NAME %>" type="text">
-				<aui:validator name="required"/>
-				<aui:validator name="maxLength">
-					<%=PortletPropsValues.USERMGT_EMPLOYEE_FULLNAME_LENGTH %>
-				</aui:validator>
+		<aui:input 
+			name="<%=EmployeeDisplayTerm.FULL_NAME %>" 
+			type="text"
+			value="<%=employee != null ? employee.getFullName() : StringPool.BLANK %>"
+		>
+			<aui:validator name="required"/>
+			<aui:validator name="maxLength">
+				<%=PortletPropsValues.USERMGT_EMPLOYEE_FULLNAME_LENGTH %>
+			</aui:validator>
 		</aui:input>
 		
 		<label class="control-label custom-lebel" for='<portlet:namespace/><%=EmployeeDisplayTerm.BIRTH_DATE %>'>
 			<liferay-ui:message key="birth-date"/>
 		</label>
+		
 		<liferay-ui:input-date
 			dayParam="<%=EmployeeDisplayTerm.BIRTH_DATE_DAY %>"
 			dayValue="<%= spd.getDayOfMoth() %>"
@@ -66,12 +80,17 @@
 		/>
 		
 		
-		<aui:input name="<%= EmployeeDisplayTerm.MOBILE%>">
+		<aui:input 
+			name="<%= EmployeeDisplayTerm.MOBILE%>"
+			type="text"
+			value="<%=employee != null && Validator.isNotNull(employee.getMobile()) ? employee.getMobile() : StringPool.BLANK %>"
+		>
 			<aui:validator name="maxLength">
 				<%=PortletPropsValues.USERMGT_EMPLOYEE_MOBILE_LENGTH%>
 			</aui:validator>
 		</aui:input>
 	</aui:col>
+	
 	<aui:col width="50">
 		<aui:select name="<%= EmployeeDisplayTerm.GENDER%>">
 			<%
@@ -79,8 +98,11 @@
 					PortletPropsValues.USERMGT_GENDER_VALUES.length > 0){
 					for(int g = 0; g < PortletPropsValues.USERMGT_GENDER_VALUES.length; g++){
 						%>
-							<aui:option value="<%= PortletPropsValues.USERMGT_GENDER_VALUES[g]%>">
-								<%= PortletUtil.getGender(g, locale)%>
+							<aui:option 
+								value="<%= PortletPropsValues.USERMGT_GENDER_VALUES[g]%>"
+								selected="<%=employee != null && employee.getGender() == PortletPropsValues.USERMGT_GENDER_VALUES[g]%>"
+							>
+								<%= PortletUtil.getGender(PortletPropsValues.USERMGT_GENDER_VALUES[g], locale)%>
 							</aui:option>
 						<%
 					}
@@ -88,7 +110,11 @@
 			%>
 		</aui:select>
 		
-		<aui:input name="<%= EmployeeDisplayTerm.EMAIL%>">
+		<aui:input 
+			name="<%= EmployeeDisplayTerm.EMAIL%>"
+			type="text"
+			value="<%=employee != null && Validator.isNotNull(employee.getEmail()) ? employee.getEmail() : StringPool.BLANK %>"
+		>
 			<aui:validator name="required"/>
 			<aui:validator name="email"/>
 			<aui:validator name="maxLength">
@@ -96,7 +122,11 @@
 			</aui:validator>
 		</aui:input>
 		
-		<aui:input name="<%= EmployeeDisplayTerm.TEL_NO%>">
+		<aui:input 
+			name="<%= EmployeeDisplayTerm.TEL_NO%>"
+			type="text"
+			value="<%=employee != null && Validator.isNotNull(employee.getTelNo()) ? employee.getTelNo() : StringPool.BLANK %>"
+		>
 			<aui:validator name="maxLength">
 				<%=PortletPropsValues.USERMGT_EMPLOYEE_TELNO_LENGTH%>
 			</aui:validator>

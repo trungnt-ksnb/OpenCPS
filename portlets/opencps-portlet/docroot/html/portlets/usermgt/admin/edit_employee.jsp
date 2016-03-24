@@ -117,6 +117,7 @@
 <aui:form name="fm" action="<%=updateEmployeeURL %>" method="post">
 
 	<aui:model-context bean="<%=employee %>" model="<%=Employee.class %>" />
+	
 	<aui:input name="redirectURL" type="hidden" value="<%= backURL%>"/>
 	<aui:input name="returnURL" type="hidden" value="<%= currentURL%>"/>
 	
