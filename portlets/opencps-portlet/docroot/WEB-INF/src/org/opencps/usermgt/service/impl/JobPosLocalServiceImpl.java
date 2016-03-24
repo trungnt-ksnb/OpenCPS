@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.opencps.usermgt.NoSuchJobPosException;
 import org.opencps.usermgt.model.JobPos;
+import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.base.JobPosLocalServiceBaseImpl;
 import org.opencps.util.PortletPropsValues;
 
@@ -70,20 +71,14 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 
 		JobPos jobPos = jobPosPersistence
 			.create(jobPosId);
+		WorkingUnit workingUnit = workingUnitPersistence
+						.findByPrimaryKey(workingUnitId);
 
 		Date currentDate = new Date();
-
 		String roleName = "";
-		if (leader == 0) {
-			roleName = "thong thuong" /*PortletPropsValues.JOBPOS_THONGTHUONG*/;
-		}
-		else if (leader == 1) {
-			roleName = "cap truong"/*PortletPropsValues.JOBPOS_CAPTRUONG*/ ;
-		}
-		else if (leader == 2) {
-			roleName =  "cap pho"/*PortletPropsValues.JOBPOS_CAPPHO*/;
-		}
-
+		
+		roleName = title + " " + workingUnit.getName();
+ 
 		Map<Locale, String> titleMap = new HashMap<Locale, String>();
 		titleMap
 			.put(Locale.US, title);
@@ -142,19 +137,13 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		Role role = RoleServiceUtil
 			.getRole(jobPos
 				.getMappingRoleId());
-
+		WorkingUnit workingUnit = workingUnitPersistence
+						.findByPrimaryKey(workingUnitId);
+		
 		Date currentDate = new Date();
-
 		String roleName = "";
-		if (leader == 0) {
-			roleName = "thong thuong" /*PortletPropsValues.JOBPOS_THONGTHUONG*/;
-		}
-		else if (leader == 1) {
-			roleName = "cap truong"/*PortletPropsValues.JOBPOS_CAPTRUONG*/ ;
-		}
-		else if (leader == 2) {
-			roleName =  "cap pho"/*PortletPropsValues.JOBPOS_CAPPHO*/;
-		}
+		
+		roleName = title + " " + workingUnit.getName();
 
 
 		jobPos
@@ -190,10 +179,18 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 	}
 
 	public void deletejobPos(long jobPosId)
-		throws NoSuchJobPosException, SystemException {
-
-		jobPosPersistence
+		throws SystemException, NoSuchJobPosException {
+		JobPos jobPos = jobPosPersistence.findByPrimaryKey(jobPosId);
+		
+		try {
+			RoleLocalServiceUtil.deleteRole(jobPos.getMappingRoleId());
+			jobPosPersistence
 			.remove(jobPosId);
+		}
+		catch (PortalException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	public int countAll()
@@ -216,6 +213,13 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		return jobPosPersistence
 			.findByWorkingUnitId(workingUnitId);
 	}
+	
+	public List<JobPos> getJobPoss(long workingUnitId, OrderByComparator odc)
+					throws SystemException {
+
+					return jobPosPersistence
+						.findByWorkingUnitId(workingUnitId);
+				}
 
 	public List<JobPos> getJobPoss(long groupId, long workingUnitId)
 		throws SystemException {

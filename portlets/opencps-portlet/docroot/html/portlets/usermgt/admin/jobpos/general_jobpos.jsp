@@ -33,13 +33,11 @@
 <%@ include file="../../init.jsp"%>
 
 <%
-	JobPos jobPos =
-	(JobPos) request.getAttribute(WebKeys.JOBPOS_ENTRY);
-	long jobposId = jobPos != null ? jobPos.getJobPosId() : 0L;
+	long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
+	System.out.println("gen_job " + workingUnitId);
+	long jobposId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
 	int[] rowIndexes = null;	
 	rowIndexes = new int[]{0};
-	System.out.println("===jobposId " + jobposId);
-	
 %>
 
 <portlet:actionURL var="addJobPosURL" name="jobPosAdd" />
@@ -55,13 +53,19 @@
 				%>
 						<aui:row>
 							<aui:column>
-								<aui:input type="text" name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>'></aui:input>
-								<aui:input type="hidden" name='<%=JobPosDisplayTerms.ID_JOBPOS + rowIndex %>'></aui:input>
+								<aui:input type="text" 
+								name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>' 
+								label="Title"/>
+								<aui:input type="hidden" 
+									name='<%=JobPosDisplayTerms.ID_JOBPOS + rowIndex %>' />
+								<aui:input name='<%="workingUnitId" + rowIndex %>' 
+									value="<%=String.valueOf(workingUnitId) %>"
+									type="hidden" />
 							</aui:column>
 							<aui:column columnWidth="30">
-								<aui:select name='<%=JobPosDisplayTerms.LEADER_JOBPOS + rowIndex%>'>
+								<aui:select name='<%=JobPosDisplayTerms.LEADER_JOBPOS + rowIndex%>'
+									label="Leader">
 									<%
-										System.out.println("===PortletPropsValues.USERMGT_JOBPOS_LEADER.length " + PortletPropsValues.USERMGT_JOBPOS_LEADER.length);
 										for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){
 											%>
 												<aui:option value="<%=PortletPropsValues.USERMGT_JOBPOS_LEADER[j] %>">

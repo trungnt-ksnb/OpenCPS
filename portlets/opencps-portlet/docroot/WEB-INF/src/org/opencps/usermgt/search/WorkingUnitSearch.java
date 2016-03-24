@@ -41,15 +41,12 @@ public class WorkingUnitSearch extends SearchContainer<WorkingUnit> {
 	static Map<String, String> orderableHeaders = new HashMap<String, String>();
 	static {
 		headerNames.add("name");
-		headerNames.add("address");
-		headerNames.add("tel-number");
-		headerNames.add("email");
-		headerNames.add("website");
+		headerNames.add("govagencycode");
 		headerNames.add("action");
 
 		orderableHeaders.put("name", WorkingUnitDisplayTerms.WORKINGUNIT_NAME);
 		orderableHeaders.put(
-			"address", WorkingUnitDisplayTerms.WORKINGUNIT_ADDRESS);
+			"govagencycode", WorkingUnitDisplayTerms.WORKINGUNIT_GOVAGENCYCODE);
 		orderableHeaders.put(
 			"tel-number", WorkingUnitDisplayTerms.WORKINGUNIT_TELNO);
 		orderableHeaders.put("email", WorkingUnitDisplayTerms.WORKINGUNIT_EMAIL);

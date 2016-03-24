@@ -20,8 +20,7 @@
 	JobPosSearchTerms searchTerms = (JobPosSearchTerms) searchContainer.getSearchTerms();
 	
 	jobPos = JobPosLocalServiceUtil.getJobPoss(
-		searchContainer.getStart(), 
-		searchContainer.getEnd(), searchContainer.getOrderByComparator());
+		workingUnitId, searchContainer.getOrderByComparator()); 
 	
 	totalCount = JobPosLocalServiceUtil.countAll();
 	total = totalCount;

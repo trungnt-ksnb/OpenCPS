@@ -42,7 +42,13 @@ public class PortletPropsKeys {
 	public static final String USERMGT_USERGROUP_NAME_CITIZEN = "opencps.usermgt.usergroup.name.citizen";
 
 	public static final String USERMGT_GENDER_VALUES = "opencps.usermgt.gender.values";
-
+	
+	public static final String JOBPOS_NOMAL = "opencps.usermgt.jobpos.nomal";
+	
+	public static final String JOBPOS_LEADER = "opencps.usermgt.jobpos.boss";
+	
+	public static final String JOBPOS_DEPUTY = "opencps.usermgt.jobpos.deputy";
+	
 	// User Management validate
 	public static final String USERMGT_EMPLOYEE_FULLNAME_LENGTH = "opencps.usermgt.employee.fullname.length";
 	public static final String USERMGT_EMPLOYEE_EMAIL_LENGTH = "opencps.usermgt.employee.email.length";

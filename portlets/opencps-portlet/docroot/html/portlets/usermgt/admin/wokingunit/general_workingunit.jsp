@@ -37,7 +37,7 @@
 	
 	try {
 		workingUnits = WorkingUnitLocalServiceUtil
-						.getWorkingUnits(QueryUtil.ALL_POS, 	QueryUtil.ALL_POS);
+						.getWorkingUnits(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 	}catch(Exception e) {
 		_log.error(e);
 		
