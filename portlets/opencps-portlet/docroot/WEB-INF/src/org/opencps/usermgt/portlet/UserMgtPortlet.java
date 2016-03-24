@@ -53,10 +53,12 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.User;
 import com.liferay.portal.model.UserGroup;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.UserGroupLocalServiceUtil;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 /**
@@ -78,53 +80,59 @@ public class UserMgtPortlet extends MVCPortlet {
 				.deleteWorkingUnitByWorkingUnitId(workingUnitId);
 	}
 
-	public void updateJobPos(ActionRequest request, ActionResponse response) throws NumberFormatException, PortalException, SystemException {
+	public void updateJobPos(ActionRequest request, ActionResponse response)
+			throws NumberFormatException, PortalException, SystemException {
 
 		String rowIndexes = request.getParameter("rowIndexes");
 		String[] indexOfRows = rowIndexes.split(",");
-		
+
 		ServiceContext serviceContext = ServiceContextFactory
-						.getInstance(request);
+				.getInstance(request);
 		for (int index = 0; index < indexOfRows.length; index++) {
-			String title = request
-					.getParameter(JobPosSearchTerms.TITLE_JOBPOS
-							+ indexOfRows[index].trim());
-			String leader = request
-					.getParameter(JobPosSearchTerms.LEADER_JOBPOS
-							+ indexOfRows[index].trim());
-			long workingUnitId = ParamUtil.getLong(request, "workingUnitId" + 0);
-			JobPosLocalServiceUtil.addJobPos(serviceContext.getUserId(), 
-				serviceContext, title, "", workingUnitId, 0, Integer.valueOf(leader));
+			String title = request.getParameter(
+					JobPosSearchTerms.TITLE_JOBPOS + indexOfRows[index].trim());
+			String leader = request.getParameter(JobPosSearchTerms.LEADER_JOBPOS
+					+ indexOfRows[index].trim());
+			long workingUnitId = ParamUtil.getLong(request,
+					"workingUnitId" + 0);
+			JobPosLocalServiceUtil.addJobPos(serviceContext.getUserId(),
+					serviceContext, title, "", workingUnitId, 0,
+					Integer.valueOf(leader));
 		}
-		
+
 	}
-	
-	public void editJobPos(ActionRequest request, ActionResponse response) throws PortalException, SystemException {
-		long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
-		
-		int leader = ParamUtil.getInteger(request, 
-			JobPosDisplayTerms.LEADER_JOBPOS);
-		String title = ParamUtil.getString(request, JobPosDisplayTerms.TITLE_JOBPOS);
+
+	public void editJobPos(ActionRequest request, ActionResponse response)
+			throws PortalException, SystemException {
+		long jobPosId = ParamUtil.getLong(request,
+				JobPosDisplayTerms.ID_JOBPOS);
+
+		int leader = ParamUtil.getInteger(request,
+				JobPosDisplayTerms.LEADER_JOBPOS);
+		String title = ParamUtil.getString(request,
+				JobPosDisplayTerms.TITLE_JOBPOS);
 		ServiceContext serviceContext = ServiceContextFactory
-						.getInstance(request);
+				.getInstance(request);
 		JobPos jobPos = null;
-		if(jobPosId > 0) {
+		if (jobPosId > 0) {
 			jobPos = JobPosLocalServiceUtil.fetchJobPos(jobPosId);
-			jobPos = JobPosLocalServiceUtil.updateJobPos(jobPosId, 
-				serviceContext.getUserId(), serviceContext, title, 
-				"", jobPos.getWorkingUnitId(), 0, leader);
+			jobPos = JobPosLocalServiceUtil.updateJobPos(jobPosId,
+					serviceContext.getUserId(), serviceContext, title, "",
+					jobPos.getWorkingUnitId(), 0, leader);
 		} else {
 			SessionErrors.add(request, "UPDATE_JOBPOS_ERROR");
 		}
 	}
 
-	public void deleteJobPos(ActionRequest request, ActionResponse response) throws NoSuchJobPosException, SystemException {
-		long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
-		if(jobPosId > 0) {
+	public void deleteJobPos(ActionRequest request, ActionResponse response)
+			throws NoSuchJobPosException, SystemException {
+		long jobPosId = ParamUtil.getLong(request,
+				JobPosDisplayTerms.ID_JOBPOS);
+		if (jobPosId > 0) {
 			JobPosLocalServiceUtil.deletejobPos(jobPosId);;
 		}
 	}
-	
+
 	public void updateEmployee(ActionRequest actionRequest,
 			ActionResponse actionResponse) throws IOException {
 
@@ -288,7 +296,7 @@ public class UserMgtPortlet extends MVCPortlet {
 		}
 
 	}
-	
+
 	@Override
 	public void render(RenderRequest renderRequest,
 			RenderResponse renderResponse)
@@ -312,6 +320,39 @@ public class UserMgtPortlet extends MVCPortlet {
 				Employee employee = EmployeeLocalServiceUtil
 						.getEmployee(employeeId);
 
+				if (employee != null) {
+					long mappingUserId = employee.getMappingUserId();
+
+					if (mappingUserId > 0) {
+						User mappingUser = UserLocalServiceUtil
+								.getUser(mappingUserId);
+
+						renderRequest.setAttribute(WebKeys.USER_MAPPING_ENTRY,
+								mappingUser);
+					}
+
+					long mappingWorkingUnitId = employee.getWorkingUnitId();
+
+					if (mappingWorkingUnitId > 0) {
+						WorkingUnit mappingWorkingUnit = WorkingUnitLocalServiceUtil
+								.getWorkingUnit(mappingWorkingUnitId);
+
+						renderRequest.setAttribute(
+								WebKeys.WORKING_UNIT_MAPPING_ENTRY,
+								mappingWorkingUnit);
+
+					}
+
+					long mainJobPosId = employee.getMainJobPosId();
+
+					if (mainJobPosId > 0) {
+						JobPos mainJobPos = JobPosLocalServiceUtil
+								.getJobPos(mainJobPosId);
+						renderRequest.setAttribute(WebKeys.MAIN_JOB_POS_ENTRY,
+								mainJobPos);
+					}
+				}
+
 				renderRequest.setAttribute(WebKeys.EMPLOYEE_ENTRY, employee);
 			}
 		} catch (Exception e) {
@@ -321,6 +362,4 @@ public class UserMgtPortlet extends MVCPortlet {
 		super.render(renderRequest, renderResponse);
 	}
 
-	
-	
 }
