@@ -34,7 +34,6 @@
 
 <%
 	long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
-	System.out.println("gen_job " + workingUnitId);
 	long jobposId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
 	int[] rowIndexes = null;	
 	rowIndexes = new int[]{0};
