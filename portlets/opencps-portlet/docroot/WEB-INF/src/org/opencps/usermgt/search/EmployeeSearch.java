@@ -25,8 +25,8 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 
-import org.opencps.datamgt.util.DataMgtUtil;
 import org.opencps.usermgt.model.Employee;
+import org.opencps.usermgt.util.UserMgtUtil;
 
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.log.Log;
@@ -51,10 +51,10 @@ public class EmployeeSearch extends SearchContainer<Employee> {
 		headerNames.add("working-unit-status");
 		headerNames.add("action");
 
-		orderableHeaders.put("employee-no", EmployeeDisplayTerm.EMPLOYEE_NO);
+		/*orderableHeaders.put("employee-no", EmployeeDisplayTerm.EMPLOYEE_NO);*/
 		orderableHeaders.put("full-name", EmployeeDisplayTerm.FULL_NAME);
-		orderableHeaders.put("working-unit-id",
-				EmployeeDisplayTerm.WORKING_UNIT_ID);
+		/*orderableHeaders.put("working-unit-id",
+				EmployeeDisplayTerm.WORKING_UNIT_ID);*/
 		orderableHeaders.put("working-unit-status",
 				EmployeeDisplayTerm.WORKING_STATUS);
 
@@ -86,9 +86,8 @@ public class EmployeeSearch extends SearchContainer<Employee> {
 			String orderByType = ParamUtil.getString(portletRequest,
 					"orderByType");
 
-			OrderByComparator orderByComparator = DataMgtUtil
-					.getDictCollectionOrderByComparator(orderByCol,
-							orderByType);
+			OrderByComparator orderByComparator = UserMgtUtil
+					.getEmployeeOrderByComparator(orderByCol, orderByType);
 
 			setOrderableHeaders(orderableHeaders);
 			setOrderByCol(orderByCol);

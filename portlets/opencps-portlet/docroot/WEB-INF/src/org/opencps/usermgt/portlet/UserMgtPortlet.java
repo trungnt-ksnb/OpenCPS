@@ -121,9 +121,7 @@ public class UserMgtPortlet extends MVCPortlet {
 	public void deleteJobPos(ActionRequest request, ActionResponse response) throws NoSuchJobPosException, SystemException {
 		long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
 		if(jobPosId > 0) {
-			JobPosLocalServiceUtil.deletejobPos(jobPosId);
-		} else {
-			SessionErrors.add(request, "DELETE_JOBPOS_ERROR");
+			JobPosLocalServiceUtil.deletejobPos(jobPosId);;
 		}
 	}
 	
