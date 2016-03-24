@@ -1,4 +1,3 @@
-<%@page import="com.liferay.portal.kernel.dao.search.SearchContainer"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -17,7 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  */
 %>
-<%@ include file="../../init.jsp"%>
 <%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
 <%@page import="com.liferay.portal.kernel.dao.orm.QueryUtil"%>
 <%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
@@ -27,18 +25,18 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="org.opencps.usermgt.model.WorkingUnit"%>
+<%@page import="com.liferay.portal.kernel.dao.search.SearchContainer"%>
+<%@ include file="../../init.jsp"%>
 
 <%	
-	WorkingUnit workingUnit =
-	(WorkingUnit) request.getAttribute(WebKeys.WORKING_UNIT_ENTRY);
+	WorkingUnit workingUnit = (WorkingUnit) request.getAttribute(WebKeys.WORKING_UNIT_ENTRY);
 
 	long workingUnitId = workingUnit != null ? workingUnit.getWorkingunitId() : 0L;
 	
 	List<WorkingUnit> workingUnits = new ArrayList<WorkingUnit>();
 	
 	try {
-		workingUnits = WorkingUnitLocalServiceUtil
-						.getWorkingUnits(scopeGroupId);
+		workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnits(scopeGroupId);
 	}catch(Exception e) {
 		_log.error(e);
 		
@@ -46,9 +44,11 @@
 	
 %>
 <aui:model-context bean="<%=workingUnit%>" model="<%=WorkingUnit.class%>" />
+
 <aui:row>
 	<aui:select name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_PARENTWORKINGUNITID%>">
-		<aui:option value="<%=0%>">root</aui:option>
+		<aui:option value="<%=0%>"><liferay-ui:message key="root"/></aui:option>
+		
 		<%
 			for(WorkingUnit unit : workingUnits) {
 				%>
@@ -61,21 +61,22 @@
 		%>
 		
 	</aui:select>
+	
 	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_NAME%>">
 		<aui:validator name="required" />
 	</aui:input>
+	
 	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME%>" />
-	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER%>" 
+	
+	<aui:input 
+		name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER%>" 
 		type="checkbox"
-		checked="true">
-	</aui:input>
+		checked="true"
+	/>
 		
 	<div id="<portlet:namespace/>workingUnitGovAgencyCodeContainer">
-			<aui:input
-				name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_GOVAGENCYCODE%>">
-			</aui:input>
+		<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_GOVAGENCYCODE%>"/>
 	</div>
-			
 	
 </aui:row>
 
