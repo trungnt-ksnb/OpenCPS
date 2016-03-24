@@ -51,7 +51,7 @@
 						int rowIndex = rowIndexes[row];
 				%>
 						<aui:row>
-							<aui:column>
+							<aui:col>
 								<aui:input type="text" 
 								name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>' 
 								label="Title">
@@ -62,8 +62,8 @@
 								<aui:input name='<%="workingUnitId" + rowIndex %>' 
 									value="<%=String.valueOf(workingUnitId) %>"
 									type="hidden" />
-							</aui:column>
-							<aui:column columnWidth="30">
+							</aui:col>
+							<aui:col colWidth="30">
 								<aui:select name='<%=JobPosDisplayTerms.LEADER_JOBPOS + rowIndex%>'
 									label="Leader">
 									<%
@@ -77,7 +77,7 @@
 									%>
 								</aui:select>
 								<aui:input type="hidden" name ="rowIndexes" value="<%=StringUtil.merge(rowIndexes) %>"></aui:input>
-							</aui:column>
+							</aui:col>
 						</aui:row>
 				<%
 					}

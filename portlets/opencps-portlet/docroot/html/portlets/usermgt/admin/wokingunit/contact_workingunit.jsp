@@ -37,32 +37,32 @@ long workingUnitId = workingUnit != null ? workingUnit.getWorkingunitId() : 0L;
 	</datamgt:ddr>
 	
 	<aui:row>
-		<aui:column>
+		<aui:col>
 			<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_TELNO%>" >
 				<aui:validator name="minLength">10</aui:validator>
 				<aui:validator name="number"></aui:validator>
 			</aui:input>
-		</aui:column>
-		<aui:column>
+		</aui:col>
+		<aui:col>
 			<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_FAXNO%>" >
 				<aui:validator name="minLength">10</aui:validator>
 				<aui:validator name="number"></aui:validator>
 			</aui:input>
-		</aui:column>
+		</aui:col>
 	</aui:row>
 	
 	<aui:row>
-		<aui:column>
+		<aui:col>
 			<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_EMAIL%>" >
 				<aui:validator name="email"/>
 				<aui:validator name="required"></aui:validator>
 			</aui:input>
-		</aui:column>
-		<aui:column>
+		</aui:col>
+		<aui:col>
 			<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_WEBSITE%>" >
 				<aui:validator name="url"/>
 			</aui:input>
-		</aui:column>
+		</aui:col>
 	</aui:row>
 	
 </aui:row>
