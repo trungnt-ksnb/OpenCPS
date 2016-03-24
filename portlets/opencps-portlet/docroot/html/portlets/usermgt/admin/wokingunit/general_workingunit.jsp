@@ -60,8 +60,10 @@
 		%>
 	
 	</aui:select>
-	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_NAME%>"></aui:input>
-	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME%>"></aui:input>
+	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_NAME%>">
+		<aui:validator name="required" />
+	</aui:input>
+	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME%>" />
 	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER%>" 
 		type="checkbox"
 		checked="true">
