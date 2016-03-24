@@ -186,11 +186,8 @@ public class WorkingUnitLocalServiceImpl
 		}
 
 		Date currentDate = new Date();
-		String treeIndex =
-						getTreeIndex(workingUnitId, parentWorkingUnitId, sibling);
 		workingUnit.setCreateDate(currentDate);
 		workingUnit.setModifiedDate(currentDate);
-		workingUnit.setTreeIndex(treeIndex);
 		workingUnit.setSibling(sibling);
 		workingUnit.setUserId(userId);
 		workingUnit.setCompanyId(serviceContext.getCompanyId());
@@ -325,5 +322,6 @@ public class WorkingUnitLocalServiceImpl
 
 		return workingUnitPersistence.findByGroupId(groupId);
 	}
+	
 	private Log _log = LogFactoryUtil.getLog(WorkingUnitLocalServiceImpl.class);
 }

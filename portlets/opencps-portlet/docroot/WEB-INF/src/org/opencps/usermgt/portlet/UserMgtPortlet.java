@@ -93,7 +93,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			long workingUnitId = ParamUtil.getLong(request,
 					"workingUnitId" + 0);
 			JobPosLocalServiceUtil.addJobPos(serviceContext.getUserId(),
-					serviceContext, title, "", workingUnitId, 0,
+					serviceContext, title, "", workingUnitId,
 					Integer.valueOf(leader));
 		}
 
@@ -115,7 +115,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			jobPos = JobPosLocalServiceUtil.fetchJobPos(jobPosId);
 			jobPos = JobPosLocalServiceUtil.updateJobPos(jobPosId,
 					serviceContext.getUserId(), serviceContext, title, "",
-					jobPos.getWorkingUnitId(), 0, leader);
+					jobPos.getWorkingUnitId(), leader);
 		} else {
 			SessionErrors.add(request, "UPDATE_JOBPOS_ERROR");
 		}

@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.opencps.usermgt.NoSuchJobPosException;
+import org.opencps.usermgt.NoSuchWorkingUnitException;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.base.JobPosLocalServiceBaseImpl;
@@ -32,6 +33,8 @@ import org.opencps.util.PortletPropsValues;
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.RoleConstants;
@@ -61,8 +64,7 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 	 */
 	public JobPos addJobPos(
 		long userId, ServiceContext serviceContext, String title,
-		String description, long workingUnitId, long directWorkingUnitId,
-		int leader)
+		String description, long workingUnitId, int leader)
 		throws SystemException, PortalException {
 
 		long jobPosId = CounterLocalServiceUtil
@@ -86,8 +88,9 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		Map<Locale, String> descriptionMap = new HashMap<Locale, String>();
 		descriptionMap
 			.put(Locale.US, description);
-
-		// ?
+		
+		long directWorkingUnitId = getDirectWorkingUnitId(
+			workingUnitId).getWorkingunitId();
 		Role role = RoleLocalServiceUtil
 			.addRole(userId, Role.class
 				.getName(), serviceContext
@@ -127,8 +130,7 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 
 	public JobPos updateJobPos(
 		long jobPosId, long userId, ServiceContext serviceContext, String title,
-		String description, long workingUnitId, long directWorkingUnitId,
-		int leader)
+		String description, long workingUnitId, int leader)
 		throws SystemException, PortalException {
 
 		JobPos jobPos = jobPosPersistence
@@ -140,10 +142,13 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		WorkingUnit workingUnit = workingUnitPersistence
 						.findByPrimaryKey(workingUnitId);
 		
+		long directWorkingUnitId = getDirectWorkingUnitId(
+			workingUnitId).getWorkingunitId();
 		Date currentDate = new Date();
 		String roleName = "";
 		
 		roleName = title + " " + workingUnit.getName();
+		
 
 
 		jobPos
@@ -250,4 +255,17 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		jobPosPersistence
 			.addEmployees(jobPosId, employeeId);
 	}
+	
+	private WorkingUnit getDirectWorkingUnitId(long parentWorkingUnitId) 
+					throws NoSuchWorkingUnitException, SystemException {
+		WorkingUnit workingUnit = workingUnitPersistence
+						.findByPrimaryKey(parentWorkingUnitId);
+		if(workingUnit.getIsEmployer() == true) {
+			return workingUnit;
+		} else {
+			return getDirectWorkingUnitId(workingUnit.getParentWorkingUnitId());
+		}
+	}
+	
+	private Log _log = LogFactoryUtil.getLog(JobPosLocalServiceImpl.class);
 }
