@@ -53,13 +53,18 @@
 				%>
 						<aui:row>
 							<aui:column>
-								<aui:input type="text" name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>' />
-								<aui:input type="hidden" name='<%=JobPosDisplayTerms.ID_JOBPOS + rowIndex %>' />
-								<aui:input name='<%="workingUnitId" + rowIndex %>' value="<%=String.valueOf(workingUnitId) %>"
+								<aui:input type="text" 
+								name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>' 
+								label="Title"/>
+								<aui:input type="hidden" 
+									name='<%=JobPosDisplayTerms.ID_JOBPOS + rowIndex %>' />
+								<aui:input name='<%="workingUnitId" + rowIndex %>' 
+									value="<%=String.valueOf(workingUnitId) %>"
 									type="hidden" />
 							</aui:column>
 							<aui:column columnWidth="30">
-								<aui:select name='<%=JobPosDisplayTerms.LEADER_JOBPOS + rowIndex%>'>
+								<aui:select name='<%=JobPosDisplayTerms.LEADER_JOBPOS + rowIndex%>'
+									label="Leader">
 									<%
 										for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){
 											%>

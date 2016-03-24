@@ -45,7 +45,6 @@
 	<aui:input name="<%=JobPosDisplayTerms.TITLE_JOBPOS %>"></aui:input>
 	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" type="hidden" />
 	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" type="hidden" />
-		type="hidden" />
 	<aui:select name="<%=JobPosDisplayTerms.LEADER_JOBPOS %>">
 		<%
 			for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){

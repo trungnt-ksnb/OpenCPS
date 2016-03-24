@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.opencps.usermgt.NoSuchJobPosException;
 import org.opencps.usermgt.model.JobPos;
+import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.base.JobPosLocalServiceBaseImpl;
 import org.opencps.util.PortletPropsValues;
 
@@ -70,22 +71,14 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 
 		JobPos jobPos = jobPosPersistence
 			.create(jobPosId);
+		WorkingUnit workingUnit = workingUnitPersistence
+						.findByPrimaryKey(workingUnitId);
 
 		Date currentDate = new Date();
-
 		String roleName = "";
-		for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){
-			if (leader == 0) {
-				roleName = PortletPropsValues.USERMGT_JOBPOS_NOMAL;
-			}
-			else if (leader == 1) {
-				roleName = PortletPropsValues.USERMGT_JOBPOS_BOSS ;
-			}
-			else if (leader == 2) {
-				roleName =  PortletPropsValues.USERMGT_JOBPOS_DEPUTY;
-			}
-		}
-
+		
+		roleName = title + " " + workingUnit.getName();
+ 
 		Map<Locale, String> titleMap = new HashMap<Locale, String>();
 		titleMap
 			.put(Locale.US, title);
@@ -144,22 +137,13 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		Role role = RoleServiceUtil
 			.getRole(jobPos
 				.getMappingRoleId());
-
-		Date currentDate = new Date();
-
-		String roleName = "";
-		for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){
-			if (leader == 0) {
-				roleName = PortletPropsValues.USERMGT_JOBPOS_NOMAL;
-			}
-			else if (leader == 1) {
-				roleName = PortletPropsValues.USERMGT_JOBPOS_BOSS ;
-			}
-			else if (leader == 2) {
-				roleName =  PortletPropsValues.USERMGT_JOBPOS_DEPUTY;
-			}
-		}
+		WorkingUnit workingUnit = workingUnitPersistence
+						.findByPrimaryKey(workingUnitId);
 		
+		Date currentDate = new Date();
+		String roleName = "";
+		
+		roleName = title + " " + workingUnit.getName();
 
 
 		jobPos
