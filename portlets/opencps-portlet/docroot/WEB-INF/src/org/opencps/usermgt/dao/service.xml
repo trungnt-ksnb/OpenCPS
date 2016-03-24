@@ -49,7 +49,6 @@
 		</order>
 		
 		<!-- Finder methods -->
-		
 		<finder name="G_E" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="isEmployer" />
