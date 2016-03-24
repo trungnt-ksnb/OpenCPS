@@ -25,7 +25,6 @@ import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.base.WorkingUnitLocalServiceBaseImpl;
-import org.opencps.usermgt.util.UserMgtUtil;
 
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -71,9 +70,15 @@ public class WorkingUnitLocalServiceImpl
 			String faxNo, String email, String website, boolean isEmployer,
 			long managerWorkingUnitId) throws SystemException, PortalException {
 
-		int sibling = 0;
+		long workingUnitId = CounterLocalServiceUtil
+				.increment(WorkingUnit.class.getName());
+		WorkingUnit workingUnit = workingUnitPersistence.create(workingUnitId);
+
+		int sibling = workingUnitLocalService
+				.getMaxSibling(serviceContext.getScopeGroupId()) + 1;
 
 		Organization org = null;
+
 		if (parentWorkingUnitId == 0) {
 			org = OrganizationLocalServiceUtil.addOrganization(userId,
 					OrganizationConstants.DEFAULT_PARENT_ORGANIZATION_ID, name,
@@ -93,20 +98,6 @@ public class WorkingUnitLocalServiceImpl
 		long mappingOrganisationId = org.getOrganizationId();
 
 		Date currentDate = new Date();
-		if (getWorkingUnitsByGroupId(serviceContext.getScopeGroupId(), 
-			UserMgtUtil
-				.getWorkingUnitOrderByComparator("sibling", "desc")) == null) {
-			sibling = 1;
-		} else {
-			sibling = getWorkingUnitsByGroupId(serviceContext.getScopeGroupId(), 
-				UserMgtUtil.getWorkingUnitOrderByComparator("sibling", "desc"))
-					.getSibling() + 1;
-		}
-
-		long workingUnitId = CounterLocalServiceUtil
-				.increment(WorkingUnit.class.getName());
-
-		WorkingUnit workingUnit = workingUnitPersistence.create(workingUnitId);
 
 		String treeIndex = getTreeIndex(workingUnitId, parentWorkingUnitId,
 				sibling);
@@ -133,8 +124,96 @@ public class WorkingUnitLocalServiceImpl
 		workingUnit.setIsEmployer(isEmployer);
 		workingUnit.setMappingOrganisationId(mappingOrganisationId);
 		workingUnit.setManagerWorkingUnitId(managerWorkingUnitId);
+
 		return workingUnitPersistence.update(workingUnit);
 
+	}
+
+	public int countAll() throws SystemException {
+
+		return workingUnitPersistence.countAll();
+	}
+
+	public void deleteWorkingUnitByWorkingUnitId(long workingUnitId)
+			throws NoSuchWorkingUnitException, SystemException {
+
+		List<Employee> employees = employeePersistence
+				.findByWorkingUnitId(workingUnitId);
+		List<JobPos> jobPos = jobPosPersistence
+				.findByWorkingUnitId(workingUnitId);
+		if (employees.isEmpty() && jobPos.isEmpty()) {
+			WorkingUnit unit = workingUnitPersistence
+					.findByPrimaryKey(workingUnitId);
+			try {
+				OrganizationLocalServiceUtil
+						.deleteOrganization(unit.getMappingOrganisationId());
+			} catch (Exception e) {
+
+			}
+
+			workingUnitPersistence.remove(workingUnitId);
+		}
+	}
+
+	public int getMaxSibling(long groupId) {
+		return workingUnitFinder.findMaxSibling(groupId);
+	}
+
+	protected String getTreeIndex(long workingunitId, long parentWorkingUnitId,
+			int sibling) throws NoSuchWorkingUnitException, SystemException {
+
+		if (parentWorkingUnitId == 0) {
+			return String.valueOf(sibling);
+		} else if (parentWorkingUnitId > 0) {
+			WorkingUnit workingUnit = workingUnitPersistence
+					.findByPrimaryKey(parentWorkingUnitId);
+			return workingUnit.getTreeIndex() + StringPool.PERIOD
+					+ String.valueOf(workingunitId);
+		} else {
+			throw new NoSuchWorkingUnitException();
+		}
+	}
+
+	public List<WorkingUnit> getWorkingUnit(int start, int end,
+			OrderByComparator odc) throws SystemException {
+
+		return workingUnitPersistence.findAll(start, end, odc);
+	}
+
+	public List<WorkingUnit> getWorkingUnit(long groupId, boolean isEmployee)
+			throws SystemException {
+
+		return workingUnitPersistence.findByG_E(groupId, isEmployee);
+	}
+
+	public List<WorkingUnit> getWorkingUnit(long groupId, boolean isEmployee,
+			long parentWorkingUnitId) throws SystemException {
+
+		return workingUnitPersistence.findByG_E_P(groupId, isEmployee,
+				parentWorkingUnitId);
+	}
+
+	public List<WorkingUnit> getWorkingUnits(long groupId,
+			long parentWorkingUnitId) throws SystemException {
+		return workingUnitPersistence.findByG_P(groupId, parentWorkingUnitId);
+	}
+
+	public WorkingUnit getWorkingUnitsByGroupId(long groupId, int start,
+			int end, OrderByComparator orderByComparator)
+			throws NoSuchWorkingUnitException, SystemException {
+		WorkingUnit workingUnit = null;
+		List<WorkingUnit> workingUnits = workingUnitPersistence
+				.findByGroupId(groupId, start, end, orderByComparator);
+		if (workingUnits != null && !workingUnits.isEmpty()) {
+			workingUnit = workingUnits.get(0);
+		}
+		return workingUnit;
+	}
+
+	public void mapMultipleJobPosWorkingUnitToOneWorkingUnit(long workingUnitId,
+			long[] jobPosIds) throws SystemException {
+
+		workingUnitPersistence.addJobPoses(workingUnitId, jobPosIds);
 	}
 
 	public WorkingUnit updateWorkingUnit(long workingUnitId, long userId,
@@ -186,92 +265,4 @@ public class WorkingUnitLocalServiceImpl
 		return workingUnitPersistence.update(workingUnit);
 	}
 
-	public void deleteWorkingUnitByWorkingUnitId(long workingUnitId)
-			throws NoSuchWorkingUnitException, SystemException {
-
-		List<Employee> employees = employeePersistence
-				.findByWorkingUnitId(workingUnitId);
-		List<JobPos> jobPos = jobPosPersistence
-				.findByWorkingUnitId(workingUnitId);
-		if (employees.isEmpty() && jobPos.isEmpty()) {
-			WorkingUnit unit = workingUnitPersistence
-					.findByPrimaryKey(workingUnitId);
-			try {
-				OrganizationLocalServiceUtil
-						.deleteOrganization(unit.getMappingOrganisationId());
-			} catch (Exception e) {
-
-			}
-
-			workingUnitPersistence.remove(workingUnitId);
-		}
-	}
-
-	public int countAll() throws SystemException {
-
-		return workingUnitPersistence.countAll();
-	}
-
-	public List<WorkingUnit> getWorkingUnit(int start, int end,
-			OrderByComparator odc) throws SystemException {
-
-		return workingUnitPersistence.findAll(start, end, odc);
-	}
-
-	protected String getTreeIndex(long workingunitId, long parentWorkingUnitId,
-			int sibling) throws NoSuchWorkingUnitException, SystemException {
-
-		if (parentWorkingUnitId == 0) {
-			return String.valueOf(sibling);
-		} else if (parentWorkingUnitId > 0) {
-			WorkingUnit workingUnit = workingUnitPersistence
-					.findByPrimaryKey(parentWorkingUnitId);
-			return workingUnit.getTreeIndex() + StringPool.PERIOD
-					+ String.valueOf(workingunitId);
-		} else {
-			throw new NoSuchWorkingUnitException();
-		}
-	}
-
-	public List<WorkingUnit> getWorkingUnit(long groupId, boolean isEmployee,
-			long parentWorkingUnitId) throws SystemException {
-
-		return workingUnitPersistence.findByG_E_P(groupId, isEmployee,
-				parentWorkingUnitId);
-	}
-
-	public List<WorkingUnit> getWorkingUnit(long groupId, boolean isEmployee)
-			throws SystemException {
-
-		return workingUnitPersistence.findByG_E(groupId, isEmployee);
-	}
-
-	public List<WorkingUnit> getWorkingUnits(long groupId,
-			long parentWorkingUnitId) throws SystemException {
-		return workingUnitPersistence.findByG_P(groupId, parentWorkingUnitId);
-	}
-
-	public void mapMultipleJobPosWorkingUnitToOneWorkingUnit(long workingUnitId,
-			long[] jobPosIds) throws SystemException {
-
-		workingUnitPersistence.addJobPoses(workingUnitId, jobPosIds);
-	}
-
-	public WorkingUnit getWorkingUnitsByGroupId(long groupId,
-			OrderByComparator orderByComparator)
-			throws NoSuchWorkingUnitException, SystemException {
-		return workingUnitPersistence.findByGroupId_First(groupId,
-				orderByComparator);
-	}
-
-	public int getNextSibling(List<WorkingUnit> workingUnits) {
-
-		int MAX = 0;
-		for (WorkingUnit workingUnit : workingUnits) {
-			if (MAX <= workingUnit.getSibling()) {
-				MAX = workingUnit.getSibling();
-			}
-		}
-		return MAX + 1;
-	}
 }
