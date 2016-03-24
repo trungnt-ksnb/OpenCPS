@@ -1,3 +1,4 @@
+<%@page import="com.liferay.portal.kernel.dao.search.SearchContainer"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -37,7 +38,7 @@
 	
 	try {
 		workingUnits = WorkingUnitLocalServiceUtil
-						.getWorkingUnits(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+						.getWorkingUnits(scopeGroupId);
 	}catch(Exception e) {
 		_log.error(e);
 		
@@ -75,7 +76,7 @@
 	
 </aui:row>
 
-<aui:script>
+<aui:script> 
 	AUI().ready(function(A){
 		var isEmployerCheckBox = A.one('#<portlet:namespace/>isEmployerCheckbox');
 		

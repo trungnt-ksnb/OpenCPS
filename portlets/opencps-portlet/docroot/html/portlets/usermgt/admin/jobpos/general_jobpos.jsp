@@ -55,7 +55,9 @@
 							<aui:column>
 								<aui:input type="text" 
 								name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>' 
-								label="Title"/>
+								label="Title">
+									<aui:validator name="required"></aui:validator>
+								</aui:input>
 								<aui:input type="hidden" 
 									name='<%=JobPosDisplayTerms.ID_JOBPOS + rowIndex %>' />
 								<aui:input name='<%="workingUnitId" + rowIndex %>' 

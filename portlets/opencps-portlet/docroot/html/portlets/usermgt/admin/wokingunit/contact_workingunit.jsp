@@ -40,11 +40,13 @@ long workingUnitId = workingUnit != null ? workingUnit.getWorkingunitId() : 0L;
 		<aui:column>
 			<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_TELNO%>" >
 				<aui:validator name="minLength">10</aui:validator>
+				<aui:validator name="number"></aui:validator>
 			</aui:input>
 		</aui:column>
 		<aui:column>
 			<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_FAXNO%>" >
 				<aui:validator name="minLength">10</aui:validator>
+				<aui:validator name="number"></aui:validator>
 			</aui:input>
 		</aui:column>
 	</aui:row>
@@ -53,6 +55,7 @@ long workingUnitId = workingUnit != null ? workingUnit.getWorkingunitId() : 0L;
 		<aui:column>
 			<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_EMAIL%>" >
 				<aui:validator name="email"/>
+				<aui:validator name="required"></aui:validator>
 			</aui:input>
 		</aui:column>
 		<aui:column>
