@@ -1,11 +1,3 @@
-
-<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
-<%@page import="com.liferay.portal.kernel.log.Log"%>
-<%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
-<%@page import="java.util.List"%>
-<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -27,6 +19,13 @@
 <%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
 <%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%@page import="javax.portlet.PortletURL"%>
+<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.log.Log"%>
+<%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
+<%@page import="java.util.List"%>
+<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@ include file="../init.jsp"%>
 
 <%
@@ -68,32 +67,42 @@
 		
 		<aui:row>
 			<aui:form action="<%= searchURL %>" method="post" name="fm">
-				<div class="toolbar_search_input">
+				<aui:row>
+					<aui:col width="30">
+						<aui:input 
+							id="keywords1" 
+							name="keywords" 
+							label=""
+							placeholder='<%= LanguageUtil.get(locale, "full-name") %>' 
+							type="text"
+						/>
+					</aui:col>
 					
-					<%
-						searchURL.setParameter(EmployeeDisplayTerm.WORKING_UNIT_ID, String.valueOf(workingUnitId));
-					%>
-					<aui:select name="<%=EmployeeDisplayTerm.WORKING_UNIT_ID %>" label="">
-						<aui:option value="0"></aui:option>
-					<%
-						if(workingUnits != null){
-							for(WorkingUnit workingUnit : workingUnits){
-								%>
-									<aui:option value="<%=workingUnit.getWorkingunitId() %>" selected="<%=workingUnitId == workingUnit.getWorkingunitId()%>">
-										<%=workingUnit.getName() %>
-									</aui:option>
-								<%
-							}
-						}
-					%>
-					</aui:select> 
+					<aui:col width="30">
+						<%
+							searchURL.setParameter(EmployeeDisplayTerm.WORKING_UNIT_ID, String.valueOf(workingUnitId));
+						%>
+						<aui:select name="<%=EmployeeDisplayTerm.WORKING_UNIT_ID %>" label="">
+							<aui:option value="0"></aui:option>
+							<%
+								if(workingUnits != null){
+									for(WorkingUnit workingUnit : workingUnits){
+										%>
+											<aui:option value="<%=workingUnit.getWorkingunitId() %>" selected="<%=workingUnitId == workingUnit.getWorkingunitId()%>">
+												<%=workingUnit.getName() %>
+											</aui:option>
+										<%
+									}
+								}
+							%>
+						</aui:select> 
+					</aui:col>
 					
-					<liferay-ui:input-search 
-						id="keywords1" 
-						name="keywords" 
-						placeholder='<%= LanguageUtil.get(locale, "fullname") %>' 
-					/>
-				</div>
+					<aui:col width="30">
+						<aui:input name="search" type="submit" value="search" label="" 
+							cssClass="opencps usermgt toolbar search-btn"/>
+					</aui:col>
+				</aui:row>
 			</aui:form>
 		</aui:row>
 		<aui:row>
