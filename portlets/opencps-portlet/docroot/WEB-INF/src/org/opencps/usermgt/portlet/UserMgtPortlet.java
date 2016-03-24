@@ -67,9 +67,6 @@ import com.liferay.util.bridges.mvc.MVCPortlet;
 
 public class UserMgtPortlet extends MVCPortlet {
 
-	private Log _log = LogFactoryUtil
-			.getLog(UserMgtEditProfilePortlet.class.getName());
-
 	public void deleteWorkingUnit(ActionRequest request,
 			ActionResponse response)
 			throws NoSuchWorkingUnitException, SystemException {
@@ -278,7 +275,6 @@ public class UserMgtPortlet extends MVCPortlet {
 				WorkingUnitDisplayTerms.WORKINGUNIT_WARDCODE);
 		ServiceContext serviceContext = ServiceContextFactory
 				.getInstance(request);
-
 		if (workingUnitId == 0) {
 			WorkingUnitLocalServiceUtil.addWorkingUnit(
 					serviceContext.getUserId(), serviceContext, name, enName,
@@ -361,5 +357,6 @@ public class UserMgtPortlet extends MVCPortlet {
 
 		super.render(renderRequest, renderResponse);
 	}
-
+	private Log _log = LogFactoryUtil
+					.getLog(UserMgtEditProfilePortlet.class.getName());
 }

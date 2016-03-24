@@ -29,6 +29,8 @@ import org.opencps.usermgt.service.base.WorkingUnitLocalServiceBaseImpl;
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.ListTypeConstants;
@@ -152,7 +154,20 @@ public class WorkingUnitLocalServiceImpl
 
 		WorkingUnit workingUnit =
 			workingUnitPersistence.findByPrimaryKey(workingUnitId);
-
+		int sibling = 0;
+		
+		if(workingUnitPersistence.countAll() == 0) {
+			sibling = 1;
+		} else {
+			if(parentWorkingUnitId != 0) {
+				sibling = workingUnitPersistence
+							.findByPrimaryKey(parentWorkingUnitId).getSibling();
+			} else {
+				sibling = workingUnitLocalService
+								.getMaxSibling(serviceContext.getScopeGroupId()) + 1;
+			}
+		}
+		
 		Organization org = null;
 		long mappingOrganisationId = 0;
 		if (parentWorkingUnitId == 0) {
@@ -171,9 +186,12 @@ public class WorkingUnitLocalServiceImpl
 		}
 
 		Date currentDate = new Date();
-		
+		String treeIndex =
+						getTreeIndex(workingUnitId, parentWorkingUnitId, sibling);
 		workingUnit.setCreateDate(currentDate);
 		workingUnit.setModifiedDate(currentDate);
+		workingUnit.setTreeIndex(treeIndex);
+		workingUnit.setSibling(sibling);
 		workingUnit.setUserId(userId);
 		workingUnit.setCompanyId(serviceContext.getCompanyId());
 		workingUnit.setGroupId(serviceContext.getScopeGroupId());
@@ -207,13 +225,17 @@ public class WorkingUnitLocalServiceImpl
 			WorkingUnit unit =
 				workingUnitPersistence.findByPrimaryKey(workingUnitId);
 			try {
-				OrganizationLocalServiceUtil.deleteOrganization(unit.getMappingOrganisationId());
+				if(OrganizationLocalServiceUtil
+					.getParentOrganizations(unit
+						.getMappingOrganisationId()).isEmpty()){
+					OrganizationLocalServiceUtil
+						.deleteOrganization(unit.getMappingOrganisationId());
+					workingUnitPersistence.remove(workingUnitId);
+				}
 			}
 			catch (Exception e) {
-
-			}
-
-			workingUnitPersistence.remove(workingUnitId);
+				_log.error(e);
+			}		
 		}
 	}
 
@@ -303,5 +325,5 @@ public class WorkingUnitLocalServiceImpl
 
 		return workingUnitPersistence.findByGroupId(groupId);
 	}
-
+	private Log _log = LogFactoryUtil.getLog(WorkingUnitLocalServiceImpl.class);
 }

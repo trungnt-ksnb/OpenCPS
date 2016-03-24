@@ -51,7 +51,7 @@
 						int rowIndex = rowIndexes[row];
 				%>
 						<aui:row>
-							<aui:col>
+							<aui:col width="50">
 								<aui:input type="text" 
 								name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>' 
 								label="Title">
@@ -63,7 +63,7 @@
 									value="<%=String.valueOf(workingUnitId) %>"
 									type="hidden" />
 							</aui:col>
-							<aui:col colWidth="30">
+							<aui:col width="50">
 								<aui:select name='<%=JobPosDisplayTerms.LEADER_JOBPOS + rowIndex%>'
 									label="Leader">
 									<%

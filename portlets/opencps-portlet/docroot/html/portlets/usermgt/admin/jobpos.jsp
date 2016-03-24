@@ -51,7 +51,7 @@
 	%>
 		
 	<liferay-ui:search-container-results>
-		<%@include file="/html/portlets/usermgt/admin/result_search_jobpos.jspf"%>
+		<%@include file="/html/portlets/usermgt/admin/jobpos_search_results.jspf"%>
 	</liferay-ui:search-container-results>
 	<liferay-ui:search-container-row 
 		className="org.opencps.usermgt.model.JobPos" 
@@ -70,7 +70,7 @@
 			row.addText(jobPosSearch.getTitle());
 			row.addText(leaderName);
 			row.addJSP("center", SearchEntry.DEFAULT_VALIGN,  templatePath +
-				"jobpos-action.jsp", config.getServletContext(),
+				"jobpos_action.jsp", config.getServletContext(),
 				request, response);
 		%>
 	</liferay-ui:search-container-row>

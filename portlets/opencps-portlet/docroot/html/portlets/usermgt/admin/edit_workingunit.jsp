@@ -67,10 +67,12 @@
 		categorySections="<%=categorySections %>" 
 		htmlBottom="<%= htmlBot %>"
 		htmlTop="<%= htmlTop %>"
-		jspPath='<%=templatePath + "wokingunit/" %>'
+		jspPath='<%=templatePath + "workingunit/" %>'
 		>	
 	</liferay-ui:form-navigator>
-	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID %>" 
+	<aui:input 
+		name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID %>" 
+		value="<%=String.valueOf(workingUnitId) %>"
 		type="hidden"
 	></aui:input>
 </aui:form>
