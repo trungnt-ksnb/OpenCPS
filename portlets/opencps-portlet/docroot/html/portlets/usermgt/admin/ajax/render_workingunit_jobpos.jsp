@@ -25,7 +25,7 @@
 <%@ include file="../../init.jsp"%>
 <%
 	long workingUnitId = ParamUtil.getLong(request, EmployeeDisplayTerm.WORKING_UNIT_ID, 0L);
-	List<WorkingUnit> workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnit(scopeGroupId, true);
+	List<WorkingUnit> workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnits(scopeGroupId, workingUnitId);
 %>
 
 <aui:col width="50">
