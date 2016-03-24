@@ -32,7 +32,7 @@ long workingUnitId = workingUnit != null ? workingUnit.getWorkingunitId() : 0L;
 	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ADDRESS%>"></aui:input>
 	
 	<datamgt:ddr depthLevel="3" 
-		dictCollectionCode="a"
+		dictCollectionCode="ADMINISTRATIVE_REGION"
 		itemNames="cityCode,wardCode,districtCode">
 	</datamgt:ddr>
 	
