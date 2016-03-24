@@ -31,11 +31,10 @@
 <aui:col width="50">
 	<aui:select 
 		name='<%=EmployeeDisplayTerm.WORKING_UNIT_ID + 0 %>' 
-		label="<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>" 
+		label="" 
 		onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
-		required="<%=false %>"
-		showEmptyOption="<%= true %>"
 	>
+		<aui:option value=""><liferay-ui:message key="select-working-unit"/></aui:option>
 		<%
 			if(workingUnits != null){
 				for(WorkingUnit workingUnit : workingUnits){
@@ -49,5 +48,7 @@
 </aui:col>
 
 <aui:col width="50">
-	<aui:select name='<%=EmployeeDisplayTerm.JOBPOS_ID + 0 %>' label="<%= EmployeeDisplayTerm.JOBPOS_ID%>"/>
+	<aui:select name='<%=EmployeeDisplayTerm.JOBPOS_ID + 0 %>' label="">
+		<aui:option value=""><liferay-ui:message key="select-jobpos"/></aui:option>
+	</aui:select>
 </aui:col>

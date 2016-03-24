@@ -83,9 +83,9 @@
 				Liferay.Util.openWindow({
 					dialog : {
 						centered : true,
-						height : 1000,
-						modal : true,
-						width : 900
+						
+						modal : true
+						
 					},
 					id : '<portlet:namespace/>dialog',
 					title : 'Edit-JobPos',

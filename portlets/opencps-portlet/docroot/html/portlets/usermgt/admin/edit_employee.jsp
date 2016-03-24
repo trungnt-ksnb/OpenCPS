@@ -36,9 +36,9 @@
 <%
 	Employee employee = (Employee)request.getAttribute(WebKeys.EMPLOYEE_ENTRY);
 
+	User mappingUser = (User)request.getAttribute(WebKeys.USER_MAPPING_ENTRY);
+	
 	String backURL = ParamUtil.getString(request, "backURL");
-
-	User mappingUser = (User)request.getAttribute("");
 	
 	PasswordPolicy passwordPolicy = null;
 
@@ -248,12 +248,15 @@
 		
 		var index = name.substring(name.length - 1, name.length);
 		
+		var jobPosBoundingBox = null;
+		
 		if(isNaN(index)){
 			index = '';
+			jobPosBoundingBox = A.one('#<portlet:namespace/><%= EmployeeDisplayTerm.MAIN_JOBPOS_ID%>' + index);
+		}else{
+			jobPosBoundingBox = A.one('#<portlet:namespace/><%= EmployeeDisplayTerm.JOBPOS_ID%>' + index);
 		}
-	
-		var jobPosBoundingBox = A.one('#<portlet:namespace/><%= EmployeeDisplayTerm.JOBPOS_ID%>' + index);
-		
+
 		A.io.request(
 			'<%= renderJobPosByWorkingUnitIdURL.toString()%>',
 			{

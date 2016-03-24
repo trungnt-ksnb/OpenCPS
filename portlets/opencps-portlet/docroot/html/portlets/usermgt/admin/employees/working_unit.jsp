@@ -68,6 +68,9 @@
 	
 	List<WorkingUnit> workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnit(scopeGroupId, true);
 %>
+
+<aui:model-context bean="<%=mappingWorkingUnit%>" model="<%=WorkingUnit.class%>" />
+
 <aui:row>
 	<aui:col width="100">
 		<aui:select 
@@ -111,20 +114,19 @@
 	<aui:col width="50">
 		<aui:select 
 			name='<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>' 
-			label="<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>" 
+			label="" 
 			onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
-			required="<%=false %>"
-			showEmptyOption="<%= true %>"
+			required="<%=true %>"
 		>
-			
+			<aui:option value=""><liferay-ui:message key="select-working-unit"/></aui:option>
 		</aui:select>
 	</aui:col>
 	<aui:col width="50">
 		<aui:select 
 			name='<%=EmployeeDisplayTerm.MAIN_JOBPOS_ID %>' 
-			label="<%= EmployeeDisplayTerm.JOBPOS_ID%>" 
-			required="<%=false %>">
-			
+			label="" 
+			required="<%=true %>">
+			<aui:option value=""><liferay-ui:message key="select-jobpos"/></aui:option>
 		</aui:select>
 	</aui:col>
 </aui:row>
@@ -141,20 +143,18 @@
 						<aui:col width="50">
 							<aui:select 
 								name='<%= EmployeeDisplayTerm.WORKING_UNIT_ID + jobPosIndex %>' 
-								label="<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>" 
+								label="" 
 								onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
-								required="<%=false %>"
-								showEmptyOption="<%= true %>"
 							>
-								
+								<aui:option value=""><liferay-ui:message key="select-working-unit"/></aui:option>
 							</aui:select>
 						</aui:col>
 						<aui:col width="50">
 							<aui:select 
 								name='<%= "jobPosId" + jobPosIndex %>' 
-								label="<%= EmployeeDisplayTerm.JOBPOS_ID%>"
+								label=""
 							>
-						
+								<aui:option value=""><liferay-ui:message key="select-jobpos"/></aui:option>
 							</aui:select>
 						</aui:col>
 					</div>
@@ -167,5 +167,3 @@
 	
 	<aui:input name="jobPosIndexes" type="hidden" value="<%= StringUtil.merge(jobPosIndexes)%>" />
 </aui:row>
-
-

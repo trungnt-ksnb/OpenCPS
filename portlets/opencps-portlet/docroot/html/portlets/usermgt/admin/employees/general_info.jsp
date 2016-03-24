@@ -34,12 +34,12 @@
 	PortletUtil.SplitDate spd = new PortletUtil.SplitDate(defaultBirthDate);
 %>
 
+<aui:model-context bean="<%=employee%>" model="<%=Employee.class%>" />
+
 <aui:row>
 	<aui:col width="50">
 		<aui:input 
 			name="<%=EmployeeDisplayTerm.EMPLOYEE_NO %>" 
-			type="text" 
-			value="<%=employee != null ? employee.getEmployeeNo() : StringPool.BLANK %>"
 		>
 			<aui:validator name="required"/>
 			<aui:validator name="maxLength">
@@ -53,8 +53,6 @@
 	<aui:col width="50">
 		<aui:input 
 			name="<%=EmployeeDisplayTerm.FULL_NAME %>" 
-			type="text"
-			value="<%=employee != null ? employee.getFullName() : StringPool.BLANK %>"
 		>
 			<aui:validator name="required"/>
 			<aui:validator name="maxLength">
@@ -82,8 +80,6 @@
 		
 		<aui:input 
 			name="<%= EmployeeDisplayTerm.MOBILE%>"
-			type="text"
-			value="<%=employee != null && Validator.isNotNull(employee.getMobile()) ? employee.getMobile() : StringPool.BLANK %>"
 		>
 			<aui:validator name="maxLength">
 				<%=PortletPropsValues.USERMGT_EMPLOYEE_MOBILE_LENGTH%>
@@ -112,8 +108,6 @@
 		
 		<aui:input 
 			name="<%= EmployeeDisplayTerm.EMAIL%>"
-			type="text"
-			value="<%=employee != null && Validator.isNotNull(employee.getEmail()) ? employee.getEmail() : StringPool.BLANK %>"
 		>
 			<aui:validator name="required"/>
 			<aui:validator name="email"/>
@@ -124,8 +118,6 @@
 		
 		<aui:input 
 			name="<%= EmployeeDisplayTerm.TEL_NO%>"
-			type="text"
-			value="<%=employee != null && Validator.isNotNull(employee.getTelNo()) ? employee.getTelNo() : StringPool.BLANK %>"
 		>
 			<aui:validator name="maxLength">
 				<%=PortletPropsValues.USERMGT_EMPLOYEE_TELNO_LENGTH%>
