@@ -34,5 +34,7 @@ public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 	public static final String EMPLOYEE_ENTRY = "EMPLOYEE_ENTRY";
 
 	public static final String JOBPOS_ENTRY = "JOBPOS_ENTRY";
+	
+	public static final String USER_MAPPING_ENTRY = "USER_MAPPING_ENTRY";
 
 }
