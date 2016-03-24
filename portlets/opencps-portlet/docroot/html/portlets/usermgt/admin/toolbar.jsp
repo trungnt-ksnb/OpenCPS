@@ -99,15 +99,24 @@
 					</aui:col>
 					
 					<aui:col width="30">
-						<aui:input name="search" type="submit" value="search" label="" 
-							cssClass="opencps usermgt toolbar search-btn"/>
+						<aui:input 
+							name="search" 
+							type="submit" value="search" 
+							label="" 
+							cssClass="opencps usermgt toolbar search-btn"
+						/>
 					</aui:col>
 				</aui:row>
 			</aui:form>
 		</aui:row>
+		
 		<aui:row>
-			<aui:button name="add-employee" value="add-employee" href="<%=editEmployeeURL %>"/>
+			<aui:col width="100">
+				<aui:button name="add-employee" value="add-employee" href="<%=editEmployeeURL %>"/>
+				<div class="bottom-horizontal-line"></div>
+			</aui:col>
 		</aui:row>
+		
 	</c:when>
 	
 	<c:otherwise>
