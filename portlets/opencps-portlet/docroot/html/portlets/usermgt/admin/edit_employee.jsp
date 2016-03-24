@@ -151,7 +151,7 @@
 		
 		workingUnitInput.on('change', function(){
 			<portlet:namespace/>renderWorkingUnitJobPos();
-			<portlet:namespace/>renderWorkingUnitMainJobPos();s
+			<portlet:namespace/>renderWorkingUnitMainJobPos();
 		});
 		
 	});
@@ -175,7 +175,7 @@
 					node.remove();	
 				}		
 			});
-		}
+		} 
 		
 		if(workingUnitInput){
 			var value = workingUnitInput.val();
@@ -184,7 +184,7 @@
 				{
 				    dataType : 'json',
 				    data:{    	
-				    	workingUnitId : value,
+				    	<portlet:namespace/>workingUnitId : value,
 				    },   
 				    on: {
 				        success: function(event, id, obj) {
@@ -215,7 +215,7 @@
 				{
 				    dataType : 'json',
 				    data:{    	
-				    	workingUnitId : value,
+				    	<portlet:namespace/>workingUnitId : value,
 				    },   
 				    on: {
 				        success: function(event, id, obj) {
@@ -259,7 +259,7 @@
 			{
 			    dataType : 'json',
 			    data:{    	
-			    	workingUnitId : value,
+			    	<portlet:namespace/>workingUnitId : value,
 			    },   
 			    on: {
 			        success: function(event, id, obj) {

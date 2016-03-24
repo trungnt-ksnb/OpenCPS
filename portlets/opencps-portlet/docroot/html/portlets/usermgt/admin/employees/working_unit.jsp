@@ -19,16 +19,46 @@
 <%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
 <%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.model.WorkingUnit"%>
+<%@page import="org.opencps.usermgt.model.JobPos"%>
+<%@page import="org.opencps.util.WebKeys"%>
+<%@page import="org.opencps.usermgt.model.Employee"%>
 <%@page import="java.util.List"%>
+<%@page import="org.opencps.usermgt.service.EmployeeLocalServiceUtil"%>
+<%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
+<%@page import="java.util.ArrayList"%>
 <%@ include file="../../init.jsp"%>
 <%
+
+	Employee employee = (Employee)request.getAttribute(WebKeys.EMPLOYEE_ENTRY);
+
+	WorkingUnit mappingWorkingUnit = (WorkingUnit)request.getAttribute(WebKeys.WORKING_UNIT_MAPPING_ENTRY);
+	
+	JobPos mainJobPos = (JobPos)request.getAttribute(WebKeys.MAIN_JOB_POS_ENTRY);
+	
+	List<JobPos> jobPoses = new ArrayList<JobPos>();
+	
+	if(employee != null){
+		try{
+			jobPoses = JobPosLocalServiceUtil.getEmployeeJobPoses(employee.getEmployeeId());
+		}catch(Exception e){
+			// Nothing todo
+		}
+	}
+	
 	int[] jobPosIndexes = null;
 
 	String jobPosIndexesParam = ParamUtil.getString(request, "jobPosIndexesParam");
 
-	if (Validator.isNotNull(jobPosIndexesParam)) {
+	if (jobPoses != null && !jobPoses.isEmpty()) {
 		
-		jobPosIndexes = StringUtil.split(jobPosIndexesParam, 0);
+		jobPosIndexes = new int[jobPoses.size()];
+		
+		int count = 0;
+		
+		for(JobPos jobPos : jobPoses){
+			jobPosIndexes[count] = count;
+			count ++;
+		}
 	}
 	else {
 		if (jobPosIndexes == null) {
@@ -40,12 +70,22 @@
 %>
 <aui:row>
 	<aui:col width="100">
-		<aui:select name="<%= EmployeeDisplayTerm.WORKING_UNIT_ID %>" cssClass="input100">
+		<aui:select 
+			name="<%= EmployeeDisplayTerm.WORKING_UNIT_ID %>" 
+			cssClass="input95"
+			showEmptyOption="<%=true %>"
+			required="<%=true %>"
+		>
 			<%
 				if(workingUnits != null){
 					for(WorkingUnit workingUnit : workingUnits){
 						%>
-							<aui:option value="<%= workingUnit.getWorkingunitId()%>"><%=workingUnit.getName() %></aui:option>
+							<aui:option 
+								value="<%= workingUnit.getWorkingunitId()%>"
+								selected="<%=mappingWorkingUnit != null && mappingWorkingUnit.getWorkingunitId() == workingUnit.getWorkingunitId()%>"
+							>
+								<%=workingUnit.getName() %>
+							</aui:option>
 						<%
 					}
 				}
@@ -56,8 +96,13 @@
 
 <aui:row>
 	<aui:col width="100">
-		<aui:input name="<%= EmployeeDisplayTerm.WORKING_STATUS  %>" 
-			type="checkbox" inlineField="<%= true %>" inlineLabel="right"/>
+		<aui:input 
+			name="<%= EmployeeDisplayTerm.WORKING_STATUS  %>" 
+			type="checkbox" 
+			inlineField="<%= true %>" 
+			inlineLabel="right"
+			value="<%=employee != null ? employee.getWorkingStatus() : 0 %>"
+		/>
 	</aui:col>
 </aui:row>
 
