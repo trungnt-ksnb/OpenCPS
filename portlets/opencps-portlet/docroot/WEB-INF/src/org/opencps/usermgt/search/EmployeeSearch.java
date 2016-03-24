@@ -43,7 +43,7 @@ public class EmployeeSearch extends SearchContainer<Employee> {
 	static List<String> headerNames = new ArrayList<String>();
 	static Map<String, String> orderableHeaders = new HashMap<String, String>();
 	static {
-		headerNames.add("no");
+		headerNames.add("STT");
 		headerNames.add("employee-no");
 		headerNames.add("full-name");
 		headerNames.add("working-unit");
