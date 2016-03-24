@@ -33,7 +33,7 @@
 		name='<%=EmployeeDisplayTerm.WORKING_UNIT_ID %>' 
 		label="<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>" 
 		onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
-		required="<%=true %>"
+		required="<%=false %>"
 		showEmptyOption="<%= true %>"
 	>
 		<%
@@ -49,5 +49,9 @@
 </aui:col>
 
 <aui:col width="50">
-	<aui:select name='<%=EmployeeDisplayTerm.MAIN_JOBPOS_ID %>' label="<%= EmployeeDisplayTerm.MAIN_JOBPOS_ID%>" required="<%=true %>"/>
+	<aui:select 
+		name='<%=EmployeeDisplayTerm.MAIN_JOBPOS_ID %>' 
+		label="<%= EmployeeDisplayTerm.MAIN_JOBPOS_ID%>" 
+		required="<%=false %>"
+	/>
 </aui:col>

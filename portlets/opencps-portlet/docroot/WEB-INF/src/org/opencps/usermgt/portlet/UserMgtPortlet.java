@@ -63,7 +63,7 @@ import com.liferay.util.bridges.mvc.MVCPortlet;
 public class UserMgtPortlet extends MVCPortlet {
 
 	private Log _log = LogFactoryUtil
-			.getLog(UserMgtEditProfilePortlet.class.getName());
+			.getLog(UserMgtPortlet.class.getName());
 
 	public void deleteWorkingUnit(ActionRequest request,
 			ActionResponse response)
@@ -80,15 +80,14 @@ public class UserMgtPortlet extends MVCPortlet {
 		String rowIndexes = request.getParameter("rowIndexes");
 		System.out.println("===rowIndexes " + rowIndexes);
 		String[] indexOfRows = rowIndexes.split(",");
-		
+
 		for (int index = 0; index < indexOfRows.length; index++) {
-			String chucvu = request
-					.getParameter(JobPosSearchTerms.TITLE_JOBPOS
-							+ indexOfRows[index].trim());
-			String vitri = request
-					.getParameter(JobPosSearchTerms.LEADER_JOBPOS
-							+ indexOfRows[index].trim());
-			long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
+			String chucvu = request.getParameter(
+					JobPosSearchTerms.TITLE_JOBPOS + indexOfRows[index].trim());
+			String vitri = request.getParameter(JobPosSearchTerms.LEADER_JOBPOS
+					+ indexOfRows[index].trim());
+			long jobPosId = ParamUtil.getLong(request,
+					JobPosDisplayTerms.ID_JOBPOS);
 			System.out.println("====chucvu " + chucvu + " vitri " + vitri
 					+ " indexOfRows " + indexOfRows + " index " + index
 					+ " jobPosId " + jobPosId);
@@ -179,6 +178,10 @@ public class UserMgtPortlet extends MVCPortlet {
 
 		List<Long> jobPosIds = new ArrayList<Long>();
 
+		if (mainJobPosId > 0) {
+			jobPosIds.add(mainJobPosId);
+		}
+
 		if (jobPosIndexes != null && jobPosIndexes.length > 0) {
 			for (int i = 0; i < jobPosIndexes.length; i++) {
 				if (jobPosIndexes[i] >= 0) {
@@ -228,6 +231,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			redirectURL = returnURL;
 			SessionErrors.add(actionRequest,
 					MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED);
+			_log.error(e);
 
 		} finally {
 			if (Validator.isNotNull(redirectURL)) {

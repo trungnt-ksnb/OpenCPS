@@ -31,7 +31,9 @@ import org.opencps.util.PortletUtil;
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.Address;
@@ -84,11 +86,19 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		Employee employee = employeePersistence.create(employeeId);
 
 		// Get main JobPos
-		JobPos jobPos = jobPosPersistence.findByPrimaryKey(mainJobPosId);
+		JobPos jobPos = null;
+
+		if (mainJobPosId > 0) {
+			jobPos = jobPosPersistence.findByPrimaryKey(mainJobPosId);
+		}
 
 		// Get Working Unit
-		WorkingUnit workingUnit = workingUnitPersistence
-				.findByPrimaryKey(workingUnitId);
+		WorkingUnit workingUnit = null;
+
+		if (workingUnitId > 0) {
+			workingUnit = workingUnitPersistence
+					.findByPrimaryKey(workingUnitId);
+		}
 
 		// Get OrganizationId
 		long[] organizationIds = null;
@@ -98,17 +108,17 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 					workingUnit.getMappingOrganisationId()};
 		}
 
-		long[] roleIds = null;
+		List<Long> roleIds = new ArrayList<Long>();
 
 		if (jobPosIds != null && jobPosIds.length > 0) {
 
-			roleIds = new long[jobPosIds.length];
-
 			for (int job = 0; job < jobPosIds.length; job++) {
-				JobPos jobPosTemp = jobPosPersistence
-						.findByPrimaryKey(jobPosIds[job]);
-				if (jobPosTemp != null) {
-					roleIds[job] = jobPosTemp.getMappingRoleId();
+				if (jobPosIds[job] > 0) {
+					JobPos jobPosTemp = jobPosPersistence
+							.findByPrimaryKey(jobPosIds[job]);
+					if (jobPosTemp != null) {
+						roleIds.add(jobPosTemp.getMappingRoleId());
+					}
 				}
 			}
 		}
@@ -124,9 +134,10 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 				serviceContext.getCompanyId(), false, password, reTypePassword,
 				false, screenName, email, 0L, StringPool.BLANK,
 				LocaleUtil.getDefault(), spn.getFirstName(), spn.getMidName(),
-				spn.getLastName(), 0, 0, (gender == 1), birthDateDay,
-				birthDateMonth, birthDateYear, jobPos.getTitle(), groupIds,
-				organizationIds, roleIds, userGroupIds,
+				spn.getLastName(), 0, 0, (gender == 1), birthDateMonth,
+				birthDateDay, birthDateYear,
+				jobPos != null ? jobPos.getTitle() : StringPool.BLANK, groupIds,
+				organizationIds, ArrayUtil.toLongArray(roleIds), userGroupIds,
 				new ArrayList<Address>(), new ArrayList<EmailAddress>(),
 				new ArrayList<Phone>(), new ArrayList<Website>(),
 				new ArrayList<AnnouncementsDelivery>(), false, serviceContext);
@@ -153,6 +164,123 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		}
 
 		return employeePersistence.update(employee);
+	}
+
+	public int countEmployees(long groupId) throws SystemException {
+		return employeePersistence.countByGroupId(groupId);
+	}
+
+	public int countEmployees(long groupId, long workingUnitId)
+			throws SystemException {
+		return employeePersistence.countByG_W(groupId, workingUnitId);
+	}
+
+	public int countEmployees(long groupId, String[] fullNames)
+			throws SystemException {
+		return employeePersistence.countByG_N(groupId, fullNames);
+	}
+
+	public int countEmployees(long groupId, String[] fullNames,
+			long workingUnitId) throws SystemException {
+		return employeePersistence.countByG_N_W(groupId, fullNames,
+				workingUnitId);
+	}
+
+	public List<Employee> getEmployees(long groupId) throws SystemException {
+
+		return employeePersistence.findByGroupId(groupId);
+	}
+
+	public List<Employee> getEmployees(long groupId, int start, int end,
+			OrderByComparator orderByComparator) throws SystemException {
+
+		return employeePersistence.findByGroupId(groupId, start, end,
+				orderByComparator);
+	}
+
+	public List<Employee> getEmployees(long groupId, long workingUnitId)
+			throws SystemException {
+
+		return employeePersistence.findByG_W(groupId, workingUnitId);
+	}
+
+	public List<Employee> getEmployees(long groupId, long workingUnitId,
+			int start, int end, OrderByComparator orderByComparator)
+			throws SystemException {
+
+		return employeePersistence.findByG_W(groupId, workingUnitId, start, end,
+				orderByComparator);
+	}
+
+	public List<Employee> getEmployees(long groupId, long workingUnitId,
+			long mainJobPosId) throws SystemException {
+
+		return employeePersistence.findByG_W_MJP(groupId, workingUnitId,
+				mainJobPosId);
+	}
+
+	public List<Employee> getEmployees(long groupId, long workingUnitId,
+			long mainJobPosId, int start, int end,
+			OrderByComparator orderByComparator) throws SystemException {
+
+		return employeePersistence.findByG_W_MJP(groupId, workingUnitId,
+				mainJobPosId, start, end, orderByComparator);
+	}
+
+	public List<Employee> getEmployees(long groupId, String[] fullNames)
+			throws SystemException {
+
+		return employeePersistence.findByG_N(groupId, fullNames);
+	}
+	public List<Employee> getEmployees(long groupId, String[] fullNames,
+			int start, int end, OrderByComparator orderByComparator)
+			throws SystemException {
+
+		return employeePersistence.findByG_N(groupId, fullNames, start, end,
+				orderByComparator);
+	}
+
+	public List<Employee> getEmployees(long groupId, String[] fullNames,
+			long workingUnitId, int start, int end,
+			OrderByComparator orderByComparator) throws SystemException {
+
+		return employeePersistence.findByG_N_W(groupId, fullNames,
+				workingUnitId, start, end, orderByComparator);
+	}
+
+	public void updateEmployee(long employeeId, int workingStatus,
+			ServiceContext serviceContext)
+			throws SystemException, PortalException {
+
+		Employee employee = employeePersistence.findByPrimaryKey(employeeId);
+
+		User mappingUse = userLocalService.getUser(employee.getMappingUserId());
+
+		Date now = new Date();
+
+		if (workingStatus == PortletConstants.WORKING_STATUS_ACTIVATE
+				|| workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
+
+			int status = WorkflowConstants.STATUS_APPROVED;
+
+			if (workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
+				status = WorkflowConstants.STATUS_INACTIVE;
+			}
+
+			mappingUse.setStatus(status);
+
+			userLocalService.updateUser(mappingUse);
+
+			employee.setWorkingStatus(workingStatus);
+
+			employee.setUserId(serviceContext.getUserId());
+			employee.setGroupId(serviceContext.getScopeGroupId());
+			employee.setCompanyId(serviceContext.getCompanyId());
+			employee.setModifiedDate(now);
+
+			employeePersistence.update(employee);
+		}
+
 	}
 
 	public Employee updateEmployee(long employeeId, long userId,
@@ -237,54 +365,6 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 
 		return employeePersistence.update(employee);
 
-	}
-
-	public void updateEmployee(long employeeId, int workingStatus,
-			ServiceContext serviceContext)
-			throws SystemException, PortalException {
-
-		Employee employee = employeePersistence.findByPrimaryKey(employeeId);
-
-		User mappingUse = userLocalService.getUser(employee.getMappingUserId());
-
-		Date now = new Date();
-
-		if (workingStatus == PortletConstants.WORKING_STATUS_ACTIVATE
-				|| workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
-
-			int status = WorkflowConstants.STATUS_APPROVED;
-
-			if (workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
-				status = WorkflowConstants.STATUS_INACTIVE;
-			}
-
-			mappingUse.setStatus(status);
-
-			userLocalService.updateUser(mappingUse);
-
-			employee.setWorkingStatus(workingStatus);
-
-			employee.setUserId(serviceContext.getUserId());
-			employee.setGroupId(serviceContext.getScopeGroupId());
-			employee.setCompanyId(serviceContext.getCompanyId());
-			employee.setModifiedDate(now);
-
-			employeePersistence.update(employee);
-		}
-
-	}
-
-	public List<Employee> getEmployees(long groupId, long mainJobPosId)
-			throws SystemException {
-
-		return employeePersistence.findByG_W(groupId, mainJobPosId);
-	}
-
-	public List<Employee> getEmployees(long groupId, long workingUnitId,
-			long mainJobPosId) throws SystemException {
-
-		return employeePersistence.findByG_W_MJP(groupId, workingUnitId,
-				mainJobPosId);
 	}
 
 }
