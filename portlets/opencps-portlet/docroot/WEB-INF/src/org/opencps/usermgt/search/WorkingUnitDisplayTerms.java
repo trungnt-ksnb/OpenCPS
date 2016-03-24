@@ -30,6 +30,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 public class WorkingUnitDisplayTerms extends DisplayTerms {
 	
 	public static final String WORKINGUNIT_MANAGERWORKINGUNITID = "managerWorkingUnitId";
+	public static final String WORKINGUNIT_SIBLING = "managerWorkingUnitId";
 	public static final String WORKINGUNIT_PARENTWORKINGUNITID = "parentWorkingUnitId";
 	public static final String WORKINGUNIT_ID = "workingunitId";
 	public static final String WORKINGUNIT_NAME = "name";
@@ -54,6 +55,7 @@ public class WorkingUnitDisplayTerms extends DisplayTerms {
 		super(request);
 		
 		managerWorkingUnitId = ParamUtil.getLong(request, WORKINGUNIT_MANAGERWORKINGUNITID);
+		sibling = ParamUtil.getInteger(request, WORKINGUNIT_SIBLING);
 		workingUnitId = ParamUtil.getLong(request, WORKINGUNIT_ID);
 		name = ParamUtil.getString(request, WORKINGUNIT_NAME);
 		enNamme = ParamUtil.getString(request, WORKINGUNIT_ENNAME);
@@ -285,8 +287,19 @@ public class WorkingUnitDisplayTerms extends DisplayTerms {
 	
 		this.managerWorkingUnitId = managerWorkingUnitId;
 	}
+	
+	public int getSibling() {
+	
+		return sibling;
+	}
 
+	
+	public void setSibling(int sibling) {
+	
+		this.sibling = sibling;
+	}
 
+	protected int sibling;
 	protected long parentWorkingUnitId;
 	protected long workingUnitId;
 	protected long groupId;

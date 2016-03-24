@@ -25,11 +25,11 @@ import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.base.WorkingUnitLocalServiceBaseImpl;
+import org.opencps.usermgt.util.UserMgtUtil;
 
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.management.jmx.GetAttributesAction;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.ListTypeConstants;
@@ -93,12 +93,14 @@ public class WorkingUnitLocalServiceImpl
 		long mappingOrganisationId = org.getOrganizationId();
 
 		Date currentDate = new Date();
-
-		List<WorkingUnit> workingUnits = workingUnitPersistence.findAll();
-		if (workingUnits.isEmpty()) {
+		if (getWorkingUnitsByGroupId(serviceContext.getScopeGroupId(), 
+			UserMgtUtil
+				.getWorkingUnitOrderByComparator("sibling", "desc")) == null) {
 			sibling = 1;
 		} else {
-			sibling = getNextSibling(workingUnits);
+			sibling = getWorkingUnitsByGroupId(serviceContext.getScopeGroupId(), 
+				UserMgtUtil.getWorkingUnitOrderByComparator("sibling", "desc"))
+					.getSibling() + 1;
 		}
 
 		long workingUnitId = CounterLocalServiceUtil

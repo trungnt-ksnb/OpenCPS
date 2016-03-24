@@ -28,6 +28,7 @@ import org.opencps.usermgt.util.comparator.WorkingUnitAdressComporator;
 import org.opencps.usermgt.util.comparator.WorkingUnitEmailComparator;
 import org.opencps.usermgt.util.comparator.WorkingUnitGovagencyCodeComparator;
 import org.opencps.usermgt.util.comparator.WorkingUnitNameComparator;
+import org.opencps.usermgt.util.comparator.WorkingUnitSiblingComparator;
 import org.opencps.usermgt.util.comparator.WorkingUnitTelNoComparator;
 
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -72,7 +73,10 @@ public class UserMgtUtil {
 		}
 		else if (orderByCol.equals(WorkingUnitDisplayTerms.WORKINGUNIT_GOVAGENCYCODE)) {
 			orderByComparator = new WorkingUnitGovagencyCodeComparator(orderByAsc);
+		} else if ((orderByCol.equals(WorkingUnitDisplayTerms.WORKINGUNIT_SIBLING))) {
+			orderByComparator = new WorkingUnitSiblingComparator(orderByAsc);
 		}
+			
 
 		return orderByComparator;
 	}
