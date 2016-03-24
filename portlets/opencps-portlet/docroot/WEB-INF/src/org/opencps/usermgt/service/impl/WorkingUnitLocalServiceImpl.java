@@ -25,7 +25,6 @@ import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.base.WorkingUnitLocalServiceBaseImpl;
-import org.opencps.usermgt.util.UserMgtUtil;
 
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -71,9 +70,19 @@ public class WorkingUnitLocalServiceImpl
 		long workingUnitId = CounterLocalServiceUtil
 				.increment(WorkingUnit.class.getName());
 		WorkingUnit workingUnit = workingUnitPersistence.create(workingUnitId);
-
-		int sibling = workingUnitLocalService
-				.getMaxSibling(serviceContext.getScopeGroupId()) + 1;
+		int sibling=0;
+		
+		if(workingUnitPersistence.countAll() == 0) {
+			sibling = 1;
+		} else {
+			if(parentWorkingUnitId != 0) {
+				sibling = workingUnitPersistence
+							.findByPrimaryKey(parentWorkingUnitId).getSibling();
+			} else {
+				sibling = workingUnitLocalService
+								.getMaxSibling(serviceContext.getScopeGroupId()) + 1;
+			}
+		}
 
 		Organization org = null;
 
@@ -88,9 +97,11 @@ public class WorkingUnitLocalServiceImpl
 
 		}
 		else {
+			WorkingUnit workingUnit2 = workingUnitPersistence
+							.findByPrimaryKey(parentWorkingUnitId);
 			org =
 				OrganizationLocalServiceUtil.addOrganization(
-					userId, parentWorkingUnitId, name,
+					userId, workingUnit2.getMappingOrganisationId(), name,
 					OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0,
 					ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, enName,
 					true, serviceContext);
@@ -151,7 +162,7 @@ public class WorkingUnitLocalServiceImpl
 					OrganizationConstants.DEFAULT_PARENT_ORGANIZATION_ID,
 					name, OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0,
 					0, ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, 
-					StringPool.BLANK, true, serviceContext);
+					enName, true, serviceContext);
 			mappingOrganisationId = org.getOrganizationId();
 
 		}
