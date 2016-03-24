@@ -1,0 +1,6 @@
+.bottom-horizontal-line{
+	border-bottom: 1px solid #ccc;
+	clear: both;
+	display: block;
+	margin-bottom: 10px;
+}
