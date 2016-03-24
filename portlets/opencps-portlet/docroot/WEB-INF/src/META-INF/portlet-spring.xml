@@ -19,4 +19,5 @@
 	<bean id="org.opencps.usermgt.service.WorkingUnitLocalService" class="org.opencps.usermgt.service.impl.WorkingUnitLocalServiceImpl" />
 	<bean id="org.opencps.usermgt.service.WorkingUnitService" class="org.opencps.usermgt.service.impl.WorkingUnitServiceImpl" />
 	<bean id="org.opencps.usermgt.service.persistence.WorkingUnitPersistence" class="org.opencps.usermgt.service.persistence.WorkingUnitPersistenceImpl" parent="basePersistence" />
+	<bean id="org.opencps.usermgt.service.persistence.WorkingUnitFinder" class="org.opencps.usermgt.service.persistence.WorkingUnitFinderImpl" parent="basePersistence" />
 </beans>

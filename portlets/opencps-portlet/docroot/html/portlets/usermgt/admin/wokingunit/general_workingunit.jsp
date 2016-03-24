@@ -1,3 +1,4 @@
+<%@page import="com.liferay.portal.kernel.dao.search.SearchContainer"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -13,7 +14,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  */
 %>
 <%@ include file="../../init.jsp"%>
@@ -37,7 +38,7 @@
 	
 	try {
 		workingUnits = WorkingUnitLocalServiceUtil
-						.getWorkingUnits(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+						.getWorkingUnits(scopeGroupId);
 	}catch(Exception e) {
 		_log.error(e);
 		
@@ -47,20 +48,23 @@
 <aui:model-context bean="<%=workingUnit%>" model="<%=WorkingUnit.class%>" />
 <aui:row>
 	<aui:select name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_PARENTWORKINGUNITID%>">
-		<aui:option value="<%=0%>"></aui:option>
+		<aui:option value="<%=0%>">root</aui:option>
 		<%
 			for(WorkingUnit unit : workingUnits) {
 				%>
 					<aui:option value="<%=unit.getWorkingunitId() %>">
-						<%=unit.getName()%>
+						<%=unit.getName() %>
 					</aui:option>
-				<%	
+				<%
 			}
+							
 		%>
-	
+		
 	</aui:select>
-	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_NAME%>"></aui:input>
-	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME%>"></aui:input>
+	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_NAME%>">
+		<aui:validator name="required" />
+	</aui:input>
+	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME%>" />
 	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER%>" 
 		type="checkbox"
 		checked="true">
@@ -75,7 +79,7 @@
 	
 </aui:row>
 
-<aui:script>
+<aui:script> 
 	AUI().ready(function(A){
 		var isEmployerCheckBox = A.one('#<portlet:namespace/>isEmployerCheckbox');
 		

@@ -14,7 +14,7 @@
 	 * GNU Affero General Public License for more details.
 	 * You should have received a copy of the GNU Affero General Public License
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
-	 */
+	 */ 
 %>
 
 <%@page import="org.opencps.util.PortletPropsValues"%>
@@ -34,7 +34,6 @@
 
 <%
 	long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
-	System.out.println("gen_job " + workingUnitId);
 	long jobposId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
 	int[] rowIndexes = null;	
 	rowIndexes = new int[]{0};
@@ -55,7 +54,9 @@
 							<aui:column>
 								<aui:input type="text" 
 								name='<%=JobPosDisplayTerms.TITLE_JOBPOS + rowIndex %>' 
-								label="Title"/>
+								label="Title">
+									<aui:validator name="required"></aui:validator>
+								</aui:input>
 								<aui:input type="hidden" 
 									name='<%=JobPosDisplayTerms.ID_JOBPOS + rowIndex %>' />
 								<aui:input name='<%="workingUnitId" + rowIndex %>' 

@@ -42,7 +42,9 @@
 <aui:form action="<%=editJobPosURL.toString() %>" method="post" 
 	 name="fm">
 	<aui:model-context bean="<%=jobPos %>" model="<%=JobPos.class %>" />
-	<aui:input name="<%=JobPosDisplayTerms.TITLE_JOBPOS %>"></aui:input>
+	<aui:input name="<%=JobPosDisplayTerms.TITLE_JOBPOS %>">
+		<aui:validator name="required"></aui:validator>
+	</aui:input>
 	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" type="hidden" />
 	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" type="hidden" />
 	<aui:select name="<%=JobPosDisplayTerms.LEADER_JOBPOS %>">
