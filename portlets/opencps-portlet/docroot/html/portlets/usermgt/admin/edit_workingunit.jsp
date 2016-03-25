@@ -22,10 +22,13 @@
 <%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
 <%@page import="com.liferay.portal.kernel.log.Log"%>
+<%@page import="org.opencps.util.MessageKeys"%>
 
 <%
 	String backURL = ParamUtil.getString(request, "backURL");
-	long workingUnitId = ParamUtil.getLong(request, WorkingUnitDisplayTerms.WORKINGUNIT_ID);
+	String redirectURL = ParamUtil.getString(request, "redirectURL");
+	long workingUnitId = ParamUtil.getLong(request, 
+		WorkingUnitDisplayTerms.WORKINGUNIT_ID);
 	String [] workingunitSections = null;
 	if(workingUnitId == 0) {
 		workingunitSections = new String[2];
@@ -42,12 +45,23 @@
 				
 	String[][] categorySections = {workingunitSections};
 %>
-<liferay-ui:error key="UPDATE_JOBPOS_ERROR" message="UPDATE JOBPOS ERROR!" />
+<liferay-ui:error 
+	key="<%=MessageKeys.JOBPOS_UPDATE_ERROR%>" 
+	message="<%=MessageKeys.JOBPOS_UPDATE_ERROR%>" 
+/>
 <portlet:actionURL var="updateWorkingUnitURL" name="updateWorkingUnit"/>
 
-<portlet:renderURL	var="dialogURL"	windowState="<%=LiferayWindowState.POP_UP.toString()%>">
+<portlet:renderURL	
+		var="dialogURL"	
+		windowState="<%=LiferayWindowState.POP_UP.toString()%>"
+	>
+	
 	<portlet:param name="mvcPath" value='<%= templatePath + "jobpos.jsp" %>' />
-	<portlet:param name="workingUnitId" value="<%=String.valueOf(workingUnitId) %>"/>
+	
+	<portlet:param 
+		name="workingUnitId" 
+		value="<%=String.valueOf(workingUnitId) %>"
+	/>
 </portlet:renderURL>
 
 <liferay-util:buffer var="htmlTop">
@@ -99,5 +113,6 @@
 </aui:script>
 
 <%!
-	private Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.edit_workingunit.jsp");
+	private Log _log = LogFactoryUtil.
+		getLog("html.portlets.usermgt.admin.edit_workingunit.jsp");
 %>

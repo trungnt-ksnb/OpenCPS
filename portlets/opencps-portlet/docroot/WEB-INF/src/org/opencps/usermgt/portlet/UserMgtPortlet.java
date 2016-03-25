@@ -89,7 +89,6 @@ public class UserMgtPortlet extends MVCPortlet {
 
 	}
 
-	@SuppressWarnings("null")
 	public void updateJobPos(ActionRequest request, ActionResponse response)
 		throws NumberFormatException, PortalException, SystemException {
 
@@ -110,8 +109,8 @@ public class UserMgtPortlet extends MVCPortlet {
 					indexOfRows[index].trim());
 
 			JobPosLocalServiceUtil.addJobPos(
-				serviceContext.getUserId(), serviceContext, title, "",
-				workingUnitId, leader);
+				serviceContext.getUserId(), title, "", workingUnitId, leader,
+				serviceContext);
 		}
 	}
 
@@ -132,8 +131,8 @@ public class UserMgtPortlet extends MVCPortlet {
 			jobPos = JobPosLocalServiceUtil.fetchJobPos(jobPosId);
 			jobPos =
 				JobPosLocalServiceUtil.updateJobPos(
-					jobPosId, serviceContext.getUserId(), serviceContext,
-					title, "", jobPos.getWorkingUnitId(), leader);
+					jobPosId, serviceContext.getUserId(), title, "",
+					jobPos.getWorkingUnitId(), leader, serviceContext);
 		}
 		else {
 			SessionErrors.add(request, "UPDATE_JOBPOS_ERROR");
@@ -141,12 +140,12 @@ public class UserMgtPortlet extends MVCPortlet {
 	}
 
 	public void deleteJobPos(ActionRequest request, ActionResponse response)
-		throws NoSuchJobPosException, SystemException {
+		throws SystemException, PortalException {
 
 		long jobPosId =
 			ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
 		if (jobPosId > 0) {
-			JobPosLocalServiceUtil.deletejobPos(jobPosId);;
+			JobPosLocalServiceUtil.deleteJobPosById(jobPosId);
 		}
 	}
 
@@ -340,7 +339,6 @@ public class UserMgtPortlet extends MVCPortlet {
 
 	}
 
-	@SuppressWarnings("null")
 	public void updateWorkingUnit(ActionRequest request, ActionResponse response)
 		throws PortalException, IOException, SystemException {
 
@@ -394,30 +392,30 @@ public class UserMgtPortlet extends MVCPortlet {
 			ParamUtil.getBoolean(
 				request, WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER);
 		String redirectURL = ParamUtil.getString(request, "redirectURL");
-		_log.info("go here");
-		/*
-		 * validateWorkingUnit( workingUnitId, name, govAgencyCode, enName,
-		 * address, faxNo, email, website, serviceContext.getScopeGroupId(),
-		 * parentWorkingUnitId);
-		 */
+		_log.info("go here redirectURL" + redirectURL);
+		
+		 validateWorkingUnit( workingUnitId, name, govAgencyCode, enName,
+		 address, faxNo, email, website, serviceContext.getScopeGroupId(),
+		 parentWorkingUnitId);
+
 		try {
 			_log.info("go here add");
 			if (workingUnitId == 0) {
 				WorkingUnitLocalServiceUtil.addWorkingUnit(
-					serviceContext.getUserId(), serviceContext, name, enName,
-					govAgencyCode, parentWorkingUnitId, address, cityCode,
-					districtCode, wardCode, telNo, faxNo, email, website,
-					isEmployer, managerWorkingUnitId);
+					serviceContext.getUserId(), name, enName, govAgencyCode,
+					parentWorkingUnitId, address, cityCode, districtCode,
+					wardCode, telNo, faxNo, email, website, isEmployer,
+					managerWorkingUnitId, serviceContext);
 
 				SessionMessages.add(
 					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 			}
 			else {
 				WorkingUnitLocalServiceUtil.updateWorkingUnit(
-					workingUnitId, serviceContext.getUserId(), serviceContext,
-					name, enName, govAgencyCode, parentWorkingUnitId, address,
-					cityCode, districtCode, wardCode, telNo, faxNo, email,
-					website, isEmployer, managerWorkingUnitId);
+					workingUnitId, serviceContext.getUserId(), name, enName,
+					govAgencyCode, parentWorkingUnitId, address, cityCode,
+					districtCode, wardCode, telNo, faxNo, email, website,
+					isEmployer, managerWorkingUnitId, serviceContext);
 				SessionMessages.add(
 					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 			}
@@ -438,11 +436,9 @@ public class UserMgtPortlet extends MVCPortlet {
 			}
 		}
 		finally {
-			/*
-			 * if (Validator.isNotNull(redirectURL)) { try {
-			 * response.sendRedirect(redirectURL); } catch (IOException e) { //
-			 * TODO Auto-generated catch block e.printStackTrace(); } }
-			 */
+			if (Validator.isNotNull(redirectURL)) {
+				response.sendRedirect(redirectURL);
+			}
 		}
 	}
 
@@ -451,24 +447,41 @@ public class UserMgtPortlet extends MVCPortlet {
 		String adress, String faxNo, String email, String website,
 		long groupId, long parentWorkingUnitId)
 		throws OutOfLengthUnitNameException, OutOfLengthUnitEnNameException,
-		NoSuchWorkingUnitException, SystemException,
-		DuplicatEgovAgencyCodeException, OutOfScopeException {
+		NoSuchWorkingUnitException, DuplicatEgovAgencyCodeException,
+		OutOfScopeException {
 
-		WorkingUnit workingUnit =
-			WorkingUnitLocalServiceUtil.getWorkingUnit(groupId, govAgencyCode);
-		WorkingUnit workingUnit2 = null;
-		workingUnit2 =
-			WorkingUnitLocalServiceUtil.fetchWorkingUnit(parentWorkingUnitId);
+		WorkingUnit workingUnit = null;
+		WorkingUnit parentWorkingUnit = null;
+		WorkingUnit workingUnitById = null;
+		try {
+			workingUnit =
+				WorkingUnitLocalServiceUtil.getWorkingUnit(
+					groupId, govAgencyCode);
+			parentWorkingUnit =
+				WorkingUnitLocalServiceUtil.fetchWorkingUnit(parentWorkingUnitId);
+			workingUnitById = 
+				WorkingUnitLocalServiceUtil.fetchWorkingUnit(workingUnitId);
+		}
+		catch (SystemException e) {
+			// nothing to do
+		}
+
 		if (name.trim().length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH) {
 			throw new OutOfLengthUnitNameException();
 		}
 		else if (enName.trim().length() > PortletPropsValues.USERMGT_WORKINGUNIT_ENNAME_LENGTH) {
 			throw new OutOfLengthUnitEnNameException();
 		}
-		else if (workingUnit != null && workingUnitId != 0) {
+		else if (workingUnit != null && workingUnitId == 0) {
 			throw new DuplicatEgovAgencyCodeException();
 		}
-		else if (workingUnit2 != null && workingUnit2.getIsEmployer() == false) {
+		else if (workingUnitById != null && workingUnit!=null &&
+			!workingUnit.getGovAgencyCode()
+				.equals(workingUnitById.getGovAgencyCode())) {
+			throw new DuplicatEgovAgencyCodeException();
+		}
+		else if (parentWorkingUnit != null &&
+			!parentWorkingUnit.getIsEmployer()) {
 			throw new OutOfScopeException();
 		}
 	}

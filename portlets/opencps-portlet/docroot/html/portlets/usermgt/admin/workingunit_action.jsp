@@ -1,10 +1,4 @@
 
-<%@page import="com.liferay.portal.kernel.log.Log"%>
-<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
-<%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
-<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
-<%@page import="org.opencps.util.WebKeys"%>
-<%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -24,21 +18,30 @@
 	 */
 %>
 <%@ include file="../init.jsp"%>
+<%@page import="com.liferay.portal.kernel.log.Log"%>
+<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
+<%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
+<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
+<%@page import="org.opencps.util.WebKeys"%>
+<%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
 
 <%
 	ResultRow row =
 		(ResultRow) request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 	WorkingUnit workingUnit = (WorkingUnit)row.getObject();
-	_log.error("currentURL====== "+currentURL);
 %>
 
 <liferay-ui:icon-menu>
 	<portlet:renderURL var="updateWorkingUnit">
 		<portlet:param name="mvcPath"
 			value="/html/portlets/usermgt/admin/edit_workingunit.jsp" />
-		<portlet:param name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID%>"
-			value="<%=String.valueOf(workingUnit.getWorkingunitId())%>" />
+		<portlet:param 
+			name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID%>"
+			value="<%=String.valueOf(workingUnit.getWorkingunitId())%>" 
+		/>
+		
 		<portlet:param name="redirectURL" value="<%=currentURL%>" />
+		
 		<portlet:param name="" value=""/>
 	</portlet:renderURL>
 
@@ -46,8 +49,12 @@
 		url="<%=updateWorkingUnit.toString()%>" />
 
 	<portlet:actionURL var="deleteWorkingUnitURL" name="deleteWorkingUnit">
-		<portlet:param name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID%>"
-			value="<%=String.valueOf(workingUnit.getWorkingunitId())%>" />
+		
+		<portlet:param 
+			name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID%>"
+			value="<%=String.valueOf(workingUnit.getWorkingunitId())%>" 
+		/>
+		
 		<portlet:param name="redirectURL" value="<%=currentURL%>" />
 	</portlet:actionURL>
 
