@@ -319,13 +319,15 @@ public class UserMgtPortlet extends MVCPortlet {
 				SessionErrors.add(actionRequest, SystemException.class);
 			}
 			else {
-				SessionErrors.add(
-					actionRequest,
-					MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED);
+
+				SessionErrors.add(actionRequest,
+
+				MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED);
 			}
 			redirectURL = returnURL;
 			SessionErrors.add(
 				actionRequest, MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED);
+			_log.error(e);
 
 		}
 		finally {
