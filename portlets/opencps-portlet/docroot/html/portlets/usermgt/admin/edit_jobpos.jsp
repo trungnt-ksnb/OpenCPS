@@ -26,8 +26,9 @@
 	String [] jobPosSections = {"general_jobpos","role_jobpos"};
 	String [][] categorySections = {jobPosSections};
 %>
-
-<portlet:actionURL var="updateJobPosURL" name="updateJobPos"/>
+<portlet:actionURL var="updateJobPosURL" name="updateJobPos">
+	<portlet:param name="workingUnitId" value="<%=String.valueOf(workingUnitId) %>"/>
+</portlet:actionURL>
 
 <liferay-util:buffer var="htmlTop">
 

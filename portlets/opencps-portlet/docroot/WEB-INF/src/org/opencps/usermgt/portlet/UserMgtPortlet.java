@@ -89,11 +89,15 @@ public class UserMgtPortlet extends MVCPortlet {
 
 	}
 
+	@SuppressWarnings("null")
 	public void updateJobPos(ActionRequest request, ActionResponse response)
 		throws NumberFormatException, PortalException, SystemException {
 
 		String rowIndexes = request.getParameter("rowIndexes");
 		String[] indexOfRows = rowIndexes.split(",");
+
+		long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
+		_log.info("workingUnitId" + workingUnitId);
 
 		ServiceContext serviceContext =
 			ServiceContextFactory.getInstance(request);
@@ -101,14 +105,28 @@ public class UserMgtPortlet extends MVCPortlet {
 			String title =
 				request.getParameter(JobPosSearchTerms.TITLE_JOBPOS +
 					indexOfRows[index].trim());
-			String leader =
-				request.getParameter(JobPosSearchTerms.LEADER_JOBPOS +
+			int leader =
+				ParamUtil.getInteger(request, JobPosSearchTerms.LEADER_JOBPOS +
 					indexOfRows[index].trim());
-			long workingUnitId =
-				ParamUtil.getLong(request, "workingUnitId" + 0);
+
 			JobPosLocalServiceUtil.addJobPos(
 				serviceContext.getUserId(), serviceContext, title, "",
-				workingUnitId, Integer.valueOf(leader));
+				workingUnitId, leader);
+		}
+
+		List<JobPos> jobPoses = new ArrayList<JobPos>();
+		jobPoses = JobPosLocalServiceUtil.getJobPoss(workingUnitId);
+		long[] jobPosIds = null;
+		int index = 0;
+		if (!jobPoses.isEmpty()) {
+			jobPosIds = new long[jobPoses.size()];
+			for (JobPos jobPos : jobPoses) {
+				jobPosIds[index] = jobPos.getJobPosId();
+				index++;
+			}
+			index = 0;
+			WorkingUnitLocalServiceUtil.mapMultipleJobPosWorkingUnitToOneWorkingUnit(
+				workingUnitId, jobPosIds);
 		}
 
 	}
@@ -338,6 +356,7 @@ public class UserMgtPortlet extends MVCPortlet {
 
 	}
 
+	@SuppressWarnings("null")
 	public void updateWorkingUnit(ActionRequest request, ActionResponse response)
 		throws PortalException, IOException, SystemException {
 
@@ -392,16 +411,20 @@ public class UserMgtPortlet extends MVCPortlet {
 				request, WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER);
 		String redirectURL = ParamUtil.getString(request, "redirectURL");
 		_log.info("go here");
-		validateWorkingUnit(
-			workingUnitId, name, govAgencyCode, enName, address, faxNo, email,
-			website, serviceContext.getScopeGroupId(), parentWorkingUnitId);
+		/*
+		 * validateWorkingUnit( workingUnitId, name, govAgencyCode, enName,
+		 * address, faxNo, email, website, serviceContext.getScopeGroupId(),
+		 * parentWorkingUnitId);
+		 */
 		try {
+			_log.info("go here add");
 			if (workingUnitId == 0) {
 				WorkingUnitLocalServiceUtil.addWorkingUnit(
 					serviceContext.getUserId(), serviceContext, name, enName,
 					govAgencyCode, parentWorkingUnitId, address, cityCode,
 					districtCode, wardCode, telNo, faxNo, email, website,
 					isEmployer, managerWorkingUnitId);
+
 				SessionMessages.add(
 					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 			}
@@ -431,15 +454,11 @@ public class UserMgtPortlet extends MVCPortlet {
 			}
 		}
 		finally {
-			if (Validator.isNotNull(redirectURL)) {
-				try {
-					response.sendRedirect(redirectURL);
-				}
-				catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			/*
+			 * if (Validator.isNotNull(redirectURL)) { try {
+			 * response.sendRedirect(redirectURL); } catch (IOException e) { //
+			 * TODO Auto-generated catch block e.printStackTrace(); } }
+			 */
 		}
 	}
 
