@@ -27,6 +27,7 @@ import org.opencps.usermgt.NoSuchJobPosException;
 import org.opencps.usermgt.NoSuchWorkingUnitException;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
+import org.opencps.usermgt.service.WorkingUnitLocalServiceUtil;
 import org.opencps.usermgt.service.base.JobPosLocalServiceBaseImpl;
 import org.opencps.util.PortletPropsValues;
 
@@ -124,6 +125,7 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 			.setMappingRoleId(role
 				.getRoleId());
 
+		workingUnitPersistence.addJobPos(workingUnitId, jobPosId);
 		return jobPosPersistence
 			.update(jobPos);
 	}

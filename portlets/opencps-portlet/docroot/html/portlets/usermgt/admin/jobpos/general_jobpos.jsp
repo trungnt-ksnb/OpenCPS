@@ -59,9 +59,6 @@
 								</aui:input>
 								<aui:input type="hidden" 
 									name='<%=JobPosDisplayTerms.ID_JOBPOS + rowIndex %>' />
-								<aui:input name='<%="workingUnitId" + rowIndex %>' 
-									value="<%=String.valueOf(workingUnitId) %>"
-									type="hidden" />
 							</aui:col>
 							<aui:col width="50">
 								<aui:select name='<%=JobPosDisplayTerms.LEADER_JOBPOS + rowIndex%>'
