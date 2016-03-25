@@ -67,9 +67,6 @@ import com.liferay.util.bridges.mvc.MVCPortlet;
 
 public class UserMgtPortlet extends MVCPortlet {
 
-	private Log _log = LogFactoryUtil
-			.getLog(UserMgtEditProfilePortlet.class.getName());
-
 	public void deleteWorkingUnit(ActionRequest request,
 			ActionResponse response)
 			throws NoSuchWorkingUnitException, SystemException {
@@ -96,7 +93,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			long workingUnitId = ParamUtil.getLong(request,
 					"workingUnitId" + 0);
 			JobPosLocalServiceUtil.addJobPos(serviceContext.getUserId(),
-					serviceContext, title, "", workingUnitId, 0,
+					serviceContext, title, "", workingUnitId,
 					Integer.valueOf(leader));
 		}
 
@@ -118,7 +115,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			jobPos = JobPosLocalServiceUtil.fetchJobPos(jobPosId);
 			jobPos = JobPosLocalServiceUtil.updateJobPos(jobPosId,
 					serviceContext.getUserId(), serviceContext, title, "",
-					jobPos.getWorkingUnitId(), 0, leader);
+					jobPos.getWorkingUnitId(), leader);
 		} else {
 			SessionErrors.add(request, "UPDATE_JOBPOS_ERROR");
 		}
@@ -278,7 +275,6 @@ public class UserMgtPortlet extends MVCPortlet {
 				WorkingUnitDisplayTerms.WORKINGUNIT_WARDCODE);
 		ServiceContext serviceContext = ServiceContextFactory
 				.getInstance(request);
-
 		if (workingUnitId == 0) {
 			WorkingUnitLocalServiceUtil.addWorkingUnit(
 					serviceContext.getUserId(), serviceContext, name, enName,
@@ -361,5 +357,6 @@ public class UserMgtPortlet extends MVCPortlet {
 
 		super.render(renderRequest, renderResponse);
 	}
-
+	private Log _log = LogFactoryUtil
+					.getLog(UserMgtEditProfilePortlet.class.getName());
 }

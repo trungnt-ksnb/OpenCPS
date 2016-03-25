@@ -46,7 +46,7 @@
 <liferay-ui:search-container searchContainer="<%= new WorkingUnitSearch(
 	renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
 	<liferay-ui:search-container-results>
-		<%@include file="/html/portlets/usermgt/admin/result_search_workingunit.jspf" %>
+		<%@include file="/html/portlets/usermgt/admin/workingunit_search_results.jspf" %>
 	
 	</liferay-ui:search-container-results>
 	
@@ -59,7 +59,7 @@
 		<%
 			row.addText(workingUnit.getName());
 			row.addText(workingUnit.getGovAgencyCode());
-			row.addJSP("center", SearchEntry.DEFAULT_VALIGN,  templatePath + "workingunit-action.jsp", config.getServletContext(), request, response);
+			row.addJSP("center", SearchEntry.DEFAULT_VALIGN,  templatePath + "workingunit_action.jsp", config.getServletContext(), request, response);
 		%>
 	</liferay-ui:search-container-row>
 	
