@@ -1,4 +1,6 @@
 
+<%@page import="com.liferay.portal.kernel.log.Log"%>
+<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
 <%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
 <%@page import="org.opencps.usermgt.model.WorkingUnit"%>
 <%@page import="org.opencps.util.WebKeys"%>
@@ -27,6 +29,7 @@
 	ResultRow row =
 		(ResultRow) request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 	WorkingUnit workingUnit = (WorkingUnit)row.getObject();
+	_log.error("currentURL====== "+currentURL);
 %>
 
 <liferay-ui:icon-menu>
@@ -35,7 +38,8 @@
 			value="/html/portlets/usermgt/admin/edit_workingunit.jsp" />
 		<portlet:param name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID%>"
 			value="<%=String.valueOf(workingUnit.getWorkingunitId())%>" />
-		<portlet:param name="backURL" value="<%=currentURL%>" />
+		<portlet:param name="redirectURL" value="<%=currentURL%>" />
+		<portlet:param name="" value=""/>
 	</portlet:renderURL>
 
 	<liferay-ui:icon image="edit" message="edit"
@@ -49,8 +53,10 @@
 
 	<liferay-ui:icon image="delete" message="delete"
 		url="<%=deleteWorkingUnitURL.toString()%>" />
-
+		
 </liferay-ui:icon-menu>
 
-
+<%!
+	private Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.workingunit_action.jsp");
+%>
 

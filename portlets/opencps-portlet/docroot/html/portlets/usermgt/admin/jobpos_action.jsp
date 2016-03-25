@@ -37,7 +37,7 @@
 			value="<%=String.valueOf(jobPos.getJobPosId())%>" />
 		<portlet:param name="workingUnitId" 
 			value="<%=String.valueOf(workingUnitId) %>"/>
-		<portlet:param name="backURL" value="<%=currentURL%>" />
+		<portlet:param name="redirectURL" value="<%=currentURL%>" />
 	</portlet:renderURL>
 
 	<liferay-ui:icon image="edit" message="edit"
