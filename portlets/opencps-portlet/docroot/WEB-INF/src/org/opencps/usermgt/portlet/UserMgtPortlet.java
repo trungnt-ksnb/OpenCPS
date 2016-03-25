@@ -110,7 +110,7 @@ public class UserMgtPortlet extends MVCPortlet {
 							+ indexOfRows[index].trim());
 
 			JobPosLocalServiceUtil.addJobPos(serviceContext.getUserId(), title,
-					"", workingUnitId, leader, serviceContext);
+					StringPool.BLANK, workingUnitId, leader, serviceContext);
 		}
 	}
 
