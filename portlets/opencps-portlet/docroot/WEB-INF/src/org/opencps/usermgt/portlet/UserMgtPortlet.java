@@ -394,9 +394,9 @@ public class UserMgtPortlet extends MVCPortlet {
 		String redirectURL = ParamUtil.getString(request, "redirectURL");
 		_log.info("go here redirectURL" + redirectURL);
 		
-		 validateWorkingUnit( workingUnitId, name, govAgencyCode, enName,
-		 address, faxNo, email, website, serviceContext.getScopeGroupId(),
-		 parentWorkingUnitId);
+//		 validateWorkingUnit( workingUnitId, name, govAgencyCode, enName,
+//		 address, faxNo, email, website, serviceContext.getScopeGroupId(),
+//		 parentWorkingUnitId);
 
 		try {
 			_log.info("go here add");
@@ -411,6 +411,7 @@ public class UserMgtPortlet extends MVCPortlet {
 					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 			}
 			else {
+				_log.info("go here update");
 				WorkingUnitLocalServiceUtil.updateWorkingUnit(
 					workingUnitId, serviceContext.getUserId(), name, enName,
 					govAgencyCode, parentWorkingUnitId, address, cityCode,
@@ -463,7 +464,7 @@ public class UserMgtPortlet extends MVCPortlet {
 				WorkingUnitLocalServiceUtil.fetchWorkingUnit(workingUnitId);
 		}
 		catch (SystemException e) {
-			// nothing to do
+			
 		}
 
 		if (name.trim().length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH) {
