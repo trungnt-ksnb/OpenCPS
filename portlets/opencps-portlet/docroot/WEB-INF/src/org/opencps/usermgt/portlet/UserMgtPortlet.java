@@ -27,8 +27,17 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.opencps.datamgt.EmptyDictItemNameException;
+import org.opencps.usermgt.DuplicateEmployeeEmailException;
+import org.opencps.usermgt.DuplicateEmployeeNoException;
+import org.opencps.usermgt.EmptyEmployeeEmailException;
+import org.opencps.usermgt.EmptyEmployeeNameException;
+import org.opencps.usermgt.EmptyEmployeeNoException;
+import org.opencps.usermgt.NoSuchEmployeeException;
 import org.opencps.usermgt.NoSuchJobPosException;
 import org.opencps.usermgt.NoSuchWorkingUnitException;
+import org.opencps.usermgt.OutOfLengthEmployeeEmailException;
+import org.opencps.usermgt.OutOfLengthFullNameException;
 import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
@@ -51,6 +60,7 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
@@ -147,6 +157,8 @@ public class UserMgtPortlet extends MVCPortlet {
 
 		String email = ParamUtil.getString(actionRequest,
 				EmployeeDisplayTerm.EMAIL);
+		String userAccountEmail = ParamUtil.getString(actionRequest,
+				EmployeeDisplayTerm.USER_EMAIL);
 		String employeeNo = ParamUtil.getString(actionRequest,
 				EmployeeDisplayTerm.EMPLOYEE_NO);
 		String fullName = ParamUtil.getString(actionRequest,
@@ -180,6 +192,7 @@ public class UserMgtPortlet extends MVCPortlet {
 		int[] jobPosIndexes = StringUtil
 				.split(ParamUtil.getString(actionRequest, "jobPosIndexes"), -1);
 
+		UserGroup userGroup = null;
 		List<Long> jobPosIds = new ArrayList<Long>();
 
 		if (jobPosIndexes != null && jobPosIndexes.length > 0) {
@@ -192,25 +205,33 @@ public class UserMgtPortlet extends MVCPortlet {
 
 			}
 		}
+		try {
+			userGroup = UserGroupLocalServiceUtil.getUserGroup(companyId,
+					PortletPropsValues.USERMGT_USERGROUP_NAME_EMPLOYEE);
+		} catch (Exception e) {
+			_log.warn(e);
+		}
 
 		try {
 
 			ServiceContext serviceContext = ServiceContextFactory
 					.getInstance(actionRequest);
-			// validatetDictItem(dictItemId, itemName, itemCode,
-			// serviceContext);
+			// Add user group
+			if (userGroup == null) {
+				userGroup = UserGroupLocalServiceUtil.addUserGroup(
+						serviceContext.getUserId(), companyId,
+						PortletPropsValues.USERMGT_USERGROUP_NAME_EMPLOYEE,
+						StringPool.BLANK, serviceContext);
+			}
+
+			long[] userGroupIds = new long[]{userGroup.getUserGroupId()};
 
 			// Add site for user. Default current site
 			long[] groupIds = new long[]{groupId};
 
-			// Add user group
-			UserGroup userGroup = UserGroupLocalServiceUtil.getUserGroup(
-					companyId,
-					PortletPropsValues.USERMGT_USERGROUP_NAME_EMPLOYEE);
-
-			long[] userGroupIds = new long[]{userGroup.getUserGroupId()};
-
-			// Add organization
+			// Validate before update
+			validateEmployee(employeeId, fullName, userAccountEmail, employeeNo,
+					workingUnitId, mainJobPosId, serviceContext);
 
 			if (employeeId == 0) {
 				EmployeeLocalServiceUtil.addEmployee(serviceContext.getUserId(),
@@ -228,9 +249,40 @@ public class UserMgtPortlet extends MVCPortlet {
 			}
 		} catch (Exception e) {
 
+			if (e instanceof EmptyEmployeeEmailException) {
+				SessionErrors.add(actionRequest,
+						EmptyEmployeeEmailException.class);
+			} else if (e instanceof OutOfLengthEmployeeEmailException) {
+				SessionErrors.add(actionRequest,
+						OutOfLengthEmployeeEmailException.class);
+			} else if (e instanceof EmptyEmployeeNoException) {
+				SessionErrors.add(actionRequest,
+						EmptyEmployeeNoException.class);
+			} else if (e instanceof EmptyEmployeeNameException) {
+				SessionErrors.add(actionRequest,
+						EmptyEmployeeNameException.class);
+			} else if (e instanceof OutOfLengthFullNameException) {
+				SessionErrors.add(actionRequest,
+						OutOfLengthFullNameException.class);
+			} else if (e instanceof NoSuchWorkingUnitException) {
+				SessionErrors.add(actionRequest,
+						NoSuchWorkingUnitException.class);
+			} else if (e instanceof NoSuchJobPosException) {
+				SessionErrors.add(actionRequest, NoSuchJobPosException.class);
+			} else if (e instanceof DuplicateEmployeeEmailException) {
+				SessionErrors.add(actionRequest,
+						DuplicateEmployeeEmailException.class);
+			} else if (e instanceof NoSuchEmployeeException) {
+				SessionErrors.add(actionRequest, NoSuchEmployeeException.class);
+			} else if (e instanceof PortalException) {
+				SessionErrors.add(actionRequest, PortalException.class);
+			} else if (e instanceof SystemException) {
+				SessionErrors.add(actionRequest, SystemException.class);
+			} else {
+				SessionErrors.add(actionRequest,
+						MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED);
+			}
 			redirectURL = returnURL;
-			SessionErrors.add(actionRequest,
-					MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED);
 
 		} finally {
 			if (Validator.isNotNull(redirectURL)) {
@@ -357,6 +409,90 @@ public class UserMgtPortlet extends MVCPortlet {
 
 		super.render(renderRequest, renderResponse);
 	}
+
+	protected void validateEmployee(long employeeId, String fullName,
+			String email, String employeeNo, long workingUnitId,
+			long mainJobPosId, ServiceContext serviceContext)
+			throws EmptyEmployeeEmailException,
+			OutOfLengthEmployeeEmailException, EmptyEmployeeNoException,
+			EmptyEmployeeNameException, OutOfLengthFullNameException,
+			NoSuchWorkingUnitException, NoSuchJobPosException,
+			DuplicateEmployeeEmailException, NoSuchEmployeeException,
+			PortalException, SystemException {
+
+		if (Validator.isNull(email)) {
+			throw new EmptyEmployeeEmailException();
+		}
+
+		if (email.length() > PortletPropsValues.USERMGT_EMPLOYEE_EMAIL_LENGTH) {
+			throw new OutOfLengthEmployeeEmailException();
+		}
+
+		if (Validator.isNull(employeeNo)) {
+			throw new EmptyEmployeeNoException();
+		}
+
+		if (Validator.isNull(fullName)) {
+			throw new EmptyEmployeeNameException();
+		}
+
+		if (fullName
+				.length() > PortletPropsValues.USERMGT_EMPLOYEE_FULLNAME_LENGTH) {
+			throw new OutOfLengthFullNameException();
+		}
+
+		if (workingUnitId <= 0) {
+			throw new NoSuchWorkingUnitException();
+		}
+
+		if (mainJobPosId <= 0) {
+			throw new NoSuchJobPosException();
+		}
+
+		Employee employee = null;
+
+		Employee employeeByEmail = null;
+
+		Employee employeeByEmployeeNo = null;
+
+		if (employeeId > 0) {
+			employee = EmployeeLocalServiceUtil.getEmployee(employeeId);
+		}
+
+		try {
+			employeeByEmail = EmployeeLocalServiceUtil.getEmployeeByEmail(
+					serviceContext.getScopeGroupId(), email);
+		} catch (Exception e) {
+			// Nothing todo
+		}
+
+		try {
+			employeeByEmployeeNo = EmployeeLocalServiceUtil
+					.getEmployeeByEmployeeNo(serviceContext.getScopeGroupId(),
+							employeeNo);
+		} catch (Exception e) {
+			// Nothing todo
+		}
+
+		if (employee == null) {
+			if (employeeByEmail != null) {
+				throw new DuplicateEmployeeEmailException();
+			}
+
+			if (employeeByEmployeeNo != null) {
+				throw new DuplicateEmployeeNoException();
+			}
+		} else {
+			if (employeeByEmail.getEmployeeId() != employeeId) {
+				throw new DuplicateEmployeeEmailException();
+			}
+
+			if (employeeByEmployeeNo.getEmployeeId() != employeeId) {
+				throw new DuplicateEmployeeNoException();
+			}
+		}
+
+	}
 	private Log _log = LogFactoryUtil
-					.getLog(UserMgtEditProfilePortlet.class.getName());
+			.getLog(UserMgtEditProfilePortlet.class.getName());
 }
