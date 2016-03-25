@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opencps.usermgt.NoSuchEmployeeException;
 import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
@@ -184,6 +185,16 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 			long workingUnitId) throws SystemException {
 		return employeePersistence.countByG_N_W(groupId, fullNames,
 				workingUnitId);
+	}
+
+	public Employee getEmployeeByEmail(long groupId, String email)
+			throws NoSuchEmployeeException, SystemException {
+		return employeePersistence.findByG_E(groupId, email);
+	}
+
+	public Employee getEmployeeByEmployeeNo(long groupId, String employeeNo)
+			throws NoSuchEmployeeException, SystemException {
+		return employeePersistence.findByG_ENO(groupId, employeeNo);
 	}
 
 	public List<Employee> getEmployees(long groupId) throws SystemException {
