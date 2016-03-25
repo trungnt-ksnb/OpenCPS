@@ -113,22 +113,6 @@ public class UserMgtPortlet extends MVCPortlet {
 				serviceContext.getUserId(), serviceContext, title, "",
 				workingUnitId, leader);
 		}
-
-		List<JobPos> jobPoses = new ArrayList<JobPos>();
-		jobPoses = JobPosLocalServiceUtil.getJobPoss(workingUnitId);
-		long[] jobPosIds = null;
-		int index = 0;
-		if (!jobPoses.isEmpty()) {
-			jobPosIds = new long[jobPoses.size()];
-			for (JobPos jobPos : jobPoses) {
-				jobPosIds[index] = jobPos.getJobPosId();
-				index++;
-			}
-			index = 0;
-			WorkingUnitLocalServiceUtil.mapMultipleJobPosWorkingUnitToOneWorkingUnit(
-				workingUnitId, jobPosIds);
-		}
-
 	}
 
 	public void editJobPos(ActionRequest request, ActionResponse response)
