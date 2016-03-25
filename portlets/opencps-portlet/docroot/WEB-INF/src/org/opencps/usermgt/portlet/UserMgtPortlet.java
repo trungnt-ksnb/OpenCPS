@@ -262,12 +262,12 @@ public class UserMgtPortlet extends MVCPortlet {
 
 			if (employeeId == 0) {
 				EmployeeLocalServiceUtil.addEmployee(
-						serviceContext.getUserId(), workingUnitId, employeeNo,
-						fullName, gender, telNo, mobile, email, screenName,
-						workingStatus, mainJobPosId,
-						ArrayUtil.toLongArray(jobPosIds), birthDateDay,
-						birthDateMonth, birthDateYear, passWord, rePassWord,
-						groupIds, userGroupIds, serviceContext);
+					serviceContext.getUserId(), workingUnitId, employeeNo,
+					fullName, gender, telNo, mobile, email, workingStatus,
+					mainJobPosId, ArrayUtil.toLongArray(jobPosIds),
+					userAccountEmail, screenName, birthDateDay, birthDateMonth,
+					birthDateYear, passWord, rePassWord, groupIds,
+					userGroupIds, serviceContext);
 				SessionMessages.add(
 					actionRequest, MessageKeys.USERMGT_ADD_SUCCESS);
 			}
