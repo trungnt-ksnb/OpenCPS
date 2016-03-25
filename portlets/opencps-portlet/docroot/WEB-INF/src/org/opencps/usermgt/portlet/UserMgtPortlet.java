@@ -407,8 +407,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			String email, String website, long groupId,
 			long parentWorkingUnitId, boolean isEmployer)
 			throws OutOfLengthUnitNameException, OutOfLengthUnitEnNameException,
-			NoSuchWorkingUnitException, DuplicatEgovAgencyCodeException,
-			OutOfScopeException {
+			DuplicatEgovAgencyCodeException,OutOfScopeException {
 
 		if (name.length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH) {
 			throw new OutOfLengthUnitNameException();
@@ -425,7 +424,7 @@ public class UserMgtPortlet extends MVCPortlet {
 				WorkingUnitLocalServiceUtil.getWorkingUnit(
 					groupId, govAgencyCode);
 		}
-		catch (SystemException e) {
+		catch (SystemException | NoSuchWorkingUnitException e) {
 			
 		}
 
