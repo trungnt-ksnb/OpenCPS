@@ -218,5 +218,6 @@
         <exception>EmptyEmployeeNo</exception>
         <exception>EmptyEmployeeName</exception>
         <exception>OutOfLengthEmployeeEmail</exception>
+        <exception>OutOfScope</exception>
 	</exceptions>
 </service-builder>
