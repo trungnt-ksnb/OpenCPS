@@ -385,7 +385,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			}
 	}
 	
-	protected void valiateWorkingUnit(long workingUnitId, String name,
+	protected void validateWorkingUnit(long workingUnitId, String name,
 		String govAgencyCode, String enName, String adress, String faxNo,
 		String email, String website , long groupId) 
 		throws OutOfLengthUnitNameException, OutOfLengthUnitEnNameException,
