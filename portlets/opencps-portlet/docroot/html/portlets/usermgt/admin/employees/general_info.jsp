@@ -29,6 +29,10 @@
 <%
 	Employee employee = (Employee)request.getAttribute(WebKeys.EMPLOYEE_ENTRY);
 
+	if(employee == null){
+		employee = (Employee)request.getAttribute(WebKeys.TURN_BACK_EMPLOYEE_ENTRY);
+	}
+
 	Date defaultBirthDate = employee != null && employee.getBirthdate() != null ? 
 			employee.getBirthdate() : DateTimeUtil.convertStringToDate("01/01/1970");
 	PortletUtil.SplitDate spd = new PortletUtil.SplitDate(defaultBirthDate);

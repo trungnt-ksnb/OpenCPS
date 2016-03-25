@@ -233,15 +233,15 @@ public class UserMgtPortlet extends MVCPortlet {
 		}
 
 		try {
+			// serviceContext);
 			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
-			// validatetDictItem(dictItemId, itemName, itemCode,
-			// serviceContext);
 
 			// Add site for user. Default current site
 			long[] groupIds = new long[] {
 				groupId
 			};
+
 			// Add user group
 			if (userGroup == null) {
 				userGroup =
@@ -262,12 +262,12 @@ public class UserMgtPortlet extends MVCPortlet {
 
 			if (employeeId == 0) {
 				EmployeeLocalServiceUtil.addEmployee(
-					serviceContext.getUserId(), workingUnitId, employeeNo,
-					fullName, gender, telNo, mobile, email, screenName,
-					workingStatus, mainJobPosId,
-					ArrayUtil.toLongArray(jobPosIds), birthDateDay,
-					birthDateMonth, birthDateYear, passWord, rePassWord,
-					groupIds, userGroupIds, serviceContext);
+						serviceContext.getUserId(), workingUnitId, employeeNo,
+						fullName, gender, telNo, mobile, email, screenName,
+						workingStatus, mainJobPosId,
+						ArrayUtil.toLongArray(jobPosIds), birthDateDay,
+						birthDateMonth, birthDateYear, passWord, rePassWord,
+						groupIds, userGroupIds, serviceContext);
 				SessionMessages.add(
 					actionRequest, MessageKeys.USERMGT_ADD_SUCCESS);
 			}
@@ -337,7 +337,7 @@ public class UserMgtPortlet extends MVCPortlet {
 	}
 
 	public void updateWorkingUnit(ActionRequest request, ActionResponse response)
-		throws PortalException, SystemException {
+		throws PortalException, IOException, SystemException {
 
 		long managerWorkingUnitId =
 			ParamUtil.getLong(
@@ -349,6 +349,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			ParamUtil.getLong(
 				request,
 				WorkingUnitDisplayTerms.WORKINGUNIT_PARENTWORKINGUNITID);
+
 		String name =
 			ParamUtil.getString(
 				request, WorkingUnitDisplayTerms.WORKINGUNIT_NAME);
@@ -392,10 +393,8 @@ public class UserMgtPortlet extends MVCPortlet {
 		validateWorkingUnit(
 			workingUnitId, name, govAgencyCode, enName, address, faxNo, email,
 			website, serviceContext.getScopeGroupId(), parentWorkingUnitId);
-
 		try {
 			if (workingUnitId == 0) {
-				_log.info("go here add");
 				WorkingUnitLocalServiceUtil.addWorkingUnit(
 					serviceContext.getUserId(), serviceContext, name, enName,
 					govAgencyCode, parentWorkingUnitId, address, cityCode,
@@ -440,7 +439,6 @@ public class UserMgtPortlet extends MVCPortlet {
 				}
 			}
 		}
-
 	}
 
 	protected void validateWorkingUnit(
@@ -454,7 +452,8 @@ public class UserMgtPortlet extends MVCPortlet {
 		WorkingUnit workingUnit =
 			WorkingUnitLocalServiceUtil.getWorkingUnit(groupId, govAgencyCode);
 		WorkingUnit workingUnit2 = null;
-		workingUnit2 = WorkingUnitLocalServiceUtil.fetchWorkingUnit(parentWorkingUnitId);
+		workingUnit2 =
+			WorkingUnitLocalServiceUtil.fetchWorkingUnit(parentWorkingUnitId);
 		if (name.trim().length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH) {
 			throw new OutOfLengthUnitNameException();
 		}
@@ -464,7 +463,7 @@ public class UserMgtPortlet extends MVCPortlet {
 		else if (workingUnit != null && workingUnitId != 0) {
 			throw new DuplicatEgovAgencyCodeException();
 		}
-		else if (workingUnit2 !=null && workingUnit2.getIsEmployer() == false) {
+		else if (workingUnit2 != null && workingUnit2.getIsEmployer() == false) {
 			throw new OutOfScopeException();
 		}
 	}

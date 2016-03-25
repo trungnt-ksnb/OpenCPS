@@ -30,6 +30,17 @@
 <%@page import="org.opencps.util.PortletUtil"%>
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="org.opencps.usermgt.model.Employee"%>
+<%@page import="org.opencps.usermgt.DuplicateEmployeeEmailException"%>
+<%@page import="org.opencps.util.MessageKeys"%>
+<%@page import="com.liferay.portal.DuplicateUserEmailAddressException"%>
+<%@page import="com.liferay.portal.kernel.exception.PortalException"%>
+<%@page import="org.opencps.usermgt.NoSuchJobPosException"%>
+<%@page import="org.opencps.usermgt.OutOfLengthFullNameException"%>
+<%@page import="org.opencps.usermgt.EmptyEmployeeNameException"%>
+<%@page import="org.opencps.usermgt.EmptyEmployeeNoException"%>
+<%@page import="org.opencps.usermgt.EmptyEmployeeEmailException"%>
+<%@page import="org.opencps.usermgt.OutOfLengthEmployeeEmailException"%>
+<%@page import="org.opencps.usermgt.NoSuchWorkingUnitException"%>
 <%@ include file="../init.jsp"%>
 
 
@@ -116,6 +127,40 @@
 
 <aui:form name="fm" action="<%=updateEmployeeURL %>" method="post">
 
+	<liferay-ui:error exception="<%= EmptyEmployeeEmailException.class %>" 
+		message="<%=EmptyEmployeeEmailException.class.getName() %>" 
+	/>
+	<liferay-ui:error exception="<%= OutOfLengthEmployeeEmailException.class %>" 
+		message="<%=OutOfLengthEmployeeEmailException.class.getName() %>"
+	/>
+	<liferay-ui:error exception="<%= EmptyEmployeeNoException.class %>" 
+		message="<%=EmptyEmployeeNoException.class.getName() %>" 
+	/>
+	<liferay-ui:error exception="<%= EmptyEmployeeNameException.class %>" 
+		message="<%=EmptyEmployeeNameException.class.getName() %>" 
+	/>
+	<liferay-ui:error exception="<%= OutOfLengthFullNameException.class %>" 
+		message="<%=OutOfLengthFullNameException.class.getName() %>" 
+	/>
+	<liferay-ui:error exception="<%= NoSuchWorkingUnitException.class %>" 
+		message="<%=NoSuchWorkingUnitException.class.getName() %>" 
+	/>
+	<liferay-ui:error exception="<%= NoSuchJobPosException.class %>" 
+		message="<%=NoSuchJobPosException.class.getName() %>" 
+	/>
+	<liferay-ui:error exception="<%= DuplicateEmployeeEmailException.class %>" 
+		message="<%=DuplicateEmployeeEmailException.class.getName() %>" 
+	/>
+	<liferay-ui:error exception="<%= PortalException.class %>" 
+		message="<%=PortalException.class.getName() %>" 
+	/>
+	<liferay-ui:error exception="<%= DuplicateUserEmailAddressException.class %>" 
+		message="<%=DuplicateUserEmailAddressException.class.getName() %>" 
+	/>
+	<liferay-ui:error key="<%= MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED%>" 
+		message="<%=MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED %>" 
+	/>
+	
 	<aui:model-context bean="<%=employee %>" model="<%=Employee.class %>" />
 	
 	<aui:input name="redirectURL" type="hidden" value="<%= backURL%>"/>
@@ -169,13 +214,13 @@
 
 		autoFieldRows = A.all('#<portlet:namespace/>boundingBox .lfr-form-row-inline');
 
-		if(autoFieldRows){
+		/* if(autoFieldRows){
 			autoFieldRows.each(function(node, index){
 				if(index != 0){
 					node.remove();	
 				}		
 			});
-		} 
+		}  */
 		
 		if(workingUnitInput){
 			var value = workingUnitInput.val();
