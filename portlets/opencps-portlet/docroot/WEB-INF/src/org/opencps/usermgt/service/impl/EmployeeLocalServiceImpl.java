@@ -26,6 +26,7 @@ import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.base.EmployeeLocalServiceBaseImpl;
+import org.opencps.util.DateTimeUtil;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.PortletUtil;
 
@@ -74,11 +75,11 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 
 	public Employee addEmployee(long userId, long workingUnitId,
 			String employeeNo, String fullName, int gender, String telNo,
-			String mobile, String email, String screenName, int workingStatus,
-			long mainJobPosId, long[] jobPosIds, int birthDateDay,
-			int birthDateMonth, int birthDateYear, String password,
-			String reTypePassword, long[] groupIds, long[] userGroupIds,
-			ServiceContext serviceContext)
+			String mobile, String email, int workingStatus, long mainJobPosId,
+			long[] jobPosIds, String accountEmail, String screenName,
+			int birthDateDay, int birthDateMonth, int birthDateYear,
+			String password, String reTypePassword, long[] groupIds,
+			long[] userGroupIds, ServiceContext serviceContext)
 			throws SystemException, PortalException {
 
 		long employeeId = CounterLocalServiceUtil
@@ -128,12 +129,12 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 
 		PortletUtil.SplitName spn = PortletUtil.splitName(fullName);
 
-		Date birthDate = PortletUtil.getDate(birthDateDay, birthDateMonth,
+		Date birthDate = DateTimeUtil.getDate(birthDateDay, birthDateMonth,
 				birthDateYear);
 
 		User user = userService.addUserWithWorkflow(
 				serviceContext.getCompanyId(), false, password, reTypePassword,
-				false, screenName, email, 0L, StringPool.BLANK,
+				false, screenName, accountEmail, 0L, StringPool.BLANK,
 				LocaleUtil.getDefault(), spn.getFirstName(), spn.getMidName(),
 				spn.getLastName(), 0, 0, (gender == 1), birthDateMonth,
 				birthDateDay, birthDateYear,
@@ -350,7 +351,7 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		mappingUser = userLocalService.updateUser(mappingUser);
 
 		// update birth date
-		Date birthDate = PortletUtil.getDate(birthDateDay, birthDateMonth,
+		Date birthDate = DateTimeUtil.getDate(birthDateDay, birthDateMonth,
 				birthDateYear);
 
 		Contact contact = ContactLocalServiceUtil
