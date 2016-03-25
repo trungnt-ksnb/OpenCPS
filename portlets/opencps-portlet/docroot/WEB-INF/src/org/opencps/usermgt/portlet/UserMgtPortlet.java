@@ -27,8 +27,17 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.opencps.usermgt.DuplicatEgovAgencyCodeException;
+import org.opencps.usermgt.DuplicateEmployeeEmailException;
+import org.opencps.usermgt.DuplicateEmployeeNoException;
+import org.opencps.usermgt.EmptyEmployeeEmailException;
+import org.opencps.usermgt.EmptyEmployeeNameException;
+import org.opencps.usermgt.EmptyEmployeeNoException;
+import org.opencps.usermgt.NoSuchEmployeeException;
 import org.opencps.usermgt.NoSuchJobPosException;
 import org.opencps.usermgt.NoSuchWorkingUnitException;
+import org.opencps.usermgt.OutOfLengthEmployeeEmailException;
+import org.opencps.usermgt.OutOfLengthFullNameException;
 import org.opencps.usermgt.OutOfLengthUnitEnNameException;
 import org.opencps.usermgt.OutOfLengthUnitNameException;
 import org.opencps.usermgt.model.Employee;
@@ -53,6 +62,7 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
@@ -137,54 +147,51 @@ public class UserMgtPortlet extends MVCPortlet {
 		}
 	}
 
-	public void updateEmployee(
-		ActionRequest actionRequest, ActionResponse actionResponse)
-		throws IOException {
 
-		long employeeId =
-			ParamUtil.getLong(actionRequest, EmployeeDisplayTerm.EMPLOYEE_ID);
-		long workingUnitId =
-			ParamUtil.getLong(
-				actionRequest, EmployeeDisplayTerm.WORKING_UNIT_ID);
-		long mainJobPosId =
-			ParamUtil.getLong(actionRequest, EmployeeDisplayTerm.MAIN_JOBPOS_ID);
+	public void updateEmployee(ActionRequest actionRequest,
+			ActionResponse actionResponse) throws IOException {
 
-		long companyId =
-			ParamUtil.getLong(actionRequest, EmployeeDisplayTerm.COMPANY_ID);
-		long groupId =
-			ParamUtil.getLong(actionRequest, EmployeeDisplayTerm.GROUP_ID);
+		long employeeId = ParamUtil.getLong(actionRequest,
+				EmployeeDisplayTerm.EMPLOYEE_ID);
+		long workingUnitId = ParamUtil.getLong(actionRequest,
+				EmployeeDisplayTerm.WORKING_UNIT_ID);
+		long mainJobPosId = ParamUtil.getLong(actionRequest,
+				EmployeeDisplayTerm.MAIN_JOBPOS_ID);
 
-		String email =
-			ParamUtil.getString(actionRequest, EmployeeDisplayTerm.EMAIL);
-		String employeeNo =
-			ParamUtil.getString(actionRequest, EmployeeDisplayTerm.EMPLOYEE_NO);
-		String fullName =
-			ParamUtil.getString(actionRequest, EmployeeDisplayTerm.FULL_NAME);
-		String mobile =
-			ParamUtil.getString(actionRequest, EmployeeDisplayTerm.MOBILE);
-		String telNo =
-			ParamUtil.getString(actionRequest, EmployeeDisplayTerm.TEL_NO);
-		String screenName =
-			ParamUtil.getString(actionRequest, EmployeeDisplayTerm.SCREEN_NAME);
-		String passWord =
-			ParamUtil.getString(actionRequest, EmployeeDisplayTerm.PASS_WORD);
-		String rePassWord =
-			ParamUtil.getString(actionRequest, EmployeeDisplayTerm.RE_PASS_WORD);
+		long companyId = ParamUtil.getLong(actionRequest,
+				EmployeeDisplayTerm.COMPANY_ID);
+		long groupId = ParamUtil.getLong(actionRequest,
+				EmployeeDisplayTerm.GROUP_ID);
 
-		int gender =
-			ParamUtil.getInteger(actionRequest, EmployeeDisplayTerm.GENDER);
-		int birthDateDay =
-			ParamUtil.getInteger(
-				actionRequest, EmployeeDisplayTerm.BIRTH_DATE_DAY);
-		int birthDateMonth =
-			ParamUtil.getInteger(
-				actionRequest, EmployeeDisplayTerm.BIRTH_DATE_MONTH);
-		int birthDateYear =
-			ParamUtil.getInteger(
-				actionRequest, EmployeeDisplayTerm.BIRTH_DATE_YEAR);
-		int workingStatus =
-			ParamUtil.getInteger(
-				actionRequest, EmployeeDisplayTerm.WORKING_STATUS);
+		String email = ParamUtil.getString(actionRequest,
+				EmployeeDisplayTerm.EMAIL);
+		String userAccountEmail = ParamUtil.getString(actionRequest,
+				EmployeeDisplayTerm.USER_EMAIL);
+		String employeeNo = ParamUtil.getString(actionRequest,
+				EmployeeDisplayTerm.EMPLOYEE_NO);
+		String fullName = ParamUtil.getString(actionRequest,
+				EmployeeDisplayTerm.FULL_NAME);
+		String mobile = ParamUtil.getString(actionRequest,
+				EmployeeDisplayTerm.MOBILE);
+		String telNo = ParamUtil.getString(actionRequest,
+				EmployeeDisplayTerm.TEL_NO);
+		String screenName = ParamUtil.getString(actionRequest,
+				EmployeeDisplayTerm.SCREEN_NAME);
+		String passWord = ParamUtil.getString(actionRequest,
+				EmployeeDisplayTerm.PASS_WORD);
+		String rePassWord = ParamUtil.getString(actionRequest,
+				EmployeeDisplayTerm.RE_PASS_WORD);
+
+		int gender = ParamUtil.getInteger(actionRequest,
+				EmployeeDisplayTerm.GENDER);
+		int birthDateDay = ParamUtil.getInteger(actionRequest,
+				EmployeeDisplayTerm.BIRTH_DATE_DAY);
+		int birthDateMonth = ParamUtil.getInteger(actionRequest,
+				EmployeeDisplayTerm.BIRTH_DATE_MONTH);
+		int birthDateYear = ParamUtil.getInteger(actionRequest,
+				EmployeeDisplayTerm.BIRTH_DATE_YEAR);
+		int workingStatus = ParamUtil.getInteger(actionRequest,
+				EmployeeDisplayTerm.WORKING_STATUS);
 
 		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
 
@@ -194,6 +201,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			StringUtil.split(
 				ParamUtil.getString(actionRequest, "jobPosIndexes"), -1);
 
+		UserGroup userGroup = null;
 		List<Long> jobPosIds = new ArrayList<Long>();
 
 		if (jobPosIndexes != null && jobPosIndexes.length > 0) {
@@ -208,10 +216,14 @@ public class UserMgtPortlet extends MVCPortlet {
 
 			}
 		}
-
 		try {
+			userGroup = UserGroupLocalServiceUtil.getUserGroup(companyId,
+					PortletPropsValues.USERMGT_USERGROUP_NAME_EMPLOYEE);
+		} catch (Exception e) {
+			_log.warn(e);
+		}
 
-			ServiceContext serviceContext =
+		try {			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
 			// validatetDictItem(dictItemId, itemName, itemCode,
 			// serviceContext);
@@ -220,18 +232,21 @@ public class UserMgtPortlet extends MVCPortlet {
 			long[] groupIds = new long[] {
 				groupId
 			};
-
 			// Add user group
-			UserGroup userGroup =
-				UserGroupLocalServiceUtil.getUserGroup(
-					companyId,
-					PortletPropsValues.USERMGT_USERGROUP_NAME_EMPLOYEE);
+			if (userGroup == null) {
+				userGroup = UserGroupLocalServiceUtil.addUserGroup(
+						serviceContext.getUserId(), companyId,
+						PortletPropsValues.USERMGT_USERGROUP_NAME_EMPLOYEE,
+						StringPool.BLANK, serviceContext);
+			}
 
 			long[] userGroupIds = new long[] {
 				userGroup.getUserGroupId()
 			};
 
-			// Add organization
+			// Validate before update
+			validateEmployee(employeeId, fullName, userAccountEmail, employeeNo,
+					workingUnitId, mainJobPosId, serviceContext);
 
 			if (employeeId == 0) {
 				EmployeeLocalServiceUtil.addEmployee(
@@ -252,9 +267,43 @@ public class UserMgtPortlet extends MVCPortlet {
 		}
 		catch (Exception e) {
 
+			if (e instanceof EmptyEmployeeEmailException) {
+				SessionErrors.add(actionRequest,
+						EmptyEmployeeEmailException.class);
+			} else if (e instanceof OutOfLengthEmployeeEmailException) {
+				SessionErrors.add(actionRequest,
+						OutOfLengthEmployeeEmailException.class);
+			} else if (e instanceof EmptyEmployeeNoException) {
+				SessionErrors.add(actionRequest,
+						EmptyEmployeeNoException.class);
+			} else if (e instanceof EmptyEmployeeNameException) {
+				SessionErrors.add(actionRequest,
+						EmptyEmployeeNameException.class);
+			} else if (e instanceof OutOfLengthFullNameException) {
+				SessionErrors.add(actionRequest,
+						OutOfLengthFullNameException.class);
+			} else if (e instanceof NoSuchWorkingUnitException) {
+				SessionErrors.add(actionRequest,
+						NoSuchWorkingUnitException.class);
+			} else if (e instanceof NoSuchJobPosException) {
+				SessionErrors.add(actionRequest, NoSuchJobPosException.class);
+			} else if (e instanceof DuplicateEmployeeEmailException) {
+				SessionErrors.add(actionRequest,
+						DuplicateEmployeeEmailException.class);
+			} else if (e instanceof NoSuchEmployeeException) {
+				SessionErrors.add(actionRequest, NoSuchEmployeeException.class);
+			} else if (e instanceof PortalException) {
+				SessionErrors.add(actionRequest, PortalException.class);
+			} else if (e instanceof SystemException) {
+				SessionErrors.add(actionRequest, SystemException.class);
+			} else {
+				SessionErrors.add(actionRequest,
+						MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED);
+			}
 			redirectURL = returnURL;
 			SessionErrors.add(
 				actionRequest, MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED);
+
 
 		}
 		finally {
@@ -338,15 +387,20 @@ public class UserMgtPortlet extends MVCPortlet {
 	
 	protected void valiateWorkingUnit(long workingUnitId, String name,
 		String govAgencyCode, String enName, String adress, String faxNo,
-		String email, String website) throws OutOfLengthUnitNameException, 
-		OutOfLengthUnitEnNameException {
+		String email, String website , long groupId) 
+		throws OutOfLengthUnitNameException, OutOfLengthUnitEnNameException,
+		NoSuchWorkingUnitException, SystemException,
+		DuplicatEgovAgencyCodeException {
+
+		WorkingUnit workingUnit = WorkingUnitLocalServiceUtil
+						.getWorkingUnit(groupId, govAgencyCode);
 		if(name.trim().length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH){
 			throw new OutOfLengthUnitNameException();
 		} else if(enName.trim().length() > PortletPropsValues
 						.USERMGT_WORKINGUNIT_ENNAME_LENGTH) {
 			throw new OutOfLengthUnitEnNameException();
-		} else if() {
-			
+		} else if(workingUnit!=null && workingUnitId != 0) {
+			throw new DuplicatEgovAgencyCodeException();
 		}
 	}
 
@@ -418,4 +472,88 @@ public class UserMgtPortlet extends MVCPortlet {
 	}
 	private Log _log =
 		LogFactoryUtil.getLog(UserMgtEditProfilePortlet.class.getName());
+
+	protected void validateEmployee(long employeeId, String fullName,
+			String email, String employeeNo, long workingUnitId,
+			long mainJobPosId, ServiceContext serviceContext)
+			throws EmptyEmployeeEmailException,
+			OutOfLengthEmployeeEmailException, EmptyEmployeeNoException,
+			EmptyEmployeeNameException, OutOfLengthFullNameException,
+			NoSuchWorkingUnitException, NoSuchJobPosException,
+			DuplicateEmployeeEmailException, NoSuchEmployeeException,
+			PortalException, SystemException {
+
+		if (Validator.isNull(email)) {
+			throw new EmptyEmployeeEmailException();
+		}
+
+		if (email.length() > PortletPropsValues.USERMGT_EMPLOYEE_EMAIL_LENGTH) {
+			throw new OutOfLengthEmployeeEmailException();
+		}
+
+		if (Validator.isNull(employeeNo)) {
+			throw new EmptyEmployeeNoException();
+		}
+
+		if (Validator.isNull(fullName)) {
+			throw new EmptyEmployeeNameException();
+		}
+
+		if (fullName
+				.length() > PortletPropsValues.USERMGT_EMPLOYEE_FULLNAME_LENGTH) {
+			throw new OutOfLengthFullNameException();
+		}
+
+		if (workingUnitId <= 0) {
+			throw new NoSuchWorkingUnitException();
+		}
+
+		if (mainJobPosId <= 0) {
+			throw new NoSuchJobPosException();
+		}
+
+		Employee employee = null;
+
+		Employee employeeByEmail = null;
+
+		Employee employeeByEmployeeNo = null;
+
+		if (employeeId > 0) {
+			employee = EmployeeLocalServiceUtil.getEmployee(employeeId);
+		}
+
+		try {
+			employeeByEmail = EmployeeLocalServiceUtil.getEmployeeByEmail(
+					serviceContext.getScopeGroupId(), email);
+		} catch (Exception e) {
+			// Nothing todo
+		}
+
+		try {
+			employeeByEmployeeNo = EmployeeLocalServiceUtil
+					.getEmployeeByEmployeeNo(serviceContext.getScopeGroupId(),
+							employeeNo);
+		} catch (Exception e) {
+			// Nothing todo
+		}
+
+		if (employee == null) {
+			if (employeeByEmail != null) {
+				throw new DuplicateEmployeeEmailException();
+			}
+
+			if (employeeByEmployeeNo != null) {
+				throw new DuplicateEmployeeNoException();
+			}
+		} else {
+			if (employeeByEmail.getEmployeeId() != employeeId) {
+				throw new DuplicateEmployeeEmailException();
+			}
+
+			if (employeeByEmployeeNo.getEmployeeId() != employeeId) {
+				throw new DuplicateEmployeeNoException();
+			}
+		}
+
+	}
 }
