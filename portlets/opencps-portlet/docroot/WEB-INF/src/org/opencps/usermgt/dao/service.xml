@@ -184,6 +184,14 @@
         <finder name="GroupId" return-type="Collection">
             <finder-column name="groupId"></finder-column>
         </finder>
+        <finder name="G_E" return-type="Employess">
+            <finder-column name="groupId"></finder-column>
+            <finder-column name="email"></finder-column>
+        </finder>
+        <finder name="G_ENO" return-type="Employee">
+            <finder-column name="groupId"></finder-column>
+            <finder-column name="employeeNo"></finder-column>
+        </finder>
 		
 		<reference entity="User" package-path="com.liferay.portal" />
 	</entity>
@@ -199,5 +207,12 @@
 		<exception>OutOfLengthJobTitle</exception>
 		<exception>OutOfLengthFullName</exception>
 		<exception>OutOfLengthDescription</exception>
+        <exception>OutOfLengthEmployNo</exception>
+        <exception>DuplicateEmployeeEmail</exception>
+        <exception>DuplicateEmployeeNo</exception>
+        <exception>EmptyEmployeeEmail</exception>
+        <exception>EmptyEmployeeNo</exception>
+        <exception>EmptyEmployeeName</exception>
+        <exception>OutOfLengthEmployeeEmail</exception>
 	</exceptions>
 </service-builder>
