@@ -24,6 +24,8 @@
 
 <%
 	User mappingUser = (User)request.getAttribute(WebKeys.USER_MAPPING_ENTRY);
+	String accountEmail = (String)request.getAttribute(WebKeys.TURN_BACK_ACCOUNT_EMAIL);
+	String screenName = (String)request.getAttribute(WebKeys.TURN_BACK_SCREEN_NAME);
 %>
 <aui:model-context bean="<%=mappingUser%>" model="<%=User.class%>" />
 

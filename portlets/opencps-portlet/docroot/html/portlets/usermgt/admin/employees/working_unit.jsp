@@ -37,6 +37,12 @@
 	
 	List<JobPos> jobPoses = new ArrayList<JobPos>();
 	
+	long mappingWorkingUnitId = 0;
+	
+	if(mappingWorkingUnit != null){
+		mappingWorkingUnitId = mappingWorkingUnit.getManagerWorkingUnitId();
+	}
+	
 	if(employee != null){
 		try{
 			jobPoses = JobPosLocalServiceUtil.getEmployeeJobPoses(employee.getEmployeeId());
@@ -119,6 +125,11 @@
 			required="<%=true %>"
 		>
 			<aui:option value=""><liferay-ui:message key="select-working-unit"/></aui:option>
+			<%
+				if(mappingWorkingUnit != null){
+					long mappingWorkingUnitId = mappingWorkingUnit.getManagerWorkingUnitId();
+				}
+			%>
 		</aui:select>
 	</aui:col>
 	<aui:col width="50">
@@ -147,6 +158,9 @@
 								onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
 							>
 								<aui:option value=""><liferay-ui:message key="select-working-unit"/></aui:option>
+								<%
+									JobPos jobPos = jobPoses.get(i);
+								%>
 							</aui:select>
 						</aui:col>
 						<aui:col width="50">
