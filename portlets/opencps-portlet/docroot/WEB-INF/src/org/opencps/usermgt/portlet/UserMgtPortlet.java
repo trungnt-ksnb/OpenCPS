@@ -220,11 +220,10 @@ public class UserMgtPortlet extends MVCPortlet {
 		try {
 			ServiceContext serviceContext = ServiceContextFactory
 					.getInstance(actionRequest);
-			// validatetDictItem(dictItemId, itemName, itemCode,
-			// serviceContext);
 
 			// Add site for user. Default current site
 			long[] groupIds = new long[]{groupId};
+
 			// Add user group
 			if (userGroup == null) {
 				userGroup = UserGroupLocalServiceUtil.addUserGroup(
@@ -292,6 +291,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			redirectURL = returnURL;
 			SessionErrors.add(actionRequest,
 					MessageKeys.USERMGT_SYSTEM_EXCEPTION_OCCURRED);
+			_log.error(e);
 
 		} finally {
 			if (Validator.isNotNull(redirectURL)) {
