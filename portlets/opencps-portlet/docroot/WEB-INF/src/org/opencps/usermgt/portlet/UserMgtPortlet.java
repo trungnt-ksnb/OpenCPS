@@ -261,11 +261,20 @@ public class UserMgtPortlet extends MVCPortlet {
 				employeeId, fullName, userAccountEmail, employeeNo,
 				workingUnitId, mainJobPosId, serviceContext);
 
+			boolean isAddUser = false;
+
+			if (Validator.isNotNull(screenName) &&
+				Validator.isNotNull(userAccountEmail) &&
+				Validator.isNotNull(passWord) &&
+				Validator.isNotNull(rePassWord)) {
+				isAddUser = true;
+			}
+
 			if (employeeId == 0) {
 				EmployeeLocalServiceUtil.addEmployee(
 					serviceContext.getUserId(), workingUnitId, employeeNo,
 					fullName, gender, telNo, mobile, email, workingStatus,
-					mainJobPosId, ArrayUtil.toLongArray(jobPosIds),
+					mainJobPosId, ArrayUtil.toLongArray(jobPosIds), isAddUser,
 					userAccountEmail, screenName, birthDateDay, birthDateMonth,
 					birthDateYear, passWord, rePassWord, groupIds,
 					userGroupIds, serviceContext);
@@ -392,14 +401,14 @@ public class UserMgtPortlet extends MVCPortlet {
 			ParamUtil.getBoolean(
 				request, WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER);
 		String redirectURL = ParamUtil.getString(request, "redirectURL");
-		_log.info("go here redirectURL" + redirectURL);
-		
-//		 validateWorkingUnit( workingUnitId, name, govAgencyCode, enName,
-//		 address, faxNo, email, website, serviceContext.getScopeGroupId(),
-//		 parentWorkingUnitId);
+
+		validateWorkingUnit(
+			workingUnitId, name, govAgencyCode, enName, address, faxNo, email,
+			website, serviceContext.getScopeGroupId(), parentWorkingUnitId,
+			isEmployer);
 
 		try {
-			_log.info("go here add");
+
 			if (workingUnitId == 0) {
 				WorkingUnitLocalServiceUtil.addWorkingUnit(
 					serviceContext.getUserId(), name, enName, govAgencyCode,
@@ -417,6 +426,8 @@ public class UserMgtPortlet extends MVCPortlet {
 					govAgencyCode, parentWorkingUnitId, address, cityCode,
 					districtCode, wardCode, telNo, faxNo, email, website,
 					isEmployer, managerWorkingUnitId, serviceContext);
+				SessionMessages.add(
+					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 				SessionMessages.add(
 					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 			}
@@ -445,44 +456,53 @@ public class UserMgtPortlet extends MVCPortlet {
 
 	protected void validateWorkingUnit(
 		long workingUnitId, String name, String govAgencyCode, String enName,
-		String adress, String faxNo, String email, String website,
-		long groupId, long parentWorkingUnitId)
+		String address, String faxNo, String email, String website,
+		long groupId, long parentWorkingUnitId, boolean isEmployer)
 		throws OutOfLengthUnitNameException, OutOfLengthUnitEnNameException,
 		NoSuchWorkingUnitException, DuplicatEgovAgencyCodeException,
 		OutOfScopeException {
 
+		if (name.length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH) {
+			throw new OutOfLengthUnitNameException();
+		}
+		else if (enName.length() > PortletPropsValues.USERMGT_WORKINGUNIT_ENNAME_LENGTH) {
+			throw new OutOfLengthUnitEnNameException();
+		}
+
 		WorkingUnit workingUnit = null;
-		WorkingUnit parentWorkingUnit = null;
-		WorkingUnit workingUnitById = null;
+
 		try {
+
 			workingUnit =
 				WorkingUnitLocalServiceUtil.getWorkingUnit(
 					groupId, govAgencyCode);
-			parentWorkingUnit =
-				WorkingUnitLocalServiceUtil.fetchWorkingUnit(parentWorkingUnitId);
-			workingUnitById = 
-				WorkingUnitLocalServiceUtil.fetchWorkingUnit(workingUnitId);
 		}
 		catch (SystemException e) {
-			
+
 		}
 
-		if (name.trim().length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH) {
-			throw new OutOfLengthUnitNameException();
-		}
-		else if (enName.trim().length() > PortletPropsValues.USERMGT_WORKINGUNIT_ENNAME_LENGTH) {
-			throw new OutOfLengthUnitEnNameException();
-		}
-		else if (workingUnit != null && workingUnitId == 0) {
+		if (workingUnit != null && workingUnitId <= 0) {
 			throw new DuplicatEgovAgencyCodeException();
 		}
-		else if (workingUnitById != null && workingUnit!=null &&
-			!workingUnit.getGovAgencyCode()
-				.equals(workingUnitById.getGovAgencyCode())) {
+		else if (workingUnit != null && workingUnitId > 0 &&
+			workingUnit.getWorkingunitId() != workingUnitId) {
 			throw new DuplicatEgovAgencyCodeException();
 		}
-		else if (parentWorkingUnit != null &&
-			!parentWorkingUnit.getIsEmployer()) {
+
+		WorkingUnit parentWorkingUnit = null;
+
+		try {
+
+			parentWorkingUnit =
+				WorkingUnitLocalServiceUtil.fetchWorkingUnit(parentWorkingUnitId);
+
+		}
+		catch (SystemException e) {
+			// nothing to do
+		}
+
+		if (parentWorkingUnit != null && !parentWorkingUnit.getIsEmployer() &&
+			isEmployer) {
 			throw new OutOfScopeException();
 		}
 	}
