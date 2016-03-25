@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.opencps.usermgt.NoSuchJobPosException;
 import org.opencps.usermgt.NoSuchWorkingUnitException;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
@@ -32,8 +31,6 @@ import org.opencps.usermgt.service.base.JobPosLocalServiceBaseImpl;
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.Role;
@@ -65,8 +62,9 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 	 * {@link org.opencps.usermgt.service.JobPosLocalServiceUtil} to access the
 	 * job pos local service.
 	 */
-	public JobPos addJobPos(long userId, ServiceContext serviceContext,
-			String title, String description, long workingUnitId, int leader)
+	public JobPos addJobPos(long userId,
+			String title, String description, long workingUnitId, int leader,
+			ServiceContext serviceContext)
 			throws SystemException, PortalException {
 
 		long jobPosId = CounterLocalServiceUtil
@@ -111,9 +109,10 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		return jobPosPersistence.update(jobPos);
 	}
 
-	public JobPos updateJobPos(long jobPosId, long userId,
-			ServiceContext serviceContext, String title, String description,
-			long workingUnitId, int leader)
+	public JobPos updateJobPos(long jobPosId, long userId, 
+			String title, String description,
+			long workingUnitId, int leader,
+			ServiceContext serviceContext)
 			throws SystemException, PortalException {
 
 		JobPos jobPos = jobPosPersistence.findByPrimaryKey(jobPosId);

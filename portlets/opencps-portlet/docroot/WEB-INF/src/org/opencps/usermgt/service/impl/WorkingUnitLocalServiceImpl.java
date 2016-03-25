@@ -65,12 +65,12 @@ public class WorkingUnitLocalServiceImpl
 	 * the working unit local service.
 	 */
 
-	public WorkingUnit addWorkingUnit(long userId,
-			ServiceContext serviceContext, String name, String enName,
+	public WorkingUnit addWorkingUnit(long userId, String name, String enName,
 			String govAgencyCode, long parentWorkingUnitId, String address,
 			String cityCode, String districtCode, String wardCode, String telNo,
 			String faxNo, String email, String website, boolean isEmployer,
-			long managerWorkingUnitId) throws SystemException, PortalException {
+			long managerWorkingUnitId, ServiceContext serviceContext) 
+			throws SystemException, PortalException {
 
 		long workingUnitId = CounterLocalServiceUtil
 				.increment(WorkingUnit.class.getName());
@@ -143,11 +143,11 @@ public class WorkingUnitLocalServiceImpl
 	}
 
 	public WorkingUnit updateWorkingUnit(long workingUnitId, long userId,
-			ServiceContext serviceContext, String name, String enName,
-			String govAgencyCode, long parentWorkingUnitId, String address,
-			String cityCode, String districtCode, String wardCode, String telNo,
-			String faxNo, String email, String website, boolean isEmployer,
-			long managerWorkingUnitId) throws SystemException, PortalException {
+			String name, String enName, String govAgencyCode, 
+			long parentWorkingUnitId, String address,String cityCode, 
+			String districtCode, String wardCode, String telNo,String faxNo, 
+			String email, String website, boolean isEmployer,
+			long managerWorkingUnitId, ServiceContext serviceContext) throws SystemException, PortalException {
 
 		WorkingUnit workingUnit = workingUnitPersistence
 				.findByPrimaryKey(workingUnitId);
