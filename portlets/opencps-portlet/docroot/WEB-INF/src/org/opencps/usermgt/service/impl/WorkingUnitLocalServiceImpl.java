@@ -323,5 +323,10 @@ public class WorkingUnitLocalServiceImpl
 		return workingUnitPersistence.findByGroupId(groupId);
 	}
 	
+	public WorkingUnit getWorkingUnit(long groupId, String govAgencyCode) 
+					throws NoSuchWorkingUnitException, SystemException {
+		return workingUnitPersistence.findByG_G(groupId, govAgencyCode);
+	}
+	
 	private Log _log = LogFactoryUtil.getLog(WorkingUnitLocalServiceImpl.class);
 }

@@ -49,6 +49,10 @@
 		</order>
 		
 		<!-- Finder methods -->
+		<finder return-type="WorkingUnit" name="G_G">
+			<finder-column name="groupId" />
+			<finder-column name="govAgencyCode" />
+		</finder>
 		<finder name="G_E" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="isEmployer" />
