@@ -86,82 +86,96 @@ import com.liferay.util.bridges.mvc.MVCPortlet;
 
 public class UserMgtPortlet extends MVCPortlet {
 
-	public void deleteWorkingUnit(ActionRequest request,
-			ActionResponse response)
+	private Log _log = LogFactoryUtil
+			.getLog(UserMgtEditProfilePortlet.class.getName());
+
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 */
+	public void deleteEmployee(ActionRequest actionRequest,
+			ActionResponse actionResponse) {
+		long employeeId = ParamUtil.getLong(actionRequest,
+				EmployeeDisplayTerm.EMPLOYEE_ID);
+
+		try {
+			EmployeeLocalServiceUtil.deletedPermanently(employeeId);
+			SessionMessages.add(actionRequest,
+					MessageKeys.USERMGT_EMPLOYEE_DELETE_SUCCESS);
+		} catch (Exception e) {
+			SessionErrors.add(actionRequest,
+					MessageKeys.USERMGT_EMPLOYEE_DELETE_ERROR);
+			_log.error(e);
+		}
+	}
+
+	public void deleteJobPos(ActionRequest actionRequest,
+			ActionResponse actionResponse)
+			throws SystemException, PortalException {
+
+		long jobPosId = ParamUtil.getLong(actionRequest,
+				JobPosDisplayTerms.ID_JOBPOS);
+		if (jobPosId > 0) {
+			JobPosLocalServiceUtil.deleteJobPosById(jobPosId);
+		}
+	}
+
+	public void deleteWorkingUnit(ActionRequest actionRequest,
+			ActionResponse actionResponse)
 			throws SystemException, PortalException, IOException {
 
-		long workingUnitId = ParamUtil.getLong(request,
+		long workingUnitId = ParamUtil.getLong(actionRequest,
 				WorkingUnitDisplayTerms.WORKINGUNIT_ID);
 		ServiceContext serviceContext = ServiceContextFactory
-				.getInstance(request);
+				.getInstance(actionRequest);
 		List<JobPos> jobPoses = JobPosLocalServiceUtil
 				.getJobPoss(workingUnitId);
 		List<Employee> employees = EmployeeLocalServiceUtil
 				.getEmployees(serviceContext.getScopeGroupId(), workingUnitId);
-		String redirectURL = ParamUtil.getString(request, "redirectURL");
-		String returnURL = ParamUtil.getString(request, "returnURL");
+		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
+		String returnURL = ParamUtil.getString(actionRequest, "returnURL");
 		_log.info("redirectURL == " + redirectURL);
 		_log.info("returnURL == " + returnURL);
-		
-		SessionMessages.add(request,
-			PortalUtil.getPortletId(request)
-			+ SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE); 
-		
+
+		SessionMessages.add(actionRequest, PortalUtil
+				.getPortletId(actionRequest)
+				+ SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
+
 		if (workingUnitId <= 0) {
-			SessionErrors.add(request,
+			SessionErrors.add(actionRequest,
 					MessageKeys.WORKINGUNIT_DELETE_ERROR_EXIST);
 
 		} else if (!jobPoses.isEmpty() || !employees.isEmpty()) {
 			_log.info("jobpos exits");
-			SessionErrors.add(request, MessageKeys.WORKINGUNIT_DELETE_ERROR);
+			SessionErrors.add(actionRequest,
+					MessageKeys.WORKINGUNIT_DELETE_ERROR);
 
 		} else {
 			WorkingUnitLocalServiceUtil
 					.deleteWorkingUnitByWorkingUnitId(workingUnitId);
-			SessionMessages.add(request,
+			SessionMessages.add(actionRequest,
 					MessageKeys.WORKINGUNIT_DELETE_SUCCESS);
 		}
 
 		if (Validator.isNotNull(returnURL)) {
-			response.sendRedirect(returnURL);
+			actionResponse.sendRedirect(returnURL);
 		}
 
 	}
 
-	public void updateJobPos(ActionRequest request, ActionResponse response)
-			throws NumberFormatException, PortalException, SystemException {
-
-		String rowIndexes = request.getParameter("rowIndexes");
-		String[] indexOfRows = rowIndexes.split(",");
-
-		long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
-
-		ServiceContext serviceContext = ServiceContextFactory
-				.getInstance(request);
-		for (int index = 0; index < indexOfRows.length; index++) {
-			String title = request.getParameter(
-					JobPosSearchTerms.TITLE_JOBPOS + indexOfRows[index].trim());
-			int leader = ParamUtil.getInteger(request,
-					JobPosSearchTerms.LEADER_JOBPOS
-							+ indexOfRows[index].trim());
-
-			JobPosLocalServiceUtil.addJobPos(serviceContext.getUserId(), title,
-					"", workingUnitId, leader, serviceContext);
-		}
-	}
-
-	public void editJobPos(ActionRequest request, ActionResponse response)
+	public void editJobPos(ActionRequest actionRequest,
+			ActionResponse actionResponse)
 			throws PortalException, SystemException {
 
-		long jobPosId = ParamUtil.getLong(request,
+		long jobPosId = ParamUtil.getLong(actionRequest,
 				JobPosDisplayTerms.ID_JOBPOS);
 
-		int leader = ParamUtil.getInteger(request,
+		int leader = ParamUtil.getInteger(actionRequest,
 				JobPosDisplayTerms.LEADER_JOBPOS);
-		String title = ParamUtil.getString(request,
+		String title = ParamUtil.getString(actionRequest,
 				JobPosDisplayTerms.TITLE_JOBPOS);
 		ServiceContext serviceContext = ServiceContextFactory
-				.getInstance(request);
+				.getInstance(actionRequest);
 		JobPos jobPos = null;
 		if (jobPosId > 0) {
 			jobPos = JobPosLocalServiceUtil.fetchJobPos(jobPosId);
@@ -169,20 +183,139 @@ public class UserMgtPortlet extends MVCPortlet {
 					serviceContext.getUserId(), title, "",
 					jobPos.getWorkingUnitId(), leader, serviceContext);
 		} else {
-			SessionErrors.add(request, "UPDATE_JOBPOS_ERROR");
+			SessionErrors.add(actionRequest, "UPDATE_JOBPOS_ERROR");
 		}
 	}
 
-	public void deleteJobPos(ActionRequest request, ActionResponse response)
-			throws SystemException, PortalException {
+	/**
+	 * @param employeeId
+	 * @param workingUnitId
+	 * @param mainJobPosId
+	 * @param email
+	 * @param employeeNo
+	 * @param fullName
+	 * @param mobile
+	 * @param telNo
+	 * @param gender
+	 * @param birthDateDay
+	 * @param birthDateMonth
+	 * @param birthDateYear
+	 * @param workingStatus
+	 * @return
+	 */
+	protected Employee getEmployee(long employeeId, long workingUnitId,
+			long mainJobPosId, String email, String employeeNo, String fullName,
+			String mobile, String telNo, int gender, int birthDateDay,
+			int birthDateMonth, int birthDateYear, int workingStatus) {
 
-		long jobPosId = ParamUtil.getLong(request,
-				JobPosDisplayTerms.ID_JOBPOS);
-		if (jobPosId > 0) {
-			JobPosLocalServiceUtil.deleteJobPosById(jobPosId);
+		Date birthdate = DateTimeUtil.getDate(birthDateDay, birthDateMonth,
+				birthDateYear);
+		Employee employee = new EmployeeImpl();
+		employee.setEmployeeId(employeeId);
+		employee.setBirthdate(birthdate);
+		employee.setEmail(email);
+		employee.setEmployeeNo(employeeNo);
+		employee.setFullName(fullName);
+		employee.setGender(gender);
+		employee.setMainJobPosId(mainJobPosId);
+		employee.setMobile(mobile);
+		employee.setTelNo(telNo);
+
+		return employee;
+
+	}
+
+	@Override
+	public void render(RenderRequest renderRequest,
+			RenderResponse renderResponse)
+			throws PortletException, IOException {
+
+		long workingUnitId = ParamUtil.getLong(renderRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_ID);
+
+		long employeeId = ParamUtil.getLong(renderRequest,
+				EmployeeDisplayTerm.EMPLOYEE_ID);
+
+		try {
+			if (workingUnitId > 0) {
+				WorkingUnit workingUnit = WorkingUnitLocalServiceUtil
+						.getWorkingUnit(workingUnitId);
+				renderRequest.setAttribute(WebKeys.WORKING_UNIT_ENTRY,
+						workingUnit);
+			}
+
+			if (employeeId > 0) {
+				Employee employee = EmployeeLocalServiceUtil
+						.getEmployee(employeeId);
+
+				if (employee != null) {
+					long mappingUserId = employee.getMappingUserId();
+
+					if (mappingUserId > 0) {
+						User mappingUser = UserLocalServiceUtil
+								.getUser(mappingUserId);
+
+						renderRequest.setAttribute(WebKeys.USER_MAPPING_ENTRY,
+								mappingUser);
+					}
+
+					long mappingWorkingUnitId = employee.getWorkingUnitId();
+
+					if (mappingWorkingUnitId > 0) {
+						WorkingUnit mappingWorkingUnit = WorkingUnitLocalServiceUtil
+								.getWorkingUnit(mappingWorkingUnitId);
+
+						renderRequest.setAttribute(
+								WebKeys.WORKING_UNIT_MAPPING_ENTRY,
+								mappingWorkingUnit);
+
+					}
+
+					long mainJobPosId = employee.getMainJobPosId();
+
+					if (mainJobPosId > 0) {
+						JobPos mainJobPos = JobPosLocalServiceUtil
+								.getJobPos(mainJobPosId);
+						renderRequest.setAttribute(WebKeys.MAIN_JOB_POS_ENTRY,
+								mainJobPos);
+					}
+				}
+
+				renderRequest.setAttribute(WebKeys.EMPLOYEE_ENTRY, employee);
+			}
+		} catch (Exception e) {
+			_log.error(e);
+		}
+
+		super.render(renderRequest, renderResponse);
+	}
+
+	/**
+	 * @param actionRequest
+	 * @param entities
+	 */
+	protected void turnBackParams(ActionRequest actionRequest,
+			Object... entities) {
+
+		if (entities != null && entities.length > 0) {
+			for (int i = 0; i < entities.length; i++) {
+				Object obj = entities[i];
+				if (obj instanceof EmployeeImpl) {
+					actionRequest.setAttribute(WebKeys.TURN_BACK_EMPLOYEE_ENTRY,
+							obj);
+				} else if (obj instanceof User) {
+					actionRequest.setAttribute(
+							WebKeys.TURN_BACK_USER_MAPPING_ENTRY, obj);
+				}
+			}
 		}
 	}
 
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 * @throws IOException
+	 */
 	public void updateEmployee(ActionRequest actionRequest,
 			ActionResponse actionResponse) throws IOException {
 
@@ -256,7 +389,7 @@ public class UserMgtPortlet extends MVCPortlet {
 		}
 
 		try {
-			// serviceContext);
+
 			ServiceContext serviceContext = ServiceContextFactory
 					.getInstance(actionRequest);
 
@@ -368,235 +501,151 @@ public class UserMgtPortlet extends MVCPortlet {
 
 	}
 
-	public void updateWorkingUnit(ActionRequest request,
-			ActionResponse response) throws IOException {
-
-		long managerWorkingUnitId = ParamUtil.getLong(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_MANAGERWORKINGUNITID);
-		long workingUnitId = ParamUtil.getLong(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_ID);
-		long parentWorkingUnitId = ParamUtil.getLong(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_PARENTWORKINGUNITID);
-
-		String name = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_NAME);
-		String enName = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME);
-		String address = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_ADDRESS);
-		String telNo = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_TELNO);
-		String faxNo = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_FAXNO);
-		String email = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_EMAIL);
-		String website = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_WEBSITE);
-		String govAgencyCode = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_GOVAGENCYCODE);
-		String cityCode = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_CITYCODE);
-		String districtCode = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_DISTRICTCODE);
-		String wardCode = ParamUtil.getString(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_WARDCODE);
-		ServiceContext serviceContext;
-		boolean isEmployer = ParamUtil.getBoolean(request,
-				WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER);
-		String redirectURL = ParamUtil.getString(request, "redirectURL");
-		String returnURL = ParamUtil.getString(request, "returnURL");
-		SessionMessages.add(request,
-			PortalUtil.getPortletId(request)
-			+ SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE); 
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 */
+	public void updateEmployeeWorkingStatus(ActionRequest actionRequest,
+			ActionResponse actionResponse) {
+		long employeeId = ParamUtil.getLong(actionRequest,
+				EmployeeDisplayTerm.EMPLOYEE_ID);
+		int workingStatus = ParamUtil.getInteger(actionRequest,
+				EmployeeDisplayTerm.WORKING_STATUS);
 
 		try {
-			serviceContext = ServiceContextFactory.getInstance(request);
+			ServiceContext serviceContext = ServiceContextFactory
+					.getInstance(actionRequest);
+
+			EmployeeLocalServiceUtil.updateEmployee(employeeId, workingStatus,
+					serviceContext);
+
+			SessionMessages.add(actionRequest,
+					MessageKeys.USERMGT_EMPLOYEE_DELETE_SUCCESS);
+		} catch (Exception e) {
+			SessionErrors.add(actionRequest,
+					MessageKeys.USERMGT_EMPLOYEE_DELETE_ERROR);
+			_log.error(e);
+		}
+
+	}
+
+	public void updateJobPos(ActionRequest actionRequest,
+			ActionResponse actionResponse)
+			throws NumberFormatException, PortalException, SystemException {
+
+		String rowIndexes = actionRequest.getParameter("rowIndexes");
+		String[] indexOfRows = rowIndexes.split(",");
+
+		long workingUnitId = ParamUtil.getLong(actionRequest, "workingUnitId");
+
+		ServiceContext serviceContext = ServiceContextFactory
+				.getInstance(actionRequest);
+		for (int index = 0; index < indexOfRows.length; index++) {
+			String title = actionRequest.getParameter(
+					JobPosSearchTerms.TITLE_JOBPOS + indexOfRows[index].trim());
+			int leader = ParamUtil.getInteger(actionRequest,
+					JobPosSearchTerms.LEADER_JOBPOS
+							+ indexOfRows[index].trim());
+
+			JobPosLocalServiceUtil.addJobPos(serviceContext.getUserId(), title,
+					"", workingUnitId, leader, serviceContext);
+		}
+	}
+
+	public void updateWorkingUnit(ActionRequest actionRequest,
+			ActionResponse actionResponse) throws IOException {
+
+		long managerWorkingUnitId = ParamUtil.getLong(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_MANAGERWORKINGUNITID);
+		long workingUnitId = ParamUtil.getLong(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_ID);
+		long parentWorkingUnitId = ParamUtil.getLong(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_PARENTWORKINGUNITID);
+
+		String name = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_NAME);
+		String enName = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME);
+		String address = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_ADDRESS);
+		String telNo = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_TELNO);
+		String faxNo = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_FAXNO);
+		String email = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_EMAIL);
+		String website = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_WEBSITE);
+		String govAgencyCode = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_GOVAGENCYCODE);
+		String cityCode = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_CITYCODE);
+		String districtCode = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_DISTRICTCODE);
+		String wardCode = ParamUtil.getString(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_WARDCODE);
+		ServiceContext serviceContext;
+		boolean isEmployer = ParamUtil.getBoolean(actionRequest,
+				WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER);
+		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
+		String returnURL = ParamUtil.getString(actionRequest, "returnURL");
+		SessionMessages.add(actionRequest, PortalUtil
+				.getPortletId(actionRequest)
+				+ SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
+
+		try {
+			serviceContext = ServiceContextFactory.getInstance(actionRequest);
 			validateWorkingUnit(workingUnitId, name, govAgencyCode, enName,
 					address, faxNo, email, website,
 					serviceContext.getScopeGroupId(), parentWorkingUnitId,
 					isEmployer);
 			if (workingUnitId == 0) {
 				WorkingUnitLocalServiceUtil.addWorkingUnit(
-					serviceContext.getUserId(), name, enName, govAgencyCode,
-					parentWorkingUnitId, address, cityCode, districtCode,
-					wardCode, telNo, faxNo, email, website, isEmployer,
-					managerWorkingUnitId, serviceContext);
+						serviceContext.getUserId(), name, enName, govAgencyCode,
+						parentWorkingUnitId, address, cityCode, districtCode,
+						wardCode, telNo, faxNo, email, website, isEmployer,
+						managerWorkingUnitId, serviceContext);
 
-				SessionMessages.add(
-					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
+				SessionMessages.add(actionRequest,
+						MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
+			} else {
+				WorkingUnitLocalServiceUtil.updateWorkingUnit(workingUnitId,
+						serviceContext.getUserId(), name, enName, govAgencyCode,
+						parentWorkingUnitId, address, cityCode, districtCode,
+						wardCode, telNo, faxNo, email, website, isEmployer,
+						managerWorkingUnitId, serviceContext);
+				SessionMessages.add(actionRequest,
+						MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
+				SessionMessages.add(actionRequest,
+						MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 			}
-			else {
-				WorkingUnitLocalServiceUtil.updateWorkingUnit(
-					workingUnitId, serviceContext.getUserId(), name, enName,
-					govAgencyCode, parentWorkingUnitId, address, cityCode,
-					districtCode, wardCode, telNo, faxNo, email, website,
-					isEmployer, managerWorkingUnitId, serviceContext);
-				SessionMessages.add(
-					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
-				SessionMessages.add(
-					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
-			}
-		}
-		catch (Exception e) {
-			
+		} catch (Exception e) {
 
 			if (e instanceof OutOfLengthUnitNameException) {
-				SessionErrors.add(request, OutOfLengthUnitNameException.class);
+				SessionErrors.add(actionRequest,
+						OutOfLengthUnitNameException.class);
 			} else if (e instanceof OutOfLengthUnitEnNameException) {
-				SessionErrors.add(request,
+				SessionErrors.add(actionRequest,
 						OutOfLengthUnitEnNameException.class);
 			} else if (e instanceof DuplicatEgovAgencyCodeException) {
-				SessionErrors.add(request,
+				SessionErrors.add(actionRequest,
 						DuplicatEgovAgencyCodeException.class);
 			} else if (e instanceof OutOfScopeException) {
-				SessionErrors.add(request, OutOfScopeException.class);
+				SessionErrors.add(actionRequest, OutOfScopeException.class);
 			} else if (e instanceof DuplicatWorkingUnitEmailException) {
-				SessionErrors.add(request,
+				SessionErrors.add(actionRequest,
 						DuplicatWorkingUnitEmailException.class);
 			} else if (e instanceof OutOfLengthUnitEmailException) {
-				SessionErrors.add(request, OutOfLengthUnitEmailException.class);
+				SessionErrors.add(actionRequest,
+						OutOfLengthUnitEmailException.class);
 			}
-		}
-		finally {
+		} finally {
 			if (Validator.isNotNull(returnURL)) {
-				response.sendRedirect(returnURL);
+				actionResponse.sendRedirect(returnURL);
 			}
 		}
 
 	}
-
-	protected void validateWorkingUnit(long workingUnitId, String name,
-			String govAgencyCode, String enName, String address, String faxNo,
-			String email, String website, long groupId,
-			long parentWorkingUnitId, boolean isEmployer)
-			throws OutOfLengthUnitNameException, OutOfLengthUnitEnNameException,
-			DuplicatEgovAgencyCodeException, OutOfScopeException,
-			DuplicatWorkingUnitEmailException, OutOfLengthUnitEmailException {
-
-		if (name.length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH) {
-			throw new OutOfLengthUnitNameException();
-		} else if (enName
-				.length() > PortletPropsValues.USERMGT_WORKINGUNIT_ENNAME_LENGTH) {
-			throw new OutOfLengthUnitEnNameException();
-		} else if (email
-				.length() > PortletPropsValues.USERMGT_WORKINGUNIT_EMAIL_LENGTH) {
-			throw new OutOfLengthUnitEmailException();
-		}
-
-		WorkingUnit workingUnit = null;
-
-		try {
-
-			workingUnit = WorkingUnitLocalServiceUtil.getWorkingUnit(groupId,
-					govAgencyCode);
-		} catch (Exception e) {
-			// nothing to do
-		}
-
-		if (workingUnit != null && workingUnitId <= 0) {
-			throw new DuplicatEgovAgencyCodeException();
-		} else if (workingUnit != null && workingUnitId > 0
-				&& workingUnit.getWorkingunitId() != workingUnitId) {
-			throw new DuplicatEgovAgencyCodeException();
-		}
-
-		WorkingUnit parentWorkingUnit = null;
-
-		try {
-
-			parentWorkingUnit = WorkingUnitLocalServiceUtil
-					.fetchWorkingUnit(parentWorkingUnitId);
-
-		} catch (Exception e) {
-			// nothing to do
-		}
-
-		if (parentWorkingUnit != null && !parentWorkingUnit.getIsEmployer()
-				&& isEmployer) {
-			throw new OutOfScopeException();
-		}
-
-		WorkingUnit getWorkingUnitByEmail = null;
-		try {
-			getWorkingUnitByEmail = WorkingUnitLocalServiceUtil
-					.getWorkingUnitByEmail(email);
-		} catch (Exception e) {
-
-		}
-		if (getWorkingUnitByEmail != null && workingUnitId <= 0) {
-			throw new DuplicatWorkingUnitEmailException();
-		} else if (getWorkingUnitByEmail != null && workingUnitId > 0
-				&& getWorkingUnitByEmail.getWorkingunitId() != workingUnitId) {
-			throw new DuplicatWorkingUnitEmailException();
-		}
-	}
-
-	@Override
-	public void render(RenderRequest renderRequest,
-			RenderResponse renderResponse)
-			throws PortletException, IOException {
-
-		long workingUnitId = ParamUtil.getLong(renderRequest,
-				WorkingUnitDisplayTerms.WORKINGUNIT_ID);
-
-		long employeeId = ParamUtil.getLong(renderRequest,
-				EmployeeDisplayTerm.EMPLOYEE_ID);
-
-		try {
-			if (workingUnitId > 0) {
-				WorkingUnit workingUnit = WorkingUnitLocalServiceUtil
-						.getWorkingUnit(workingUnitId);
-				renderRequest.setAttribute(WebKeys.WORKING_UNIT_ENTRY,
-						workingUnit);
-			}
-
-			if (employeeId > 0) {
-				Employee employee = EmployeeLocalServiceUtil
-						.getEmployee(employeeId);
-
-				if (employee != null) {
-					long mappingUserId = employee.getMappingUserId();
-
-					if (mappingUserId > 0) {
-						User mappingUser = UserLocalServiceUtil
-								.getUser(mappingUserId);
-
-						renderRequest.setAttribute(WebKeys.USER_MAPPING_ENTRY,
-								mappingUser);
-					}
-
-					long mappingWorkingUnitId = employee.getWorkingUnitId();
-
-					if (mappingWorkingUnitId > 0) {
-						WorkingUnit mappingWorkingUnit = WorkingUnitLocalServiceUtil
-								.getWorkingUnit(mappingWorkingUnitId);
-
-						renderRequest.setAttribute(
-								WebKeys.WORKING_UNIT_MAPPING_ENTRY,
-								mappingWorkingUnit);
-
-					}
-
-					long mainJobPosId = employee.getMainJobPosId();
-
-					if (mainJobPosId > 0) {
-						JobPos mainJobPos = JobPosLocalServiceUtil
-								.getJobPos(mainJobPosId);
-						renderRequest.setAttribute(WebKeys.MAIN_JOB_POS_ENTRY,
-								mainJobPos);
-					}
-				}
-
-				renderRequest.setAttribute(WebKeys.EMPLOYEE_ENTRY, employee);
-			}
-		} catch (Exception e) {
-			_log.error(e);
-		}
-
-		super.render(renderRequest, renderResponse);
-	}
-	private Log _log = LogFactoryUtil
-			.getLog(UserMgtEditProfilePortlet.class.getName());
 
 	protected void validateEmployee(long employeeId, String fullName,
 			String email, String employeeNo, long workingUnitId,
@@ -668,42 +717,69 @@ public class UserMgtPortlet extends MVCPortlet {
 		}
 	}
 
-	protected void turnBackParams(ActionRequest actionRequest,
-			Object... entities) {
+	protected void validateWorkingUnit(long workingUnitId, String name,
+			String govAgencyCode, String enName, String address, String faxNo,
+			String email, String website, long groupId,
+			long parentWorkingUnitId, boolean isEmployer)
+			throws OutOfLengthUnitNameException, OutOfLengthUnitEnNameException,
+			DuplicatEgovAgencyCodeException, OutOfScopeException,
+			DuplicatWorkingUnitEmailException, OutOfLengthUnitEmailException {
 
-		if (entities != null && entities.length > 0) {
-			for (int i = 0; i < entities.length; i++) {
-				Object obj = entities[i];
-				if (obj instanceof EmployeeImpl) {
-					actionRequest.setAttribute(WebKeys.TURN_BACK_EMPLOYEE_ENTRY,
-							obj);
-				} else if (obj instanceof User) {
-					actionRequest.setAttribute(
-							WebKeys.TURN_BACK_USER_MAPPING_ENTRY, obj);
-				}
-			}
+		if (name.length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH) {
+			throw new OutOfLengthUnitNameException();
+		} else if (enName
+				.length() > PortletPropsValues.USERMGT_WORKINGUNIT_ENNAME_LENGTH) {
+			throw new OutOfLengthUnitEnNameException();
+		} else if (email
+				.length() > PortletPropsValues.USERMGT_WORKINGUNIT_EMAIL_LENGTH) {
+			throw new OutOfLengthUnitEmailException();
 		}
-	}
 
-	protected Employee getEmployee(long employeeId, long workingUnitId,
-			long mainJobPosId, String email, String employeeNo, String fullName,
-			String mobile, String telNo, int gender, int birthDateDay,
-			int birthDateMonth, int birthDateYear, int workingStatus) {
+		WorkingUnit workingUnit = null;
 
-		Date birthdate = DateTimeUtil.getDate(birthDateDay, birthDateMonth,
-				birthDateYear);
-		Employee employee = new EmployeeImpl();
-		employee.setEmployeeId(employeeId);
-		employee.setBirthdate(birthdate);
-		employee.setEmail(email);
-		employee.setEmployeeNo(employeeNo);
-		employee.setFullName(fullName);
-		employee.setGender(gender);
-		employee.setMainJobPosId(mainJobPosId);
-		employee.setMobile(mobile);
-		employee.setTelNo(telNo);
+		try {
 
-		return employee;
+			workingUnit = WorkingUnitLocalServiceUtil.getWorkingUnit(groupId,
+					govAgencyCode);
+		} catch (Exception e) {
+			// nothing to do
+		}
 
+		if (workingUnit != null && workingUnitId <= 0) {
+			throw new DuplicatEgovAgencyCodeException();
+		} else if (workingUnit != null && workingUnitId > 0
+				&& workingUnit.getWorkingunitId() != workingUnitId) {
+			throw new DuplicatEgovAgencyCodeException();
+		}
+
+		WorkingUnit parentWorkingUnit = null;
+
+		try {
+
+			parentWorkingUnit = WorkingUnitLocalServiceUtil
+					.fetchWorkingUnit(parentWorkingUnitId);
+
+		} catch (Exception e) {
+			// nothing to do
+		}
+
+		if (parentWorkingUnit != null && !parentWorkingUnit.getIsEmployer()
+				&& isEmployer) {
+			throw new OutOfScopeException();
+		}
+
+		WorkingUnit getWorkingUnitByEmail = null;
+		try {
+			getWorkingUnitByEmail = WorkingUnitLocalServiceUtil
+					.getWorkingUnitByEmail(email);
+		} catch (Exception e) {
+
+		}
+		if (getWorkingUnitByEmail != null && workingUnitId <= 0) {
+			throw new DuplicatWorkingUnitEmailException();
+		} else if (getWorkingUnitByEmail != null && workingUnitId > 0
+				&& getWorkingUnitByEmail.getWorkingunitId() != workingUnitId) {
+			throw new DuplicatWorkingUnitEmailException();
+		}
 	}
 }

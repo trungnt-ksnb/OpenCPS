@@ -205,6 +205,17 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 				workingUnitId);
 	}
 
+	public void deletedPermanently(long employeeId)
+			throws SystemException, PortalException {
+		Employee employee = employeePersistence.findByPrimaryKey(employeeId);
+		long mappingUserId = employee.getMappingUserId();
+		if (mappingUserId > 0) {
+			userLocalService.deleteUser(mappingUserId);
+		}
+
+		employeePersistence.remove(employeeId);
+	}
+
 	public Employee getEmployeeByEmail(long groupId, String email)
 			throws NoSuchEmployeeException, SystemException {
 		return employeePersistence.findByG_E(groupId, email);
@@ -255,12 +266,12 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		return employeePersistence.findByG_W_MJP(groupId, workingUnitId,
 				mainJobPosId, start, end, orderByComparator);
 	}
-
 	public List<Employee> getEmployees(long groupId, String[] fullNames)
 			throws SystemException {
 
 		return employeePersistence.findByG_N(groupId, fullNames);
 	}
+
 	public List<Employee> getEmployees(long groupId, String[] fullNames,
 			int start, int end, OrderByComparator orderByComparator)
 			throws SystemException {
@@ -283,32 +294,36 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 
 		Employee employee = employeePersistence.findByPrimaryKey(employeeId);
 
-		User mappingUse = userLocalService.getUser(employee.getMappingUserId());
+		long mappingUserId = employee.getMappingUserId();
 
 		Date now = new Date();
 
-		if (workingStatus == PortletConstants.WORKING_STATUS_ACTIVATE
-				|| workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
+		if (mappingUserId > 0) {
+			User mappingUse = userLocalService
+					.getUser(employee.getMappingUserId());
+			if (workingStatus == PortletConstants.WORKING_STATUS_ACTIVATE
+					|| workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
 
-			int status = WorkflowConstants.STATUS_APPROVED;
+				int status = WorkflowConstants.STATUS_APPROVED;
 
-			if (workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
-				status = WorkflowConstants.STATUS_INACTIVE;
+				if (workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
+					status = WorkflowConstants.STATUS_INACTIVE;
+				}
+
+				mappingUse.setStatus(status);
+
+				userLocalService.updateUser(mappingUse);
+
 			}
-
-			mappingUse.setStatus(status);
-
-			userLocalService.updateUser(mappingUse);
-
-			employee.setWorkingStatus(workingStatus);
-
-			employee.setUserId(serviceContext.getUserId());
-			employee.setGroupId(serviceContext.getScopeGroupId());
-			employee.setCompanyId(serviceContext.getCompanyId());
-			employee.setModifiedDate(now);
-
-			employeePersistence.update(employee);
 		}
+
+		employee.setWorkingStatus(workingStatus);
+		employee.setUserId(serviceContext.getUserId());
+		employee.setGroupId(serviceContext.getScopeGroupId());
+		employee.setCompanyId(serviceContext.getCompanyId());
+		employee.setModifiedDate(now);
+
+		employeePersistence.update(employee);
 
 	}
 

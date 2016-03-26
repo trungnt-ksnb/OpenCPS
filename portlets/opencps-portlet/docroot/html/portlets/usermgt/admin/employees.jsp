@@ -1,3 +1,4 @@
+<%@page import="org.opencps.util.MessageKeys"%>
 <%@page import="org.opencps.usermgt.service.EmployeeLocalServiceUtil"%>
 <%@page import="com.liferay.portal.kernel.dao.search.SearchEntry"%>
 <%@page import="com.liferay.portal.model.User"%>
@@ -51,7 +52,8 @@
 	List<Employee> employees = new ArrayList<Employee>();
 	int totalCount = 0;
 %>
-
+<liferay-ui:success key="<%=MessageKeys.USERMGT_ADD_SUCCESS %>" message="<%=MessageKeys.USERMGT_ADD_SUCCESS %>"/>
+<liferay-ui:success key="<%=MessageKeys.USERMGT_UPDATE_SUCCESS %>" message="<%=MessageKeys.USERMGT_UPDATE_SUCCESS %>"/>
 <liferay-ui:search-container searchContainer="<%= new EmployeeSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
 
 	<liferay-ui:search-container-results>
