@@ -26,9 +26,11 @@
 <%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
 
 <%
+	String redirectURL = ParamUtil.getString(request, "redirectURL"); 
 	ResultRow row =
 		(ResultRow) request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 	WorkingUnit workingUnit = (WorkingUnit)row.getObject();
+	_log.info("redirectURL" + redirectURL);
 %>
 
 <liferay-ui:icon-menu>
@@ -40,9 +42,8 @@
 			value="<%=String.valueOf(workingUnit.getWorkingunitId())%>" 
 		/>
 		
-		<portlet:param name="redirectURL" value="<%=currentURL%>" />
+		<portlet:param name="redirectURL" value="<%=redirectURL%>" />
 		
-		<portlet:param name="" value=""/>
 	</portlet:renderURL>
 
 	<liferay-ui:icon image="edit" message="edit"
@@ -55,7 +56,9 @@
 			value="<%=String.valueOf(workingUnit.getWorkingunitId())%>" 
 		/>
 		
-		<portlet:param name="redirectURL" value="<%=currentURL%>" />
+		<portlet:param name="redirectURL" value="<%=redirectURL%>" />
+		<portlet:param name="returnURL" value="<%=currentURL%>" />
+		
 	</portlet:actionURL>
 
 	<liferay-ui:icon image="delete" message="delete"

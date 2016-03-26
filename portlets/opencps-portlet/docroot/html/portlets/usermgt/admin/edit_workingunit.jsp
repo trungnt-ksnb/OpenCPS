@@ -25,8 +25,8 @@
 <%@page import="org.opencps.util.MessageKeys"%>
 
 <%
-	String backURL = ParamUtil.getString(request, "backURL");
-	String redirectURL = ParamUtil.getString(request, "redirectURL");
+	String backURL = ParamUtil.getString(request, "backURL");	
+	_log.info("backURL" + backURL);	
 	long workingUnitId = ParamUtil.getLong(request, 
 		WorkingUnitDisplayTerms.WORKINGUNIT_ID);
 	String [] workingunitSections = null;
@@ -49,7 +49,10 @@
 	key="<%=MessageKeys.JOBPOS_UPDATE_ERROR%>" 
 	message="<%=MessageKeys.JOBPOS_UPDATE_ERROR%>" 
 />
-<portlet:actionURL var="updateWorkingUnitURL" name="updateWorkingUnit"/>
+<portlet:actionURL var="updateWorkingUnitURL" name="updateWorkingUnit" >
+	<portlet:param name="returnURL" value="<%=currentURL %>"/>
+</portlet:actionURL>
+
 
 <portlet:renderURL	
 		var="dialogURL"	

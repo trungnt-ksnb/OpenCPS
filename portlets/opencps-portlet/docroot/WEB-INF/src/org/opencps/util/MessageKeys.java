@@ -23,18 +23,26 @@ package org.opencps.util;
 public class MessageKeys {
 
 	public static final String DATAMGT_ADD_SUCESS = "datamgt.add.sucess";
-	public static final String DATAMGT_SYSTEM_EXCEPTION_OCCURRED = "datamgt.system.exception.occurred";
+	public static final String DATAMGT_SYSTEM_EXCEPTION_OCCURRED =
+		"datamgt.system.exception.occurred";
 	public static final String DATAMGT_UPDATE_SUCESS = "datamgt.update.sucess";
-	public static final String WORKINGUNIT_UPDATE_SUCESS = "workingunit.update.success";
-	public static final String WORKINGUNIT_UPDATE_ERROR = "workingunit.update.error";
-	public static final String WORKINGUNIT_DELETE_SUCCESS = "workingunit.delete.success";
-	public static final String WORKINGUNIT_DELETE_ERROR = "workingunit.delete.error";
+	public static final String WORKINGUNIT_UPDATE_SUCESS =
+		"workingunit.update.success";
+	public static final String WORKINGUNIT_UPDATE_ERROR =
+		"workingunit.update.error";
+	public static final String WORKINGUNIT_DELETE_SUCCESS =
+		"workingunit.delete.success";
+	public static final String WORKINGUNIT_DELETE_ERROR_EXIST =
+		"workingunit.delete.error.exist";
+	public static final String WORKINGUNIT_DELETE_ERROR =
+		"workingunit.delete.error";
 	public static final String JOBPOS_UPDATE_SUCESS = "jobpos.update.success";
 	public static final String JOBPOS_UPDATE_ERROR = "jobpos.update.error";
 	public static final String JOBPOS_DELETE_SUCCESS = "jobpos.delete.success";
 	public static final String JOBPOS_DELETE_ERROR = "jobpos.delete.error";
 	public static final String USERMGT_ADD_SUCCESS = "usermgt.add.sucess";
-	public static final String USERMGT_SYSTEM_EXCEPTION_OCCURRED = "usermgt.system.exception.occurred";
+	public static final String USERMGT_SYSTEM_EXCEPTION_OCCURRED =
+		"usermgt.system.exception.occurred";
 	public static final String USERMGT_UPDATE_SUCCESS = "usermgt.update.sucess";
 
 }

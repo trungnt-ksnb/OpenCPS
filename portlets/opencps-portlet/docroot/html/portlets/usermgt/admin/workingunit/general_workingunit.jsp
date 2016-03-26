@@ -64,9 +64,12 @@
 	
 	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_NAME%>">
 		<aui:validator name="required" />
+		<aui:validator name="maxLength">255</aui:validator>
 	</aui:input>
 	
-	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME%>" />
+	<aui:input name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ENNAME%>" >
+		<aui:validator name="maxLength">255</aui:validator>
+	</aui:input>
 	
 	<aui:input 
 		name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER%>" 
