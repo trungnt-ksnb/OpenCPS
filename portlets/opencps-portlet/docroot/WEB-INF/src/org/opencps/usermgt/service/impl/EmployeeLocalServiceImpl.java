@@ -317,6 +317,10 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 			}
 		}
 
+		workingStatus = workingStatus == PortletConstants.WORKING_STATUS_ACTIVATE
+				? 0
+				: 1;
+
 		employee.setWorkingStatus(workingStatus);
 		employee.setUserId(serviceContext.getUserId());
 		employee.setGroupId(serviceContext.getScopeGroupId());

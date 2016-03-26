@@ -92,12 +92,13 @@ public class UserMgtPortlet extends MVCPortlet {
 	/**
 	 * @param actionRequest
 	 * @param actionResponse
+	 * @throws IOException
 	 */
 	public void deleteEmployee(ActionRequest actionRequest,
-			ActionResponse actionResponse) {
+			ActionResponse actionResponse) throws IOException {
 		long employeeId = ParamUtil.getLong(actionRequest,
 				EmployeeDisplayTerm.EMPLOYEE_ID);
-
+		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
 		try {
 			EmployeeLocalServiceUtil.deletedPermanently(employeeId);
 			SessionMessages.add(actionRequest,
@@ -106,6 +107,10 @@ public class UserMgtPortlet extends MVCPortlet {
 			SessionErrors.add(actionRequest,
 					MessageKeys.USERMGT_EMPLOYEE_DELETE_ERROR);
 			_log.error(e);
+		} finally {
+			if (Validator.isNotNull(redirectURL)) {
+				actionResponse.sendRedirect(redirectURL);
+			}
 		}
 	}
 
@@ -358,8 +363,8 @@ public class UserMgtPortlet extends MVCPortlet {
 				EmployeeDisplayTerm.BIRTH_DATE_MONTH);
 		int birthDateYear = ParamUtil.getInteger(actionRequest,
 				EmployeeDisplayTerm.BIRTH_DATE_YEAR);
-		int workingStatus = ParamUtil.getInteger(actionRequest,
-				EmployeeDisplayTerm.WORKING_STATUS);
+		int workingStatus = ParamUtil.getBoolean(actionRequest,
+				EmployeeDisplayTerm.WORKING_STATUS, false) == true ? 1 : 0;
 
 		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
 
@@ -504,14 +509,15 @@ public class UserMgtPortlet extends MVCPortlet {
 	/**
 	 * @param actionRequest
 	 * @param actionResponse
+	 * @throws IOException
 	 */
 	public void updateEmployeeWorkingStatus(ActionRequest actionRequest,
-			ActionResponse actionResponse) {
+			ActionResponse actionResponse) throws IOException {
 		long employeeId = ParamUtil.getLong(actionRequest,
 				EmployeeDisplayTerm.EMPLOYEE_ID);
 		int workingStatus = ParamUtil.getInteger(actionRequest,
 				EmployeeDisplayTerm.WORKING_STATUS);
-
+		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
 		try {
 			ServiceContext serviceContext = ServiceContextFactory
 					.getInstance(actionRequest);
@@ -525,6 +531,10 @@ public class UserMgtPortlet extends MVCPortlet {
 			SessionErrors.add(actionRequest,
 					MessageKeys.USERMGT_EMPLOYEE_DELETE_ERROR);
 			_log.error(e);
+		} finally {
+			if (Validator.isNotNull(redirectURL)) {
+				actionResponse.sendRedirect(redirectURL);
+			}
 		}
 
 	}

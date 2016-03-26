@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.util.PortletConstants"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -114,7 +115,8 @@
 			type="checkbox" 
 			inlineField="<%= true %>" 
 			inlineLabel="right"
-			value="<%=employee != null ? employee.getWorkingStatus() : 0 %>"
+			value="<%=employee != null 
+				&& employee.getWorkingStatus() == PortletConstants.WORKING_STATUS_ACTIVATE ? true : false %>"
 		/>
 	</aui:col>
 </aui:row>
