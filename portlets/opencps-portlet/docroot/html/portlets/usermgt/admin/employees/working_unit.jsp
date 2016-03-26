@@ -42,7 +42,7 @@
 	long mappingWorkingUnitId = 0;
 	
 	if(mappingWorkingUnit != null){
-		mappingWorkingUnitId = mappingWorkingUnit.getManagerWorkingUnitId();
+		mappingWorkingUnitId = mappingWorkingUnit.getWorkingunitId();
 	}
 	
 	if(employee != null){
@@ -124,14 +124,12 @@
 	<aui:col width="50">
 		<aui:select 
 			name='<%= EmployeeDisplayTerm.WORKING_UNIT_ID%>' 
-			label="" 
+			label='<%=StringPool.BLANK %>' 
 			onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
-			required="<%=true %>"
+			required='<%=true %>'
 		>
 			<aui:option value=""><liferay-ui:message key="select-working-unit"/></aui:option>
 			<%
-				
-			
 				if(mainJobPos != null){
 					WorkingUnit workingUnit = null;
 					try{
@@ -160,8 +158,8 @@
 	<aui:col width="50">
 		<aui:select 
 			name='<%=EmployeeDisplayTerm.MAIN_JOBPOS_ID %>' 
-			label="" 
-			required="<%=true %>">
+			label='<%=StringPool.BLANK %>'  
+			required='<%=true %>'>
 			<aui:option value=""><liferay-ui:message key="select-jobpos"/></aui:option>
 			<%
 				if(selectedMainWorkingUnitId > 0){
@@ -186,28 +184,75 @@
 	<aui:fieldset id="boundingBox">
 	<%
 		for(int i = 0; i < jobPosIndexes.length; i++){
+			
 			int jobPosIndex = jobPosIndexes[i];
+			JobPos jobPos = null;
+			
+			if(jobPoses != null && !jobPoses.isEmpty()){
+				jobPos = jobPoses.get(i);
+			}
+			
+			long selectedWorkingUnitId = 0;
+			
 			%>
 				<div class="lfr-form-row lfr-form-row-inline">
 					<div class="row-fields">
 						<aui:col width="50">
 							<aui:select 
 								name='<%= EmployeeDisplayTerm.WORKING_UNIT_ID + jobPosIndex %>' 
-								label="" 
+								label='<%=StringPool.BLANK %>' 
 								onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
+								showEmptyOption="<%=true %>"
 							>
-								<aui:option value=""><liferay-ui:message key="select-working-unit"/></aui:option>
+							
 								<%
-									/* JobPos jobPos = jobPoses.get(i); */
+
+									if(jobPos != null){
+										WorkingUnit workingUnit = null;
+										try{
+											workingUnit = WorkingUnitLocalServiceUtil.getFirstWorkingUnitByJobPosId(jobPos.getJobPosId());
+										}catch(Exception e){
+											
+										}
+										
+										if(workingUnit != null){
+											selectedWorkingUnitId = workingUnit.getWorkingunitId();
+										}
+									}
+									if(mappingWorkingUnitId > 0){
+										List<WorkingUnit> workingUnitsTemp = UserMgtUtil.getWorkingUnitsForEmployess(scopeGroupId, mappingWorkingUnitId);
+										for(WorkingUnit workingUnit : workingUnitsTemp){
+											%>
+												<aui:option value="<%=workingUnit.getWorkingunitId()%>" selected="<%= workingUnit.getWorkingunitId() == selectedWorkingUnitId %>">
+													<%=workingUnit.getName() %>
+												</aui:option>
+											<%
+										}
+									}
 								%>
+								
 							</aui:select>
 						</aui:col>
 						<aui:col width="50">
 							<aui:select 
 								name='<%= "jobPosId" + jobPosIndex %>' 
-								label=""
+								label='<%=StringPool.BLANK %>'
+								showEmptyOption="<%=true %>"
 							>
-								<aui:option value=""><liferay-ui:message key="select-jobpos"/></aui:option>
+								<%
+									if(selectedWorkingUnitId > 0 && jobPos != null){
+										List<JobPos> jobPosTemps = JobPosLocalServiceUtil.getJobPoss(scopeGroupId, selectedWorkingUnitId);
+										if(jobPos != null){
+											for(JobPos jobPosTem : jobPosTemps){
+												%>
+													<aui:option value="<%=jobPosTem.getJobPosId() %>" selected="<%=jobPosTem.getJobPosId() == jobPos.getJobPosId() %>">
+														<%=jobPosTem.getTitle() %>
+													</aui:option>
+												<%
+											}
+										}
+									}
+								%>
 							</aui:select>
 						</aui:col>
 					</div>
