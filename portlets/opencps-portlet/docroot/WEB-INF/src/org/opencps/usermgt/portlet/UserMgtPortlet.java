@@ -450,7 +450,7 @@ public class UserMgtPortlet extends MVCPortlet {
 				SessionErrors.add(
 					request, DuplicatWorkingUnitEmailException.class);
 			} else if(e instanceof OutOfLengthUnitEmailException) {
-				SessionErrors.add(request, OutOfLengthUnitEmailException.classs);
+				SessionErrors.add(request, OutOfLengthUnitEmailException.class);
 			}
 		}
 		finally {
