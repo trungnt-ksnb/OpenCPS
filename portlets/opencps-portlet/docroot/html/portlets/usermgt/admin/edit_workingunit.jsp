@@ -23,10 +23,14 @@
 <%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
 <%@page import="com.liferay.portal.kernel.log.Log"%>
 <%@page import="org.opencps.util.MessageKeys"%>
-
+<%@page import="org.opencps.usermgt.OutOfLengthUnitNameException"%>
+<%@page import="org.opencps.usermgt.OutOfLengthUnitEnNameException"%>
+<%@page import="org.opencps.usermgt.OutOfScopeException"%>
+<%@page import="org.opencps.usermgt.DuplicatEgovAgencyCodeException"%>
+<%@page import="org.opencps.usermgt.OutOfLengthUnitEmailException"%>
+<%@page import="org.opencps.usermgt.DuplicatWorkingUnitEmailException"%> 
 <%
 	String backURL = ParamUtil.getString(request, "backURL");	
-	_log.info("backURL" + backURL);	
 	long workingUnitId = ParamUtil.getLong(request, 
 		WorkingUnitDisplayTerms.WORKINGUNIT_ID);
 	String [] workingunitSections = null;
@@ -46,9 +50,35 @@
 	String[][] categorySections = {workingunitSections};
 %>
 <liferay-ui:error 
-	key="<%=MessageKeys.JOBPOS_UPDATE_ERROR%>" 
-	message="<%=MessageKeys.JOBPOS_UPDATE_ERROR%>" 
+	exception="<%= OutOfLengthUnitNameException.class %>" 
+	message="<%= OutOfLengthUnitNameException.class.getName() %>" 
 />
+
+<liferay-ui:error 
+	exception="<%= OutOfLengthUnitEnNameException.class %>" 
+	message="<%= OutOfLengthUnitEnNameException.class.getName() %>" 
+/>
+
+<liferay-ui:error 
+	exception="<%= OutOfLengthUnitEmailException.class %>" 
+	message="<%= OutOfLengthUnitEmailException.class.getName() %>" 
+/>
+
+<liferay-ui:error 
+	exception="<%= DuplicatEgovAgencyCodeException.class %>" 
+	message="<%= DuplicatEgovAgencyCodeException.class.getName() %>" 
+/>
+
+<liferay-ui:error 
+	exception="<%= OutOfScopeException.class %>" 
+	message="<%= OutOfScopeException.class.getName() %>" 
+/>
+
+<liferay-ui:error 
+	exception="<%= DuplicatWorkingUnitEmailException.class %>" 
+	message="<%= DuplicatWorkingUnitEmailException.class.getName() %>" 
+/>
+
 <portlet:actionURL var="updateWorkingUnitURL" name="updateWorkingUnit" >
 	<portlet:param name="returnURL" value="<%=currentURL %>"/>
 </portlet:actionURL>
