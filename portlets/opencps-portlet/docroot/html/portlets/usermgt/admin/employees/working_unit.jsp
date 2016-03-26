@@ -1,4 +1,4 @@
-<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -27,6 +27,7 @@
 <%@page import="org.opencps.usermgt.service.EmployeeLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
 <%@page import="java.util.ArrayList"%>
+<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%@ include file="../../init.jsp"%>
 <%
 

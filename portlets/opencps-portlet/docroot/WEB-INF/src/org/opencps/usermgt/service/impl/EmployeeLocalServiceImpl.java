@@ -75,9 +75,9 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 	 * the employee local service.
 	 */
 
-	public Employee addEmployee(long userId, long workingUnitId,
-			String employeeNo, String fullName, int gender, String telNo,
-			String mobile, String email, int workingStatus, long mainJobPosId,
+	public Employee addEmployee(long userId, String employeeNo, String fullName,
+			int gender, String telNo, String mobile, String email,
+			long workingUnitId, int workingStatus, long mainJobPosId,
 			long[] jobPosIds, boolean isAddUser, String accountEmail,
 			String screenName, int birthDateDay, int birthDateMonth,
 			int birthDateYear, String password, String reTypePassword,
