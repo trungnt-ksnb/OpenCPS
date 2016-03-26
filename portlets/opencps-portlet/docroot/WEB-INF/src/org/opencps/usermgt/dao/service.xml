@@ -200,6 +200,10 @@
             <finder-column name="groupId"></finder-column>
             <finder-column name="employeeNo"></finder-column>
         </finder>
+        <finder name="G_U" return-type="Employee">
+            <finder-column name="groupId"></finder-column>
+            <finder-column name="mappingUserId"></finder-column>
+        </finder>
 		
 		<reference entity="User" package-path="com.liferay.portal" />
 	</entity>
