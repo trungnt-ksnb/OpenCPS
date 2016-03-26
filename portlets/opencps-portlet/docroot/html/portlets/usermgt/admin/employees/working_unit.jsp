@@ -1,3 +1,4 @@
+<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -73,6 +74,8 @@
 	}
 	
 	List<WorkingUnit> workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnit(scopeGroupId, true);
+	
+	long selectedMainWorkingUnitId = 0;
 %>
 
 <aui:model-context bean="<%=mappingWorkingUnit%>" model="<%=WorkingUnit.class%>" />
@@ -126,8 +129,29 @@
 		>
 			<aui:option value=""><liferay-ui:message key="select-working-unit"/></aui:option>
 			<%
-				if(mappingWorkingUnit != null){
-					long mappingWorkingUnitId = mappingWorkingUnit.getManagerWorkingUnitId();
+				
+			
+				if(mainJobPos != null){
+					WorkingUnit workingUnit = null;
+					try{
+						workingUnit = WorkingUnitLocalServiceUtil.getFirstWorkingUnitByJobPosId(mainJobPos.getJobPosId());
+					}catch(Exception e){
+						
+					}
+					
+					if(workingUnit != null){
+						selectedMainWorkingUnitId = workingUnit.getWorkingunitId();
+					}
+				}
+				if(mappingWorkingUnitId > 0){
+					List<WorkingUnit> workingUnitsTemp = UserMgtUtil.getWorkingUnitsForEmployess(scopeGroupId, mappingWorkingUnitId);
+					for(WorkingUnit workingUnit : workingUnitsTemp){
+						%>
+							<aui:option value="<%=workingUnit.getWorkingunitId()%>" selected="<%= workingUnit.getWorkingunitId() == selectedMainWorkingUnitId %>">
+								<%=workingUnit.getName() %>
+							</aui:option>
+						<%
+					}
 				}
 			%>
 		</aui:select>
@@ -138,6 +162,20 @@
 			label="" 
 			required="<%=true %>">
 			<aui:option value=""><liferay-ui:message key="select-jobpos"/></aui:option>
+			<%
+				if(selectedMainWorkingUnitId > 0){
+					List<JobPos> jobPos = JobPosLocalServiceUtil.getJobPoss(scopeGroupId, selectedMainWorkingUnitId);
+					if(jobPos != null){
+						for(JobPos jobPosTem : jobPos){
+							%>
+								<aui:option value="<%=jobPosTem.getJobPosId() %>" selected="<%=jobPosTem.getJobPosId() == mainJobPos.getJobPosId() %>">
+									<%=jobPosTem.getTitle() %>
+								</aui:option>
+							<%
+						}
+					}
+				}
+			%>
 		</aui:select>
 	</aui:col>
 </aui:row>
@@ -159,7 +197,7 @@
 							>
 								<aui:option value=""><liferay-ui:message key="select-working-unit"/></aui:option>
 								<%
-									JobPos jobPos = jobPoses.get(i);
+									/* JobPos jobPos = jobPoses.get(i); */
 								%>
 							</aui:select>
 						</aui:col>
