@@ -35,6 +35,7 @@
 <%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.model.WorkingUnit"%>
 <%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
+<%@page import="org.opencps.util.PortletConstants"%>
 <%@ include file="../init.jsp"%>
 
 
@@ -57,6 +58,7 @@
 
 <liferay-ui:success key="<%=MessageKeys.USERMGT_EMPLOYEE_DELETE_SUCCESS %>" message="<%=MessageKeys.USERMGT_EMPLOYEE_DELETE_SUCCESS %>"/>
 <liferay-ui:error key="<%=MessageKeys.USERMGT_EMPLOYEE_DELETE_ERROR %>" message="<%=MessageKeys.USERMGT_EMPLOYEE_DELETE_ERROR %>"/>
+
 
 <liferay-ui:search-container searchContainer="<%= new EmployeeSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
 
@@ -141,8 +143,13 @@
 				
 				row.addText(screenName, editURL);
 				
+				String status = "<i class=\"opencps-icon checked\"></i>";
 				
-				row.addText(String.valueOf(employee.getWorkingStatus()), editURL);
+				if(employee.getWorkingStatus() == PortletConstants.WORKING_STATUS_DEACTIVATE){
+					status = "<i class=\"opencps-icon removed\"></i>";
+				}
+				
+				row.addText(status, editURL);
 				
 				
 				//action column
