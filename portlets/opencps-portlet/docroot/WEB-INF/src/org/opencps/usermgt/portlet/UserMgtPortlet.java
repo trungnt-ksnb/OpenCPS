@@ -19,6 +19,7 @@ package org.opencps.usermgt.portlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
@@ -46,6 +47,7 @@ import org.opencps.usermgt.OutOfScopeException;
 import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
+import org.opencps.usermgt.model.impl.EmployeeImpl;
 import org.opencps.usermgt.search.EmployeeDisplayTerm;
 import org.opencps.usermgt.search.JobPosDisplayTerms;
 import org.opencps.usermgt.search.JobPosSearchTerms;
@@ -53,6 +55,7 @@ import org.opencps.usermgt.search.WorkingUnitDisplayTerms;
 import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
 import org.opencps.usermgt.service.JobPosLocalServiceUtil;
 import org.opencps.usermgt.service.WorkingUnitLocalServiceUtil;
+import org.opencps.util.DateTimeUtil;
 import org.opencps.util.MessageKeys;
 import org.opencps.util.PortletPropsValues;
 import org.opencps.util.WebKeys;
@@ -260,8 +263,8 @@ public class UserMgtPortlet extends MVCPortlet {
 
 			// Validate before update
 			validateEmployee(
-				employeeId, fullName, userAccountEmail, employeeNo,
-				workingUnitId, mainJobPosId, serviceContext);
+				employeeId, fullName, email, employeeNo, workingUnitId,
+				mainJobPosId, serviceContext);
 
 			boolean isAddUser = false;
 
@@ -291,6 +294,15 @@ public class UserMgtPortlet extends MVCPortlet {
 		}
 		catch (Exception e) {
 
+			Employee employee =
+				getEmployee(
+					employeeId, workingUnitId, mainJobPosId, email, employeeNo,
+					fullName, mobile, telNo, gender, birthDateDay,
+					birthDateMonth, birthDateYear, workingStatus);
+
+			turnBackParams(actionRequest, new Object[] {
+				employee
+			});
 			if (e instanceof EmptyEmployeeEmailException) {
 				SessionErrors.add(
 					actionRequest, EmptyEmployeeEmailException.class);
@@ -420,7 +432,7 @@ public class UserMgtPortlet extends MVCPortlet {
 					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 			}
 			else {
-
+				_log.info("go here update");
 				WorkingUnitLocalServiceUtil.updateWorkingUnit(
 					workingUnitId, serviceContext.getUserId(), name, enName,
 					govAgencyCode, parentWorkingUnitId, address, cityCode,
@@ -449,7 +461,8 @@ public class UserMgtPortlet extends MVCPortlet {
 			else if (e instanceof DuplicatWorkingUnitEmailException) {
 				SessionErrors.add(
 					request, DuplicatWorkingUnitEmailException.class);
-			} else if(e instanceof OutOfLengthUnitEmailException) {
+			}
+			else if (e instanceof OutOfLengthUnitEmailException) {
 				SessionErrors.add(request, OutOfLengthUnitEmailException.class);
 			}
 		}
@@ -472,11 +485,10 @@ public class UserMgtPortlet extends MVCPortlet {
 		if (name.length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH) {
 			throw new OutOfLengthUnitNameException();
 		}
-		else if (enName.length() > PortletPropsValues
-						.USERMGT_WORKINGUNIT_ENNAME_LENGTH) {
+		else if (enName.length() > PortletPropsValues.USERMGT_WORKINGUNIT_ENNAME_LENGTH) {
 			throw new OutOfLengthUnitEnNameException();
-		} else if (email.length() > PortletPropsValues
-						.USERMGT_WORKINGUNIT_EMAIL_LENGTH) {
+		}
+		else if (email.length() > PortletPropsValues.USERMGT_WORKINGUNIT_EMAIL_LENGTH) {
 			throw new OutOfLengthUnitEmailException();
 		}
 
@@ -488,8 +500,8 @@ public class UserMgtPortlet extends MVCPortlet {
 				WorkingUnitLocalServiceUtil.getWorkingUnit(
 					groupId, govAgencyCode);
 		}
-		catch (SystemException | NoSuchWorkingUnitException e) {
-
+		catch (Exception e) {
+			// nothing to do
 		}
 
 		if (workingUnit != null && workingUnitId <= 0) {
@@ -508,7 +520,7 @@ public class UserMgtPortlet extends MVCPortlet {
 				WorkingUnitLocalServiceUtil.fetchWorkingUnit(parentWorkingUnitId);
 
 		}
-		catch (SystemException e) {
+		catch (Exception e) {
 			// nothing to do
 		}
 
@@ -642,16 +654,8 @@ public class UserMgtPortlet extends MVCPortlet {
 
 		Employee employee = null;
 
-		Employee employeeByEmail = null;
-
-		Employee employeeByEmployeeNo = null;
-
-		if (employeeId > 0) {
-			employee = EmployeeLocalServiceUtil.getEmployee(employeeId);
-		}
-
 		try {
-			employeeByEmail =
+			employee =
 				EmployeeLocalServiceUtil.getEmployeeByEmail(
 					serviceContext.getScopeGroupId(), email);
 		}
@@ -659,8 +663,16 @@ public class UserMgtPortlet extends MVCPortlet {
 			// Nothing todo
 		}
 
+		if (employee != null && employeeId <= 0) {
+			throw new DuplicateEmployeeEmailException();
+		}
+		else if (employee != null && employeeId > 0 &&
+			employee.getEmployeeId() != employeeId) {
+			throw new DuplicateEmployeeEmailException();
+		}
+
 		try {
-			employeeByEmployeeNo =
+			employee =
 				EmployeeLocalServiceUtil.getEmployeeByEmployeeNo(
 					serviceContext.getScopeGroupId(), employeeNo);
 		}
@@ -668,24 +680,53 @@ public class UserMgtPortlet extends MVCPortlet {
 			// Nothing todo
 		}
 
-		if (employee == null) {
-			if (employeeByEmail != null) {
-				throw new DuplicateEmployeeEmailException();
-			}
+		if (employee != null && employeeId <= 0) {
+			throw new DuplicateEmployeeNoException();
+		}
+		else if (employee != null && employeeId > 0 &&
+			employee.getEmployeeId() != employeeId) {
+			throw new DuplicateEmployeeNoException();
+		}
+	}
 
-			if (employeeByEmployeeNo != null) {
-				throw new DuplicateEmployeeNoException();
+	protected void turnBackParams(
+		ActionRequest actionRequest, Object... entities) {
+
+		if (entities != null && entities.length > 0) {
+			for (int i = 0; i < entities.length; i++) {
+				Object obj = entities[i];
+				if (obj instanceof EmployeeImpl) {
+					actionRequest.setAttribute(
+						WebKeys.TURN_BACK_EMPLOYEE_ENTRY, obj);
+				}
+				else if (obj instanceof User) {
+					actionRequest.setAttribute(
+						WebKeys.TURN_BACK_USER_MAPPING_ENTRY, obj);
+				}
 			}
 		}
-		else {
-			if (employeeByEmail.getEmployeeId() != employeeId) {
-				throw new DuplicateEmployeeEmailException();
-			}
+	}
 
-			if (employeeByEmployeeNo.getEmployeeId() != employeeId) {
-				throw new DuplicateEmployeeNoException();
-			}
-		}
+	protected Employee getEmployee(
+		long employeeId, long workingUnitId, long mainJobPosId, String email,
+		String employeeNo, String fullName, String mobile, String telNo,
+		int gender, int birthDateDay, int birthDateMonth, int birthDateYear,
+		int workingStatus) {
+
+		Date birthdate =
+			DateTimeUtil.getDate(birthDateDay, birthDateMonth, birthDateYear);
+		Employee employee = new EmployeeImpl();
+		employee.setEmployeeId(employeeId);
+		employee.setBirthdate(birthdate);
+		employee.setEmail(email);
+		employee.setEmployeeNo(employeeNo);
+		employee.setFullName(fullName);
+		employee.setGender(gender);
+		employee.setMainJobPosId(mainJobPosId);
+		employee.setMobile(mobile);
+		employee.setTelNo(telNo);
+
+		return employee;
 
 	}
 }
