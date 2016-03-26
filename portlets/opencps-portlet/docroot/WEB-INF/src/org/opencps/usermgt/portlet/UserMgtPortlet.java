@@ -77,6 +77,7 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.UserGroupLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 /**
@@ -101,7 +102,11 @@ public class UserMgtPortlet extends MVCPortlet {
 		String returnURL = ParamUtil.getString(request, "returnURL");
 		_log.info("redirectURL == " + redirectURL);
 		_log.info("returnURL == " + returnURL);
-//		SessionMessages.add(actionRequest, (LiferayPortletConfig)portletConfig.getPortletName() + SessionMessages. KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
+		
+		SessionMessages.add(request,
+			PortalUtil.getPortletId(request)
+			+ SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE); 
+		
 		if (workingUnitId <= 0) {
 			SessionErrors.add(request, MessageKeys.WORKINGUNIT_DELETE_ERROR_EXIST);
 			
@@ -442,8 +447,9 @@ public class UserMgtPortlet extends MVCPortlet {
 				request, WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER);
 		String redirectURL = ParamUtil.getString(request, "redirectURL");
 		String returnURL = ParamUtil.getString(request, "returnURL");
-		_log.info("redirectURL == " + redirectURL);
-		_log.info("returnURL == " + returnURL);
+		SessionMessages.add(request,
+			PortalUtil.getPortletId(request)
+			+ SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE); 
 
 		try {
 			serviceContext = ServiceContextFactory.getInstance(request);
@@ -462,7 +468,6 @@ public class UserMgtPortlet extends MVCPortlet {
 					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 			}
 			else {
-				_log.info("go here update");
 				WorkingUnitLocalServiceUtil.updateWorkingUnit(
 					workingUnitId, serviceContext.getUserId(), name, enName,
 					govAgencyCode, parentWorkingUnitId, address, cityCode,
@@ -475,6 +480,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			}
 		}
 		catch (Exception e) {
+			
 			if (e instanceof OutOfLengthUnitNameException) {
 				SessionErrors.add(request, OutOfLengthUnitNameException.class);
 			}
@@ -497,8 +503,8 @@ public class UserMgtPortlet extends MVCPortlet {
 			}
 		}
 		finally {
-			if (Validator.isNotNull(redirectURL)) {
-				response.sendRedirect(redirectURL);
+			if (Validator.isNotNull(returnURL)) {
+				response.sendRedirect(returnURL);
 			}
 		}
 
