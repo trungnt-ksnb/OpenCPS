@@ -302,6 +302,11 @@ public class WorkingUnitLocalServiceImpl
 			throws NoSuchWorkingUnitException, SystemException {
 		return workingUnitPersistence.findByG_G(groupId, govAgencyCode);
 	}
+	
+	public WorkingUnit getWorkingUnitByEmail(String email) 
+					throws NoSuchWorkingUnitException, SystemException {
+		return workingUnitPersistence.findByEmail(email);
+	}
 
 	private Log _log = LogFactoryUtil.getLog(WorkingUnitLocalServiceImpl.class);
 }
