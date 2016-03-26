@@ -312,9 +312,9 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 
 	}
 
-	public Employee updateEmployee(long employeeId, long userId,
-			long workingUnitId, String employeeNo, String fullName, int gender,
-			String telNo, String mobile, String email, int workingStatus,
+	public Employee updateEmployee(long userId, long employeeId,
+			String employeeNo, String fullName, int gender, String telNo,
+			String mobile, String email, long workingUnitId, int workingStatus,
 			long mainJobPosId, long[] jobPosIds, boolean isAddUser,
 			boolean isResetPassWord, String accountEmail, String screenName,
 			int birthDateDay, int birthDateMonth, int birthDateYear,
@@ -397,6 +397,7 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 					new ArrayList<AnnouncementsDelivery>(), false,
 					serviceContext);
 		} else {
+
 			try {
 				mappingUser = userLocalService
 						.getUserById(employee.getMappingUserId());
@@ -404,38 +405,44 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 				_log.error(e);
 			}
 
-			// Reset password
-			if (isResetPassWord) {
-				mappingUser = userLocalService.updatePassword(
-						serviceContext.getUserId(), password, reTypePassword,
-						false);
-			}
+			if (mappingUser != null) {
+				// Reset password
+				if (isResetPassWord) {
+					mappingUser = userLocalService.updatePassword(
+							mappingUser.getUserId(), password, reTypePassword,
+							false);
+				}
 
-			// Change user name
-			if (!fullName.equals(employee.getFullName())) {
-				mappingUser.setFirstName(spn.getFirstName());
-				mappingUser.setLastName(spn.getLastName());
-				mappingUser.setMiddleName(spn.getMidName());
-			}
+				// Change user name
+				if (!fullName.equals(employee.getFullName())) {
+					mappingUser.setFirstName(spn.getFirstName());
+					mappingUser.setLastName(spn.getLastName());
+					mappingUser.setMiddleName(spn.getMidName());
+				}
 
-			// update job title
-			if (jobPos != null
-					&& !jobPos.getTitle().equals(mappingUser.getJobTitle())) {
-				mappingUser.setJobTitle(jobPos.getTitle());
-			}
+				// update job title
+				if (jobPos != null && !jobPos.getTitle()
+						.equals(mappingUser.getJobTitle())) {
+					mappingUser.setJobTitle(jobPos.getTitle());
+				}
 
-			userLocalService.setRoleUsers(mappingUser.getUserId(),
-					ArrayUtil.toLongArray(roleIds));
+				// userLocalService.setRoleUsers
 
-			mappingUser = userLocalService.updateUser(mappingUser);
+				for (Long roleId : roleIds) {
+					userLocalService.setRoleUsers(roleId,
+							new long[]{mappingUser.getUserId()});
+				}
 
-			// update birth date
-			Contact contact = ContactLocalServiceUtil
-					.getContact(mappingUser.getContactId());
+				mappingUser = userLocalService.updateUser(mappingUser);
 
-			if (contact != null) {
-				contact.setBirthday(birthDate);
-				contact = ContactLocalServiceUtil.updateContact(contact);
+				// update birth date
+				Contact contact = ContactLocalServiceUtil
+						.getContact(mappingUser.getContactId());
+
+				if (contact != null) {
+					contact.setBirthday(birthDate);
+					contact = ContactLocalServiceUtil.updateContact(contact);
+				}
 			}
 		}
 
@@ -451,10 +458,11 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		employee.setTelNo(telNo);
 		employee.setMobile(mobile);
 		employee.setMainJobPosId(mainJobPosId);
+		employeePersistence.addJobPoses(employeeId,
+				ArrayUtil.toLongArray(distinctJobPosIds));
 
-		if (isAddUser) {
-			employeePersistence.addJobPoses(employeeId,
-					ArrayUtil.toLongArray(distinctJobPosIds));
+		if (isAddUser && mappingUser != null) {
+			employee.setMappingUserId(mappingUser.getUserId());
 		}
 
 		return employeePersistence.update(employee);

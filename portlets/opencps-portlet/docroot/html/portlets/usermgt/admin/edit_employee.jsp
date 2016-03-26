@@ -166,6 +166,7 @@
 	<aui:input name="redirectURL" type="hidden" value="<%= backURL%>"/>
 	<aui:input name="returnURL" type="hidden" value="<%= currentURL%>"/>
 	
+	<aui:input name="<%=EmployeeDisplayTerm.EMPLOYEE_ID %>" type="hidden"/>
 	<aui:input name="<%=EmployeeDisplayTerm.GROUP_ID %>" type="hidden" value="<%= scopeGroupId%>"/>
 	<aui:input name="<%=EmployeeDisplayTerm.COMPANY_ID %>" type="hidden" value="<%= company.getCompanyId()%>"/>
 
@@ -181,6 +182,8 @@
 
 <aui:script use="liferay-auto-fields">
 
+	var isAddNew = Boolean('<%= employee == null ? true : false %>');
+
 	var workingUnitInput = AUI().one('#<portlet:namespace/><%= EmployeeDisplayTerm.WORKING_UNIT_ID%>');
 	
 	var mainJobPosBoundingBox = AUI().one('#<portlet:namespace/>mainJobPosBoundingBox');
@@ -190,10 +193,12 @@
 	var autoFieldRows = AUI().all('#<portlet:namespace/>boundingBox .lfr-form-row-inline');
 	
 	AUI().ready(function(A){
-		
-		<portlet:namespace/>renderWorkingUnitJobPos();
-		<portlet:namespace/>renderWorkingUnitMainJobPos();
-		
+		console.log(isAddNew);
+		/* if(isAddNew){
+			<portlet:namespace/>renderWorkingUnitJobPos();
+			<portlet:namespace/>renderWorkingUnitMainJobPos();
+		} */
+
 		workingUnitInput.on('change', function(){
 			<portlet:namespace/>renderWorkingUnitJobPos();
 			<portlet:namespace/>renderWorkingUnitMainJobPos();
@@ -214,13 +219,13 @@
 
 		autoFieldRows = A.all('#<portlet:namespace/>boundingBox .lfr-form-row-inline');
 
-		/* if(autoFieldRows){
+		if(autoFieldRows){
 			autoFieldRows.each(function(node, index){
 				if(index != 0){
 					node.remove();	
 				}		
 			});
-		}  */
+		}
 		
 		if(workingUnitInput){
 			var value = workingUnitInput.val();
@@ -302,28 +307,31 @@
 			jobPosBoundingBox = A.one('#<portlet:namespace/><%= EmployeeDisplayTerm.JOBPOS_ID%>' + index);
 		}
 
-		A.io.request(
-			'<%= renderJobPosByWorkingUnitIdURL.toString()%>',
-			{
-			    dataType : 'json',
-			    data:{    	
-			    	<portlet:namespace/>workingUnitId : value,
-			    },   
-			    on: {
-			        success: function(event, id, obj) {
-						var instance = this;
-						var res = instance.get('responseData');
-						
-						if(jobPosBoundingBox){
-							jobPosBoundingBox.empty();
-							jobPosBoundingBox.html(res);
-						}
+		if(parseInt(value) > 0){
+			A.io.request(
+				'<%= renderJobPosByWorkingUnitIdURL.toString()%>',
+				{
+				    dataType : 'json',
+				    data:{    	
+				    	<portlet:namespace/>workingUnitId : value,
+				    },   
+				    on: {
+				        success: function(event, id, obj) {
+							var instance = this;
+							var res = instance.get('responseData');
 							
-					},
-			    	error: function(){}
+							if(jobPosBoundingBox){
+								jobPosBoundingBox.empty();
+								jobPosBoundingBox.html(res);
+							}
+								
+						},
+				    	error: function(){}
+					}
 				}
-			}
-		);
+			);
+		}
+
 	});
 	
 	Liferay.provide(window, '<portlet:namespace/>enableAddingAccount', function(e) {
