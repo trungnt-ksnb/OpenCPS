@@ -110,7 +110,7 @@ public class UserMgtPortlet extends MVCPortlet {
 							+ indexOfRows[index].trim());
 
 			JobPosLocalServiceUtil.addJobPos(serviceContext.getUserId(), title,
-					StringPool.BLANK, workingUnitId, leader, serviceContext);
+					"", workingUnitId, leader, serviceContext);
 		}
 	}
 
@@ -317,7 +317,7 @@ public class UserMgtPortlet extends MVCPortlet {
 
 	public void updateWorkingUnit(ActionRequest request,
 			ActionResponse response)
-			throws PortalException, IOException, SystemException {
+			throws IOException{
 
 		long managerWorkingUnitId = ParamUtil.getLong(request,
 				WorkingUnitDisplayTerms.WORKINGUNIT_MANAGERWORKINGUNITID);
@@ -348,37 +348,40 @@ public class UserMgtPortlet extends MVCPortlet {
 				WorkingUnitDisplayTerms.WORKINGUNIT_DISTRICTCODE);
 		String wardCode = ParamUtil.getString(request,
 				WorkingUnitDisplayTerms.WORKINGUNIT_WARDCODE);
-		ServiceContext serviceContext = ServiceContextFactory
-				.getInstance(request);
+		ServiceContext serviceContext;
 		boolean isEmployer = ParamUtil.getBoolean(request,
 				WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER);
 		String redirectURL = ParamUtil.getString(request, "redirectURL");
 
-		validateWorkingUnit(workingUnitId, name, govAgencyCode, enName, address,
-				faxNo, email, website, serviceContext.getScopeGroupId(),
-				parentWorkingUnitId, isEmployer);
-
 		try {
-
+			serviceContext = ServiceContextFactory
+							.getInstance(request);
+			validateWorkingUnit(workingUnitId, name, govAgencyCode, enName, address,
+					faxNo, email, website, serviceContext.getScopeGroupId(),
+					parentWorkingUnitId, isEmployer);
 			if (workingUnitId == 0) {
 				WorkingUnitLocalServiceUtil.addWorkingUnit(
-						serviceContext.getUserId(), name, enName, govAgencyCode,
-						parentWorkingUnitId, address, cityCode, districtCode,
-						wardCode, telNo, faxNo, email, website, isEmployer,
-						managerWorkingUnitId, serviceContext);
+					serviceContext.getUserId(), name, enName, govAgencyCode,
+					parentWorkingUnitId, address, cityCode, districtCode,
+					wardCode, telNo, faxNo, email, website, isEmployer,
+					managerWorkingUnitId, serviceContext);
 
-				SessionMessages.add(request,
-						MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
-			} else {
-				WorkingUnitLocalServiceUtil.updateWorkingUnit(workingUnitId,
-						serviceContext.getUserId(), name, enName, govAgencyCode,
-						parentWorkingUnitId, address, cityCode, districtCode,
-						wardCode, telNo, faxNo, email, website, isEmployer,
-						managerWorkingUnitId, serviceContext);
+				SessionMessages.add(
+					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
+			}
+			else {
+				_log.info("go here update");
+				WorkingUnitLocalServiceUtil.updateWorkingUnit(
+					workingUnitId, serviceContext.getUserId(), name, enName,
+					govAgencyCode, parentWorkingUnitId, address, cityCode,
+					districtCode, wardCode, telNo, faxNo, email, website,
+					isEmployer, managerWorkingUnitId, serviceContext);
+				SessionMessages.add(
+					request, MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 				SessionMessages.add(request,
 						MessageKeys.WORKINGUNIT_UPDATE_SUCESS);
 			}
-		} catch (Exception e) {
+		}catch (Exception e) {
 			if (e instanceof OutOfLengthUnitNameException) {
 				SessionErrors.add(request, OutOfLengthUnitNameException.class);
 			} else if (e instanceof OutOfLengthUnitEnNameException) {
@@ -395,6 +398,8 @@ public class UserMgtPortlet extends MVCPortlet {
 				response.sendRedirect(redirectURL);
 			}
 		}
+
+		
 	}
 
 	protected void validateWorkingUnit(long workingUnitId, String name,
@@ -402,8 +407,7 @@ public class UserMgtPortlet extends MVCPortlet {
 			String email, String website, long groupId,
 			long parentWorkingUnitId, boolean isEmployer)
 			throws OutOfLengthUnitNameException, OutOfLengthUnitEnNameException,
-			NoSuchWorkingUnitException, DuplicatEgovAgencyCodeException,
-			OutOfScopeException {
+			DuplicatEgovAgencyCodeException,OutOfScopeException {
 
 		if (name.length() > PortletPropsValues.USERMGT_WORKINGUNIT_NAME_LENGTH) {
 			throw new OutOfLengthUnitNameException();
@@ -415,11 +419,13 @@ public class UserMgtPortlet extends MVCPortlet {
 		WorkingUnit workingUnit = null;
 
 		try {
-			workingUnit = WorkingUnitLocalServiceUtil.getWorkingUnit(groupId,
-					govAgencyCode);
 
-		} catch (SystemException e) {
-			// nothing to do
+			workingUnit =
+				WorkingUnitLocalServiceUtil.getWorkingUnit(
+					groupId, govAgencyCode);
+		}
+		catch (SystemException | NoSuchWorkingUnitException e) {
+			
 		}
 
 		if (workingUnit != null && workingUnitId <= 0) {
