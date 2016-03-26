@@ -17,6 +17,7 @@
 
 package org.opencps.usermgt.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.opencps.usermgt.NoSuchWorkingUnitException;
+import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
 import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.base.JobPosLocalServiceBaseImpl;
@@ -149,9 +151,13 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 	public void deleteJobPosById(long jobPosId)
 			throws SystemException, PortalException {
 		JobPos jobPos = jobPosPersistence.findByPrimaryKey(jobPosId);
-
-		RoleLocalServiceUtil.deleteRole(jobPos.getMappingRoleId());
-		jobPosPersistence.remove(jobPosId);
+		List<Employee> employees = new ArrayList<Employee>();
+		employees =	employeePersistence.findByMainJobPosId(jobPosId);
+		if(employees.isEmpty()) {
+			RoleLocalServiceUtil.deleteRole(jobPos.getMappingRoleId());
+			jobPosPersistence.remove(jobPosId);
+		}
+		
 
 	}
 

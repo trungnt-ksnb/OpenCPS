@@ -26,11 +26,10 @@
 <%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
 
 <%
-	String redirectURL = ParamUtil.getString(request, "redirectURL"); 
 	ResultRow row =
 		(ResultRow) request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 	WorkingUnit workingUnit = (WorkingUnit)row.getObject();
-	_log.info("redirectURL" + redirectURL);
+	String redirectURL = currentURL;
 %>
 
 <liferay-ui:icon-menu>
@@ -57,7 +56,6 @@
 		/>
 		
 		<portlet:param name="redirectURL" value="<%=redirectURL%>" />
-		<portlet:param name="returnURL" value="<%=currentURL%>" />
 		
 	</portlet:actionURL>
 

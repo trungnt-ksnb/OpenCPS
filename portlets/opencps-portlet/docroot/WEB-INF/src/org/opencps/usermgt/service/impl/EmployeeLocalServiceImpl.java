@@ -265,6 +265,12 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 				mainJobPosId);
 	}
 
+	public List<Employee> getEmployeesByMainJobPosId(long mainJobPosId)
+					throws SystemException 
+					  {
+		return employeePersistence.findByMainJobPosId(mainJobPosId);
+	}
+	
 	public List<Employee> getEmployees(long groupId, long workingUnitId,
 			long mainJobPosId, int start, int end,
 			OrderByComparator orderByComparator) throws SystemException {

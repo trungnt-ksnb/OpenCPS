@@ -1,3 +1,4 @@
+<%@page import="org.opencps.util.MessageKeys"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -27,6 +28,8 @@
 <%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.search.JobPosSearchTerms"%>
 <%@page import="org.opencps.usermgt.search.JobPosSearch"%>
+<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
+
 <%
 	long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
 	PortletURL iteratorURL = renderResponse.createRenderURL();
@@ -35,14 +38,34 @@
 	int totalCount = 0;
 %>
 
-<liferay-ui:error key="DELETE_JOBPOS_ERROR" message="DELETE JOBPOS ERROR" />
+<liferay-ui:error 
+	key="<%=MessageKeys.USERMGT_JOBPOS_DELETE_ERROR %>" 
+	message="<%=LanguageUtil.get(pageContext, 
+		MessageKeys.USERMGT_JOBPOS_DELETE_ERROR) %>"
+/>
+
+<liferay-ui:success 
+	key="<%=MessageKeys.USERMGT_JOBPOS_DELETE_SUCCESS %>"
+	message="<%=LanguageUtil.get(pageContext, 
+		MessageKeys.USERMGT_JOBPOS_DELETE_SUCCESS) %>"
+/>
+
+<liferay-ui:success 
+	key="<%=MessageKeys.USERMGT_JOBPOS_UPDATE_SUCESS %>"
+	message="<%=LanguageUtil.get(pageContext, 
+		MessageKeys.USERMGT_JOBPOS_UPDATE_SUCESS) %>"
+/>
 <portlet:renderURL var="updateJobPosURL">
 	<portlet:param name="mvcPath" value='<%=templatePath + "edit_jobpos.jsp" %>'/>
 	<portlet:param name="workingUnitId" value="<%=String.valueOf(workingUnitId) %>"/>
+	<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 </portlet:renderURL>
 
-<liferay-ui:icon iconCssClass="icon-plus-sign" label="update-jobpos" 
-	url="<%=updateJobPosURL.toString() %>"/>
+<liferay-ui:icon 
+	iconCssClass="icon-plus-sign" 
+	url="<%=updateJobPosURL.toString() %>"
+	/> 
+		
 
 <liferay-ui:search-container searchContainer="<%= 
 	new JobPosSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
