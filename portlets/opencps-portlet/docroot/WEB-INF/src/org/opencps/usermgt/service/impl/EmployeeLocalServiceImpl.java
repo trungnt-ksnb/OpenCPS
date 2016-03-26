@@ -226,6 +226,11 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		return employeePersistence.findByG_ENO(groupId, employeeNo);
 	}
 
+	public Employee getEmployeeByMappingUserId(long groupId, long mappingUserId)
+			throws NoSuchEmployeeException, SystemException {
+		return employeePersistence.findByG_U(groupId, mappingUserId);
+	}
+
 	public List<Employee> getEmployees(long groupId) throws SystemException {
 
 		return employeePersistence.findByGroupId(groupId);

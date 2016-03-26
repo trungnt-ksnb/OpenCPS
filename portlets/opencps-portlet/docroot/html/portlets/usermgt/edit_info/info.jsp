@@ -16,8 +16,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
+<%@page import="org.opencps.usermgt.model.Employee"%>
+<%@page import="com.liferay.portal.model.User"%>
 <%@ include file="../init.jsp"%>
 
-<liferay-util:include page="/html/portlets/usermgt/edit_info/workingunits.jsp" servletContext="<%=application %>" />
-<%-- <liferay-util:include page="/html/portlets/usermgt/edit_info/edit_workingunit.jsp" servletContext="<%=application %>" /> --%>
+<c:choose>
+	<c:when test="<%=themeDisplay.isSignedIn() %>">
+		<%
+			Employee employee = null;
+		
+			try{
+				long mappingUserId = user.getUserId();
+				
+			}catch(Exception e){
+				
+			}
+		%>
+
+		<aui:form name="fm" action="" method="">
+			<%
+			
+			%>
+		</aui:form>
+	</c:when>
+	<c:otherwise>
+		<div class="portlet-msg-warrning"><liferay-ui:message key="please-sign-in-to-view-profile"/></div>
+	</c:otherwise>
+</c:choose>
+
+
  
