@@ -129,16 +129,17 @@ public class UserMgtUtil {
 	public static List<WorkingUnit> getWorkingUnitsForEmployess(long groupId,
 			long workingUnitId) {
 		List<WorkingUnit> workingUnits = new ArrayList<WorkingUnit>();
-
-		try {
-			WorkingUnit workingUnitRoot = WorkingUnitLocalServiceUtil
-					.getWorkingUnit(workingUnitId);
-			workingUnits.add(workingUnitRoot);
-			List<WorkingUnit> childWorkingUnits = WorkingUnitLocalServiceUtil
-					.getWorkingUnits(groupId, workingUnitId);
-			workingUnits.addAll(childWorkingUnits);
-		} catch (Exception e) {
-			_log.error(e);
+		if (workingUnitId > 0) {
+			try {
+				WorkingUnit workingUnitRoot = WorkingUnitLocalServiceUtil
+						.getWorkingUnit(workingUnitId);
+				workingUnits.add(workingUnitRoot);
+				List<WorkingUnit> childWorkingUnits = WorkingUnitLocalServiceUtil
+						.getWorkingUnits(groupId, workingUnitId);
+				workingUnits.addAll(childWorkingUnits);
+			} catch (Exception e) {
+				_log.warn(e);
+			}
 		}
 
 		return workingUnits;
