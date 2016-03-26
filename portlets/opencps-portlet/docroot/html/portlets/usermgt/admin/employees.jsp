@@ -1,11 +1,3 @@
-<%@page import="org.opencps.util.MessageKeys"%>
-<%@page import="org.opencps.usermgt.service.EmployeeLocalServiceUtil"%>
-<%@page import="com.liferay.portal.kernel.dao.search.SearchEntry"%>
-<%@page import="com.liferay.portal.model.User"%>
-<%@page import="com.liferay.portal.service.UserLocalServiceUtil"%>
-<%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
-<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
-<%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -35,6 +27,14 @@
 <%@page import="org.opencps.usermgt.search.EmployeeSearchTerm"%>
 <%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%@page import="javax.portlet.PortletURL"%>
+<%@page import="org.opencps.util.MessageKeys"%>
+<%@page import="org.opencps.usermgt.service.EmployeeLocalServiceUtil"%>
+<%@page import="com.liferay.portal.kernel.dao.search.SearchEntry"%>
+<%@page import="com.liferay.portal.model.User"%>
+<%@page import="com.liferay.portal.service.UserLocalServiceUtil"%>
+<%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
+<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
+<%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
 <%@ include file="../init.jsp"%>
 
 
@@ -54,6 +54,10 @@
 %>
 <liferay-ui:success key="<%=MessageKeys.USERMGT_ADD_SUCCESS %>" message="<%=MessageKeys.USERMGT_ADD_SUCCESS %>"/>
 <liferay-ui:success key="<%=MessageKeys.USERMGT_UPDATE_SUCCESS %>" message="<%=MessageKeys.USERMGT_UPDATE_SUCCESS %>"/>
+
+<liferay-ui:success key="<%=MessageKeys.USERMGT_EMPLOYEE_DELETE_SUCCESS %>" message="<%=MessageKeys.USERMGT_EMPLOYEE_DELETE_SUCCESS %>"/>
+<liferay-ui:error key="<%=MessageKeys.USERMGT_EMPLOYEE_DELETE_ERROR %>" message="<%=MessageKeys.USERMGT_EMPLOYEE_DELETE_ERROR %>"/>
+
 <liferay-ui:search-container searchContainer="<%= new EmployeeSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
 
 	<liferay-ui:search-container-results>
@@ -94,7 +98,7 @@
 				editURL.setParameter("backURL", currentURL);
 				
 				// no column
-				row.addText(String.valueOf(row.getPos()), editURL);
+				row.addText(String.valueOf(row.getPos() + 1), editURL);
 			
 				// employee no
 				row.addText(employee.getEmployeeNo(), editURL);

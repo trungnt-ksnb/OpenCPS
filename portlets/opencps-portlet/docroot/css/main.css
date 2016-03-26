@@ -15,3 +15,11 @@
 .input100{
 	width : 100% !important;
 }
+
+.opencps-icon .checked{
+	background-image: url("/sprite/html/themes/classic/images/common/_sprite.png");
+    background-position: 50% 0;
+    background-repeat: no-repeat;
+    height: 16px;
+    width: 16px
+}
