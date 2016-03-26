@@ -179,6 +179,7 @@
 		<finder return-type="Collection" name="WorkingUnitId">
 			<finder-column name="workingUnitId"></finder-column>
 		</finder>
+       
         <finder name="G_N_W" return-type="Collection">
             <finder-column name="groupId"></finder-column>
             <finder-column name="fullName" comparator="LIKE" arrayable-operator="OR"></finder-column>
