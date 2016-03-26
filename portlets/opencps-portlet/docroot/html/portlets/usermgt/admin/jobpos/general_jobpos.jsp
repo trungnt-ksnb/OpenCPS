@@ -39,9 +39,6 @@
 	rowIndexes = new int[]{0};
 %>
 
-<portlet:actionURL var="addJobPosURL" name="jobPosAdd" />
-
-<aui:form action="<%=addJobPosURL.toString()%>" method="POST">
 	<aui:row>
 		<div id="member-fields">
 
@@ -85,8 +82,6 @@
 		</div>
 
 	</aui:row>
-
-</aui:form>
 
 <aui:script>
 	AUI().use('liferay-auto-fields', function(A) {

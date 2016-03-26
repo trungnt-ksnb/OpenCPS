@@ -35,6 +35,12 @@
 	
 	List<WorkingUnit> workingUnits = new ArrayList<WorkingUnit>();
 	
+	boolean isEmployer = true; 
+	
+	if (workingUnitId > 0) {
+		isEmployer = workingUnit.getIsEmployer();
+	}
+	_log.info("isEmployer" + isEmployer);
 	try {
 		workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnits(scopeGroupId);
 	}catch(Exception e) {
@@ -74,7 +80,7 @@
 	<aui:input 
 		name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER%>" 
 		type="checkbox"
-		checked="true"
+		checked="<%=isEmployer%>"
 	/>
 		
 	<div id="<portlet:namespace/>workingUnitGovAgencyCodeContainer">
@@ -86,6 +92,13 @@
 <aui:script> 
 	AUI().ready(function(A){
 		var isEmployerCheckBox = A.one('#<portlet:namespace/>isEmployerCheckbox');
+		var workingUnitGovAgencyCodeContainerGlobal = 
+			A.one('#<portlet:namespace/>workingUnitGovAgencyCodeContainer');
+		if(isEmployerCheckBox.val() == 'false') {
+			workingUnitGovAgencyCodeContainerGlobal.hide();
+		} else {
+			workingUnitGovAgencyCodeContainerGlobal.show();
+		}
 		
 		if(isEmployerCheckBox){
 			
