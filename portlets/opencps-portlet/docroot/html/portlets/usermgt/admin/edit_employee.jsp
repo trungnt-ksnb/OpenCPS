@@ -325,4 +325,16 @@
 			}
 		);
 	});
+	
+	Liferay.provide(window, '<portlet:namespace/>enableAddingAccount', function(e) {
+		var A = AUI();
+		
+		var accountInfo = A.one('#<portlet:namespace/>accountInfo');
+		
+		if(e.checked){
+			accountInfo.show();
+		}else{
+			accountInfo.hide();
+		}
+	});
 </aui:script>
