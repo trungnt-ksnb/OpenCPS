@@ -50,6 +50,7 @@
 	<c:when test="<%= tabs1.equals(UserMgtUtil.TOP_TABS_WORKINGUNIT)%>">
 		<portlet:renderURL var="editWorkingUnitURL">
 			<portlet:param name="mvcPath" value='<%= templatePath + "edit_workingunit.jsp" %>'/>
+			<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 		</portlet:renderURL>
 		
 		<aui:button name="add-workingunit" value="add-workingunit" href="<%= editWorkingUnitURL%>"/>

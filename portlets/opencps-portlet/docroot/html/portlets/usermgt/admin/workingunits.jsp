@@ -1,3 +1,4 @@
+<%@page import="org.opencps.util.MessageKeys"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -29,6 +30,14 @@
 <%@page import="java.util.List"%>
 <%@page import="javax.portlet.PortletURL"%>
 <%@ include file="../init.jsp"%>
+
+<liferay-ui:error key="<%=MessageKeys.WORKINGUNIT_DELETE_ERROR_EXIST %>" 
+	message="WorkingUnit-has-not-exist"
+/>
+
+<liferay-ui:error key="<%=MessageKeys.WORKINGUNIT_DELETE_ERROR %>" 
+	message="Employees or Jobpos-has-existed"
+/>
 
 <liferay-util:include page="/html/portlets/usermgt/admin/toptabs.jsp" servletContext="<%=application %>" />
 
