@@ -36,42 +36,50 @@
 			type="checkbox" 
 			inlineField="<%= true %>" 
 			inlineLabel="right" 
-			disabled="<%=true %>"
+			disabled="<%=mappingUser != null ? true : false %>"
 			value="<%=mappingUser != null ? true : false %>"
 		/>
 	</aui:col>
 </aui:row>
 
-<aui:row>
-	<aui:col width="50">
-		<aui:input 
-			name="<%= EmployeeDisplayTerm.SCREEN_NAME%>"
-			disabled="<%=mappingUser != null ? true : false  %>"
-		>
-			<aui:validator name="required"/>
-		</aui:input>
-	</aui:col>
+<div id="<portlet:namespace/>accountInfo">
+	<aui:row>
+		<aui:col width="50">
+			<aui:input 
+				name="<%= EmployeeDisplayTerm.SCREEN_NAME%>"
+				disabled="<%=mappingUser != null ? true : false  %>"
+				required="<%=false %>"
+				id="mappingUserScreenName"
+				type="text"
+			>
+			</aui:input>
+		</aui:col>
+		
+		<aui:col width="50">
+			<aui:input 
+				name="<%= EmployeeDisplayTerm.USER_EMAIL%>"
+				disabled="<%=mappingUser != null ? true : false  %>"
+				type="text"
+			>
+				<%-- <aui:validator name="required"/> --%>
+				<aui:validator name="email"/>
+				<aui:validator name="maxLength">
+					<%= PortletPropsValues.USERMGT_EMPLOYEE_EMAIL_LENGTH %>
+				</aui:validator>
+			</aui:input>
+		</aui:col>
+	</aui:row>
 	
-	<aui:col width="50">
-		<aui:input 
-			name="<%= EmployeeDisplayTerm.USER_EMAIL%>"
-			disabled="<%=mappingUser != null ? true : false  %>"
-		>
-			<aui:validator name="required"/>
-			<aui:validator name="email"/>
-			<aui:validator name="maxLength">
-				<%= PortletPropsValues.USERMGT_EMPLOYEE_EMAIL_LENGTH %>
-			</aui:validator>
-		</aui:input>
-	</aui:col>
-</aui:row>
+	<aui:row>
+		<aui:col width="50">
+			<aui:input name="<%= EmployeeDisplayTerm.PASS_WORD%>" type="password"></aui:input>
+		</aui:col>
+		
+		<aui:col width="50">
+			<aui:input name="<%= EmployeeDisplayTerm.RE_PASS_WORD%>" type="password">
+				<aui:validator name="equalTo">'#<portlet:namespace /><%= EmployeeDisplayTerm.PASS_WORD%>'</aui:validator>
+			</aui:input>
+		</aui:col>
+	</aui:row>
 
-<aui:row>
-	<aui:col width="50">
-		<aui:input name="<%= EmployeeDisplayTerm.PASS_WORD%>" type="password"></aui:input>
-	</aui:col>
-	
-	<aui:col width="50">
-		<aui:input name="<%= EmployeeDisplayTerm.RE_PASS_WORD%>" type="password"/>
-	</aui:col>
-</aui:row>
+</div>
