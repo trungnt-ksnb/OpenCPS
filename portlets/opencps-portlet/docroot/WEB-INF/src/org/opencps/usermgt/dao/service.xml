@@ -49,6 +49,9 @@
 		</order>
 		
 		<!-- Finder methods -->
+		<finder return-type="WorkingUnit" name="Email">
+			<finder-column name="email"></finder-column>
+		</finder>
 		<finder return-type="WorkingUnit" name="G_G">
 			<finder-column name="groupId" />
 			<finder-column name="govAgencyCode" />
@@ -205,9 +208,11 @@
 		<exception>EmptyJobPosTitle</exception>
 		<exception>DuplicatEgovAgencyCode</exception>
 		<exception>DuplicateWorkingUnit</exception>
+		<exception>DuplicatWorkingUnitEmail</exception>
 		<exception>DuplicateJobPos</exception>
 		<exception>OutOfLengthUnitName</exception>
 		<exception>OutOfLengthUnitEnName</exception>
+		<exception>OutOfLengthUnitEmail</exception>
 		<exception>OutOfLengthJobTitle</exception>
 		<exception>OutOfLengthFullName</exception>
 		<exception>OutOfLengthDescription</exception>
