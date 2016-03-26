@@ -48,6 +48,7 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.model.Website;
 import com.liferay.portal.service.ContactLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.UserServiceUtil;
 import com.liferay.portlet.announcements.model.AnnouncementsDelivery;
 
 /**
@@ -304,20 +305,22 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		Date now = new Date();
 
 		if (mappingUserId > 0) {
-			User mappingUse = userLocalService
-					.getUser(employee.getMappingUserId());
+			/*User mappingUse = userLocalService
+					.getUser(employee.getMappingUserId());*/
 			if (workingStatus == PortletConstants.WORKING_STATUS_ACTIVATE
 					|| workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
 
 				int status = WorkflowConstants.STATUS_APPROVED;
 
-				if (workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
+				if (workingStatus == PortletConstants.WORKING_STATUS_ACTIVATE) {
 					status = WorkflowConstants.STATUS_INACTIVE;
 				}
 
-				mappingUse.setStatus(status);
+				// mappingUse.setStatus(status);
 
-				userLocalService.updateUser(mappingUse);
+				// userLocalService.updateUser(mappingUse);
+
+				userLocalService.updateStatus(mappingUserId, status);
 
 			}
 		}
