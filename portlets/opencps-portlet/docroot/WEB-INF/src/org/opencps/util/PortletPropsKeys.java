@@ -57,6 +57,10 @@ public class PortletPropsKeys {
 	
 	public static final String JOBPOS_DEPUTY = "opencps.usermgt.jobpos.deputy";
 	
+	public static final String USERMGT_WORKINGUNIT_RESOURCE = "opencps.usermgt.workingunit.resource";
+	public static final String USERMGT_JOBPOS_RESOURCE = "opencps.usermgt.jobpos.resource";
+	public static final String USERMGT_EMPLOYEE_RESOURCE = "opencps.usermgt.employee.resource";
+	
 	// User Management validate
 	public static final String USERMGT_EMPLOYEE_FULLNAME_LENGTH = "opencps.usermgt.employee.fullname.length";
 	public static final String USERMGT_EMPLOYEE_EMAIL_LENGTH = "opencps.usermgt.employee.email.length";
