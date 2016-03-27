@@ -42,6 +42,7 @@ public class WorkingUnitSearch extends SearchContainer<WorkingUnit> {
 	static {
 		headerNames.add("name");
 		headerNames.add("govagencycode");
+		headerNames.add("isEmployer");
 		headerNames.add("action");
 
 		orderableHeaders.put("name", WorkingUnitDisplayTerms.WORKINGUNIT_NAME);

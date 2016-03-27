@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.util.PortletConstants"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -79,6 +80,14 @@
 		<%
 			row.addText(workingUnit.getName());
 			row.addText(workingUnit.getGovAgencyCode());
+			String isEmployer = "<i class=\"opencps-icon checked\"></i>";
+			
+			if(workingUnit.getIsEmployer() == false) {
+				isEmployer = "<i class=\"opencps-icon removed\"></i>";
+			}
+			
+			row.addText(isEmployer);
+			
 			row.addJSP("center", SearchEntry.DEFAULT_VALIGN,  templatePath + "workingunit_action.jsp", config.getServletContext(), request, response);
 		%>
 	</liferay-ui:search-container-row>
