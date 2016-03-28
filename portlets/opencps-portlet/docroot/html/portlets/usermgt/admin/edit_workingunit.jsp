@@ -1,3 +1,4 @@
+<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.model.WorkingUnit"%>
 <%
@@ -148,13 +149,13 @@
 			onclickJobPos.on('click', function(event) {
 				Liferay.Util.openWindow({
 					dialog : {
-						centered : true,
+						center : true,
 						
 						modal : true
 						
 					},
 					id : '<portlet:namespace/>dialog',
-					title : 'Edit-JobPos',
+					title : '<%= LanguageUtil.get(locale, "Edit-JobPos")%>',
 					uri : '<%=dialogURL %>'
 				});
 			});

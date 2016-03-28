@@ -38,7 +38,10 @@ long workingUnitId = workingUnit != null ? workingUnit.getWorkingunitId() : 0L;
 		cssClass="input100"
 		depthLevel="3" 
 		dictCollectionCode="ADMINISTRATIVE_REGION"
-		itemNames="cityCode,districtCode,wardCode">
+		itemNames="cityCode,districtCode,wardCode"
+		itemsEmptyOption="true,true,true"	
+	>
+		
 	</datamgt:ddr>
 	
 	<aui:row>
