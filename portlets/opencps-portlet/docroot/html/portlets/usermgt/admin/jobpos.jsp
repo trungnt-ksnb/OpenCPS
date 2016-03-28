@@ -1,4 +1,3 @@
-<%@page import="org.opencps.util.MessageKeys"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -17,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
  */
 %>
-<%@ include file="../init.jsp"%>
+
 <%@page import="java.util.ArrayList"%>
 <%@page import="org.opencps.usermgt.model.JobPos"%>
 <%@page import="java.util.List"%>
@@ -29,6 +28,9 @@
 <%@page import="org.opencps.usermgt.search.JobPosSearchTerms"%>
 <%@page import="org.opencps.usermgt.search.JobPosSearch"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
+<%@page import="org.opencps.util.MessageKeys"%>
+<%@page import="org.opencps.util.PortletUtil"%>
+<%@ include file="../init.jsp"%>
 
 <%
 	long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
@@ -55,6 +57,7 @@
 	message="<%=LanguageUtil.get(pageContext, 
 		MessageKeys.USERMGT_JOBPOS_UPDATE_SUCESS) %>"
 />
+
 <portlet:renderURL var="updateJobPosURL">
 	<portlet:param name="mvcPath" value='<%=templatePath + "edit_jobpos.jsp" %>'/>
 	<portlet:param name="workingUnitId" value="<%=String.valueOf(workingUnitId) %>"/>
@@ -64,37 +67,27 @@
 <liferay-ui:icon 
 	iconCssClass="icon-plus-sign" 
 	url="<%=updateJobPosURL.toString() %>"
-	/> 
+/> 
 		
 
-<liferay-ui:search-container searchContainer="<%= 
-	new JobPosSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
-	<%
-		
-	%>
-		
+<liferay-ui:search-container searchContainer="<%= new JobPosSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
+	
 	<liferay-ui:search-container-results>
 		<%@include file="/html/portlets/usermgt/admin/jobpos_search_results.jspf"%>
 	</liferay-ui:search-container-results>
+	
 	<liferay-ui:search-container-row 
 		className="org.opencps.usermgt.model.JobPos" 
 		modelVar="jobPosSearch" 
 		keyProperty="jobPosId"
 	>
 		<%
-			String leaderName = "";
-			if(jobPosSearch.getLeader() == 0) {
-				leaderName = PortletPropsValues.USERMGT_JOBPOS_NOMAL;;
-			} else if (jobPosSearch.getLeader() == 1) {
-				leaderName = PortletPropsValues.USERMGT_JOBPOS_BOSS ;
-			} else if (jobPosSearch.getLeader() == 2) {
-				leaderName =  PortletPropsValues.USERMGT_JOBPOS_DEPUTY;
-			}
+			String leaderName = PortletUtil.getLeaderLabel(jobPosSearch.getLeader(), locale);
+		
 			row.addText(jobPosSearch.getTitle());
 			row.addText(leaderName);
 			row.addJSP("center", SearchEntry.DEFAULT_VALIGN,  templatePath +
-				"jobpos_action.jsp", config.getServletContext(),
-				request, response);
+				"jobpos_action.jsp", config.getServletContext(), request, response);
 		%>
 	</liferay-ui:search-container-row>
 	<liferay-ui:search-iterator/>

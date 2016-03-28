@@ -1,5 +1,3 @@
-<%@page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil"%>
-<%@page import="java.sql.RowId"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -18,7 +16,7 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
-<%@ include file="../../init.jsp"%>
+
 <%@page import="com.liferay.portal.kernel.dao.search.RowChecker"%>
 <%@page import="com.liferay.portal.service.ResourceActionLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.search.ResourceActionSearchTerm"%>
@@ -29,6 +27,8 @@
 <%@page import="com.liferay.portal.model.ResourceAction"%>
 <%@page import="java.util.List"%>
 <%@page import="javax.portlet.PortletURL"%>
+<%@page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil"%>
+<%@ include file="../../init.jsp"%>
 
 <%
 	PortletURL iteratorURL = renderResponse.createRenderURL();
