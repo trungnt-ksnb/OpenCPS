@@ -1,3 +1,5 @@
+<%@page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil"%>
+<%@page import="java.sql.RowId"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -92,7 +94,37 @@
 				
 				<liferay-ui:search-iterator/>
 			</liferay-ui:search-container>
+			
+			<%-- <aui:input 
+				name="<resourceActionIds" 
+				type="hidden" 
+			/> --%>
 		<%
 		
 	}
 %>
+
+<aui:script>
+AUI().ready(        
+
+	    function(customA) {
+	        customA.all('.taglib-page-iterator').hide(); 
+	    }
+	);
+
+/*  Liferay.provide(window, '<portlet:namespace />updateJobPoses',
+		 	function() {
+	 var resourceActionIds = Liferay.Util
+	 .listCheckedExcept(document.<portlet:namespace />fm, '<portlet:namespace />allRowIds'); 
+	 
+	 if(resourceActionIds && 
+			 confirm('<%= UnicodeLanguageUtil
+					 .get(pageContext, 
+							 "are-you-sure-you-want-to-add-the-selected-messages") %>')) {
+		document.<portlet:namespace />fm.<portlet:namespace />resourceActionIds.value = resourceActionIds;
+		
+		submitForm(document.<portlet:namespace />updateJobPoses);
+	 }
+	 
+ }); */
+</aui:script>
