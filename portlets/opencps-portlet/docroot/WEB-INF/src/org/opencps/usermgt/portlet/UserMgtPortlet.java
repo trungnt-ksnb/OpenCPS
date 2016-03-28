@@ -514,6 +514,10 @@ public class UserMgtPortlet extends MVCPortlet {
 			throws NumberFormatException, PortalException, IOException {
 
 		String rowIndexes = actionRequest.getParameter("rowIndexes");
+		long [] rowIds = ParamUtil.getLongValues(actionRequest, "rowIds");
+		
+		_log.info("rowIds " + rowIds.length);
+		
 		String[] indexOfRows = rowIndexes.split(",");
 		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
 		String returnURL = ParamUtil.getString(actionRequest, "returnURL");
@@ -530,10 +534,11 @@ public class UserMgtPortlet extends MVCPortlet {
 								+ indexOfRows[index].trim());
 				int leader = ParamUtil.getInteger(actionRequest,
 						JobPosSearchTerms.LEADER_JOBPOS
-								+ indexOfRows[index].trim());
-
+								+ indexOfRows[index].trim());			
 				JobPosLocalServiceUtil.addJobPos(serviceContext.getUserId(),
-						title, "", workingUnitId, leader, serviceContext);
+						title, StringPool.BLANK, workingUnitId, leader,
+						 rowIds, serviceContext);
+				
 			}
 			SessionMessages.add(actionRequest,
 					MessageKeys.USERMGT_JOBPOS_UPDATE_SUCESS);

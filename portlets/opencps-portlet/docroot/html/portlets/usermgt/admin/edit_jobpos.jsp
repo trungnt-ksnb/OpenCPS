@@ -90,6 +90,7 @@
 	</liferay-ui:form-navigator>
 	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" 
 		type="hidden" />
+		
 </aui:form>
 
 <%! 

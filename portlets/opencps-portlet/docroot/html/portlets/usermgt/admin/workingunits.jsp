@@ -80,10 +80,10 @@
 		<%
 			row.addText(workingUnit.getName());
 			row.addText(workingUnit.getGovAgencyCode());
-			String isEmployer = "<i class=\"opencps-icon checked\"></i>";
+			String isEmployer = "<i class=\"opencps-icon employees\"></i>";
 			
 			if(workingUnit.getIsEmployer() == false) {
-				isEmployer = "<i class=\"opencps-icon removed\"></i>";
+				isEmployer = "<i class=\"opencps-icon not-employee\"></i>";
 			}
 			
 			row.addText(isEmployer);

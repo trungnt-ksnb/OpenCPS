@@ -33,10 +33,20 @@ import org.opencps.usermgt.service.base.JobPosLocalServiceBaseImpl;
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.model.ClassName;
+import com.liferay.portal.model.ResourceAction;
+import com.liferay.portal.model.ResourceConstants;
+import com.liferay.portal.model.ResourcePermission;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.RoleConstants;
+import com.liferay.portal.service.ClassNameLocalServiceUtil;
+import com.liferay.portal.service.ResourceActionLocalServiceUtil;
+import com.liferay.portal.service.ResourcePermissionLocalService;
+import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.RoleServiceUtil;
 import com.liferay.portal.service.ServiceContext;
@@ -66,7 +76,7 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 	 */
 	public JobPos addJobPos(long userId,
 			String title, String description, long workingUnitId, int leader,
-			ServiceContext serviceContext)
+			long [] rowIds ,ServiceContext serviceContext)
 			throws SystemException, PortalException {
 
 		long jobPosId = CounterLocalServiceUtil
@@ -94,6 +104,28 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 				serviceContext.getCompanyId(), roleName, titleMap,
 				descriptionMap, RoleConstants.TYPE_REGULAR, null,
 				serviceContext);
+		
+		for(int jndex = 0; jndex < rowIds.length; jndex ++) {
+			
+			if(rowIds[jndex] > 0) {
+				
+				ResourceAction resourceAction = ResourceActionLocalServiceUtil
+				.fetchResourceAction(rowIds[jndex]);
+				String className = resourceAction.getName();
+				long classNameId = ClassNameLocalServiceUtil
+								.getClassNameId(className);
+				
+				ResourcePermissionLocalServiceUtil.addResourcePermission(
+					serviceContext.getCompanyId(), 
+					className, ResourceConstants.SCOPE_GROUP, 
+					String.valueOf(classNameId), 
+					role.getRoleId(), resourceAction.getActionId()
+					);
+				
+				_log.info("rowIds[jndex]  " + rowIds[jndex] +
+					" resourceAction.getActionId() " + resourceAction.getActionId());
+			}
+		}
 
 		jobPos.setUserId(userId);
 		jobPos.setGroupId(serviceContext.getScopeGroupId());
@@ -206,5 +238,5 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 			return getDirectWorkingUnitId(workingUnit.getParentWorkingUnitId());
 		}
 	}
-
+	Log _log = LogFactoryUtil.getLog(JobPosLocalServiceImpl.class);
 }
