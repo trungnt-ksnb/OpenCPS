@@ -30,6 +30,8 @@
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="org.opencps.util.MessageKeys"%>
 <%@page import="org.opencps.util.PortletUtil"%>
+<%@page import="org.opencps.util.ActionKeys"%>
+<%@page import="org.opencps.usermgt.permissions.WorkingUnitPermission"%>
 <%@ include file="../init.jsp"%>
 
 <%
@@ -64,11 +66,13 @@
 	<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 </portlet:renderURL>
 
-
-<aui:button 
+<c:if test="<%=WorkingUnitPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_JOBPOS) %>">
+	<aui:button 
 	value="Add Job Position"
 	onClick ="<%=updateJobPosURL.toString() %>"	
 />
+</c:if>
+
 		
 
 <liferay-ui:search-container searchContainer="<%= new JobPosSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">

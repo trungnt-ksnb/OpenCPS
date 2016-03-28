@@ -1,4 +1,3 @@
-
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -17,13 +16,15 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
-<%@ include file="../init.jsp"%>
+<%@page import="org.opencps.usermgt.permissions.WorkingUnitPermission"%>
+<%@page import="org.opencps.util.ActionKeys"%>
 <%@page import="com.liferay.portal.kernel.log.Log"%>
 <%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
 <%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
 <%@page import="org.opencps.usermgt.model.WorkingUnit"%>
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
+<%@ include file="../init.jsp"%>
 
 <%
 	ResultRow row =
@@ -44,9 +45,11 @@
 		<portlet:param name="redirectURL" value="<%=redirectURL%>" />
 		
 	</portlet:renderURL>
-
-	<liferay-ui:icon image="edit" message="edit"
+	<c:if test="<%=WorkingUnitPermission.contains(permissionChecker, scopeGroupId, ActionKeys.UPDATE) %>">
+		<liferay-ui:icon image="edit" message="edit"
 		url="<%=updateWorkingUnit.toString()%>" />
+	</c:if>
+	
 
 	<portlet:actionURL var="deleteWorkingUnitURL" name="deleteWorkingUnit">
 		
@@ -58,10 +61,12 @@
 		<portlet:param name="redirectURL" value="<%=redirectURL%>" />
 		
 	</portlet:actionURL>
-
-	<liferay-ui:icon image="delete" message="delete"
-		url="<%=deleteWorkingUnitURL.toString()%>" />
+	<c:if test="<%=WorkingUnitPermission.contains(permissionChecker, scopeGroupId, ActionKeys.DELETE) %>">
 		
+		<liferay-ui:icon image="delete" message="delete"
+			url="<%=deleteWorkingUnitURL.toString()%>" />
+		</c:if>
+	
 </liferay-ui:icon-menu>
 
 <%!
