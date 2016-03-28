@@ -1,5 +1,3 @@
-
-<%@page import="org.opencps.util.PortletConstants"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -29,6 +27,10 @@
 <%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
+<%@page import="org.opencps.util.PortletConstants"%>
+<%@page import="org.opencps.usermgt.NoSuchJobPosException"%>
+<%@page import="org.opencps.usermgt.NoSuchWorkingUnitException"%>
+
 <%@ include file="../../init.jsp"%>
 <%
 
@@ -37,6 +39,8 @@
 	WorkingUnit mappingWorkingUnit = (WorkingUnit)request.getAttribute(WebKeys.WORKING_UNIT_MAPPING_ENTRY);
 	
 	JobPos mainJobPos = (JobPos)request.getAttribute(WebKeys.MAIN_JOB_POS_ENTRY);
+	
+	boolean userViewProfile = GetterUtil.getBoolean((Boolean)request.getAttribute(WebKeys.USERMGT_VIEW_PROFILE), false);
 	
 	List<JobPos> jobPoses = new ArrayList<JobPos>();
 	
@@ -81,7 +85,14 @@
 %>
 
 <aui:model-context bean="<%=mappingWorkingUnit%>" model="<%=WorkingUnit.class%>" />
+<liferay-ui:error-marker key="errorSection" value="working_unit" />
 
+<liferay-ui:error exception="<%= NoSuchWorkingUnitException.class %>" 
+	message="<%=NoSuchWorkingUnitException.class.getName() %>" 
+/>
+<liferay-ui:error exception="<%= NoSuchJobPosException.class %>" 
+	message="<%=NoSuchJobPosException.class.getName() %>" 
+/>
 <aui:row>
 	<aui:col width="100">
 		<aui:select 
@@ -89,6 +100,7 @@
 			cssClass="input95"
 			showEmptyOption="<%=true %>"
 			required="<%=true %>"
+			disabled='<%=userViewProfile ? true : false %>'
 		>
 			<%
 				if(workingUnits != null){
@@ -117,6 +129,7 @@
 			inlineLabel="right"
 			value="<%=employee != null 
 				&& employee.getWorkingStatus() == PortletConstants.WORKING_STATUS_ACTIVATE ? true : false %>"
+			disabled='<%=userViewProfile ? true : false %>'
 		/>
 	</aui:col>
 </aui:row>
@@ -129,6 +142,7 @@
 			label='<%=StringPool.BLANK %>' 
 			onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
 			required='<%=true %>'
+			disabled="<%=userViewProfile ? true : false %>"
 		>
 			<aui:option value=""><liferay-ui:message key="select-working-unit"/></aui:option>
 			<%
@@ -161,7 +175,9 @@
 		<aui:select 
 			name='<%=EmployeeDisplayTerm.MAIN_JOBPOS_ID %>' 
 			label='<%=StringPool.BLANK %>'  
-			required='<%=true %>'>
+			required='<%=true %>'
+			disabled='<%=userViewProfile ? true : false %>'
+		>
 			<aui:option value=""><liferay-ui:message key="select-jobpos"/></aui:option>
 			<%
 				if(selectedMainWorkingUnitId > 0){
@@ -204,7 +220,8 @@
 								name='<%= EmployeeDisplayTerm.WORKING_UNIT_ID + jobPosIndex %>' 
 								label='<%=StringPool.BLANK %>' 
 								onChange='<%=renderResponse.getNamespace() + "getJobPosByWorkingUnitId(this)" %>'
-								showEmptyOption="<%=true %>"
+								showEmptyOption='<%=true %>'
+								disabled='<%=userViewProfile ? true : false %>'
 							>
 							
 								<%
@@ -239,7 +256,8 @@
 							<aui:select 
 								name='<%= "jobPosId" + jobPosIndex %>' 
 								label='<%=StringPool.BLANK %>'
-								showEmptyOption="<%=true %>"
+								showEmptyOption='<%=true %>'
+								disabled='<%=userViewProfile ? true : false %>'
 							>
 								<%
 									if(selectedWorkingUnitId > 0 && jobPos != null){

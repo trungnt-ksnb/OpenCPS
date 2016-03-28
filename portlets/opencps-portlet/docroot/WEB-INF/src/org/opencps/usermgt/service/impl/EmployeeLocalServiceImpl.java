@@ -266,11 +266,10 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 	}
 
 	public List<Employee> getEmployeesByMainJobPosId(long mainJobPosId)
-					throws SystemException 
-					  {
+			throws SystemException {
 		return employeePersistence.findByMainJobPosId(mainJobPosId);
 	}
-	
+
 	public List<Employee> getEmployees(long groupId, long workingUnitId,
 			long mainJobPosId, int start, int end,
 			OrderByComparator orderByComparator) throws SystemException {
@@ -300,6 +299,69 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 				workingUnitId, start, end, orderByComparator);
 	}
 
+	public void updateProfile(long userId, long employeeId, String fullName,
+			int gender, String telNo, String mobile, String email,
+			boolean isChangePassWord, int birthDateDay, int birthDateMonth,
+			int birthDateYear, String password, String reTypePassword,
+			ServiceContext serviceContext)
+			throws SystemException, PortalException {
+
+		Employee employee = employeePersistence.findByPrimaryKey(employeeId);
+
+		Date now = new Date();
+
+		PortletUtil.SplitName spn = PortletUtil.splitName(fullName);
+
+		User mappingUser = null;
+
+		Date birthDate = DateTimeUtil.getDate(birthDateDay, birthDateMonth,
+				birthDateYear);
+
+		try {
+			mappingUser = userLocalService
+					.getUserById(employee.getMappingUserId());
+		} catch (Exception e) {
+			_log.error(e);
+		}
+
+		if (mappingUser != null) {
+			// Reset password
+			if (isChangePassWord) {
+				mappingUser = userLocalService.updatePassword(
+						mappingUser.getUserId(), password, reTypePassword,
+						false);
+			}
+
+			// Change user name
+			if (!fullName.equals(employee.getFullName())) {
+				mappingUser.setFirstName(spn.getFirstName());
+				mappingUser.setLastName(spn.getLastName());
+				mappingUser.setMiddleName(spn.getMidName());
+			}
+
+			mappingUser = userLocalService.updateUser(mappingUser);
+
+			// update birth date
+			Contact contact = ContactLocalServiceUtil
+					.getContact(mappingUser.getContactId());
+
+			if (contact != null) {
+				contact.setBirthday(birthDate);
+				contact = ContactLocalServiceUtil.updateContact(contact);
+			}
+		}
+		employee.setUserId(serviceContext.getUserId());
+		employee.setGroupId(serviceContext.getScopeGroupId());
+		employee.setCompanyId(serviceContext.getCompanyId());
+		employee.setModifiedDate(now);
+		employee.setFullName(fullName);
+		employee.setGender(gender);
+		employee.setBirthdate(birthDate);
+		employee.setTelNo(telNo);
+		employee.setMobile(mobile);
+		employeePersistence.update(employee);
+	}
+
 	public void updateEmployee(long employeeId, int workingStatus,
 			ServiceContext serviceContext)
 			throws SystemException, PortalException {
@@ -311,8 +373,7 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		Date now = new Date();
 
 		if (mappingUserId > 0) {
-			/*User mappingUse = userLocalService
-					.getUser(employee.getMappingUserId());*/
+
 			if (workingStatus == PortletConstants.WORKING_STATUS_ACTIVATE
 					|| workingStatus == PortletConstants.WORKING_STATUS_DEACTIVATE) {
 
@@ -321,10 +382,6 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 				if (workingStatus == PortletConstants.WORKING_STATUS_ACTIVATE) {
 					status = WorkflowConstants.STATUS_INACTIVE;
 				}
-
-				// mappingUse.setStatus(status);
-
-				// userLocalService.updateUser(mappingUse);
 
 				userLocalService.updateStatus(mappingUserId, status);
 

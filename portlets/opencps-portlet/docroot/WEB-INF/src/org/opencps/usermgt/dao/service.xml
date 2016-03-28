@@ -233,5 +233,7 @@
         <exception>EmptyEmployeeName</exception>
         <exception>OutOfLengthEmployeeEmail</exception>
         <exception>OutOfScope</exception>
+        <exception>OutOfLengthMobile</exception>
+        <exception>OutOfLengthTelNo</exception>
 	</exceptions>
 </service-builder>

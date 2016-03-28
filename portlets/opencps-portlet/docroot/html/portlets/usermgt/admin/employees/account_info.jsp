@@ -1,3 +1,4 @@
+<%@page import="com.liferay.portal.DuplicateUserScreenNameException"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -20,6 +21,9 @@
 <%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="com.liferay.portal.model.User"%>
+<%@page import="com.liferay.portal.DuplicateUserEmailAddressException"%>
+<%@page import="com.liferay.portal.UserPasswordException"%>
+<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@ include file="../../init.jsp"%>
 
 <%
@@ -28,6 +32,30 @@
 	String screenName = (String)request.getAttribute(WebKeys.TURN_BACK_SCREEN_NAME);
 %>
 <aui:model-context bean="<%=mappingUser%>" model="<%=User.class%>" />
+<liferay-ui:error-marker key="errorSection" value="account_info" />
+
+<liferay-ui:error exception="<%= DuplicateUserEmailAddressException.class %>" 
+	message="<%=DuplicateUserEmailAddressException.class.getName() %>" 
+/>
+
+<liferay-ui:error exception="<%= DuplicateUserScreenNameException.class %>" 
+	message="<%=DuplicateUserScreenNameException.class.getName() %>" 
+/>
+<liferay-ui:error exception="<%= UserPasswordException.class %>">
+	<%
+		UserPasswordException upe = (UserPasswordException)errorException;
+	%>
+
+	<c:if test="<%= upe.getType() == UserPasswordException.PASSWORD_LENGTH %>">
+
+	<%
+		int passwordPolicyMinLength = 3;
+
+	%>
+
+	<%= LanguageUtil.format(pageContext, "that-password-is-too-short-or-too-long-please-make-sure-your-password-is-between-x-and-512-characters", String.valueOf(passwordPolicyMinLength), false) %>
+</c:if>
+</liferay-ui:error>
 
 <aui:row>
 	<aui:col width="100">
