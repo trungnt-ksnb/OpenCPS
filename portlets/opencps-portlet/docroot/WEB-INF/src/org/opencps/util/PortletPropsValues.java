@@ -131,4 +131,16 @@ public class PortletPropsValues {
 					.getInteger(PortletProps
 							.get(PortletPropsKeys.USERMGT_WORKINGUNIT_ENNAME_LENGTH));
 	
+	//resource action
+	
+	public static final String USERMGT_WORKINGUNIT_RESOURCE = GetterUtil
+					.getString(PortletProps
+						.get(PortletPropsKeys.USERMGT_WORKINGUNIT_RESOURCE));
+	public static final String USERMGT_JOBPOS_RESOURCE = GetterUtil
+					.getString(PortletProps
+						.get(PortletPropsKeys.USERMGT_JOBPOS_RESOURCE));
+	public static final String USERMGT_EMPLOYEE_RESOURCE = GetterUtil
+					.getString(PortletProps
+						.get(PortletPropsKeys.USERMGT_EMPLOYEE_RESOURCE));
+	
 }

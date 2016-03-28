@@ -166,18 +166,13 @@ public class WorkingUnitLocalServiceImpl
 		}
 
 		Organization org = null;
-		long mappingOrganisationId = 0;
-		if (parentWorkingUnitId == 0) {
-			org = OrganizationLocalServiceUtil.addOrganization(userId,
-					OrganizationConstants.DEFAULT_PARENT_ORGANIZATION_ID, name,
-					OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0,
-					ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, enName, true,
-					serviceContext);
-			mappingOrganisationId = org.getOrganizationId();
-
-		} else {
-			mappingOrganisationId = workingUnit.getMappingOrganisationId();
-		}
+		org = OrganizationLocalServiceUtil
+						.getOrganization(workingUnit.getMappingOrganisationId());
+		org.setParentOrganizationId(OrganizationConstants
+						.DEFAULT_PARENT_ORGANIZATION_ID);
+		
+		OrganizationLocalServiceUtil.updateOrganization(org);
+			
 
 		Date currentDate = new Date();
 		workingUnit.setCreateDate(currentDate);
@@ -199,7 +194,6 @@ public class WorkingUnitLocalServiceImpl
 		workingUnit.setEmail(email);
 		workingUnit.setWebsite(website);
 		workingUnit.setIsEmployer(isEmployer);
-		workingUnit.setMappingOrganisationId(mappingOrganisationId);
 		workingUnit.setManagerWorkingUnitId(managerWorkingUnitId);
 
 		return workingUnitPersistence.updateImpl(workingUnit);

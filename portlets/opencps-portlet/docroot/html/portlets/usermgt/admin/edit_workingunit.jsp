@@ -1,3 +1,5 @@
+<%@page import="org.opencps.usermgt.service.WorkingUnitLocalServiceUtil"%>
+<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -30,10 +32,19 @@
 <%@page import="org.opencps.usermgt.OutOfLengthUnitEmailException"%>
 <%@page import="org.opencps.usermgt.DuplicatWorkingUnitEmailException"%> 
 <%
-	String backURL = ParamUtil.getString(request, "backURL");	
+	String redirectURL = ParamUtil.getString(request, "redirectURL"); 
 	long workingUnitId = ParamUtil.getLong(request, 
 		WorkingUnitDisplayTerms.WORKINGUNIT_ID);
 	String [] workingunitSections = null;
+	
+	WorkingUnit workingUnit = null;
+	
+	try{
+		workingUnit = WorkingUnitLocalServiceUtil.fetchWorkingUnit(workingUnitId);
+	} catch (Exception e) {
+		_log.error(e);
+	}
+	
 	if(workingUnitId == 0) {
 		workingunitSections = new String[2];
 		workingunitSections[0] = "general_workingunit";
@@ -49,6 +60,11 @@
 				
 	String[][] categorySections = {workingunitSections};
 %>
+
+<liferay-ui:header
+	backURL="<%= redirectURL %>"
+	title='<%= (workingUnit == null) ? "add-workingunit" : "update-workingunit" %>'
+/>
 <liferay-ui:error 
 	exception="<%= OutOfLengthUnitNameException.class %>" 
 	message="<%= OutOfLengthUnitNameException.class.getName() %>" 
@@ -81,6 +97,7 @@
 
 <portlet:actionURL var="updateWorkingUnitURL" name="updateWorkingUnit" >
 	<portlet:param name="returnURL" value="<%=currentURL %>"/>
+	<portlet:param name="redirectURL" value="<%=redirectURL %>"/>
 </portlet:actionURL>
 
 
@@ -109,7 +126,7 @@
 	method="post" 
 	action="<%=updateWorkingUnitURL.toString() %>">
 	<liferay-ui:form-navigator 
-		backURL="<%= backURL %>"
+		backURL="<%= redirectURL %>"
 		categoryNames= "<%= UserMgtUtil._WORKING_UNIT_CATEGORY_NAMES %>"	
 		categorySections="<%=categorySections %>" 
 		htmlBottom="<%= htmlBot %>"
