@@ -66,7 +66,7 @@
 	<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 </portlet:renderURL>
 
-<c:if test="<%=JobPosPermission.contains(permissionChecker, scopeGroupId, ActionKeys.	) %>">
+<c:if test="<%=JobPosPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_JOBPOS	) %>">
 	<aui:button 
 	name="add-jobpos"
 	value="add-jobpos"
