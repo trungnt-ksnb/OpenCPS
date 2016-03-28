@@ -64,10 +64,11 @@
 	<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 </portlet:renderURL>
 
-<liferay-ui:icon 
-	iconCssClass="icon-plus-sign" 
-	url="<%=updateJobPosURL.toString() %>"
-/> 
+
+<aui:button 
+	value="Add Job Position"
+	onClick ="<%=updateJobPosURL.toString() %>"	
+/>
 		
 
 <liferay-ui:search-container searchContainer="<%= new JobPosSearch(renderRequest ,SearchContainer.DEFAULT_DELTA, iteratorURL) %>">

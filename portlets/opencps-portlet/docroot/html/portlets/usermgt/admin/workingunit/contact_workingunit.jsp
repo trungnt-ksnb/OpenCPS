@@ -34,9 +34,11 @@ long workingUnitId = workingUnit != null ? workingUnit.getWorkingunitId() : 0L;
 		<aui:validator name="maxLength">500</aui:validator>		
 	</aui:input>
 	
-	<datamgt:ddr depthLevel="3" 
+	<datamgt:ddr 
+		cssClass="input100"
+		depthLevel="3" 
 		dictCollectionCode="ADMINISTRATIVE_REGION"
-		itemNames="cityCode,wardCode,districtCode">
+		itemNames="cityCode,districtCode,wardCode">
 	</datamgt:ddr>
 	
 	<aui:row>
