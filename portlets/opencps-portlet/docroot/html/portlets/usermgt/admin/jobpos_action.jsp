@@ -22,7 +22,7 @@
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
 <%@page import="org.opencps.util.ActionKeys"%>
-<%@page import="org.opencps.usermgt.permissions.WorkingUnitPermission"%>
+<%@page import="org.opencps.usermgt.permissions.JobPosPermission"%>
 <%@ include file="../init.jsp"%>
 
 <%
@@ -42,7 +42,7 @@
 			value="<%=String.valueOf(workingUnitId) %>"/>
 		<portlet:param name="redirectURL" value="<%=currentURL%>" />
 	</portlet:renderURL>
-	<c:if test="<%=WorkingUnitPermission.contains(permissionChecker, scopeGroupId, ActionKeys.UPDATE) %>">
+	<c:if test="<%=JobPosPermission.contains(permissionChecker, scopeGroupId, ActionKeys.UPDATE) %>">
 		<liferay-ui:icon image="edit" message="edit"
 		url="<%=updateJobPos.toString()%>" />
 	</c:if>
@@ -53,7 +53,7 @@
 		<portlet:param name="redirectURL" value="<%=currentURL%>" />
 	</portlet:actionURL>
 	
-	<c:if test="<%=WorkingUnitPermission.contains(permissionChecker, scopeGroupId, ActionKeys.DELETE) %>">
+	<c:if test="<%=JobPosPermission.contains(permissionChecker, scopeGroupId, ActionKeys.DELETE) %>">
 		<liferay-ui:icon image="delete" message="delete"
 		url="<%=deleteJobPosURL.toString()%>" />
 	</c:if>

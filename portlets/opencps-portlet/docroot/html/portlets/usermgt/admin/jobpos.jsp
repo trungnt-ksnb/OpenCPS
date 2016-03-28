@@ -31,7 +31,7 @@
 <%@page import="org.opencps.util.MessageKeys"%>
 <%@page import="org.opencps.util.PortletUtil"%>
 <%@page import="org.opencps.util.ActionKeys"%>
-<%@page import="org.opencps.usermgt.permissions.WorkingUnitPermission"%>
+<%@page import="org.opencps.usermgt.permissions.JobPosPermission"%>
 <%@ include file="../init.jsp"%>
 
 <%
@@ -66,7 +66,7 @@
 	<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 </portlet:renderURL>
 
-<c:if test="<%=WorkingUnitPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_JOBPOS) %>">
+<c:if test="<%=JobPosPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_JOBPOS) %>">
 	<aui:button 
 	value="Add Job Position"
 	onClick ="<%=updateJobPosURL.toString() %>"	
