@@ -88,9 +88,10 @@
 	<portlet:param name="backURL" value="<%=backURL %>"/>
 </portlet:actionURL>
 
-
 <liferay-util:buffer var="htmlTop">
-	<liferay-ui:icon iconCssClass="icon-home" />
+	<c:if test="<%=dossierTemplate!=null %>">
+		<h4><%=dossierTemplate.getTemplateName() %></h4>
+	</c:if>
 </liferay-util:buffer>
 
 <liferay-util:buffer var="htmlBot">
@@ -157,7 +158,8 @@ Liferay.provide(window, '<portlet:namespace/>sentToolBarSignal', function(tbSign
 				dataType : 'text/html',
 				method : 'GET',
 			    data:{    	
-			    	"<portlet:namespace />tabs1" : tbSignal
+			    	"<portlet:namespace />tabs1" : tbSignal,
+			    	"<portlet:namespace />currURL" : '<%=currentURL %>'
 			    },   
 			    on: {
 			    	success: function(event, id, obj) {
