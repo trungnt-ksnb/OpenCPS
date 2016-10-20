@@ -1,4 +1,3 @@
-<%@page import="com.liferay.util.Normalizer"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -36,8 +35,11 @@
 <%@ include file="../init.jsp" %>
 
 <%
-	Citizen citizen = (Citizen) request.getAttribute(WebKeys.CITIZEN_ENTRY);
-	long citizenID = citizen != null ? citizen.getCitizenId() : 0L;
+	if(request.getAttribute(WebKeys.CITIZEN_ENTRY) != null){
+		citizen = (Citizen) request.getAttribute(WebKeys.CITIZEN_ENTRY);
+	}
+
+	long citizenId = citizen != null ? citizen.getCitizenId() : 0L;
 %>
 
 <liferay-ui:error 
@@ -109,7 +111,7 @@
 <portlet:actionURL var="updateCitizenURL" name="updateCitizen">
 	<portlet:param 
 		name="<%=CitizenDisplayTerms.CITIZEN_ID %>" 
-		value="<%=String.valueOf(citizenID) %>"
+		value="<%=String.valueOf(citizenId) %>"
 	/>
 	<portlet:param name="currentURL" value="<%=currentURL %>"/>
 </portlet:actionURL>
@@ -121,6 +123,9 @@
 	enctype="multipart/form-data"
 	onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "registerAccount();" %>'
 >
+
+	<aui:input name="citizenRegStep_cfg" value="<%=citizenRegStep_cfg %>" type="hidden"></aui:input>
+	
 	<liferay-util:include 
 		page="/html/portlets/accountmgt/registration/citizen/general_info.jsp" 
 		servletContext="<%=application %>" 

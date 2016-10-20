@@ -1,6 +1,4 @@
-<%@page import="org.opencps.processmgt.model.ServiceProcess"%>
-<%@page import="org.opencps.processmgt.permissions.ProcessPermission"%>
-<%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -19,6 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 %>
+<%@page import="org.opencps.processmgt.model.ServiceProcess"%>
+<%@page import="org.opencps.processmgt.permissions.ProcessPermission"%>
+<%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
 
 <%@ include file="../init.jsp"%>
 
@@ -28,7 +29,7 @@
 %> 
 
 			
- <liferay-ui:icon-menu>
+ <%-- <liferay-ui:icon-menu> --%>
  	<c:if test="<%= ProcessPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_PROCESS) %>">
 		<%
 			PortletURL editURL = renderResponse.createRenderURL();
@@ -36,7 +37,7 @@
 			editURL.setParameter("serviceProcessId", String.valueOf(process.getServiceProcessId()));
 			editURL.setParameter("backURL", currentURL);
 		%>
-		<liferay-ui:icon image="edit" url="<%= editURL.toString() %>" />
+		<liferay-ui:icon cssClass="search-container-action fa edit" image="edit" url="<%= editURL.toString() %>" />
  	</c:if>
 
  	<c:if test="<%= ProcessPermission.contains(permissionChecker, scopeGroupId, ActionKeys.DELETE) %>">
@@ -44,6 +45,6 @@
 			<portlet:param name="serviceProcessId" value="<%=String.valueOf(process.getServiceProcessId()) %>"/>
 			<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 		</portlet:actionURL> 
-		<liferay-ui:icon-delete image="delete" confirmation="are-you-sure-delete-entry" message="delete" url="<%= deleteProcessURL.toString() %>" />
+		<liferay-ui:icon-delete cssClass="search-container-action fa delete" image="delete" confirmation="are-you-sure-delete-entry" message="delete" url="<%= deleteProcessURL.toString() %>" />
  	</c:if>
-</liferay-ui:icon-menu> 
+<%-- </liferay-ui:icon-menu> --%> 

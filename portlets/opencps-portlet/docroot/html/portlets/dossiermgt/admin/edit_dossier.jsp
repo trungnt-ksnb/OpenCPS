@@ -16,21 +16,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-<%@ include file="../init.jsp"%>
+
+<%@page import="com.liferay.portal.kernel.util.HtmlUtil"%>
 <%@page import="org.opencps.dossiermgt.model.DossierTemplate"%>
 <%@page import="javax.portlet.PortletURL"%>
 <%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
 <%@page import="org.opencps.dossiermgt.search.DossierTemplateDisplayTerms"%>
 <%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%@page import="org.opencps.util.ActionKeys"%>
-<%@page import="org.opencps.dossiermgt.permission.DossierPartPermission"%>
 <%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
 <%@page import="org.opencps.util.WebKeys"%>
-<%@page import="org.opencps.dossiermgt.permission.ServiceConfigPermission"%>
 <%@page import="org.opencps.dossiermgt.DuplicateDossierTemplateNumberException"%>
 <%@page import="org.opencps.dossiermgt.OutOfLengthDossierTemplateNumberException"%>
 <%@page import="org.opencps.dossiermgt.OutOfLengthDossierTemplateNameException"%>
 <%@page import="org.opencps.util.MessageKeys"%>
+
+<%@ include file="../init.jsp"%>
+
 <%
 
 	DossierTemplate dossierTemplate = (DossierTemplate) request.getAttribute(WebKeys.DOSSIER_TEMPLATE_ENTRY);
@@ -90,93 +92,39 @@
 	<portlet:param name="backURL" value="<%=backURL %>"/>
 </portlet:actionURL>
 
-
 <liferay-util:buffer var="htmlTop">
-	<liferay-ui:icon iconCssClass="icon-home" />
+	<c:if test="<%=dossierTemplate!=null %>">
+		 <div class="form-navigator-topper [customcss]">
+            <div class="form-navigator-container">
+                <i aria-hidden="true" class="fa [customcss]"></i>
+                <span class="form-navigator-topper-name"><%= HtmlUtil.escape(dossierTemplate.getTemplateName()) %></span>
+            </div>
+        </div>
+	</c:if>
 </liferay-util:buffer>
 
 <liferay-util:buffer var="htmlBot">
-	<div class="button-holder ">
+	<%-- <div class="button-holder ">
 			<aui:button name="submit" type="submit" value="submit"/>
 			<aui:button name="cancel" value="cancel" href="<%=backURL %>"/>	
-	</div>
+	</div> --%>
 </liferay-util:buffer>
 
-<aui:form name="fm" 
+<aui:form 
+	name="fm" 
 	method="post" 
-	action="<%=updateDossierURL.toString() %>">
-	<liferay-ui:form-navigator 
-		backURL="<%= currentURL %>"
-		categoryNames= "<%= DossierMgtUtil._DOSSIER_CATEGORY_NAMES %>"	
-		categorySections="<%=categorySections %>" 
-		htmlBottom="<%= htmlBot %>"
-		htmlTop="<%= htmlTop %>"
-		jspPath='<%=templatePath + "dossier_common/" %>'
-		showButtons="false"
-		
-		>	
-	</liferay-ui:form-navigator>
+	action="<%=updateDossierURL.toString() %>"
+>
+	<div class="opencps-form-navigator-container">
+		<liferay-ui:form-navigator 
+			backURL="<%= currentURL %>"
+			categoryNames= "<%= DossierMgtUtil._DOSSIER_CATEGORY_NAMES %>"	
+			categorySections="<%=categorySections %>" 
+			htmlBottom="<%= htmlBot %>"
+			htmlTop="<%= htmlTop %>"
+			jspPath='<%=templatePath + "dossier_common/" %>'
+			displayStyle="left-navigator"
+			>	
+		</liferay-ui:form-navigator>
+	</div>
 </aui:form>
-<aui:script>
-	
-	AUI().ready('liferay-portlet-url',function(A) {	
-		var dossierPartLink = A.one('#<portlet:namespace />dossierpartlistLink');
-		var dossierServiceLink = A.one('#<portlet:namespace />dossierservicelistLink'); 
-		var dossierTemplateLink = A.one('#<portlet:namespace />edit_dossier_templateLink');
-		
-		if(dossierTemplateLink) {
-			var submitBtn = A.one('#<portlet:namespace />submit');
-			dossierTemplateLink.on('click',function(){
-				submitBtn.show();
-			});
-		} 
-		
-		if(dossierPartLink) {
-			var submitBtn = A.one('#<portlet:namespace />submit');
-			dossierPartLink.on('click',function(){
-				submitBtn.hide();
-				<portlet:namespace />sentToolBarSignal('dossierPartToolBar');
-			});
-		} 
-		
-		if(dossierServiceLink) {
-			var submitBtn = A.one('#<portlet:namespace />submit');
-			dossierServiceLink.on('click',function(){
-				submitBtn.hide();
-				<portlet:namespace />sentToolBarSignal('serviceConfigToolBar');
-			});
-		} 
-		
-	});
-	
-Liferay.provide(window, '<portlet:namespace/>sentToolBarSignal', function(tbSignal) {
-		
-		var A = AUI();
-		
-		A.io.request(
-			'<%= renderToToolBar.toString() %>',
-			{
-				dataType : 'text/html',
-				method : 'GET',
-			    data:{    	
-			    	"<portlet:namespace />tabs1" : tbSignal
-			    },   
-			    on: {
-			    	success: function(event, id, obj) {
-						var instance = this;
-						var res = instance.get('responseData');
-						
-						var toolbarResponse = A.all("#<portlet:namespace/>toolbarResponse");
-						
-						if(toolbarResponse){
-							toolbarResponse.empty();
-							toolbarResponse.html(res);
-						}
-						
-					},
-			    	error: function(){}
-				}
-			}
-		);
-	},['aui-base','aui-io']);
-</aui:script>

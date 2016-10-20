@@ -1,3 +1,4 @@
+<%@page import="org.opencps.dossiermgt.permissions.ServiceConfigPermission"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -18,7 +19,6 @@
 %>
 <%@page import="org.opencps.dossiermgt.search.ServiceConfigDisplayTerms"%>
 <%@page import="org.opencps.util.ActionKeys"%>
-<%@page import="org.opencps.dossiermgt.permission.ServiceConfigPermission"%>
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="org.opencps.dossiermgt.model.ServiceConfig"%>
 <%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
@@ -29,7 +29,7 @@
 	String redirectURL = currentURL;
 %>
 
-<liferay-ui:icon-menu>
+<%-- <liferay-ui:icon-menu> --%>
 	<c:if test="<%=ServiceConfigPermission.contains(permissionChecker, scopeGroupId, ActionKeys.UPDATE) %>">
 		<portlet:renderURL var="updateServiceConfig">
 			<portlet:param 
@@ -42,7 +42,8 @@
 			<portlet:param name="mvcPath" value='<%=templatePath + "edit_service_config.jsp"%>'/>
 		</portlet:renderURL>
 		
-		<liferay-ui:icon 
+		<liferay-ui:icon
+			cssClass="search-container-action fa edit" 
 			image="edit" 
 			message="edit"
 			url="<%=updateServiceConfig.toString()%>" 
@@ -57,8 +58,8 @@
 			/>
 			<portlet:param name="CurrentURL" value="<%=currentURL %>"/>
 		</portlet:actionURL>
-		<liferay-ui:icon image="delete" message="delete"
+		<liferay-ui:icon-delete cssClass="search-container-action fa delete" confirmation="do-you-want-to-delete?" image="delete" message="delete"
 			url="<%=deleteServiceConfigURL.toString()%>" 
 		/>
 	</c:if>
-</liferay-ui:icon-menu>
+<%-- </liferay-ui:icon-menu> --%>

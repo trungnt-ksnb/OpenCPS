@@ -40,5 +40,17 @@ public class ActionKeys
 	public static final String ADD_CITIZEN = "ADD_CITIZEN";
 	public static final String ADD_BUSINESS = "ADD_BUSINESS";
 	public static final String ADD_SERVICE_CONFIG = "ADD_SERVICE_CONFIG";
+
+	public static final String ADD_DOSSIER = "ADD_DOSSIER";
+	public static final String ADD_DOSSIER_FILE = "ADD_DOSSIER_FILE";
+	
+	public static final String ADD_PROCESS_ORDER = "ADD_PROCESS_ORDER";
+	public static final String ASSIGN_PROCESS_ORDER = "ASSIGN_PROCESS_ORDER";
+
+	public static final String MANAGE_PAYMENT_CONFIG = "MANAGE_PAYMENT_CONFIG";
+	
+	public static final String ADD_HOLIDAY = "ADD_HOLIDAY";
+	
+
 }
 

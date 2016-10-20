@@ -1,3 +1,4 @@
+<%@page import="org.opencps.dossiermgt.permissions.DossierPartPermission"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -20,7 +21,6 @@
 <%@page import="org.opencps.util.ActionKeys"%>
 <%@page import="org.opencps.dossiermgt.search.DossierTemplateDisplayTerms"%>
 <%@page import="org.opencps.dossiermgt.model.DossierTemplate"%>
-<%@page import="org.opencps.dossiermgt.permission.DossierPartPermission"%>
 <%@page import="javax.portlet.PortletURL"%>
 <%@page import="org.opencps.dossiermgt.search.DossierPartDisplayTerms"%>
 <%@page import="org.opencps.dossiermgt.model.DossierPart"%>
@@ -58,21 +58,20 @@
 
 %>
 
-<liferay-ui:icon-menu>
+<%-- <liferay-ui:icon-menu> --%>
 	<c:if test="<%=DossierPartPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_DOSSIER_PART) 
 				&&	DossierPartPermission.contains(permissionChecker, scopeGroupId, ActionKeys.UPDATE) %>"
 	>		
-			<liferay-ui:icon image="edit" message="edit"
+			<liferay-ui:icon image="edit" message="edit" cssClass="search-container-action fa edit"
 				url="<%=updateDossierPartURL.toString()%>" />
 			
-			<c:if test="<%= dossierPart.getPartType() == PortletConstants.DOSSIER_TYPE_OTHER_PAPERS_GROUP
-							|| dossierPart.getPartType() == PortletConstants.DOSSIER_TYPE_GROUPS_OPTIONAL 
+			<c:if test="<%= dossierPart.getPartType() == PortletConstants.DOSSIER_TYPE_GROUPS_OPTIONAL
 							|| dossierPart.getPartType() == PortletConstants.DOSSIER_TYPE_OWN_RECORDS %>">
 				<%
 					updateDossierPartChildsURL.setParameter("isAddChild", "isAddChild");
 				%> 
 			
-				<liferay-ui:icon image="add" message="add-childs-part"
+				<liferay-ui:icon image="add" cssClass="search-container-action fa add" message="add-childs-part"
 					url="<%=updateDossierPartURL.toString()%>" />
 			
 			</c:if>	
@@ -84,7 +83,7 @@
 			<portlet:param name="CurrentURL" value="<%=currentURL %>"/>
 		</portlet:actionURL>
 		
-		<liferay-ui:icon image="delete" message="delete"
-				url="<%=deleteDossierParttURL.toString()%>" />	
+		<liferay-ui:icon-delete cssClass="search-container-action fa delete" confirmation="do-you-want-to-detete?" image="delete" message="delete"
+				url="<%=deleteDossierParttURL.toString()%>" />
 	</c:if>
-</liferay-ui:icon-menu> 
+<%-- </liferay-ui:icon-menu>  --%>

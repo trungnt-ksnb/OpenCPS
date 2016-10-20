@@ -23,7 +23,7 @@
 
 		<column name="serviceNo" type="String" />
 		<column name="serviceName" type="String"/>
-		<column name="shortName" type="String" />
+		<column name="fullName" type="String" />
 		<column name="serviceProcess" type="String"/>
 		<column name="serviceMethod" type="String" />
 		<column name="serviceDossier" type="String" />
@@ -48,6 +48,25 @@
 		</order>
 
 		<!-- Finder methods -->
+		<finder return-type="Collection" name="G_DI" >
+			<finder-column name="groupId" />
+			<finder-column name="domainIndex" comparator="LIKE" />
+		</finder>
+		
+		<finder return-type="Collection" name="G_DI_Status" >
+			<finder-column name="groupId" />
+			<finder-column name="domainIndex" comparator="LIKE" />
+			<finder-column name="fullName" comparator="LIKE" />
+			<finder-column name="activeStatus" />
+			<finder-column name="administrationIndex" comparator="LIKE" />
+		</finder>
+		
+		<finder return-type="Collection" name="G_FullName_Status" >
+			<finder-column name="groupId" />
+			<finder-column name="fullName" comparator="LIKE" />
+			<finder-column name="activeStatus" />
+		</finder>
+		
 		<finder name="GroupId" return-type="Collection">
 			<finder-column name="groupId" />
 		</finder>
@@ -62,6 +81,11 @@
 			<finder-column name="groupId" />
 			<finder-column name="domainCode"/>
 			<finder-column name="activeStatus"/>
+		</finder>
+		
+		<finder name="C_SN" return-type="ServiceInfo">
+			<finder-column name="companyId" />
+			<finder-column name="serviceNo"/>
 		</finder>
 		<reference package-path="com.liferay.portlet.asset" entity="AssetEntry" />
 	</entity>

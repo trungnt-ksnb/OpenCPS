@@ -1,36 +1,14 @@
-.bottom-horizontal-line{
-	border-bottom: 1px solid #ccc;
-	clear: both;
-	display: block;
-	margin-bottom: 10px;
-	margin-top: 10px;
-}
-
-.input90{
-	width : 90% !important;
-}
-.input95{
-	width : 95% !important;
-}
 .input100{
-	width : 100% !important;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-khtml-box-sizing: border-box;
+	box-sizing: border-box;
+	min-height: 30px;
+	max-width: 100% !important;
+	width: 100%;
 }
 
-.input50{
-	width : 50% !important;
-}
-
-.input60{
-	width : 60% !important;
-}
-
-.input30{
-	width : 30% !important;
-}
-
-.input40{
-	width : 40% !important;
-}
 
 .input30_1 select {
 	width: 150px !important;
@@ -75,4 +53,28 @@
 
 .opencps-icon.not-employee{
     background-position: 50% -769px;
+}
+.lookup-result table {
+	width: 100%;
+}
+
+.lookup-result tr td {
+	padding: 5px;
+	border: 1px solid #cbcbcb;
+}
+
+.ocps-btn{
+	margin-bottom: 5px;
+    box-shadow: none;
+    border-radius: 4px;
+}
+
+.ocps-green{
+    color: #fff !important;
+    background-color: #4CAF50 !important;
+}
+
+.ocps-red{
+	color: #fff !important;
+    background-color: #f44336 !important;
 }

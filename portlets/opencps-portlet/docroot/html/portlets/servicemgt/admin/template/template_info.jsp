@@ -1,4 +1,4 @@
-<%@page import="org.opencps.servicemgt.model.TemplateFile"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -17,30 +17,49 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 %>
+<%@page import="com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil"%>
+<%@page import="com.liferay.portlet.documentlibrary.model.DLFileEntry"%>
+<%@page import="org.opencps.servicemgt.model.TemplateFile"%>
+
 <%@ include file="../../init.jsp" %>
 
 <%
 	TemplateFile templateFile = (TemplateFile) request.getAttribute(WebKeys.SERVICE_TEMPLATE_ENTRY);
+	String url = StringPool.BLANK;
+	
+	DLFileEntry dlFileEntry = null;
+	if(Validator.isNotNull(templateFile)) {
+		try {
+			dlFileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(templateFile.getFileEntryId());
+			url = themeDisplay.getPortalURL()+"/c/document_library/get_file?uuid="+dlFileEntry.getUuid()+"&groupId="+themeDisplay.getScopeGroupId();
+		} catch (Exception e) {}
+	}
 %>
 
 <aui:model-context bean="<%= templateFile %>" model="<%= TemplateFile.class %>"/>
 
-<aui:row>
-	<aui:col width="50">
+<aui:row cssClass="nav-content-row">
+	<aui:col>
 		<aui:input name="fileNo"></aui:input>
 	</aui:col>
 </aui:row>
 
-<aui:row>
-	<aui:col width="50">
+<aui:row cssClass="nav-content-row">
+	<aui:col>
 		<aui:input name="fileName"></aui:input>
 	</aui:col>
 </aui:row>
 
-<aui:row>
-	<aui:col width="50">
+<c:if test="<%=Validator.isNotNull(url) %>">
+	<a href="<%=url%>"><span style="color: blue"><liferay-ui:message key="url.file.entry" /></span></a>
+</c:if>
+
+<aui:row cssClass="nav-content-row">
+	<aui:col>
 		<aui:input name="uploadedFile" type="file"/>
 	</aui:col>
 </aui:row>
+
+
 
 

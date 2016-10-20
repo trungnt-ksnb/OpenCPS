@@ -1,5 +1,4 @@
 
-<%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -18,8 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-<%@ include file="../init.jsp"%>
+
 <%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
+<%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
 <%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="org.opencps.util.MessageKeys"%>
@@ -27,7 +27,12 @@
 <%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
 <%@page import="org.opencps.usermgt.model.JobPos"%>
 <%@page import="com.liferay.portal.kernel.exception.SystemException"%>
+<%@page import="com.liferay.portal.kernel.servlet.SessionErrors"%>
+<%@page import="com.liferay.portal.kernel.servlet.SessionMessages"%>
+<%@page import="com.liferay.portal.kernel.util.HtmlUtil"%>
+<%@page import="org.opencps.util.WebKeys"%>
 
+<%@ include file="../init.jsp"%>
 <%
 	long workingUnitId = ParamUtil.getLong(request, "workingUnitId");
 	long jobPosId = ParamUtil.getLong(request, JobPosDisplayTerms.ID_JOBPOS);
@@ -39,46 +44,72 @@
 	} catch(Exception e) {
 		_log.error(e);
 	}
-	
+		
 	String redirectURL = ParamUtil.getString(request, "redirectURL");
 	String returnURL = currentURL;
 	String [] jobPosSections = {"general_jobpos","role_jobpos"};
 	String [][] categorySections = {jobPosSections};
-%>
+	
+	boolean success = false;
 
+	try{
+		success = !SessionMessages.isEmpty(renderRequest) && SessionErrors.isEmpty(renderRequest);
+	}catch(Exception e){
+		
+	}
+	
+%>
+<%-- 
 <liferay-ui:header
 	backURL="<%= redirectURL %>"
 	title='<%= (jobPos == null) ? "add-jobpos" : "update-jobpos" %>'
-/>
+/> --%>
+
 
 <liferay-ui:error 
-	key="<%=MessageKeys.USERMGT_JOBPOS_UPDATE_ERROR %>"
+	key="<%=MessageKeys.USERMGT_JOBPOS_DELETE_ERROR %>" 
 	message="<%=LanguageUtil.get(pageContext, 
-		MessageKeys.USERMGT_JOBPOS_UPDATE_ERROR) %>"
+		MessageKeys.USERMGT_JOBPOS_DELETE_ERROR) %>"
 />
 
 <liferay-ui:success 
-	key="<%=MessageKeys.USERMGT_JOBPOS_UPDATE_SUCESS %>"
+	key="<%=MessageKeys.USERMGT_JOBPOS_DELETE_SUCCESS %>"
 	message="<%=LanguageUtil.get(pageContext, 
-		MessageKeys.USERMGT_JOBPOS_UPDATE_SUCESS) %>"
+		MessageKeys.USERMGT_JOBPOS_DELETE_SUCCESS) %>"
 />
+
+<liferay-ui:error 
+	key="jobpos-existed-title" 
+	message="jobpos-existed-title"
+/>
+
+
 <portlet:actionURL var="updateJobPosURL" name="updateJobPoses">
 	<portlet:param name="workingUnitId" value="<%=String.valueOf(workingUnitId) %>"/>
-	<portlet:param name="redirectURL" value="<%=redirectURL %>"/>
 	<portlet:param name="returnURL" value="<%=returnURL %>"/>
 </portlet:actionURL>
 
 <liferay-util:buffer var="htmlTop">
-
+	<c:if test="<%= jobPos != null %>">
+        <div class="form-navigator-topper edit-jobpos">
+            <div class="form-navigator-container">
+                <i aria-hidden="true" class="fa edit-jobpos"></i>
+                <span class="form-navigator-topper-name"><%= HtmlUtil.escape(jobPos.getTitle()) %></span>
+            </div>
+        </div>
+    </c:if> 
 </liferay-util:buffer>
+<div class = "class-to-action">
+	<liferay-util:buffer var="htmlBot">
 
-<liferay-util:buffer var="htmlBot">
+	</liferay-util:buffer>
+</div>
 
-</liferay-util:buffer>
 
-<aui:form name="fm" 
+<aui:form name="fm1" 
 	method="post" 
 	action="<%=updateJobPosURL.toString() %>">
+<div class="opencps-form-navigator-container">
 	<liferay-ui:form-navigator 
 		backURL="<%= redirectURL %>"
 		categoryNames= "<%= UserMgtUtil._JOBPOS_CATEGORY_NAMES %>"	
@@ -86,8 +117,10 @@
 		htmlBottom="<%= htmlBot %>"
 		htmlTop="<%= htmlTop %>"
 		jspPath='<%=templatePath + "jobpos/" %>'
-		>	
+		displayStyle="left-navigator"
+		>
 	</liferay-ui:form-navigator>
+</div>
 	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" 
 		type="hidden" />
 		
@@ -96,3 +129,11 @@
 <%! 
 	Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.edit_jobpos.jsp");
 %>
+<aui:script use='liferay-util-window'>
+	AUI().ready(function(A) {
+		var successVal = "<%= success %>";
+		if(successVal == 'true') {
+			closeDialog('<portlet:namespace/>editJobPos', '<%=WebKeys.USER_MGT_PORTLET%>_');
+		}
+	});
+</aui:script>

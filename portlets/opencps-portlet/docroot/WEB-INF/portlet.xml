@@ -102,6 +102,10 @@
 			<name>template-path</name>
 			<value>/html/portlets/usermgt/edit_info/</value>
 		</init-param>
+		<init-param>
+		    <name>copy-request-parameters</name>
+		    <value>true</value>
+		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
@@ -178,6 +182,10 @@
 			<name>template-path</name>
 			<value>/html/portlets/accountmgt/registration/</value>
 		</init-param>
+		<init-param>
+        	<name>config-template</name>
+        	<value>/html/portlets/accountmgt/registration/configuration.jsp</value>
+    	</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
@@ -210,7 +218,7 @@
 		</portlet-class>
 		<init-param>
 			<name>view-template</name>
-			<value>/html/portlets/accountmgt/profile/viewprofile.jsp</value>
+			<value>/html/portlets/accountmgt/profile/viewprofile-ux.jsp</value>
 		</init-param>
 		<init-param>
 			<name>template-path</name>
@@ -444,6 +452,14 @@
 			<name>template-path</name>
 			<value>/html/portlets/processmgt/processorder/</value>
 		</init-param>
+		<init-param>
+		    <name>copy-request-parameters</name>
+		    <value>true</value>
+		</init-param>
+		<init-param>
+			<name>add-process-action-success-action</name>
+			<value>false</value>
+		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
@@ -466,6 +482,9 @@
 		<security-role-ref>
 			<role-name>user</role-name>
 		</security-role-ref>
+		<supported-public-render-parameter>
+			active
+		</supported-public-render-parameter>
 	</portlet>
 
 	<portlet>	
@@ -504,6 +523,9 @@
 		<security-role-ref>
 			<role-name>user</role-name>
 		</security-role-ref>
+		<supported-public-render-parameter>
+			active
+		</supported-public-render-parameter>
 	</portlet>
 
 	<portlet>	
@@ -596,6 +618,14 @@
 			<name>template-path</name>
 			<value>/html/portlets/dossiermgt/frontoffice/</value>
 		</init-param>
+		<init-param>
+		    <name>copy-request-parameters</name>
+		    <value>true</value>
+		</init-param>
+		<init-param>
+			<name>add-process-action-success-action</name>
+			<value>false</value>
+		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
@@ -628,7 +658,7 @@
 		</portlet-class>
 		<init-param>
 			<name>view-template</name>
-			<value>/html/portlets/dossiermgt/statemenu/view.jsp</value>
+			<value>/html/portlets/dossiermgt/statemenu/dossiermenu.jsp</value>
 		</init-param>
 		<init-param>
 			<name>template-path</name>
@@ -667,18 +697,22 @@
 		<init-param>
 			<name>view-template</name>
 			<value>
-				/html/portlets/dossiermgt/monitoring/view.jsp
+				/html/portlets/dossiermgt/monitoring/dossiermonitoringsearch.jsp
 			</value>
 		</init-param>
 		<init-param>
 			<name>template-path</name>
-			<value>/html/portlets/dossiermgt/statemenu/</value>
+			<value>/html/portlets/dossiermgt/monitoring/</value>
 		</init-param>
+    	<init-param>
+        	<name>config-template</name>
+        	<value>/html/portlets/dossiermgt/monitoring/configuration.jsp</value>
+    	</init-param>		
 		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
 		</supports>
-		<resource-bundle>content.Language_14</resource-bundle>
+		<resource-bundle>content.Language_19</resource-bundle>
 		<portlet-info>
 			<title>Dossier FrontOffice Monitoring</title>
 			<short-title>Dossier FrontOffice Monitoring</short-title>
@@ -697,4 +731,282 @@
 			<role-name>user</role-name>
 		</security-role-ref>
 	</portlet>
+	<portlet>
+		<portlet-name>20</portlet-name>
+		<display-name>Payment FrontOffice</display-name>
+		<portlet-class>
+			org.opencps.paymentmgt.portlet.PaymentMgtFrontOfficePortlet
+		</portlet-class>
+		<init-param>
+			<name>view-template</name>
+			<value>
+				/html/portlets/paymentmgt/frontoffice/frontofficepaymentlist.jsp
+			</value>
+		</init-param>
+		<init-param>
+			<name>template-path</name>
+			<value>/html/portlets/paymentmgt/frontoffice/</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+		</supports>
+		<resource-bundle>content.Language_20</resource-bundle>
+		<portlet-info>
+			<title>Payment FrontOffice</title>
+			<short-title>Payment FrontOffice</short-title>
+			<keywords>Payment FrontOffice</keywords>
+		</portlet-info>
+		<security-role-ref>
+			<role-name>administrator</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>guest</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>power-user</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>user</role-name>
+		</security-role-ref>
+	</portlet>	
+	<portlet>
+		<portlet-name>21</portlet-name>
+		<display-name>Dossier Payment Config</display-name>
+		<portlet-class>
+			org.opencps.paymentmgt.portlet.PaymentMgtPaymentConfigPortlet
+		</portlet-class>
+		<init-param>
+			<name>view-template</name>
+			<value>
+				/html/portlets/paymentmgt/paymentconfig/edit_paymentconfig.jsp
+			</value>
+		</init-param>
+		<init-param>
+			<name>template-path</name>
+			<value>/html/portlets/paymentmgt/paymentconfig/</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+		</supports>
+		<resource-bundle>content.Language_21</resource-bundle>
+		<portlet-info>
+			<title>Payment Config</title>
+			<short-title>Payment Config</short-title>
+			<keywords>Payment Config</keywords>
+		</portlet-info>
+		<security-role-ref>
+			<role-name>administrator</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>guest</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>power-user</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>user</role-name>
+		</security-role-ref>
+	</portlet>	
+	<portlet>
+		<portlet-name>22</portlet-name>
+		<display-name>Dossier Backoffice</display-name>
+		<portlet-class>
+			org.opencps.paymentmgt.portlet.PaymentMgtBackOfficePortlet
+		</portlet-class>
+		<init-param>
+			<name>view-template</name>
+			<value>
+				/html/portlets/paymentmgt/backoffice/backofficepaymentlist.jsp
+			</value>
+		</init-param>
+		<init-param>
+			<name>template-path</name>
+			<value>/html/portlets/paymentmgt/backoffice/</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+		</supports>
+		<resource-bundle>content.Language_22</resource-bundle>
+		<portlet-info>
+			<title>Payment Backoffice</title>
+			<short-title>Payment Backoffice</short-title>
+			<keywords>Payment Backoffice</keywords>
+		</portlet-info>
+		<security-role-ref>
+			<role-name>administrator</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>guest</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>power-user</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>user</role-name>
+		</security-role-ref>
+	</portlet>
+	<portlet>
+		<portlet-name>24</portlet-name>
+		<display-name>Log Mornitoring</display-name>
+		<portlet-class>
+			org.opencps.dossiermgt.portlet.LogMornitoringPortlet
+		</portlet-class>
+		<init-param>
+			<name>view-template</name>
+			<value>/html/portlets/dossiermgt/log/logmornitering.jsp</value>
+		</init-param>
+		<init-param>
+			<name>template-path</name>
+			<value>/html/portlets/dossiermgt/log/</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>view</portlet-mode>
+		</supports>
+		<resource-bundle>content.Language_24</resource-bundle>
+		<portlet-info>
+			<title>Log Mornitoring</title>
+			<short-title>Log Mornitoring</short-title>
+			<keywords></keywords>
+		</portlet-info>
+		<security-role-ref>
+			<role-name>administrator</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>guest</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>power-user</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>user</role-name>
+		</security-role-ref>
+	</portlet>
+	<portlet>
+		<portlet-name>25</portlet-name>
+		<display-name>Dossier Top List</display-name>
+		<portlet-class>
+			org.opencps.dossiermgt.portlet.DossierTopList
+		</portlet-class>
+		<init-param>
+			<name>view-template</name>
+			<value>/html/portlets/dossiermgt/toplist/toplist.jsp</value>
+		</init-param>
+		<init-param>
+			<name>template-path</name>
+			<value>/html/portlets/dossiermgt/toplist/</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>view</portlet-mode>
+		</supports>
+		<resource-bundle>content.Language_25</resource-bundle>
+		<portlet-info>
+			<title>Dossier Top List</title>
+			<short-title>Dossier Top List</short-title>
+			<keywords></keywords>
+		</portlet-info>
+		<security-role-ref>
+			<role-name>administrator</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>guest</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>power-user</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>user</role-name>
+		</security-role-ref>
+	</portlet>
+	<portlet>
+		<portlet-name>26</portlet-name>
+		<display-name>submit-instruction</display-name>
+		<portlet-class>
+			org.opencps.dossiermgt.portlet.SubmitInstructionPortlet
+		</portlet-class>
+		<init-param>
+			<name>view-template</name>
+			<value>/html/portlets/holidayconfig/admin/submitinstruction.jsp</value>
+		</init-param>
+		<init-param>
+			<name>template-path</name>
+			<value>/html/portlets/dossiermgt/submit/</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>view</portlet-mode>
+		</supports>
+		<resource-bundle>content.Language_26</resource-bundle>
+		<portlet-info>
+			<title>submit-instruction</title>
+			<short-title>26</short-title>
+			<keywords></keywords>
+		</portlet-info>
+		<security-role-ref>
+			<role-name>administrator</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>guest</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>power-user</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>user</role-name>
+		</security-role-ref>
+	</portlet>
+	
+	<portlet>
+		<portlet-name>27</portlet-name>
+		<display-name>Holiday Config</display-name>
+		<portlet-class>
+			org.opencps.holidayconfig.portlet.HolidayConfigPortlet
+		</portlet-class>
+		<init-param>
+			<name>view-template</name>
+			<value>/html/portlets/holidayconfig/admin/holidayconfig_list.jsp</value>
+		</init-param>
+		<init-param>
+			<name>template-path</name>
+			<value>/html/portlets/holidayconfig/admin/</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>view</portlet-mode>
+		</supports>
+		<resource-bundle>content.Language_27</resource-bundle>
+		<portlet-info>
+			<title>Holiday Config</title>
+			<short-title>Holiday Config</short-title>
+			<keywords>Holiday Config</keywords>
+		</portlet-info>
+		<security-role-ref>
+			<role-name>administrator</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>guest</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>power-user</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>user</role-name>
+		</security-role-ref>
+	</portlet>
+	
+	<public-render-parameter>
+    	<identifier>active</identifier>
+   		<qname>active</qname>
+    </public-render-parameter>
+
+
+
 </portlet-app>

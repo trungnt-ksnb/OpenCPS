@@ -19,10 +19,10 @@
 <%
 	JobPosSearchTerms searchTerms = (JobPosSearchTerms) searchContainer.getSearchTerms();
 	
-	jobPos = JobPosLocalServiceUtil.getJobPoss(
-		workingUnitId, searchContainer.getOrderByComparator()); 
+	jobPos = JobPosLocalServiceUtil.getJobPossG_W(
+		scopeGroupId, workingUnitId, searchContainer.getStart(), searchContainer.getEnd() 
+		,searchContainer.getOrderByComparator()); 	
 	
-	totalCount = JobPosLocalServiceUtil.countAll();
 	total = totalCount;
 	results = jobPos;
 	pageContext.setAttribute("results", results);

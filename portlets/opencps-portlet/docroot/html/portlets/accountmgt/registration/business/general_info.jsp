@@ -34,12 +34,12 @@
 <%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
 <%@page import="org.opencps.datamgt.model.DictCollection"%>
 <%@page import="org.opencps.accountmgt.service.BusinessLocalServiceUtil"%>
+<%@page import="org.opencps.util.PortletUtil"%>
+
 <%@ include file="../../init.jsp" %>
 
 <%
-	Business business = (Business) request.getAttribute(WebKeys.BUSINESS_ENTRY);
-
-	long businessId = business!=null ? business.getBusinessId() : 0L;
+	long businessId = 0;
 	
 	long dictItemTypeId = 0;
 	
@@ -49,7 +49,21 @@
 	
 	boolean isCheckItemDomain = false;
 	
+	if(request.getAttribute(BusinessDisplayTerms.BUSINESS_BUSINESSID) != null && isAdminViewProfile){
+		businessId = (Long) request.getAttribute(BusinessDisplayTerms.BUSINESS_BUSINESSID);
+		if(businessId > 0){
+			try{
+				business = BusinessLocalServiceUtil.fetchBusiness(businessId);
+			}catch(Exception e){
+				//
+			}
+		}
+	}
+	
+	businessId = business!=null ? business.getBusinessId() : 0L;
+	
 	List<DictItem> dictItemDomains = new ArrayList<DictItem>();
+	
 	DictItem dictItemType = null;
 	
 	DictCollection dictCollectionDomain = null;
@@ -89,92 +103,150 @@
 <aui:model-context bean="<%=business%>" model="<%=Business.class%>" />
 
 <c:if test="<%=isAdminViewProfile  && businessId > 0%>">
-	<aui:row>
+	<aui:row cssClass="nav-content-row-2">
 		<aui:col width="50">
 			<aui:input 
 				type="text"
 				name="<%=BusinessDisplayTerms.BUSINESS_CREATEDDATE %>" 
 				value="<%=DateTimeUtil.convertDateToString(business.getCreateDate(), DateTimeUtil._VN_DATE_FORMAT) %>"
 				disabled="<%=isAdminViewProfile %>"
+				label="create-date"
+				cssClass="input100" 
 			/>
 		</aui:col>
 		<aui:col width="50">
-			<aui:input name="<%=BusinessDisplayTerms.BUSINESS_ACCOUNTSTATUS%>"  disabled="<%=isAdminViewProfile %>" />
+			<aui:input 
+				name="account-status"  
+				disabled="<%=isAdminViewProfile %>" 
+				cssClass="input100" 
+				type="text"
+				value="<%=PortletUtil.getAccountStatus(business.getAccountStatus(), themeDisplay.getLocale())%>"
+			/>
 		</aui:col>
 		
 	</aui:row>
 </c:if>
 
-<aui:row>
+<aui:row cssClass="nav-content-row-2">
 	<aui:col width="50">
-		<aui:input name="<%=BusinessDisplayTerms.BUSINESS_NAME %>" >
+		<aui:input name="<%=BusinessDisplayTerms.BUSINESS_NAME %>" cssClass="input100" >
 			<aui:validator name="required" />
 			<aui:validator name="maxLength">255</aui:validator>
 		</aui:input>
 	</aui:col>
 	
 	<aui:col width="50">
-		<aui:input name="<%=BusinessDisplayTerms.BUSINESS_IDNUMBER %>"	
-	>
+		<aui:input name="<%=BusinessDisplayTerms.BUSINESS_IDNUMBER %>" cssClass="input100"	
+			>
 			<aui:validator name="required" />
 			<aui:validator name="maxLength">100</aui:validator>
 		</aui:input>
 	</aui:col>
 </aui:row>
 
-<aui:row>
+<aui:row cssClass="nav-content-row-2">
 	<aui:col width="50">
-		<aui:input name="<%= BusinessDisplayTerms.BUSINESS_ENNAME %>">
-			<aui:validator name="required" />
+		<aui:input name="<%= BusinessDisplayTerms.BUSINESS_ENNAME %>" cssClass="input100">
 			<aui:validator name="maxLength">255</aui:validator>
 		</aui:input>
 	</aui:col>
 	
 	<aui:col width="50">
-		<aui:input name="<%=BusinessDisplayTerms.BUSINESS_SHORTNAME %>">
+		<aui:input name="<%=BusinessDisplayTerms.BUSINESS_SHORTNAME %>" cssClass="input100">
 			<aui:validator name="maxLength">100</aui:validator>
 		</aui:input>
 	</aui:col>
 </aui:row>
 
-<aui:row>
-	<datamgt:ddr
-		depthLevel="1" 
-		dictCollectionCode="<%=PortletPropsValues.DATAMGT_MASTERDATA_BUSINESS_TYPE %>"
-		itemNames="businessType"
-		itemsEmptyOption="true"	
-		selectedItems="<%=String.valueOf(dictItemTypeId)%>"
-	/>	
-</aui:row>
-<c:if test="<%= !dictItemDomains.isEmpty() %>">
-	<aui:row>
-		<div class="">
-		<%
-			for(DictItem dictItemDomain : dictItemDomains) {
-					if(businessDomains != null) {
-						for(BusinessDomain businessDomainChecked : businessDomains) {
-							if(dictItemDomain.getItemCode().equals(businessDomainChecked.getBusinessDomainId())) {
-								isCheckItemDomain = true;
-								break;
+<aui:row cssClass="nav-content-row-2">
+	<aui:col width="50">
+		<aui:row>
+			<datamgt:ddr
+				cssClass="input100"
+				depthLevel="1" 
+				dictCollectionCode="<%=PortletPropsValues.DATAMGT_MASTERDATA_BUSINESS_TYPE %>"
+				itemNames="businessType"
+				itemsEmptyOption="true"	
+				selectedItems="<%=String.valueOf(dictItemTypeId)%>"
+				emptyOptionLabels="businessType"
+				showLabel="<%=true%>"
+			/>
+		</aui:row>
+		<aui:row>
+				<aui:input name="<%=BusinessDisplayTerms.BUSINESS_ADDRESS %>" cssClass="input100">
+					<aui:validator name="maxLength">500</aui:validator>
+				</aui:input>
+		</aui:row>
+	</aui:col>
+	<aui:col width="50">
+		<c:if test="<%= !dictItemDomains.isEmpty() %>">
+			<aui:row>
+				<label><liferay-ui:message key ="businessDomain" /></label>
+				<div class="fake_textarea">
+				<%
+					for(DictItem dictItemDomain : dictItemDomains) {
+							if(businessDomains != null) {
+								for(BusinessDomain businessDomainChecked : businessDomains) {
+									if(dictItemDomain.getItemCode().equals(businessDomainChecked.getBusinessDomainCode())) {
+										isCheckItemDomain = true;
+										break;
+									}
+								}
 							}
-						}
+						%>
+							<aui:input
+								name="businessDomains"
+								id='<%= "businessDomain" + dictItemDomain.getDictItemId()%>'
+								value="<%=dictItemDomain.getItemCode() %>"
+								type="checkbox" 
+							    label="<%=dictItemDomain.getItemName(locale, true)%>"
+							    checked="<%= isCheckItemDomain %>"
+							    cssClass="getval"
+							/>		
+						<%
+						isCheckItemDomain = false;
 					}
 				%>
-					<aui:input 
-						id='<%= "businessDomain" + dictItemDomain.getDictItemId()%>'
-						name="businessDomain"
-						value="<%=dictItemDomain.getItemCode() %>"
-						type="checkbox" 
-					    label="<%=dictItemDomain.getItemName(locale, true)%>"
-					    checked="<%= isCheckItemDomain %>"
-					/>		
-				<%
-				isCheckItemDomain = false;
+				</div>
+				<aui:input name="listBussinessDomains" type="hidden" value=""></aui:input>
+			</aui:row>
+		</c:if>
+	</aui:col>
+</aui:row>
+
+<aui:script>
+	AUI().ready(function(A) {
+		var businessTypeCbs = $(".getval");
+		var businessTypeCbsChecked = $(".getval:checked");
+		var checkedArr = [];
+		var listBussinessDomains = A.one("#<portlet:namespace />listBussinessDomains");
+		
+		businessTypeCbsChecked.each(function() {
+			checkedArr.push($(this).attr("value"));
+			listBussinessDomains.val(checkedArr);
+		});
+		
+		businessTypeCbs.click(function() {
+			if($(this).is(":checked")) {
+				//alert($(this).attr("value") + ' ' + $(this).attr("id"));
+				if($.inArray($(this).attr("value"), checkedArr) == -1) {
+					checkedArr.push($(this).attr("value"));
+				}
+			} else {
+				if($.inArray($(this).attr("value"), checkedArr) > -1) {
+					removeItem = $(this).attr("value");
+					checkedArr = $.grep(checkedArr, function(value) {
+						  return value != removeItem;
+					});
+				} 
 			}
-		%>
-		</div>
-	</aui:row>
-</c:if>
+			
+			listBussinessDomains.val(checkedArr);
+		});
+
+		
+	});
+</aui:script>
 
 <%!
 	private Log _log = LogFactoryUtil.getLog(".html.portlets.accountmgt.registration.registration_business.business_register.jsp");

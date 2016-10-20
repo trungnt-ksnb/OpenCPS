@@ -30,11 +30,11 @@
 <%
 	ResultRow row =	(ResultRow) request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 
-	Citizen citizen = (Citizen)row.getObject();
-	
+	citizen = (Citizen)row.getObject();
+
 %>
 
-<liferay-ui:icon-menu>
+<%-- <liferay-ui:icon-menu> --%>
 	<c:if test="<%=CitizenPermission.contains(permissionChecker, scopeGroupId, ActionKeys.UPDATE) %>">
 		<portlet:renderURL var="updateCitizen"> 
 			<portlet:param name="<%=CitizenDisplayTerms.CITIZEN_ID %>" value="<%=String.valueOf(citizen.getCitizenId()) %>"/>
@@ -44,6 +44,7 @@
 	
 		<liferay-ui:icon 
 			image="edit" 
+			cssClass="search-container-action fa edit"
 			message="edit"
 			url="<%=updateCitizen.toString()%>" 
 		/>
@@ -59,7 +60,8 @@
 			</portlet:actionURL>
 	
 			<liferay-ui:icon
-			 	image="publish" 
+			 	image="publish"
+			 	cssClass="search-container-action fa publish" 
 			 	message="approve"
 				url="<%= updateStatusURL.toString()%>" 
 			/>
@@ -74,8 +76,10 @@
 				<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 			</portlet:actionURL>
 	
-			<liferay-ui:icon-deactivate
+			<liferay-ui:icon
+				image="deactivate"
 			 	label="deactivate"
+			 	cssClass="search-container-action fa deactivate"
 				url="<%= updateStatusURL.toString()%>" 
 			/>
 		</c:if>
@@ -90,7 +94,8 @@
 			</portlet:actionURL>
 	
 			<liferay-ui:icon
-			 	image="activate" 
+			 	image="activate"
+			 	cssClass="search-container-action fa activate" 
 			 	message="activate"
 				url="<%= updateStatusURL.toString()%>" 
 			/>
@@ -110,9 +115,10 @@
 			<liferay-ui:icon-delete
 			 	confirmation="are-you-sure-remove-this-account"
 			 	message="delete"
+			 	cssClass="search-container-action fa delete"
 				url="<%=deleteCitizenURL.toString()%>" 
 			/>
 		</c:if>
 	</c:if>
 
-</liferay-ui:icon-menu>
+<%-- </liferay-ui:icon-menu> --%>

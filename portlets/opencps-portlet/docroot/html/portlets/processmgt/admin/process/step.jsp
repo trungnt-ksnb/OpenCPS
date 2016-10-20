@@ -1,3 +1,4 @@
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -16,11 +17,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 %>
+<%@page import="org.opencps.util.PortletUtil"%>
+<%@page import="org.opencps.util.DictItemUtil"%>
+<%@page import="org.opencps.processmgt.util.ProcessUtils"%>
 
 <%@ include file="../../init.jsp" %>
 
 <%
 	ServiceProcess serviceProcess  = (ServiceProcess) request.getAttribute(WebKeys.SERVICE_PROCESS_ENTRY);
+
+	long serviceProcessId = 0;
+	
+	if (Validator.isNotNull(serviceProcess)) {
+		serviceProcessId = serviceProcess.getServiceProcessId();
+	}
 
 	ProcessStep processStep  = (ProcessStep) request.getAttribute(WebKeys.PROCESS_STEP_ENTRY);
 	
@@ -31,6 +41,8 @@
 				    ProcessPermission.contains(
 				        themeDisplay.getPermissionChecker(),
 				        themeDisplay.getScopeGroupId(), ActionKeys.ADD_PROCESS);
+	
+	int totalCount = ProcessStepLocalServiceUtil.countStepByProcess(serviceProcessId);
 
 %>
 
@@ -40,20 +52,27 @@
 	<portlet:param name="processStepId" value="<%= Validator.isNotNull(processStep) ? Long.toString(processStep.getProcessStepId()) : StringPool.BLANK %>"/>
 </liferay-portlet:renderURL>
 
+<liferay-portlet:renderURL var="editStepInlineURL" windowState="<%= LiferayWindowState.NORMAL.toString() %>">
+	<portlet:param name="mvcPath" value='<%= templatePath + "edit_step.jsp" %>'/>
+	<portlet:param name="redirectURL" value="<%= currentURL %>"/>
+	<portlet:param name="serviceProcessId" value="<%= Validator.isNotNull(serviceProcess) ? Long.toString(serviceProcess.getServiceProcessId()) : StringPool.BLANK %>"/>
+	<portlet:param name="processStepId" value="<%= Validator.isNotNull(processStep) ? Long.toString(processStep.getProcessStepId()) : StringPool.BLANK %>"/>
+</liferay-portlet:renderURL>
+
 <aui:button-row>
-	<aui:button name="addStep" onClick="showDialog()" value="add-step" ></aui:button>
+	<aui:button name="addStep" href="<%= editStepInlineURL.toString() %>" value="add-step-inline" ></aui:button>
 </aui:button-row>
 
-<liferay-ui:search-container searchContainer="<%= new StepSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
+<liferay-ui:search-container searchContainer="<%= new StepSearch(renderRequest, totalCount, iteratorURL) %>">
 		
 	<liferay-ui:search-container-results>
 		<%
 		
 			StepSearchTerms searchTerms = (StepSearchTerms) searchContainer.getSearchTerms();
 
-			total = ProcessStepLocalServiceUtil.countStep(scopeGroupId); 
+			total =  totalCount;
 
-			results = ProcessStepLocalServiceUtil.searchStep(scopeGroupId,
+			results = ProcessStepLocalServiceUtil.getStepByProcess(serviceProcessId,
 				searchContainer.getStart(), searchContainer.getEnd());
 			
 			pageContext.setAttribute("results", results);
@@ -75,7 +94,7 @@
 			row.addText(step.getStepName());
 			
 			// step name
-			row.addText(step.getDossierStatus());
+			row.addText(PortletUtil.getDossierStatusLabel(step.getDossierStatus(), locale));
 			
 			// step duration
 			row.addText(Integer.toString(step.getDaysDuration()));
@@ -88,14 +107,17 @@
 	
 	</liferay-ui:search-container-row>	
 
-	<liferay-ui:search-iterator/>
+	<liferay-ui:search-iterator paginate="false"/>
 
 </liferay-ui:search-container>
 
+<%!
+	private int ITEM_PERPAGE = 100;
+%>
 
 <aui:script use="liferay-util-window">
 	Liferay.provide(window, 'showDialog', function(action) {
-		page = '<%=editStepURL%>'
+		page = '<%= editStepURL %>'
 		Liferay.Util.openWindow({
 			dialog: {
 				cache: false,
@@ -105,7 +127,7 @@
 				width: 1000
 			},
 			id: 'addstep',
-			title: 'adding-process-step',
+			title: Liferay.Language.get("adding-process-step"),
 			uri: page
 		});
 	});

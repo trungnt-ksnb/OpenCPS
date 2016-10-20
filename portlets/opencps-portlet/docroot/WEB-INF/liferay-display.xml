@@ -8,7 +8,6 @@
 	
 	<category name="org.opencps.backoffice">
 		<portlet id="2" />
-		<portlet id="3"/>
 		<portlet id="4"/>
 		<portlet id="8"/>
 		<portlet id="9"/>
@@ -17,15 +16,25 @@
 		<portlet id="16"/>
 		<portlet id="17"/>
 		<portlet id="18"/>
-	</category>
+		<portlet id="21"/>
+		<portlet id="22"/>
+		<portlet id="27"/>
+	</category>	
 
 	<category name="org.opencps.frontoffice">
+		<portlet id="3" />
 		<portlet id="5" />
 		<portlet id="6" />
 		<portlet id="10" />
 		<portlet id="11" />
 		<portlet id="13" />
-		<portlet id="14"/>
-		<portlet id="19"/>
+		<portlet id="14" />
+		<portlet id="19" />
+		<portlet id="20" />
+		<portlet id="25"></portlet>
+		<portlet id="26"></portlet>
+	</category>
+	<category name="org.opencps.admin">
+		<portlet id="24"></portlet>
 	</category>
 </display>
