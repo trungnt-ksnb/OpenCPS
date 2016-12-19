@@ -23,7 +23,7 @@
 <%@page import="org.opencps.dossiermgt.model.DossierPart"%>
 <%@page import="org.opencps.processmgt.util.ProcessUtils"%>
 
-<%@ include file="../../../init.jsp"%>
+<%@ include file="../../init.jsp"%>
 
 <%
 	ProcessOrder processOrder = (ProcessOrder)request.getAttribute(WebKeys.PROCESS_ORDER_ENTRY);
