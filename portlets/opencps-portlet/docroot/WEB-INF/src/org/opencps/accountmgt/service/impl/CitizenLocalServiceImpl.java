@@ -314,6 +314,7 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 				mappingUser = userLocalService.updatePassword(
 						mappingUser.getUserId(), newPassword, reTypePassword,
 						false);
+				userLocalService.updateModifiedDate(mappingUser.getUserId(), now);
 			}
 
 			if ((cityCode != citizen.getCityCode()
