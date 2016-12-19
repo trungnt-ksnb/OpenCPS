@@ -21,9 +21,12 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.opencps.accountmgt.model.Citizen;
+import org.opencps.accountmgt.service.CitizenLocalServiceUtil;
 import org.opencps.api.service.ApiServiceLocalServiceUtil;
 import org.opencps.api.service.base.ApiServiceServiceBaseImpl;
 import org.opencps.api.util.APIServiceConstants;
@@ -50,7 +53,7 @@ import org.opencps.util.PortletUtil;
 import org.opencps.util.WebKeys;
 import org.opencps.util.PortletUtil.SplitDate;
 
-import com.fasterxml.jackson.annotation.JsonFormat.Value;
+import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -71,7 +74,6 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.User;
-import com.liferay.portal.security.ac.AccessControlled;
 import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextThreadLocal;
@@ -155,6 +157,47 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			String note = dossierInfoObj.getString("note");
 			String dossierFiles = dossierInfoObj.getString("dossierFiles");
 			
+			// if event is submit then create dossier online
+			if(event.equalsIgnoreCase(WebKeys.ACTION_SUBMIT_VALUE)) {
+				if(Validator.isNotNull(contactEmail)) {
+					User userOfDossierOnline = userPersistence.fetchByC_EA(
+							serviceContext.getCompanyId(), contactEmail);
+					
+					if(userOfDossierOnline == null) {
+						// create user citizen
+						Calendar cal = Calendar.getInstance();
+						int birthDateDay = cal.get(Calendar.DAY_OF_MONTH);
+						int birthDateMonth = cal.get(Calendar.MONTH);
+						int birthDateYear = cal.get(Calendar.YEAR);
+
+						Citizen citizen = CitizenLocalServiceUtil.addCitizen(contactName, 
+								StringPool.BLANK, 0,
+								birthDateDay, birthDateMonth, birthDateYear, address, cityCode,
+								districtCode, wardCode, cityName, districtName, wardName,
+								contactEmail, StringPool.BLANK,
+								serviceContext.getScopeGroupId(), StringPool.BLANK,
+								StringPool.BLANK, StringPool.BLANK, null, 0, serviceContext);
+						
+						if(citizen != null) {
+							CitizenLocalServiceUtil.updateStatus(
+								citizen.getCitizenId(), serviceContext.getUserId(),
+								PortletConstants.ACCOUNT_STATUS_APPROVED);
+						}
+						
+						userId = citizen.getMappingUserId();
+						
+						// update default passoword is telNo
+						userLocalService.updatePassword(userId, contactTelNo, contactTelNo, false);
+					} else {
+						userId = userOfDossierOnline.getUserId();
+					}
+					
+					serviceContext.setUserId(userId);
+				} else {
+					throw new NoSuchUserException();
+				}
+			}
+			
 			ServiceInfo serviceInfo = serviceInfoPersistence.fetchByC_SN(
 				serviceContext.getCompanyId(), serviceNo);
 			
@@ -171,7 +214,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			String serviceDomainIndex = serviceConfig.getServiceDomainIndex();
 			long govAgencyOrganizationId = serviceConfig.getGovAgencyOrganizationId();
 			String govAgencyName = serviceConfig.getGovAgencyName();
-			int serviceMode = serviceConfig.getServiceMode();
+			int serviceMode = 1; //TODO: hard fix for remote dossier
 			String serviceAdministrationIndex = serviceConfig.getServiceAdministrationIndex();
 			String subjectId = StringPool.BLANK;
 			
@@ -221,6 +264,71 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			
 			//update ho so co ma tiep nhan
 			dossier = DossierLocalServiceUtil.updateDossier(dossier);
+			
+			//add dossier file
+			JSONArray dossierFilesArray = JSONFactoryUtil.createJSONArray(dossierFiles);
+			for(int i = 0; i < dossierFilesArray.length(); i++) {
+				JSONObject jsonObj = dossierFilesArray.getJSONObject(i);
+				
+				String partNo = GetterUtil.getString(jsonObj.getString("dossierPartNo"));
+				String dossierFileName = GetterUtil.getString(jsonObj.getString("dossierFileName"));
+				String dossierFileURL = GetterUtil.getString(jsonObj.getString("dossierFileURL"));
+				
+				Date fileDate = new Date();
+				
+				DossierPart dossierPart = dossierPartLocalService.getDossierPartByT_PN(
+					dossierTemplateId, partNo);
+				
+				byte[] bytes = getFileFromURL(dossierFileURL);
+				
+				String sourceFileName = dossierFileName;
+				
+				String extension = FileUtil.getExtension(sourceFileName);
+				
+				if(Validator.isNull(extension)) {
+					extension = StringUtil.replace(FileUtil.getExtension(dossierFileURL), 
+						StringPool.FORWARD_SLASH, StringPool.BLANK);
+					
+					if(Validator.isNotNull(extension)) {
+						sourceFileName = dossierFileName.concat(StringPool.UNDERLINE)
+								.concat(String.valueOf(System.nanoTime()))
+								.concat(StringPool.PERIOD).concat(extension);
+					}
+				}
+				
+				String mimeType = MimeTypesUtil.getExtensionContentType(extension);
+				
+				serviceContext.setUserId(dossier.getUserId());
+				
+				DLFolder dossierFileFolder = DLFolderUtil.getDossierFolder(
+						serviceContext.getScopeGroupId(),
+						null, dossier.getOid(),
+						serviceContext);
+				
+				dossierFileLocalService
+				.addDossierFile(
+						dossier.getUserId(),
+						dossier.getDossierId(),
+						dossierPart.getDossierpartId(),
+						dossierPart.getTemplateFileNo(),
+						StringPool.BLANK,
+						0L,
+						0L,
+						dossier.getUserId(),
+						dossier.getOwnerOrganizationId(),
+						dossierFileName,
+						mimeType,
+						PortletConstants.DOSSIER_FILE_MARK_UNKNOW,
+						2,
+						StringPool.BLANK,
+						fileDate,
+						1,
+						PortletConstants.DOSSIER_FILE_SYNC_STATUS_SYNCSUCCESS,
+						dossierFileFolder.getFolderId(),
+						sourceFileName, mimeType, dossierFileName,
+						StringPool.BLANK, StringPool.BLANK,
+						bytes, serviceContext);
+			}
 			
 			//update ho so ve system
 			DossierLocalServiceUtil.updateDossierStatus(
@@ -938,6 +1046,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			dossierObj.put("contactTelNo", dossier.getContactTelNo());
 			dossierObj.put("contactEmail", dossier.getContactEmail());
 			dossierObj.put("note", dossier.getNote());
+			dossierObj.put("serviceMode", dossier.getServiceMode());
 			
 			if (dossier.getSubmitDatetime() != null) {
 				dossierObj.put("submitDatetime",
@@ -1040,6 +1149,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 				dossierObj.put("receptionNo", dossier.getReceptionNo());
 				dossierObj.put("dossierStatus", dossier.getDossierStatus());
 				dossierObj.put("delayStatus", dossier.getDelayStatus());
+				dossierObj.put("serviceMode", dossier.getServiceMode());
 				
 				if (dossier.getSubmitDatetime() != null) {
 					dossierObj.put("submitDatetime",
@@ -1222,66 +1332,6 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 		ApiServiceLocalServiceUtil.addLog(userId, APIServiceConstants.CODE_08, 
 			serviceContext.getRemoteAddr(), oid, resultObj.toString(), 
 			APIServiceConstants.OUT, serviceContext);
-		
-		return resultObj;
-	}
-
-	//DK
-	//TODO
-	@JSONWebService(value = "alpacadklaprap", method = "GET")
-	public JSONObject alpacaGenerateDKLapRap(String currentKey, String dependency, String dossierNo) 
-		throws SystemException, PortalException {
-		
-		ServiceContext serviceContext = getServiceContext();
-		
-		JSONObject result = JSONFactoryUtil.createJSONObject();
-		
-		String [] dependencies = null;
-	
-		if(Validator.isNotNull(dependency)){
-			dependencies = dependency.split(",");
-		}
-		
-		switch (currentKey) {
-			case "ghichu":
-				result = JSONFactoryUtil.createJSONObject();
-				break;
-	
-			default:
-				result = JSONFactoryUtil.createJSONObject();
-				break;
-		}
-		
-		return result;
-	}
-	
-	@JSONWebService(value = "alpacadklaprapsupdatasource", method = "GET")
-	public JSONObject alpacadklaprapSubDataSource(String code) 
-		throws SystemException, PortalException {
-		
-		ServiceContext serviceContext = getServiceContext();
-		
-		JSONObject result = JSONFactoryUtil.createJSONObject();
-		
-		switch (code) {
-			case "code1":
-				result = JSONFactoryUtil.createJSONObject();
-				break;
-	
-			default:
-				result = JSONFactoryUtil.createJSONObject();
-				break;
-		}
-		
-		return result;
-	}
-	
-	@JSONWebService(value = "updatedklaprap", method = "POST")
-	public JSONObject updateDKLapRap(String oid, String receptionno) {
-		
-		JSONObject resultObj = JSONFactoryUtil.createJSONObject();
-		
-		ServiceContext serviceContext = getServiceContext();
 		
 		return resultObj;
 	}
