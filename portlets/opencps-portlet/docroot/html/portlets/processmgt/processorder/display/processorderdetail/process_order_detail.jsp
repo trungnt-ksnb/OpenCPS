@@ -37,7 +37,6 @@
 	title="process-order"
 />
 
-<div class="ocps-history-process-bound-navigator">
 	<liferay-util:buffer var="htmlTop">
 		<c:if test="<%= processOrder != null %>">
 			<div class="form-navigator-topper dossier-info">
@@ -81,31 +80,26 @@
 					/>
 					
 					<div id="<portlet:namespace/>div-dossier-content">
-						<liferay-ui:panel title="dossier_content" collapsible="false" >
-							<liferay-util:include page='<%=templatePath + "/dossier/dossier_content_view_part_file.jsp" %>' servletContext="<%=application %>" />
-						</liferay-ui:panel>
+						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "dossier_content") %></h4>
+						<liferay-util:include page='<%=templatePath + "/dossier/dossier_content_view_part_file.jsp" %>' servletContext="<%=application %>" />
 					</div>
 					<div id="<portlet:namespace/>div-dossier-info">
-						<liferay-ui:panel title="dossier-info" collapsible="false">
-							<liferay-util:include page='<%=templatePath + "/dossier/dossier_info.jsp" %>' servletContext="<%=application %>" />
-						</liferay-ui:panel>
+						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "dossier-info") %></h4>
+						<liferay-util:include page='<%=templatePath + "/dossier/dossier_info.jsp" %>' servletContext="<%=application %>" />
 					</div>
 					<div id="<portlet:namespace/>div-process">
-						<liferay-ui:panel title="process" collapsible="false">
-							<liferay-util:include page='<%=templatePath + "/dossier/process.jsp" %>' servletContext="<%=application %>" />
-						</liferay-ui:panel>
+						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "process") %></h4>
+						<liferay-util:include page='<%=templatePath + "/dossier/process.jsp" %>' servletContext="<%=application %>" />
 					</div>
 					<div id="<portlet:namespace/>div-history">
-						<liferay-ui:panel title="history" collapsible="false">
-							<liferay-util:include page='<%=templatePath + "/dossier/history.jsp" %>' servletContext="<%=application %>" />
-						</liferay-ui:panel>
+						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "history") %></h4>
+						<liferay-util:include page='<%=templatePath + "/dossier/history.jsp" %>' servletContext="<%=application %>" />
 					</div>
 					
 				</aui:form>
 			</div>
 		</aui:col>
 	</aui:row>
-</div>
 
 <aui:script>
 	AUI().ready(function(A){
@@ -123,19 +117,20 @@
 		var containerP = A.one('#<portlet:namespace/>containerP');
 		
 		if (document.documentElement.scrollTop > dossierContentDiv.getY()){
-			containerP.setStyle('top', '10px');
+			containerP.setStyle('top', '15px');
 			containerP.setStyle('position', 'fixed');
 	    } else {
+	    	containerP.setStyle('top', '0px');
 	    	containerP.setStyle('position', '');
 	    }
 		
-		if (document.documentElement.scrollTop < dossierInfoDiv.getY() - 150){
+		if (document.documentElement.scrollTop < dossierInfoDiv.getY() - 75){
 	        dossierContentP.addClass('changeDefErr');
 	    } else 
-	    if (document.documentElement.scrollTop < processDiv.getY() - 150){
+	    if (document.documentElement.scrollTop < processDiv.getY() - 75){
 	    	dossierInfoP.addClass('changeDefErr');
 	    } else
-	    if (document.documentElement.scrollTop < historyDiv.getY() - 150){
+	    if (document.documentElement.scrollTop < historyDiv.getY() - 75){
 	    	processP.addClass('changeDefErr');
 	    } else {
 	    	historyP.addClass('changeDefErr');
@@ -144,14 +139,15 @@
 		A.on('scroll', function(){
 			console.log('scroll');
 			
-			if (document.documentElement.scrollTop > dossierContentDiv.getY()){
-				containerP.setStyle('top', '10px');
+			if (document.documentElement.scrollTop > dossierContentDiv.getY() - 15){
+				containerP.setStyle('top', '15px');
 				containerP.setStyle('position', 'fixed');
 		    } else {
+		    	containerP.setStyle('top', '0px');
 		    	containerP.setStyle('position', '');
 		    }
 			
-			if (document.documentElement.scrollTop < dossierInfoDiv.getY() - 150){
+			if (document.documentElement.scrollTop < dossierInfoDiv.getY() - 75){
 		        
 		        dossierInfoP.removeClass('changeDefErr');
 		        processP.removeClass('changeDefErr');
@@ -159,7 +155,7 @@
 		        
 		        dossierContentP.addClass('changeDefErr');
 		    } else 
-		    if (document.documentElement.scrollTop < processDiv.getY() - 150){
+		    if (document.documentElement.scrollTop < processDiv.getY() - 75){
 		    	
 		    	dossierContentP.removeClass('changeDefErr');
 		    	processP.removeClass('changeDefErr');
@@ -167,9 +163,9 @@
 		    	
 		    	dossierInfoP.addClass('changeDefErr');
 		    } else
-		    if (document.documentElement.scrollTop < historyDiv.getY() - 150){
+		    if (document.documentElement.scrollTop < historyDiv.getY() - 75){
 		    	
-		    	dossierContentP
+		    	dossierContentP.removeClass('changeDefErr');
 		    	dossierInfoP.removeClass('changeDefErr');
 		    	historyP.removeClass('changeDefErr');
 		    	
