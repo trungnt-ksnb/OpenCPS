@@ -529,7 +529,7 @@
 												/>
 												<portlet:param 
 													name="<%=DossierFileDisplayTerms.PART_TYPE %>" 
-													value="<%=String.valueOf(dossierPart.getPartType()) %>"
+													value="<%=String.valueOf(PortletConstants.DOSSIER_PART_TYPE_RESULT) %>"
 												/>
 												<portlet:param 
 													name="isEditDossier" 
