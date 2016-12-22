@@ -90,6 +90,21 @@ public class ProcessMgtUtil {
 		return userId;
 	}
 	
+	
+	public static long getAssignUserWasActioning(long processOrderId) {
+		long userId = 0;
+		System.out.println("processOrderId ---- " + processOrderId);
+		try {
+			ProcessOrder processOrder = ProcessOrderLocalServiceUtil.getProcessOrder(processOrderId);
+			List<ActionHistory> actionHistories = ActionHistoryLocalServiceUtil.getActionHistory(processOrderId, processOrder.getProcessWorkflowId());
+			userId = actionHistories.get(0).getActionUserId();
+		} catch (Exception e) {
+			System.err.println("CATCHHHHHHHHHHHHHHHHH");
+		}
+		
+		return userId;
+	}
+	
 	/**
 	 * @param processWorkflowId
 	 * @return
