@@ -1042,6 +1042,12 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 							StringPool.BLANK);
 			}
 			
+			if(Boolean.valueOf(processOrderStage)){
+				sql = StringUtil
+						.replace(sql, "OR opencps_processorder.assignToUserId = ?",
+							"OR opencps_processorder.assignToUserId = ? OR 1=1");
+			}
+			
 			SQLQuery q = session
 				.createSQLQuery(sql);
 			q
@@ -1161,6 +1167,12 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 				sql = StringUtil
 						.replace(sql, "AND opencps_processstep.dossierSubStatus = ?",
 							StringPool.BLANK);
+			}
+			
+			if(Boolean.valueOf(processOrderStage)){
+				sql = StringUtil
+						.replace(sql, "OR opencps_processorder.assignToUserId = ?",
+							"OR opencps_processorder.assignToUserId = ? OR 1=1");
 			}
 			
 			sql = CustomSQLUtil.replaceOrderBy(sql, orderByComparator);
