@@ -209,9 +209,9 @@
 										processOrder.getActionDatetime() : null,
 										new Date(), processOrder.getDaysDuration(),themeDisplay.getLocale());
 								
+								String redirectURL = processURL.toString() + "#" +renderResponse.getNamespace() +"tab="+ renderResponse.getNamespace() + redirectToPageProcessCfg ;
 								
-						
-								String hrefFix = "location.href='" + processURL.toString()+"'";
+								String hrefFix = "location.href='" + redirectURL+"'";
 								String cssStatusColor = "status-color-" + processOrder.getDossierStatus();
 							%>
 							

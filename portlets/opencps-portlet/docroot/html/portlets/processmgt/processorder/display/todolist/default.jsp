@@ -155,8 +155,9 @@
 								new Date(), processOrder.getDaysDuration(),themeDisplay.getLocale());
 						
 						//String deadLine = Validator.isNotNull(processOrder.getDealine()) ? processOrder.getDealine() : StringPool.DASH;
-						
-						String href = "location.href='" + processURL.toString()+"'";
+						String redirectURL = processURL.toString() + "#" +renderResponse.getNamespace() +"tab="+ renderResponse.getNamespace() + redirectToPageProcessCfg ;
+								
+						String href = "location.href='" + redirectURL+"'";
 						
 						String cssStatusColor = "status-color-" + processOrder.getDossierStatus();
 					%>

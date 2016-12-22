@@ -72,7 +72,9 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 		}
 
 		boolean hiddenTreeNodeEqualNone = ParamUtil.getBoolean(actionRequest, "hiddenTreeNodeEqualNone");
+		String redirectToPageProcessCfg = ParamUtil.getString(actionRequest, "redirectToPageProcessCfg", "dossier_info");
 		preferences.setValue("hiddenTreeNodeEqualNone", String.valueOf(hiddenTreeNodeEqualNone));
+		preferences.setValue("redirectToPageProcessCfg", String.valueOf(redirectToPageProcessCfg));
 		
 		preferences.store();
 
