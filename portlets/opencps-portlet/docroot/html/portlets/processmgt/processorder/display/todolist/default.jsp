@@ -81,12 +81,13 @@
 	
 	iteratorURL.setParameter("dossierSubStatus", dossierSubStatus);
 	iteratorURL.setParameter("processOrderStage", processOrderStage);
-	
+	boolean isShowRowChecker = false;
 	if(ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
 			serviceInfoId > 0 && processStepId > 0){
 		
 		rowChecker = new RowChecker(liferayPortletResponse);
+		isShowRowChecker = true;
 		
 	}
 %>
@@ -288,10 +289,10 @@ AUI().ready(function(A){
 	
 	var processDossier = A.one("#<portlet:namespace />processDossier");
 	var isMultiAssignvar = '<%= isMultiAssign %>';
-	
+	var isShowRowChecker = '<%= isShowRowChecker%>';
 	console.log(isMultiAssignvar);
 	console.log(processDossier);
-	if(isMultiAssignvar == 'false' && processDossier) {
+	if(isMultiAssignvar == 'false' && processDossier && isShowRowChecker == 'false') {
 		processDossier.hide();
 	}
 	

@@ -93,11 +93,14 @@
 	iteratorURL.setParameter("dossierSubStatus", dossierSubStatus);
 	iteratorURL.setParameter("processOrderStage", processOrderStage);
 	
+	boolean isShowRowChecker = false;
+	
 	if(ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
 			serviceInfoId > 0 && processStepId > 0){
 		
 		rowChecker = new RowChecker(liferayPortletResponse);
+		isShowRowChecker = true;
 		
 	}
 %>
@@ -160,13 +163,12 @@
 				           <p class="count"></p>
 				    </div>
 				</div>
-				<c:if test="<%=ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
+				<%-- <c:if test="<%=ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 				serviceInfoId > 0 && processStepId > 0 %>">
 					<aui:button name="multiAssignToUserBtn" value="multiAssignToUserBtn"/>
-				</c:if>
+				</c:if> --%>
 				<liferay-ui:search-container 
 					searchContainer="<%= new ProcessOrderSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>"
-					
 					headerNames="<%= headers%>"
 				>
 				
@@ -334,7 +336,16 @@
 
 AUI().ready(function(A){
 	
-	var processDossier = A.one("#<portlet:namespace />multiAssignToUserBtn");
+	var processDossier = A.one("#<portlet:namespace />processDossier");
+	var isMultiAssignvar = '<%= isMultiAssign %>';
+	var isShowRowChecker = '<%= isShowRowChecker%>';
+	console.log(isMultiAssignvar);
+	console.log(processDossier);
+	if(isMultiAssignvar == 'false' && processDossier && isShowRowChecker == 'false') {
+		processDossier.hide();
+	}
+	
+	/* var processDossier = A.one("#<portlet:namespace />multiAssignToUserBtn");
 	var isMultiAssignvar = '<%= isMultiAssign %>';
 	
 	console.log(isMultiAssignvar);
@@ -380,7 +391,7 @@ AUI().ready(function(A){
 				return;
 			}
 		});
-	}
+	} */
 	
 });
 

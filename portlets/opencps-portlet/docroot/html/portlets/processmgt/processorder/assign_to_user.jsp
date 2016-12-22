@@ -126,8 +126,6 @@
 	
 	long assigerToUserIdWasActioning = ProcessMgtUtil.getAssignUserWasActioning(processOrderId);
 	
-	System.out.println("assigerToUserIdWasActioning ________________________ " + assigerToUserIdWasActioning);
-	
 	PortletURL backTodoListURL =PortletURLFactoryUtil.create(request, WebKeys.PROCESS_ORDER_PORTLET, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
 
 	backTodoListURL.setParameter("mvcPath", "/html/portlets/processmgt/processorder/processordertodolist.jsp");
