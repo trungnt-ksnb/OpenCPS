@@ -83,14 +83,23 @@
 						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "dossier_content") %></h4>
 						<liferay-util:include page='<%=templatePath + "/dossier/dossier_content_view_part_file.jsp" %>' servletContext="<%=application %>" />
 					</div>
+					
+					<div class="separate-line"></div>
+					
 					<div id="<portlet:namespace/>div-dossier-info">
 						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "dossier-info") %></h4>
 						<liferay-util:include page='<%=templatePath + "/dossier/dossier_info.jsp" %>' servletContext="<%=application %>" />
 					</div>
+					
+					<div class="separate-line"></div>
+					
 					<div id="<portlet:namespace/>div-process">
 						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "process") %></h4>
 						<liferay-util:include page='<%=templatePath + "/dossier/process.jsp" %>' servletContext="<%=application %>" />
 					</div>
+					
+					<div class="separate-line"></div>
+					
 					<div id="<portlet:namespace/>div-history">
 						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "history") %></h4>
 						<liferay-util:include page='<%=templatePath + "/dossier/history.jsp" %>' servletContext="<%=application %>" />
