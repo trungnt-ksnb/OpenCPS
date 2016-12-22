@@ -79,12 +79,28 @@
 	</aui:col>
 </aui:row>
 
-	<div class="ocps-title-detail-top">	
-		<label class="service-reception-label">
-			<liferay-ui:message key="reception-no"/> 
-		</label>
-		<p class="service-reception-no"><%=receptionNo %></p>
-	</div>
+<aui:row>
+	<aui:col width="50">
+		<aui:row>
+			<aui:col width="30" cssClass="bold">
+				<liferay-ui:message key="dossier-no"/>
+			</aui:col>
+			<aui:col width="70">
+				<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+			</aui:col>
+		</aui:row>
+	</aui:col>
+	<aui:col width="50">
+		<aui:row>
+			<aui:col width="30" cssClass="bold">
+				<liferay-ui:message key="dossier-reception-no"/>
+			</aui:col>
+			<aui:col width="70">
+				<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+			</aui:col>
+		</aui:row>
+	</aui:col>
+</aui:row>
 	<div class="ocps-title-detail-bot">
 		<label class="service-name-label">
 			<liferay-ui:message key="dossier-name"/> 

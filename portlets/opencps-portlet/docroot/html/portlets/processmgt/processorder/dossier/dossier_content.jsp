@@ -50,14 +50,38 @@
 
 <%@ include file="../../init.jsp"%>
 
+<%
+	Dossier dossier = (Dossier) request.getAttribute(WebKeys.DOSSIER_ENTRY);
+%>
 <div class="ocps-dossier-content">
 <aui:row cssClass="header-title custom-title">
 	<aui:col width="100">
 		<liferay-ui:message key="dossier_content"/>
 	</aui:col>
 </aui:row>
+<aui:row>
+	<aui:col width="50">
+		<aui:row>
+			<aui:col width="30" cssClass="bold">
+				<liferay-ui:message key="dossier-no"/>
+			</aui:col>
+			<aui:col width="70">
+				<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+			</aui:col>
+		</aui:row>
+	</aui:col>
+	<aui:col width="50">
+		<aui:row>
+			<aui:col width="30" cssClass="bold">
+				<liferay-ui:message key="dossier-reception-no"/>
+			</aui:col>
+			<aui:col width="70">
+				<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+			</aui:col>
+		</aui:row>
+	</aui:col>
+</aui:row>
 <%
-	Dossier dossier = (Dossier) request.getAttribute(WebKeys.DOSSIER_ENTRY);
 
 	ServiceConfig serviceConfig = (ServiceConfig) request.getAttribute(WebKeys.SERVICE_CONFIG_ENTRY);
 	
@@ -85,7 +109,7 @@
 			List<DossierPart> dossierParts = DossierMgtUtil.getTreeDossierPart(dossierPartLevel1.getDossierpartId());
 			
 			if(dossierParts != null){
-				%>
+%>
 				<div class="opencps dossiermgt dossier-part-tree" id='<%= renderResponse.getNamespace() + "tree" + dossierParts.get(0).getDossierpartId()%>'>
 					<c:choose>
 						<c:when test="<%=partType == PortletConstants.DOSSIER_PART_TYPE_OPTION ||

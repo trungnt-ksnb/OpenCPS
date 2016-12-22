@@ -55,8 +55,6 @@
 <%@page import="org.opencps.dossiermgt.service.DossierLocalServiceUtil"%>
 
 <%@ include file="../../init.jsp"%>
-
-<div class="ocps-dossier-content">
 <%
 	long dossierId = ParamUtil.getLong(request, "dossierId");
 	
@@ -68,6 +66,32 @@
 	catch (NoSuchDossierException ex) {
 		
 	}
+%>
+<div class="ocps-dossier-content">
+
+<aui:row>
+		<aui:col width="50">
+			<aui:row>
+				<aui:col width="30" cssClass="bold">
+					<liferay-ui:message key="dossier-no"/>
+				</aui:col>
+				<aui:col width="70">
+					<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+				</aui:col>
+			</aui:row>
+		</aui:col>
+		<aui:col width="50">
+			<aui:row>
+				<aui:col width="30" cssClass="bold">
+					<liferay-ui:message key="dossier-reception-no"/>
+				</aui:col>
+				<aui:col width="70">
+					<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+				</aui:col>
+			</aui:row>
+		</aui:col>
+	</aui:row>
+<%
 	
 	String cssRequired = StringPool.BLANK;
 	
