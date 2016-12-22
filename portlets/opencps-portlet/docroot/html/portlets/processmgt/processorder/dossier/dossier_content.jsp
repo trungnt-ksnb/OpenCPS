@@ -175,7 +175,7 @@
 												
 											</span>
 											<span class="opencps dossiermgt dossier-part-name">
-												<%=dossierPart.getPartName() + (Validator.isNotNull(dossierFile.getDossierFileNo()) ?  " - " + LanguageUtil.get(pageContext, "so-hieu-gt") + ": " + dossierFile.getDossierFileNo():StringPool.BLANK) + DossierMgtUtil.getLoaiGiayToLabel((Validator.isNotNull(dossierFile) ? dossierFile.getDossierFileMark() : -1), locale) %>
+												<%=dossierPart.getPartName() + ((Validator.isNotNull(dossierFile) && Validator.isNotNull(dossierFile.getDossierFileNo())) ?  " - " + LanguageUtil.get(pageContext, "so-hieu-gt") + ": " + dossierFile.getDossierFileNo():StringPool.BLANK) + DossierMgtUtil.getLoaiGiayToLabel((Validator.isNotNull(dossierFile) ? dossierFile.getDossierFileMark() : -1), locale) %>
 											</span>
 										</span>
 									
@@ -261,7 +261,7 @@
 														</i>
 													</span>
 													<span class="opencps dossiermgt dossier-part-name">
-														<%=dossierFileOther.getDisplayName()  + (Validator.isNotNull(dossierFileOther.getDossierFileNo()) ? " - " + LanguageUtil.get(pageContext, "so-hieu-gt") + ": " +  dossierFileOther.getDossierFileNo():StringPool.BLANK) + DossierMgtUtil.getLoaiGiayToLabel(dossierFileOther.getDossierFileMark(), locale) %>
+														<%=dossierFileOther.getDisplayName()  + ((Validator.isNotNull(dossierFileOther) && Validator.isNotNull(dossierFileOther.getDossierFileNo())) ? " - " + LanguageUtil.get(pageContext, "so-hieu-gt") + ": " +  dossierFileOther.getDossierFileNo():StringPool.BLANK) + DossierMgtUtil.getLoaiGiayToLabel(dossierFileOther.getDossierFileMark(), locale) %>
 													</span>
 												</span>
 											
