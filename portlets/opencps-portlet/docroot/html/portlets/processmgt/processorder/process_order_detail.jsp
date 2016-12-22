@@ -38,7 +38,7 @@
 	
 	String backURL = ParamUtil.getString(request, "backURL");
 	
-	String[] processOrderSections = new String[]{"dossier_info", "dossier_content", "process", "history"};
+	String[] processOrderSections = new String[]{"dossier_content", "process", "history", "dossier_info"};
 	
 	String[][] categorySections = {processOrderSections};
 %>
