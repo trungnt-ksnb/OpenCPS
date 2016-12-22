@@ -59,6 +59,7 @@
 	long dossierId = ParamUtil.getLong(request, "dossierId");
 	
 	Dossier dossier = null;
+	ServiceInfo serviceInfo = null;
 	
 	try {
 		dossier = DossierLocalServiceUtil.getDossier(dossierId);
@@ -66,6 +67,12 @@
 	catch (NoSuchDossierException ex) {
 		
 	}
+	
+	try {
+		serviceInfo = ServiceInfoLocalServiceUtil.getServiceInfo(dossier.getServiceInfoId());
+	} catch (Exception e){}
+	
+	
 %>
 <div class="ocps-dossier-content">
 
@@ -91,21 +98,24 @@
 			</aui:row>
 		</aui:col>
 	</aui:row>
+	<aui:row>
+				<aui:col width="30" cssClass="bold">
+					<liferay-ui:message key="serviceinfo-name"/>
+				</aui:col>
+				<aui:col width="70">
+					<%=Validator.isNotNull(serviceInfo) ? serviceInfo.getServiceName() : StringPool.DASH %>
+				</aui:col>
+	</aui:row>
 <%
 	
 	String cssRequired = StringPool.BLANK;
 	
-	ServiceInfo serviceInfo = null;
 	ServiceConfig serviceConfig = null;
 	DossierTemplate dossierTemplate = null;
 	
 	try {
 		serviceConfig = ServiceConfigLocalServiceUtil.getServiceConfig(dossier.getServiceConfigId());
 	} catch (Exception e){}	
-	
-	try {
-		serviceInfo = ServiceInfoLocalServiceUtil.getServiceInfo(dossier.getServiceInfoId());
-	} catch (Exception e){}
 	
 	try {
 		dossierTemplate = DossierTemplateLocalServiceUtil.getDossierTemplate(dossier.getDossierTemplateId());

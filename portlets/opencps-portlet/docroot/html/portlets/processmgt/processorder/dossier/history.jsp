@@ -103,7 +103,7 @@
 </aui:row>
 	<div class="ocps-title-detail-bot">
 		<label class="service-name-label">
-			<liferay-ui:message key="dossier-name"/> 
+			<liferay-ui:message key="dossier-service-name"/> 
 		</label>
 		<p class="service-service-name"><%=serviceName%></p>
 	</div>

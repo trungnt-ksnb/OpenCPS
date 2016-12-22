@@ -335,7 +335,7 @@
 							<div class="span6">
 							
 								<%=Validator.isNotNull(dossierFile.getModifiedDate()) ? 
-										DateTimeUtil.convertDateToString(dossierFile.getModifiedDate() , DateTimeUtil._VN_DATE_FORMAT): StringPool.DASH %>
+										DateTimeUtil.convertDateToString(dossierFile.getModifiedDate() , DateTimeUtil._VN_DATE_TIME_FORMAT): StringPool.DASH %>
 							
 							</div>
 						</div>

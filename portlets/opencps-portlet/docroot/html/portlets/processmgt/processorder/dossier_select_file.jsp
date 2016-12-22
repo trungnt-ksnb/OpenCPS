@@ -246,7 +246,7 @@
 					row.addText(dossierFile.getDossierFileNo());
 							
 					// dossier file no column
-					row.addText(DateTimeUtil.convertDateToString(dossierFile.getModifiedDate(), DateTimeUtil._VN_DATE_FORMAT));
+					row.addText(DateTimeUtil.convertDateToString(dossierFile.getModifiedDate(), DateTimeUtil._VN_DATE_TIME_FORMAT));
 					
 					// dossier display name column
 					row.addText(dossierFile.getDisplayName());
