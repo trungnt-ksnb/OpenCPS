@@ -17,7 +17,12 @@
 
 package org.opencps.util;
 
+import java.util.Date;
+
 import javax.portlet.PortletPreferences;
+
+import org.opencps.accountmgt.model.Business;
+import org.opencps.accountmgt.model.Citizen;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -36,6 +41,7 @@ import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.TicketLocalServiceUtil;
 import com.liferay.portal.util.SubscriptionSender;
+import com.liferay.util.ContentUtil;
 import com.liferay.util.PwdGenerator;
 
 /**
@@ -44,10 +50,9 @@ import com.liferay.util.PwdGenerator;
 public class MessageBusUtil {
 
 	public static void sendEmailAddressVerification(
-	    String uuid, User user, String emailAddress, String type,
-	    ServiceContext serviceContext)
+	    String uuid, User user, String emailAddress, String type, String emailConfigStep,
+	    String emailConfirmToAdmin, ServiceContext serviceContext)
 	    throws PortalException, SystemException {
-
 		if (user
 		    .isEmailAddressVerified() && StringUtil
 		        .equalsIgnoreCase(emailAddress, user
@@ -69,7 +74,7 @@ public class MessageBusUtil {
 		    .getPortalURL() + "/opencps-portlet/verify/email?token=" + uuid +
 		    "&ticketKey=" + ticket
 		        .getKey() +
-		    "&type=" + type;
+		    "&type=" + type + "&emailConfigStep=" + emailConfigStep + "&emailConfirmToAdmin="+emailConfirmToAdmin;
 
 		long plid = serviceContext
 		    .getPlid();
@@ -147,7 +152,7 @@ public class MessageBusUtil {
 		        .getUserId());
 
 		subscriptionSender
-		    .addRuntimeSubscribers(toAddress, toName);
+		    .addRuntimeSubscribers(toAddress, null);
 
 		subscriptionSender
 		    .flushNotificationsAsync();
@@ -226,7 +231,7 @@ public class MessageBusUtil {
 		        .getUserId());
 
 		subscriptionSender
-		    .addRuntimeSubscribers(toAddress, toName);
+		    .addRuntimeSubscribers(toAddress, null);
 
 		subscriptionSender
 		    .flushNotificationsAsync();
@@ -294,10 +299,97 @@ public class MessageBusUtil {
 		        .getUserId());
 
 		subscriptionSender
-		    .addRuntimeSubscribers(toAddress, toName);
+		    .addRuntimeSubscribers(toAddress, null);
 
 		subscriptionSender
 		    .flushNotificationsAsync();
 	}
 
+	public static void sendEmailConfirmToAdmin(String uuid, User user,
+			String emailAddress, String emailConfirmToAdmin, Business business,
+			Citizen citizen, ServiceContext serviceContext) throws PortalException,
+			SystemException {
+		
+		System.out.println("EMAIL ADMIN --------------**************************" + emailConfirmToAdmin);
+		
+		String emailAdmins[] = null;
+		
+		String telNo = StringPool.BLANK;
+		
+		Date createDate = new Date();
+		
+		if(Validator.isNotNull(business)){
+			createDate = business.getCreateDate();
+			telNo = business.getTelNo();
+		}
+		
+		if(Validator.isNotNull(citizen)){
+			createDate = citizen.getCreateDate();
+			telNo = citizen.getTelNo();
+		}
+		
+		if (Validator.isNotNull(emailConfirmToAdmin)) {
+			
+			emailAdmins = emailConfirmToAdmin.split(";");
+			
+			for (int i = 0; i < emailAdmins.length; i++) {
+
+				if (Validator.isEmailAddress(emailAdmins[i])) {
+
+					String fromName = PrefsPropsUtil.getString(
+							user.getCompanyId(),
+							PropsKeys.ADMIN_EMAIL_FROM_NAME);
+
+					String fromAddress = PrefsPropsUtil.getString(
+							user.getCompanyId(),
+							PropsKeys.ADMIN_EMAIL_FROM_ADDRESS);
+
+					String toName = user.getFullName();
+
+					String toAddress = emailAdmins[i];
+
+					PortletPreferences preferences = PrefsPropsUtil
+							.getPreferences(serviceContext.getCompanyId(), true);
+
+					String subject = GetterUtil
+							.getString(preferences.getValue(
+									"EMAIL_CONFIRM_TO_ADMIN_SUBJECT",
+									StringPool.BLANK));
+
+					String body = GetterUtil.getString(preferences.getValue(
+							"EMAIL_CONFIRM_TO_ADMIN_BODY", StringPool.BLANK));
+
+					SubscriptionSender subscriptionSender = new SubscriptionSender();
+
+					subscriptionSender.setBody(body);
+
+					subscriptionSender.setCompanyId(user.getCompanyId());
+
+					subscriptionSender.setContextAttributes("[$TIME_REGISTER$]",
+							createDate, "[$EMAIL_REGISTER$]",
+							emailAddress, "[$PHONE_NUMBER$]",
+							telNo, "[$HO_TEN_NGUOI_DK$]", toName,
+							"[$USER_ID$]", user.getUserId());
+
+					subscriptionSender.setFrom(fromAddress, fromName);
+
+					subscriptionSender.setMailId("user", user.getUserId(),
+							System.currentTimeMillis(),
+							PwdGenerator.getPassword());
+
+					subscriptionSender.setHtmlFormat(true);
+
+					subscriptionSender.setServiceContext(serviceContext);
+
+					subscriptionSender.setSubject(subject);
+
+					subscriptionSender.setUserId(user.getUserId());
+
+					subscriptionSender.addRuntimeSubscribers(toAddress, null);
+
+					subscriptionSender.flushNotificationsAsync();
+				}
+			}
+		}
+	}
 }

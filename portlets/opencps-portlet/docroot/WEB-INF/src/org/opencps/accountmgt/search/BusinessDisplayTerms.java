@@ -35,6 +35,10 @@ public class BusinessDisplayTerms extends DisplayTerms{
 	public static final String RE_PASSWORD = "rePass";
 	public static final String BUSINESS_DOMAIN = "businessDomains";
 	public static final String BUSINESS_IDNUMBER = "idNumber";
+	public static final String BUSINESS_DATE_OF_IDNUMBER = "dateOfIdNumber";
+	public static final String DATE_DAY = "dateDay";
+	public static final String DATE_MONTH = "dateMonth";
+	public static final String DATE_YEAR = "dateYear";
 	public static final String BUSINESS_BUSINESSTYPE = "businessType";
 	public static final String BUSINESS_SHORTNAME = "shortName";
 	public static final String BUSINESS_ENNAME = "enName";
@@ -102,7 +106,7 @@ public class BusinessDisplayTerms extends DisplayTerms{
 		mappingOrganizationId = ParamUtil.getLong(request,
 			BUSINESS_MAPPINGORGANIZATIONID);
 		
-		accountStatus = ParamUtil.getInteger(request, BUSINESS_ACCOUNTSTATUS);
+		accountStatus = ParamUtil.getInteger(request, BUSINESS_ACCOUNTSTATUS, -1 );
 		
 	}
 	

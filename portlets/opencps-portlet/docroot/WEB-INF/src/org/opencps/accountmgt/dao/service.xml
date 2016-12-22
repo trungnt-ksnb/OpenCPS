@@ -90,6 +90,9 @@
 			<finder-column name="fullName" comparator="LIKE" />
 			<finder-column name="accountStatus"/>
 		</finder>
+		<finder return-type="Citizen" name="PersonalId">
+			<finder-column name="personalId"></finder-column>
+		</finder>
 		<reference entity="User" package-path="com.liferay.portal" />
 		
 	</entity>
@@ -117,6 +120,7 @@
 		<column name="shortName" type="String" />
 		<column name="businessType" type="String" />
 		<column name="idNumber" type="String"/>
+		<column name="dateOfIdNumber" type="Date"/>
 		<column name="address" type="String" />
 		<column name="cityCode" type="String" />
 		<column name="districtCode" type="String" />
@@ -182,18 +186,24 @@
         <finder name="UUID" return-type="Business">
             <finder-column name="uuid"></finder-column>
         </finder>
-		
+		 <finder name="mappingOrganizationId" return-type="Business">
+            <finder-column name="mappingOrganizationId"></finder-column>
+        </finder>
+        <finder return-type="Business" name="IdNumber">
+			<finder-column name="idNumber"></finder-column>
+		</finder>
 		<reference package-path="com.liferay.portal" entity="Organization" />
 		<reference package-path="com.liferay.portal" entity="User" />
 	</entity>
 
 	<entity name="BusinessDomain" local-service="true" remote-service="true"
 		table="opencps_acc_businessdomain">
-
+		
+		<column name="domainId" type="long" primary="true" />
 		<!-- PK fields -->
 
-		<column name="businessId" type="long" primary="true" />
-		<column name="businessDomainId" type="String" primary="false" />
+		<column name="businessId" type="long"/>
+		<column name="businessDomainCode" type="String" />
 
 		<!-- Finder methods -->
 		<finder name="BusinessId" return-type="Collection">
@@ -201,7 +211,7 @@
 		</finder>
 		
 		<finder name="BusinessDomain" return-type="Collection">
-			<finder-column name="businessDomainId" />
+			<finder-column name="businessDomainCode" />
 		</finder>
 	</entity>
 
@@ -271,5 +281,12 @@
 		<exception>InvalidFileUpload</exception>
 		<exception>OutOfSizeFileUpload</exception>
 		<exception>FileTypeFail</exception>
+        <exception>NoSuchAccount</exception>
+        <exception>NoSuchAccountType</exception>
+        <exception>NoSuchAccountFolder</exception>
+        <exception>NoSuchAccountOwnUserId</exception>
+        <exception>NoSuchAccountOwnOrgId</exception>
+        <exception>DuplicateCitizenPersonalId</exception>
+        <exception>DuplicateBusinessIdNumber</exception>
 	</exceptions>
 </service-builder>

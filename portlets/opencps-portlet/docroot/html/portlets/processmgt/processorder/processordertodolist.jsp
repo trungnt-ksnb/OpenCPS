@@ -1,3 +1,4 @@
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -16,3 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 %>
+
+<%@ include file="init.jsp"%>
+
+<liferay-util:include page='<%=templatePath + "toptabs.jsp" %>' servletContext="<%=application %>" />
+
+
+<liferay-util:include page='<%=templatePath + "display/todolist/" + todolistDisplayStyle + ".jsp" %>' servletContext="<%=application %>" />

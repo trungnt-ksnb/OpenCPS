@@ -18,6 +18,7 @@
 %>
 <%@page import="org.opencps.usermgt.search.EmployeeDisplayTerm"%>
 <%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
+<%@page import="org.opencps.usermgt.search.WorkingUnitDisplayTerms"%>
 <%@page import="javax.portlet.PortletURL"%>
 <%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
 <%@page import="com.liferay.portal.kernel.log.Log"%>
@@ -35,7 +36,6 @@
 <%
 	String tabs1 = ParamUtil.getString(request, "tabs1", UserMgtUtil.TOP_TABS_WORKINGUNIT);
 	PortletURL searchURL = renderResponse.createRenderURL();
-	
 	long workingUnitId = ParamUtil.getLong(request, EmployeeDisplayTerm.WORKING_UNIT_ID, 0L);
 	
 	List<WorkingUnit> workingUnits = new ArrayList<WorkingUnit>();
@@ -49,7 +49,7 @@
 	
 	request.setAttribute(EmployeeDisplayTerm.WORKING_UNIT_ID, workingUnitId);
 %>
-<aui:nav-bar cssClass="custom-toolbar">
+<aui:nav-bar cssClass="opencps-toolbar custom-toolbar">
 	<aui:nav id="toolbarContainer" cssClass="nav-display-style-buttons pull-left" >
 		<c:choose>
 			<c:when test="<%= tabs1.equals(UserMgtUtil.TOP_TABS_WORKINGUNIT)%>">
@@ -58,77 +58,124 @@
 					<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 				</portlet:renderURL>
 				<c:if test="<%=WorkingUnitPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_WORKINGUNIT) %>">
-					<aui:nav-item 
+					<%-- <aui:nav-item 
 						id="add-workingunit" 
 						label="add-workingunit" 
 						iconCssClass="icon-plus"  
 						href="<%=editWorkingUnitURL %>"
-					/>
+					/> --%>
+					<aui:button icon="icon-plus" href="<%=editWorkingUnitURL %>" cssClass="action-button" value="add-workingunit"/>
 				</c:if>
 			</c:when>
 			
-			<c:when test="<%= tabs1.equals(UserMgtUtil.TOP_TABS_EMPLOYEE)%>">
+			<c:when test="<%= tabs1.contentEquals(UserMgtUtil.TOP_TABS_EMPLOYEE)%>">
 				
 				<portlet:renderURL var="editEmployeeURL">
 					<portlet:param name="mvcPath" value='<%= templatePath + "edit_employee.jsp" %>'/>
 					<portlet:param name="backURL" value="<%=currentURL %>"/>
 				</portlet:renderURL>
 				
-				<aui:nav-item 
+				<%-- <aui:nav-item 
 					id="add-employee" 
 					label="add-employee" 
 					iconCssClass="icon-plus"  
 					href="<%=editEmployeeURL %>"
-				/>
-					
+				/> --%>
+				<aui:button icon="icon-plus" href="<%=editEmployeeURL %>" cssClass="action-button" value="add-employee"/>
 			</c:when>
 			
 		</c:choose>
 	</aui:nav>
 	
-	<c:if test="<%= tabs1.equals(UserMgtUtil.TOP_TABS_EMPLOYEE)%>">
 		<aui:nav-bar-search cssClass="pull-right">
 			<div class="form-search">
-				<%
-					searchURL.setParameter("mvcPath", templatePath + "employees.jsp");
-					searchURL.setParameter("tabs1", UserMgtUtil.TOP_TABS_EMPLOYEE);
-				%>
-				<aui:form action="<%= searchURL %>" method="post" name="fm">
-					<aui:row>
-						<aui:col width="50">
-					
-							<%
-								searchURL.setParameter(EmployeeDisplayTerm.WORKING_UNIT_ID, String.valueOf(workingUnitId));
-							%>
-							<aui:select name="<%=EmployeeDisplayTerm.WORKING_UNIT_ID %>" label="<%=StringPool.BLANK %>">
-								<aui:option value="0"></aui:option>
-								<%
-									if(workingUnits != null){
-										for(WorkingUnit workingUnit : workingUnits){
-											%>
-												<aui:option value="<%=workingUnit.getWorkingunitId() %>" selected="<%=workingUnitId == workingUnit.getWorkingunitId()%>">
-													<%=workingUnit.getName() %>
-												</aui:option>
-											<%
-										}
-									}
-								%>
-							</aui:select> 	
-						</aui:col>
-						
-						<aui:col width="50">
-							<liferay-ui:input-search 
-								id="keywords1" 
-								name="keywords" 
-								placeholder='<%= LanguageUtil.get(locale, "keyword") %>' 
-							/>
-						</aui:col>
-					</aui:row>
+				<c:choose>
+					<c:when test="<%= tabs1.contentEquals(UserMgtUtil.TOP_TABS_EMPLOYEE)%>">
+						<%
+							searchURL.setParameter("mvcPath", templatePath + "employees.jsp");
+							searchURL.setParameter("tabs1", UserMgtUtil.TOP_TABS_EMPLOYEE);
+						%>
+					</c:when>
+					<c:when test="<%=tabs1.contentEquals(UserMgtUtil.TOP_TABS_WORKINGUNIT) %>">
+						<%
+	                        searchURL.setParameter("mvcPath", templatePath + "workingunits.jsp");
+	                        searchURL.setParameter("tabs1", UserMgtUtil.TOP_TABS_WORKINGUNIT);
+	                    %>
+					</c:when>
+				</c:choose>
+			   
+			<aui:form action="<%= searchURL %>" method="post" name="fm">
+			<c:choose>
+			     <c:when test="<%= tabs1.contentEquals(UserMgtUtil.TOP_TABS_EMPLOYEE)%>">
+	                    <aui:row>
+	                        <aui:col width="50">
+	                            <%
+	                                searchURL.setParameter(EmployeeDisplayTerm.WORKING_UNIT_ID, String.valueOf(workingUnitId));
+	                            %>
+	                            <aui:select name="<%=EmployeeDisplayTerm.WORKING_UNIT_ID %>" label="<%=StringPool.BLANK %>">
+	                                <aui:option value="0"></aui:option>
+	                                <%
+	                                    if(workingUnits != null){
+	                                        for(WorkingUnit workingUnit : workingUnits){
+	                                            %>
+	                                                <aui:option value="<%=workingUnit.getWorkingunitId() %>" selected="<%=workingUnitId == workingUnit.getWorkingunitId()%>">
+	                                                    <%=workingUnit.getName() %>
+	                                                </aui:option>
+	                                            <%
+	                                        }
+	                                    }
+	                                %>
+	                            </aui:select>   
+	                        </aui:col>
+	                        
+	                        <aui:col width="50" cssClass="search-input input-keyword">
+	                            <liferay-ui:input-search 
+	                                id="keywords1" 
+	                                name="keywords" 
+	                                title='<%= LanguageUtil.get(locale, "keywords") %>' 
+	                                placeholder='<%= LanguageUtil.get(locale, "keyword") %>' 
+	                            />
+	                        </aui:col>
+	                    </aui:row>
+			     </c:when>
+			    
+			     <c:when test="<%=tabs1.contentEquals(UserMgtUtil.TOP_TABS_WORKINGUNIT) %>">
+                      <aui:row>
+                        <aui:col cssClass="span4">
+                            <aui:select name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER %>" label="<%=StringPool.BLANK %>"
+                            	onChange='<%=renderResponse.getNamespace() + "searchByIsemployee(this)"%>'
+                            >
+	                             <aui:option value='<%= "fillall" %>'>
+                                    <liferay-ui:message key="all" />
+                                </aui:option>
+	                            <aui:option value='<%= "isEmploy" %>'>
+	                                <liferay-ui:message key="fill-by-is-employer" />
+	                            </aui:option>
+	                             <aui:option value='<%= "isNotEmploy" %>'>
+	                                <liferay-ui:message key="fill-by-is-not-employer" />
+	                            </aui:option>
+	                      </aui:select>
+                        </aui:col>
+                        </aui:row>
+                        <%-- <aui:button type="submit" name="fill" value="fill"/> --%>
+			     </c:when>
+			</c:choose>
 				</aui:form>
 			</div>
 		</aui:nav-bar-search>
-	</c:if>
 </aui:nav-bar>
+<aui:script use="liferay-util-list-fields,liferay-portlet-url">
+	Liferay.provide(window, '<portlet:namespace/>searchByIsemployee', function(e) {
+		
+		var A = AUI();
+		
+		var instance = A.one(e);
+		
+		var processStepId = instance.attr(instance.val());
+		
+		submitForm(document.<portlet:namespace />fm);
+	});
+</aui:script>
 <%!
 	private Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.toolbar.jsp");
 %>

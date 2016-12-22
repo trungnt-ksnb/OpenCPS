@@ -1,0 +1,42 @@
+.opencps-theme .lfr-search-container {
+	margin-top: 0;
+}
+.taglib-page-iterator .pagination {
+    text-align: center;
+    margin: 0;
+}
+.taglib-page-iterator .pagination ul {
+    display: inline-block;
+    margin-bottom: 0;
+    margin-left: 0;
+    border-radius: 4px;
+    float: none;
+    box-shadow: none;
+}
+.taglib-page-iterator .pagination ul > li {
+    display: inline;
+}
+.taglib-page-iterator .pagination ul > li > a:hover, 
+.taglib-page-iterator .pagination ul > li > a:focus, 
+.taglib-page-iterator .pagination ul > .active > a, 
+.taglib-page-iterator .pagination ul > .active > span {
+    border-radius: 20px;
+    background-color: #0090ff;
+    color: white;
+}
+.taglib-page-iterator .pagination ul > li > a, 
+.taglib-page-iterator .pagination ul > li > span {
+    border: 0;
+    padding: 4px 11px;
+    color:  #333;
+}
+.taglib-search-iterator-page-iterator-top > .taglib-page-iterator .pager {
+	display: none;
+	box-shadow: none;
+}
+.taglib-search-iterator-page-iterator-top {
+	margin-bottom: 0;
+}
+.taglib-page-iterator > .search-results {
+	display: none;
+}

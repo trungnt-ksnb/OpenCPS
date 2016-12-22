@@ -24,8 +24,8 @@
 <%
 	DossierTemplate dossierTemplate = (DossierTemplate) request.getAttribute(WebKeys.DOSSIER_TEMPLATE_ENTRY);
 	long dossierTemplateId = dossierTemplate != null ? dossierTemplate.getDossierTemplateId() : 0L;
+	String backURL = ParamUtil.getString(request, "redirectURL");
 %>
-
 <aui:model-context bean="<%=dossierTemplate%>" model="<%=DossierTemplate.class%>" />
 <aui:input 
 	type="hidden" 
@@ -35,7 +35,7 @@
 <aui:row>
 	<aui:input 
 		name="<%=DossierTemplateDisplayTerms.DOSSIERTEMPLATE_TEMPLATENO %>"
-		cssClass="input50"
+		cssClass="input100"
 	>
 		<aui:validator name="required" />
 		<aui:validator name="maxLength">100</aui:validator>
@@ -45,7 +45,7 @@
 <aui:row>
 	<aui:input 
 		name="<%=DossierTemplateDisplayTerms.DOSSIERTEMPLATE_TEMPLATENAME %>"
-		cssClass="input95"
+		cssClass="input100"
 	>
 		<aui:validator name="required" />
 		<aui:validator name="maxLength">255</aui:validator>
@@ -57,8 +57,7 @@
 	<aui:input 
 		type="textarea"
 		name="<%=DossierTemplateDisplayTerms.DOSSIERTEMPLATE_DESCRIPTION %>"
-		cssClass="input95"
+		cssClass="input100"
 	>
-		<aui:validator name="required" />
 	</aui:input>
 </aui:row>

@@ -1,0 +1,11 @@
+/* Tab 1 */
+#_18_WAR_opencpsportlet_dossieroverview table td:first-child {
+	width: 150px;
+}
+/* Tab 4 */
+.portlet-boundary_18_WAR_opencpsportlet_ .ocps-title-detail label {
+	display: inline-block;
+	margin-right: 10px;
+	vertical-align: top;
+	font-family: 'Roboto-Bold'
+} 

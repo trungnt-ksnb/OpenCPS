@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.util.WebKeys"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -17,18 +18,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-<%@ include file="../init.jsp"%>
-<%@page import="org.opencps.util.WebKeys"%>
-<%@page import="org.opencps.usermgt.model.WorkingUnit"%>
-<%@page import="org.opencps.util.PortletPropsValues"%>
-<%@page import="org.opencps.util.PortletUtil"%>
-<%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
-<%@page import="org.opencps.usermgt.model.JobPos"%>
-<%@page import="com.liferay.portal.kernel.log.Log"%>
-<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
-<%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
+
+<%@page import="com.liferay.portal.kernel.util.HtmlUtil"%>
+<%@page import="org.opencps.usermgt.util.UserMgtUtil"%>
 <%@page import="org.opencps.util.MessageKeys"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
+<%@page import="org.opencps.usermgt.search.JobPosDisplayTerms"%>
+<%@page import="org.opencps.usermgt.service.JobPosLocalServiceUtil"%>
+<%@page import="org.opencps.usermgt.model.JobPos"%>
+<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.log.Log"%>
+
+<%@ include file="../init.jsp"%>
 
 <%
 	String redirectURL = ParamUtil.getString(request, "redirectURL");
@@ -39,53 +40,114 @@
 	} catch(Exception e) {
 		_log.error(e);
 	}
+	
+	String [] updateJobPosSections = {"jobpos","role_jobpos"};
+	String [][] updateCategorySections = {updateJobPosSections};
+	
+	String message = LanguageUtil.get(portletConfig ,themeDisplay.getLocale(), "are-you-sure-to-update");
 %>
-
-<liferay-ui:header
+<%-- <liferay-ui:header
 	backURL="<%= redirectURL %>"
 	title='<%= (jobPos == null) ? "add-jobpos" : "update-jobpos" %>'
-/>
+/> --%>
 
 <liferay-ui:error 
 	key="<%=MessageKeys.USERMGT_JOBPOS_UPDATE_ERROR %>" 
 	message="<%=LanguageUtil.get(pageContext, 
 		MessageKeys.USERMGT_JOBPOS_UPDATE_ERROR) %>"
 />
+
+<liferay-ui:success 
+	key="<%= MessageKeys.USERMGT_JOBPOS_UPDATE_SUCESS %>"
+	message="<%= MessageKeys.USERMGT_JOBPOS_UPDATE_SUCESS%>"
+/>
 <portlet:actionURL var="editJobPosURL" name="updateJobPos">
 	<portlet:param name="redirectURL" value="<%=redirectURL %>"/>
 	<portlet:param name="returnURL" value="<%=currentURL %>"/>
 </portlet:actionURL>
 
-<aui:form action="<%=editJobPosURL.toString() %>" method="post" 
-	 name="fm">
-	<aui:model-context bean="<%=jobPos %>" model="<%=JobPos.class %>" />
-	<aui:input name="<%=JobPosDisplayTerms.TITLE_JOBPOS %>">
-		<aui:validator name="required"></aui:validator>
-	</aui:input>
-	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" type="hidden" />
-	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" type="hidden" />
-	<aui:select name="<%=JobPosDisplayTerms.LEADER_JOBPOS %>">
-		<%
-			for(int j = 0 ; j < PortletPropsValues.USERMGT_JOBPOS_LEADER.length; j++){
-				%>
-					<aui:option value="<%=PortletPropsValues.USERMGT_JOBPOS_LEADER[j] %>">
-						<%=PortletUtil.getLeaderLabel(
-							PortletPropsValues.USERMGT_JOBPOS_LEADER[j], locale) %>
-					</aui:option>
-				<%
-			}
-		%>
-	</aui:select>	
-	<aui:button type="submit" name="submit"></aui:button>
+
+<liferay-util:buffer var="htmlTop">
+	<c:if test="<%= jobPos != null %>">
+        <div class="form-navigator-topper edit-jobpos">
+            <div class="form-navigator-container">
+                <i aria-hidden="true" class="fa topper edit-jobpos"></i>
+                <span class="form-navigator-topper-name"><%= HtmlUtil.escape(jobPos.getTitle()) %></span>
+            </div>
+        </div>
+    </c:if> 
+</liferay-util:buffer>
+
+<liferay-util:buffer var="htmlBot">
+	<div class="button-holder ">
+		<aui:button name="submitbtn" value="submit" cssClass="btn-primary"/>
+		<aui:button name="cancel" value="cancel" href="<%=redirectURL %>" cssClass="btn-cancel"/>	
+	</div>
+</liferay-util:buffer>
+
+<aui:form name="fm2" 
+	method="post" 
+	action="<%=editJobPosURL.toString() %>">
+	<div class="opencps-form-navigator-container">
+		<liferay-ui:form-navigator 
+			backURL="<%= redirectURL %>"
+			categoryNames= "<%= UserMgtUtil._JOBPOS_CATEGORY_NAMES %>"	
+			categorySections="<%=updateCategorySections %>" 
+			htmlBottom="<%= htmlBot %>"
+			htmlTop="<%= htmlTop %>"
+			jspPath='<%=templatePath + "jobpos/" %>'
+			showButtons="false"
+			displayStyle="left-navigator"
+			>	
+		</liferay-ui:form-navigator>
+	</div>
+	<aui:input name="<%=JobPosDisplayTerms.ID_JOBPOS %>" 
+		type="hidden" value="<%=String.valueOf(jobPosId) %>"/>
+		
 </aui:form>
-<aui:script>
-	AUI().ready(function(A) {
-		var putCurValueForSelect = A.one('#<portlet:namespace/><%=JobPosDisplayTerms.LEADER_JOBPOS%>');
-		if(putCurValueForSelect) {
-			putCurValueForSelect.setValue('<%=jobPos.getLeader()%>');
+
+<aui:script use='liferay-util-window'>
+	AUI().use(function(A) {
+		var message = '<%=message%>';
+		var btnChoose = A.one('#<portlet:namespace />submitbtn');
+		var btnChooseCancel = A.one('#<portlet:namespace />cancel');
+		if(btnChooseCancel) {
+			btnChooseCancel.on('click', function() {
+				closeDialog('<portlet:namespace/>updateJobPos', '<%=WebKeys.USER_MGT_PORTLET%>_');
+			});
+		}
+		
+		if(btnChoose) {
+			btnChoose.on('click',function(){
+				//make a confirm box
+				var r = confirm(message);
+				//check confirm
+				if(r == true) {
+					<portlet:namespace/>submitItemForm();
+				} else {
+					closeDialog('<portlet:namespace/>updateJobPos', '<%=WebKeys.USER_MGT_PORTLET%>_');
+				}
+				
+			});
 		}
 	});
+	
+    Liferay.provide(window,'<portlet:namespace/>submitItemForm',
+         function() {
+          var A = AUI();
+          A.io.request('<%=editJobPosURL %>',{
+              method: 'POST',
+              form: { id: '<portlet:namespace />fm2' },
+              on: {
+                  success: function(){
+                	  closeDialog('<portlet:namespace/>updateJobPos', '<%=WebKeys.USER_MGT_PORTLET%>_');
+                  }
+             }
+        });
+  	},['aui-base','aui-io','aui-node']);
+    
 </aui:script>
+
 <%!
 	private Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.update_jobpos.jsp");
 %>

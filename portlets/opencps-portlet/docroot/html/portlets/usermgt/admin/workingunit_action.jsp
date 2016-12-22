@@ -33,7 +33,7 @@
 	String redirectURL = currentURL;
 %>
 
-<liferay-ui:icon-menu>
+<%-- <liferay-ui:icon-menu> --%>
 	<portlet:renderURL var="updateWorkingUnit">
 		<portlet:param name="mvcPath"
 			value="/html/portlets/usermgt/admin/edit_workingunit.jsp" />
@@ -41,15 +41,27 @@
 			name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID%>"
 			value="<%=String.valueOf(workingUnit.getWorkingunitId())%>" 
 		/>
-		
 		<portlet:param name="redirectURL" value="<%=redirectURL%>" />
-		
 	</portlet:renderURL>
-	<c:if test="<%=WorkingUnitPermission.contains(permissionChecker, scopeGroupId, ActionKeys.UPDATE) %>">
-		<liferay-ui:icon image="edit" message="edit"
-		url="<%=updateWorkingUnit.toString()%>" />
-	</c:if>
 	
+	<portlet:renderURL var="updateWorkingUnitChirl">
+        <portlet:param name="mvcPath"
+            value="/html/portlets/usermgt/admin/edit_workingunit.jsp" />
+        <portlet:param 
+            name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ID%>"
+            value="<%=String.valueOf(workingUnit.getWorkingunitId())%>" 
+        />
+        <portlet:param name="isAddChild" value="isAddChild"/>
+        <portlet:param name="redirectURL" value="<%=redirectURL%>" />
+    </portlet:renderURL>
+	
+	<c:if test="<%=WorkingUnitPermission.contains(permissionChecker, scopeGroupId, ActionKeys.UPDATE) %>">
+		<liferay-ui:icon cssClass="search-container-action fa edit" image="edit" message="edit"
+		url="<%=updateWorkingUnit.toString()%>" />
+		
+		<liferay-ui:icon cssClass="search-container-action fa add" image="add" message="add-child"
+        url="<%=updateWorkingUnitChirl.toString()%>" />
+	</c:if>
 
 	<portlet:actionURL var="deleteWorkingUnitURL" name="deleteWorkingUnit">
 		
@@ -63,11 +75,11 @@
 	</portlet:actionURL>
 	<c:if test="<%=WorkingUnitPermission.contains(permissionChecker, scopeGroupId, ActionKeys.DELETE) %>">
 		
-		<liferay-ui:icon image="delete" message="delete"
+		<liferay-ui:icon cssClass="search-container-action fa delete" image="delete" message="delete"
 			url="<%=deleteWorkingUnitURL.toString()%>" />
 		</c:if>
 	
-</liferay-ui:icon-menu>
+<%-- </liferay-ui:icon-menu> --%>
 
 <%!
 	private Log _log = LogFactoryUtil.getLog("html.portlets.usermgt.admin.workingunit_action.jsp");

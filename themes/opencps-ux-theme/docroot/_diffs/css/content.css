@@ -1,0 +1,220 @@
+/* ---------------------- Container  ------------*/
+
+.opencps-theme.ux #wrapper.home_bg {
+    position: relative;
+    padding: 0;
+}
+.opencps-theme.ux #wrapper {
+	padding: 30px 0 5px;
+	overflow-x: hidden;
+}
+
+.opencps-theme.ux #column-1.span3, 
+.opencps-theme.ux #column-1.span4 {
+	width: 270px;
+	float: left;
+}
+.opencps-theme.ux #column-2.span8, 
+.opencps-theme.ux #column-2.span9 {
+	width: 870px;
+	margin-left: 30px;
+	float: left;
+}
+
+.opencps-theme.ux .portlet-content {
+	padding: 12px 0 10px;
+}
+
+/*---------- Homepage ----------*/
+.home_bg .container {
+	width: 100%;
+}
+.home_bg:before {
+	content: "";
+	position: absolute;
+	background: transparent url("../images/custom/bg_home.jpg") center center no-repeat;
+	background-size: cover;
+	top: 0;
+	left: 0;
+	height: 525px;
+	width: 100%;
+}
+
+/*--- Search ---*/
+.home_bg .screen {
+	height: 525px;
+	position: relative;
+	text-align: center;
+}
+.opencps-theme.ux .container .home-search-sologan {
+	overflow: hidden;
+}
+.opencps-theme.ux .container .home-search-sologan h2 {
+	color: #fff;
+    font-family: "Roboto-Black";
+    font-size: 42px;
+    font-weight: normal;
+    text-shadow: 2px 2px 10px #000;
+    line-height: normal;
+    margin-top: 175px;
+}
+.opencps-theme.ux .container .home-search-sologan p {
+	color: #fff;
+    font-size: 21px;
+    text-shadow: 2px 2px 10px #000;
+    margin-bottom: 20px;
+}
+.home_bg .home-search .navbar-inner {
+	border: 0;
+	background: transparent none;
+	min-height: auto;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	padding: 0;
+}
+.home_bg .home-search .navbar-search, 
+.home_bg .home-search form {
+	margin: 0;
+	width: 100%;
+}
+.home_bg .home-search .toolbar_search_input > div > div > label {
+	display: none;
+}
+.home_bg .home-search .home-bb-search {
+	width: 700px;
+	margin: auto;
+}
+.opencps-theme .home_bg .home-search .home-bb-search input {
+	width: 482px;
+	height: 60px;
+	border: 1px solid #e1e1e1;
+	box-shadow: none;
+	border-radius: 40px 0 0 40px;
+	padding: 0 30px;
+}
+.home_bg .home-search .home-bb-search .btn-group {
+	width: 127px;
+	height: 60px;
+}
+.home_bg .home-search .home-bb-search .dropdown-toggle {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #e1e1e1;
+	background: white none;
+	border-radius: 0;
+	font-family: 'Roboto-Medium';
+    font-size: 15px;
+    color: #444;
+}
+.home_bg .home-search .home-bb-search .dropdown-toggle .caret {
+	margin-left: 35px;
+}
+.home_bg .home-search .home-bb-search > .btn {
+	border-radius: 0 40px 40px 0;
+	background: #0074cd none;
+	width: 91px;
+	height: 60px;
+	border: 0;
+	position: relative;
+}
+.home_bg .home-search .home-bb-search > .btn:before {
+	content: "\f002";
+	font-family: FontAwesome;
+	color: white;
+	font-size: 24px;
+}
+.opencps-theme.ux .home_bg .opencps-toolbar .container > span:last-child {
+    display: block;
+}
+
+/*--- Sitemap ---*/
+.home_bg #column-2 {
+	height: 60px;
+	-webkit-box-shadow: 0px 2px 10px #ccc;
+	box-shadow: 0px 2px 10px #ccc;
+}
+.opencps-theme .home_bg .portlet-boundary_85_ {
+	overflow: hidden;
+	border-radius: 0;
+	border: 0;
+}
+.opencps-theme .home_bg .portlet-boundary_85_ .portlet-body .sitemap-class {
+	width: 1170px;
+	margin: auto;
+}
+.opencps-theme .home_bg .portlet-boundary_85_ .portlet-body .sitemap-class li {
+	float: left;
+	font-family: 'Roboto-Medium';
+	padding: 0;
+    border-bottom: 0;
+}
+.opencps-theme .home_bg .portlet-boundary_85_ .portlet-body .sitemap-class li a {
+	line-height: 60px;
+	display: block;
+	padding: 0 34px;
+}
+.home_bg .sitemap-class li:hover a {
+	color: #0090ff
+}
+.opencps-theme .home_bg .portlet-boundary_85_ .sitemap-class li:first-child {
+	font-family: 'Roboto-Bold';
+	font-size: 17px;
+	text-transform: uppercase;
+	background: url("../images/custom/icon_helper.png") 16px 19px no-repeat;
+	color: #0090ff;
+}
+.home_bg .sitemap-class li:nth-child(2) {
+	background: url("../images/custom/icon_dangky.png") 14px center no-repeat;
+}
+.home_bg .sitemap-class li:nth-child(2):hover {
+	background: url("../images/custom/icon_dangky_hover.png") 14px center no-repeat;
+}
+.home_bg .sitemap-class li:nth-child(3) {
+	background: url("../images/custom/icon_dangnhap.png") 11px center no-repeat;
+}
+.home_bg .sitemap-class li:nth-child(3):hover {
+	background: url("../images/custom/icon_dangnhap_hover.png") 11px center no-repeat;
+}
+.home_bg .sitemap-class li:nth-child(4) {
+	background: url("../images/custom/icon_nophosott.png") 9px center no-repeat;
+}
+.home_bg .sitemap-class li:nth-child(4):hover {
+	background: url("../images/custom/icon_nophosott_hover.png") 9px center no-repeat;
+}
+.home_bg .sitemap-class li:nth-child(5) {
+	background: url("../images/custom/icon_tracuukq.png") 10px center no-repeat;
+}
+.home_bg .sitemap-class li:nth-child(5):hover {
+	background: url("../images/custom/icon_tracuukq_hover.png") 10px center no-repeat;
+}
+.home_bg .sitemap-class li:nth-child(6) {
+	background: url("../images/custom/icon_canboxulyhs.png") 10px center no-repeat;
+}
+.home_bg .sitemap-class li:nth-child(6):hover {
+	background: url("../images/custom/icon_canboxulyhs_hover.png") 10px center no-repeat;
+}
+
+/*--- VBPL ---*/
+.home_bg .other-content > div{
+	margin: auto;
+	width: 1170px;
+	padding: 0 15px;
+}
+.home_bg .other-content .portlet-title {
+	background: transparent url("../images/custom/icon_vanbanphapluat.png") no-repeat scroll 0 center;
+    color: #0090ff;
+    font-family: "Roboto-Bold";
+    font-size: 17px;
+    font-weight: normal;
+    margin-bottom: 5px;
+    padding-left: 20px;
+    text-transform: uppercase;
+    margin: 30px 0 10px;
+    text-align: left;
+}
+.home_bg .other-content .portlet-body {
+	padding: 0 10px;
+}
+.home_bg .other-content p {
+	line-height: normal;
+}

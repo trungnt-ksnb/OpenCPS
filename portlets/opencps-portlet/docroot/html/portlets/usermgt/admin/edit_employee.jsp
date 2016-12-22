@@ -1,3 +1,4 @@
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -30,12 +31,18 @@
 <%@page import="org.opencps.util.PortletUtil"%>
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="org.opencps.usermgt.model.Employee"%>
+<%@page import="org.opencps.usermgt.service.EmployeeLocalServiceUtil"%>
 <%@ include file="../init.jsp"%>
 
 
 <%
-	Employee employee = (Employee)request.getAttribute(WebKeys.EMPLOYEE_ENTRY);
-
+	long employeeId = ParamUtil.getLong(request, EmployeeDisplayTerm.EMPLOYEE_ID);
+	try {
+		employee = EmployeeLocalServiceUtil.getEmployee(employeeId);
+	} catch(Exception e) {
+		
+	}
+	
 	User mappingUser = (User)request.getAttribute(WebKeys.USER_MAPPING_ENTRY);
 	
 	String backURL = ParamUtil.getString(request, "backURL");
@@ -52,7 +59,6 @@
 	String[] employeeSections = new String[]{"general_info", "working_unit", "account_info"};
 	
 	String[][] categorySections = {employeeSections};
-
 %>
 
 <liferay-ui:header
@@ -123,15 +129,17 @@
 	<aui:input name="<%=EmployeeDisplayTerm.EMPLOYEE_ID %>" type="hidden" value="<%= employee != null ? employee.getEmployeeId() : 0L%>"/>
 	<aui:input name="<%=EmployeeDisplayTerm.GROUP_ID %>" type="hidden" value="<%= scopeGroupId%>"/>
 	<aui:input name="<%=EmployeeDisplayTerm.COMPANY_ID %>" type="hidden" value="<%= company.getCompanyId()%>"/>
-
-	<liferay-ui:form-navigator
-		backURL="<%= backURL %>"
-		categoryNames="<%= UserMgtUtil._EMPLOYESS_CATEGORY_NAMES %>"
-		categorySections="<%= categorySections %>"
-		htmlBottom="<%= htmlBottom %>"
-		htmlTop="<%= htmlTop %>"
-		jspPath='<%=templatePath + "employees/" %>'
-	/>
+	<div class="opencps-form-navigator-container radius8">
+		<liferay-ui:form-navigator
+			backURL="<%= backURL %>"
+			categoryNames="<%= UserMgtUtil._EMPLOYESS_CATEGORY_NAMES %>"
+			categorySections="<%= categorySections %>"
+			htmlBottom="<%= htmlBottom %>"
+			htmlTop="<%= htmlTop %>"
+			jspPath='<%=templatePath + "employees/" %>'
+			displayStyle="left-navigator"
+		/>
+	</div>
 </aui:form>
 
 <aui:script use="liferay-auto-fields">

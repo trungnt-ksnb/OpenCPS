@@ -13,11 +13,15 @@
 * GNU Affero General Public License for more details.
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>
+* 
+* 
+* 
 */
 
 package org.opencps.accountmgt.portlet;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -44,6 +48,7 @@ import org.opencps.accountmgt.service.CitizenLocalServiceUtil;
 import org.opencps.datamgt.model.DictItem;
 import org.opencps.datamgt.service.DictItemLocalServiceUtil;
 import org.opencps.usermgt.search.EmployeeDisplayTerm;
+import org.opencps.util.DateTimeUtil;
 import org.opencps.util.MessageBusUtil;
 import org.opencps.util.MessageKeys;
 import org.opencps.util.PortletConstants;
@@ -61,6 +66,7 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.util.PwdGenerator;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 /**
@@ -99,7 +105,7 @@ public class AccountMgtPortlet extends MVCPortlet {
 	public void deleteCitizen(
 	    ActionRequest actionRequest, ActionResponse actionResponse)
 	    throws IOException {
-
+		
 		long citizenId = ParamUtil
 		    .getLong(actionRequest, CitizenDisplayTerms.CITIZEN_ID, 0L);
 		String redirectURL = ParamUtil
@@ -137,17 +143,14 @@ public class AccountMgtPortlet extends MVCPortlet {
 		try {
 
 			if (citizenId > 0) {
-				Citizen citizen = CitizenLocalServiceUtil
-				    .fetchCitizen(citizenId);
+				
 				renderRequest
-				    .setAttribute(WebKeys.CITIZEN_ENTRY, citizen);
+				    .setAttribute(CitizenDisplayTerms.CITIZEN_ID, citizenId);
 			}
 
 			if (businessId > 0) {
-				Business business = BusinessLocalServiceUtil
-				    .fetchBusiness(businessId);
 				renderRequest
-				    .setAttribute(WebKeys.BUSINESS_ENTRY, business);
+				    .setAttribute(BusinessDisplayTerms.BUSINESS_BUSINESSID, businessId);
 			}
 
 			renderRequest
@@ -163,7 +166,7 @@ public class AccountMgtPortlet extends MVCPortlet {
 	}
 
 	public void updateStatus(
-	    ActionRequest actionRequest, ActionResponse actionResponse) {
+	    ActionRequest actionRequest, ActionResponse actionResponse) throws IOException {
 
 		long citizenId = ParamUtil
 		    .getLong(actionRequest, CitizenDisplayTerms.CITIZEN_ID, 0L);
@@ -175,7 +178,12 @@ public class AccountMgtPortlet extends MVCPortlet {
 		    .getInteger(actionRequest, "curAccountStatus", -1);
 
 		int accountStatus = -1;
-
+		
+		String password = PwdGenerator
+			    .getPassword();
+		
+		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
+		
 		try {
 			ServiceContext serviceContext = ServiceContextFactory
 			    .getInstance(actionRequest);
@@ -233,20 +241,20 @@ public class AccountMgtPortlet extends MVCPortlet {
 				}
 
 				mappingUser = UserLocalServiceUtil
-				    .getUser(mappingUserId);
-
+						.updatePassword(mappingUserId, password, password, false);
+				
 				if (mappingUser != null) {
-
-					MessageBusUtil
-					    .sendEmailWelcomeNewUser(mappingUser, serviceContext);
+					MessageBusUtil.sendEmailActiveAccount(mappingUser, password, serviceContext);
 				}
-
 			}
-
 		}
 		catch (Exception e) {
 			_log
 			    .error(e);
+		} finally {
+			if (Validator.isNotNull(redirectURL)) {
+				actionResponse.sendRedirect(redirectURL);
+			}
 		}
 
 	}
@@ -294,10 +302,10 @@ public class AccountMgtPortlet extends MVCPortlet {
 		try {
 			
 			AccountRegPortlet
-			    .ValidateCitizen(
+			    .validateCitizen(
 			        citizenId, StringPool.BLANK, StringPool.BLANK, address,
 			        StringPool.BLANK, telNo, 1, StringPool.BLANK, cityId, districtId, wardId
-			        ,PortletPropsValues.ACCOUNTMGT_FILE_TYPE[0]);
+			        , StringPool.BLANK);
 
 			ServiceContext serviceContext = ServiceContextFactory
 			    .getInstance(actionRequest);
@@ -328,7 +336,7 @@ public class AccountMgtPortlet extends MVCPortlet {
 				            .getItemName(serviceContext
 				                .getLocale(), true),
 				        telNo, isChangePassWord, newPass, rePass, serviceContext
-				            .getUserId(),
+				            .getScopeGroupId(),
 				        serviceContext);
 
 			}
@@ -365,6 +373,7 @@ public class AccountMgtPortlet extends MVCPortlet {
 				    .add(
 				        actionRequest,
 				        MessageKeys.DATAMGT_SYSTEM_EXCEPTION_OCCURRED);
+				_log.error(e);
 			}
 
 			if (Validator
@@ -399,8 +408,8 @@ public class AccountMgtPortlet extends MVCPortlet {
 		    .getString(actionRequest, BusinessDisplayTerms.BUSINESS_IDNUMBER);
 		String shortName = ParamUtil
 		    .getString(actionRequest, BusinessDisplayTerms.BUSINESS_SHORTNAME);
-		String type = ParamUtil
-		    .getString(
+		long type = ParamUtil
+		    .getLong(
 		        actionRequest, BusinessDisplayTerms.BUSINESS_BUSINESSTYPE);
 		String address = ParamUtil
 		    .getString(actionRequest, BusinessDisplayTerms.BUSINESS_ADDRESS);
@@ -419,6 +428,8 @@ public class AccountMgtPortlet extends MVCPortlet {
 		String[] domain = ParamUtil
 		    .getParameterValues(
 		        actionRequest, BusinessDisplayTerms.BUSINESS_DOMAIN);
+		String [] listBussinessDomains = ParamUtil
+						.getParameterValues(actionRequest, "listBussinessDomains");
 		String curPass = ParamUtil
 		    .getString(actionRequest, BusinessDisplayTerms.CURRENT_PASSWORD);
 		String newPass = ParamUtil
@@ -434,19 +445,36 @@ public class AccountMgtPortlet extends MVCPortlet {
 			isChangePassWord = true;
 		}
 
+		String backURL = ParamUtil.getString(actionRequest, "backURL");
+		
+		int dateDayIDNumber =
+		    ParamUtil.getInteger(
+		        actionRequest, BusinessDisplayTerms.DATE_DAY);
+		int dateMonthIDNumber =
+		    ParamUtil.getInteger(
+		    		actionRequest, BusinessDisplayTerms.DATE_MONTH);
+		int dateYearIDNumber =
+		    ParamUtil.getInteger(
+		    		actionRequest, BusinessDisplayTerms.DATE_YEAR);
+		
+		Date dateOfIdNumber = DateTimeUtil.getDate(dateDayIDNumber, dateMonthIDNumber,
+				dateYearIDNumber);
+		
 		DictItem city = null;
 
 		DictItem district = null;
 
 		DictItem ward = null;
+		
+		DictItem busType = null;
 
 		try {
 
 			AccountRegPortlet
-			    .ValidateBusiness(
+			    .validateBusiness(
 			        businessId, email, StringPool.BLANK, enName, shortName,
 			        address, representativeName, representativeRole, cityId, districtId, wardId,
-			        1,PortletPropsValues.ACCOUNTMGT_FILE_TYPE[0]);
+			        1, StringPool.BLANK, StringPool.BLANK);
 
 			city = DictItemLocalServiceUtil
 			    .getDictItem(cityId);
@@ -456,6 +484,9 @@ public class AccountMgtPortlet extends MVCPortlet {
 
 			ward = DictItemLocalServiceUtil
 			    .getDictItem(wardId);
+			
+			busType = DictItemLocalServiceUtil
+						    .getDictItem(type);
 			ServiceContext serviceContext = ServiceContextFactory
 			    .getInstance(actionRequest);
 
@@ -465,7 +496,7 @@ public class AccountMgtPortlet extends MVCPortlet {
 				        .getLocale(), true);
 				BusinessLocalServiceUtil
 				    .updateBusiness(
-				        businessId, name, enName, shortName, type, idNumber,
+				        businessId, name, enName, shortName, busType.getItemCode(), idNumber,
 				        address, city
 				            .getItemCode(),
 				        district
@@ -481,10 +512,14 @@ public class AccountMgtPortlet extends MVCPortlet {
 				        ward
 				            .getItemName(serviceContext
 				                .getLocale(), true),
-				        telNo, representativeName, representativeRole, domain,
+				        telNo, representativeName, representativeRole, listBussinessDomains,
 				        isChangePassWord, curPass, rePass, serviceContext
-				            .getUserId(),
-				        serviceContext);
+				            .getScopeGroupId(),
+				        serviceContext, dateOfIdNumber);
+				
+				if(Validator.isNotNull(backURL)) {
+					actionResponse.sendRedirect(backURL);
+				}
 
 			}
 
@@ -545,6 +580,7 @@ public class AccountMgtPortlet extends MVCPortlet {
 			    .isNotNull(returnURL)) {
 				actionResponse
 				    .sendRedirect(returnURL);
+				_log.error(e);
 			}
 
 		}

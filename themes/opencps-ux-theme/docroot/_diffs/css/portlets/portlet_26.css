@@ -1,0 +1,106 @@
+.opencps-theme.ux .ocps-submit-online {
+	margin: auto;
+	width: 790px;
+	background-color: white;
+	border-radius: 8px;
+	border: 1px solid #e1e1e1;
+	padding: 30px 0 25px;
+}
+.opencps-theme.ux .ocps-submit-online > .row-fluid:first-child {
+	overflow: hidden;
+	padding-bottom: 20px;
+	margin-bottom: 20px;
+	border-bottom: 1px solid #e1e1e1;
+}
+.opencps-theme.ux .ocps-submit-online .row-fluid [class*="span"] {
+	padding: 0 15px;
+}
+.opencps-theme.ux .ocps-submit-online .span4 {
+	font-family: 'Roboto-Bold';
+	width: 17%;
+}
+.opencps-theme.ux .ocps-submit-online .span8 {
+	width: 83%;
+	margin-left: 0;
+}
+.opencps-theme.ux  .ocps-submit-online .span6 {
+	width: 100%;
+}
+.opencps-theme.ux  .ocps-submit-online .span6 label {
+	font-family: 'Roboto-Bold';
+	margin-bottom: 10px;
+	display: inline-block;
+	width: 17%;
+}
+.opencps-theme.ux  .ocps-submit-online .span6 .control-group select {
+	width: 82%;
+	height: 34px;
+	display: inline-block;
+}
+.opencps-theme.ux .ocps-submit-online .serice-des {
+	margin: 30px 0 20px;
+    font-family: 'Roboto-Bold';
+    padding: 0 15px;
+}
+.opencps-theme.ux .ocps-submit-online .des-detail {
+	padding: 0 15px;
+}
+.opencps-theme.ux .ocps-submit-online .btn-submit-online {
+	border-top: 1px solid #e1e1e1;
+	margin-top: 30px;
+	padding-top: 20px;
+	text-align: center;
+}
+.opencps-theme.ux .ocps-submit-online .btn-submit-online button {
+	border-radius: 20px;
+	text-transform: uppercase;
+	padding: 10px;
+	width: 220px;
+	display: inline-block;
+}
+.opencps-theme.ux .opencps-form-navigator-container .des-sub-button {
+    border-radius: 20px;
+    margin: 5px 15px;
+    padding: 5px 20px;
+    width: 239px;
+}
+.opencps-theme.ux .opencps-form-navigator-container li + .des-sub-button, 
+.opencps-theme.ux .opencps-form-navigator-container li + div > .des-sub-button {
+    margin-top: 20px;
+}
+.opencps-theme.ux .opencps-form-navigator-container .des-sub-button:before {
+	content: "\f0c7";
+	font-family: FontAwesome;
+	margin-right: 5px;
+}
+
+/*--- Title Header ---*/
+.opencps-theme.ux .taglib-header {
+	border-bottom: 0;
+	margin-bottom: 20px;
+	position: relative;
+}
+.opencps-theme.ux .taglib-header .header-title {
+    text-transform: uppercase;
+    font-size: 20px;
+    line-height: normal;
+    font-weight: normal;
+    font-family: 'Roboto-Bold';
+    text-align: center;
+}
+.opencps-theme.ux .taglib-header .header-back-to a {
+	padding: 0;
+    line-height: 26px;
+    font-size: inherit;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-weight: normal;
+}
+.opencps-theme.ux .taglib-header .header-back-to a:before {
+	content: "\f177";
+}
+.opencps-theme.ux .taglib-header .header-back-to .helper-hidden-accessible {
+    font-family: 'Roboto-Regular';
+    position: relative !important;
+}

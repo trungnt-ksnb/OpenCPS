@@ -22,29 +22,48 @@
 <%@ include file="../init.jsp" %>
 
 <%
-	HttpServletRequest originalServletRequest = PortalUtil.getOriginalServletRequest(request);
-	String type = GetterUtil.getString(originalServletRequest.getParameter("type"), "citizen");
+	//HttpServletRequest originalServletRequest = PortalUtil.getOriginalServletRequest(request);
+	/* String type = GetterUtil.getString(request.getParameter("type"), "citizen"); */
+	String type = ParamUtil.getString(request, "type", "citizen");
 %>
 
 <c:choose>
-	<c:when test='<%=type.equals("citizen") %>'>
+	<c:when test='<%= allowBussinessRegistration && allowCitizenRegistration %>'>
+		<c:choose>
+			<c:when test='<%=type.equals("citizen")%>'>
+				<liferay-util:include 
+					page="/html/portlets/accountmgt/registration/citizenregistration-ux.jsp" 
+					servletContext="<%=application %>" 
+				/> 
+			</c:when>
+			
+			<c:when test='<%=type.equals("business")%>'>
+				<liferay-util:include 
+					page="/html/portlets/accountmgt/registration/businessregistration-ux.jsp" 
+					servletContext="<%=application %>" 
+				/> 
+			</c:when>
+		</c:choose>
+	</c:when>
+	
+	<c:when test='<%= !allowBussinessRegistration && allowCitizenRegistration%>'>
 		<liferay-util:include 
-			page="/html/portlets/accountmgt/registration/citizenregistration.jsp" 
+			page="/html/portlets/accountmgt/registration/citizenregistration-ux.jsp" 
 			servletContext="<%=application %>" 
 		/> 
 	</c:when>
 	
-	<c:when test='<%=type.equals("business") %>'>
+	<c:when test='<%= allowBussinessRegistration && !allowCitizenRegistration%>'>
 		<liferay-util:include 
-			page="/html/portlets/accountmgt/registration/businessregistration.jsp" 
+			page="/html/portlets/accountmgt/registration/businessregistration-ux.jsp" 
 			servletContext="<%=application %>" 
 		/> 
 	</c:when>
-	<c:otherwise>
+	<c:when test='<%= !allowBussinessRegistration && !allowCitizenRegistration %>'>
 		<liferay-util:include 
-			page="/html/portlets/accountmgt/registration/citizenregistration.jsp" 
+			page="/html/portlets/accountmgt/registration/confirmPageBlank.jsp" 
 			servletContext="<%=application %>" 
 		/> 
-	</c:otherwise>
+	</c:when>
 </c:choose>
 

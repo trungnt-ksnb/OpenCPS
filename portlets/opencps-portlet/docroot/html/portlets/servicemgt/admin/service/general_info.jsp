@@ -1,5 +1,3 @@
-<%@page import="org.opencps.util.WebKeys"%>
-<%@page import="org.opencps.servicemgt.model.ServiceInfo"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -20,10 +18,44 @@
 %>
 
 <%@ include file="../../init.jsp" %>
+<%@page import="org.opencps.util.WebKeys"%>
+<%@page import="org.opencps.servicemgt.model.ServiceInfo"%>
+<%@page import="org.opencps.dossiermgt.search.DossierDisplayTerms"%>
+<%@page import="org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil"%>
+<%@page import="org.opencps.dossiermgt.model.ServiceConfig"%>
 
 <%
 	ServiceInfo serviceInfo = (ServiceInfo) request.getAttribute(WebKeys.SERVICE_ENTRY);
+	long serviceInfoId = (serviceInfo != null) ? serviceInfo.getServiceinfoId() : 0L;
+	long submitOnlinePlid = PortalUtil.getPlidFromPortletId(scopeGroupId, true,  WebKeys.P26_SUBMIT_ONLINE);
+	
+	long plidResLong = 0;
+	
+	if(Long.valueOf(plidRes) ==0) {
+		plidResLong = submitOnlinePlid;
+	} else {
+		plidResLong = Long.valueOf(plidRes);
+	}
+	
+	ServiceConfig serviceConfig = null;
+	
+	try {
+		serviceConfig = ServiceConfigLocalServiceUtil.getServiceConfigByG_S(scopeGroupId, serviceInfoId);
+	} catch (Exception e) {
+		
+	}
+	
 %>
+<liferay-portlet:renderURL 
+		var="servieOnlinePopURL" 
+		portletName="<%=WebKeys.P26_SUBMIT_ONLINE %>"
+		plid="<%=plidResLong %>"
+		portletMode="VIEW"
+	>
+		<portlet:param name="mvcPath" value="/html/portlets/dossiermgt/submit/dossier_submit_online.jsp"/>
+		<portlet:param name="serviceinfoId" value="<%=String.valueOf(serviceInfoId) %>"/>
+</liferay-portlet:renderURL>
+
 
 <aui:model-context bean="<%= serviceInfo %>" model="<%= ServiceInfo.class %>"/>
 
@@ -38,7 +70,7 @@
 		<aui:input name="<%= ServiceDisplayTerms.SERVICE_NO %>"></aui:input>
 	</aui:col>
 	<aui:col width="50">
-		<aui:input name="<%= ServiceDisplayTerms.SERVICE_SHORTNAME %>"></aui:input>
+		<aui:input name="<%= ServiceDisplayTerms.SERVICE_FULLNAME %>"></aui:input>
 	</aui:col>
 </aui:row>
 <aui:row>
@@ -69,12 +101,18 @@
 	</aui:col>
 </aui:row>
 
-
-<aui:row>
+<%-- <aui:row>
 	<aui:col width="100">
-		<aui:input cssClass="input100" name="<%= ServiceDisplayTerms.SERVICE_ONLINEURL %>"></aui:input>
+		<c:choose>
+			<c:when test="<%=Validator.isNotNull(serviceInfo) && Validator.isNull(serviceInfo.getOnlineUrl())%>">
+				<aui:input cssClass="input100" name="urlOnline" type="text" value="<%=servieOnlinePopURL.toString() %>"/>
+			</c:when>
+			<c:otherwise>
+				<aui:input cssClass="input100" name="<%= ServiceDisplayTerms.SERVICE_ONLINEURL %>" />
+			</c:otherwise>
+		</c:choose>	
 	</aui:col>
-</aui:row>
+</aui:row> --%>
 
 <aui:row>
 	<aui:col width="100">

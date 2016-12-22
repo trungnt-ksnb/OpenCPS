@@ -31,15 +31,29 @@
 	
 	request.setAttribute(ServiceDisplayTerms.SERVICE_DOMAINCODE, domainCode);
 	
+	DictCollection collectionDomain = null;
+	DictItem curDictItem = null;
+	try {
+		collectionDomain = DictCollectionLocalServiceUtil.getDictCollection(scopeGroupId, WebKeys.SERVICE_DOMAIN);
+	} catch (Exception e) {
+		
+	}
+	
+	List<DictItem> dictItems = new ArrayList<DictItem>();
+	
+	if(Validator.isNotNull(collectionDomain)) {
+		dictItems = DictItemLocalServiceUtil.getDictItemsByDictCollectionId(collectionDomain.getDictCollectionId());
+	}
 %>
-<aui:nav-bar cssClass="custom-toolbar">
+<aui:nav-bar cssClass="opencps-toolbar custom-toolbar">
 	<aui:nav-bar-search cssClass="pull-right">
 		<div class="form-search">
 			<aui:form action="<%= searchURL %>" method="post" name="fm">
 				<div class="toolbar_search_input">
 					<aui:row>
-						<aui:col width="25">
-							<datamgt:ddr cssClass="input30"
+						<aui:col width="25" cssClass="search-col">
+							<datamgt:ddr
+								cssClass="search-input select-box"
 								depthLevel="1" 
 								dictCollectionCode="SERVICE_ADMINISTRATION"
 								itemNames="<%= ServiceDisplayTerms.SERVICE_ADMINISTRATION %>"
@@ -49,26 +63,25 @@
 							</datamgt:ddr>
 
 						</aui:col>
-						<aui:col width="25">
-							<datamgt:ddr cssClass="input30"
+						<aui:col width="25" cssClass="search-col">
+							<datamgt:ddr
+								cssClass="search-input select-box"
 								depthLevel="1" 
-								dictCollectionCode="SERVICE_DOMAIN"
+								dictCollectionCode="SERVICE_DOMAINCODE"
 								itemNames="<%= ServiceDisplayTerms.SERVICE_DOMAINCODE %>"
-								itemsEmptyOption="true"	
-								selectedItems="<%= domainCode %>"
+								itemsEmptyOption="true"
+								selectedItems="<%= ServiceDisplayTerms.SERVICE_DOMAINCODE %>"	
 							>
 							</datamgt:ddr>
-
+							
 						</aui:col>
-						<aui:col width="45">
-							<label>
-								<liferay-ui:message key="keywords"/>
-							</label>
+						<aui:col width="50" cssClass="search-col">
 							<liferay-ui:input-search 
 								id="keywords1"
 								name="keywords"
-								title="keywords"
+								title='<%= LanguageUtil.get(locale, "keywords") %>'
 								placeholder='<%= LanguageUtil.get(locale, "name") %>' 
+								cssClass="search-input input-keyword"
 							/>
 						</aui:col>
 					</aui:row>

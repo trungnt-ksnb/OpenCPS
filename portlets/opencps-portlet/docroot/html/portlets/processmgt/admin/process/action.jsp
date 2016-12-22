@@ -1,9 +1,4 @@
-<%@page import="org.opencps.processmgt.util.ProcessUtils"%>
-<%@page import="com.liferay.portal.kernel.process.ProcessUtil"%>
-<%@page import="org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil"%>
-<%@page import="org.opencps.processmgt.search.WorkflowSearchTerms"%>
-<%@page import="org.opencps.processmgt.search.WorkflowSearch"%>
-<%@page import="org.opencps.processmgt.model.ProcessWorkflow"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -22,6 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 %>
+
+<%@page import="org.opencps.processmgt.util.ProcessUtils"%>
+<%@page import="com.liferay.portal.kernel.process.ProcessUtil"%>
+<%@page import="org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil"%>
+<%@page import="org.opencps.processmgt.search.WorkflowSearchTerms"%>
+<%@page import="org.opencps.processmgt.search.WorkflowSearch"%>
+<%@page import="org.opencps.processmgt.model.ProcessWorkflow"%>
 
 <%@ include file="../../init.jsp" %>
 
@@ -44,25 +46,28 @@
 				    ProcessPermission.contains(
 				        themeDisplay.getPermissionChecker(),
 				        themeDisplay.getScopeGroupId(), ActionKeys.ADD_PROCESS);
+	
+	int totalCount = ProcessWorkflowLocalServiceUtil.countWorkflow(serviceProcessId);
 %>
 
-<liferay-portlet:renderURL var="editActionURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
+<liferay-portlet:renderURL var="editActionURL" windowState="<%= LiferayWindowState.NORMAL.toString() %>">
 	<portlet:param name="mvcPath" value='<%= templatePath + "edit_action.jsp" %>'/>
 	<portlet:param name="serviceProcessId" value="<%= Validator.isNotNull(serviceProcess) ? Long.toString(serviceProcess.getServiceProcessId()) : StringPool.BLANK %>"/>
 	<portlet:param name="processWorkflowId" value="<%= Validator.isNotNull(workflow) ? Long.toString(workflow.getProcessWorkflowId()) : StringPool.BLANK %>"/>
+	<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 </liferay-portlet:renderURL>
 
 <aui:button-row>
-	<aui:button name="addAction" onClick="showDialog()" value="add-action" ></aui:button>
+	<aui:button name="addAction" href="<%= editActionURL %>" value="add-action" ></aui:button>
 </aui:button-row>
 
-<liferay-ui:search-container searchContainer="<%= new WorkflowSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
+<liferay-ui:search-container searchContainer="<%= new WorkflowSearch(renderRequest, totalCount, iteratorURL) %>">
 		
 	<liferay-ui:search-container-results>
 		<%
 			WorkflowSearchTerms searchTerms = (WorkflowSearchTerms) searchContainer.getSearchTerms();
 		
-			total = ProcessWorkflowLocalServiceUtil.countWorkflow(serviceProcessId); 
+			total = totalCount;
 
 			results = ProcessWorkflowLocalServiceUtil.searchWorkflow(serviceProcessId, searchContainer.getStart(), searchContainer.getEnd());
 			
@@ -78,17 +83,30 @@
 		keyProperty="processWorkflowId"
 	>
 		<%
+		
+			String preName = LanguageUtil.get(portletConfig, themeDisplay.getLocale(), "start-step");
+			
+			String postName = LanguageUtil.get(portletConfig, themeDisplay.getLocale(), "end-step");
+			
+			if(!ProcessUtils.getPreProcessStepName(processWorkflow.getPreProcessStepId()).equals(StringPool.BLANK)) {
+				preName = ProcessUtils.getPreProcessStepName(processWorkflow.getPreProcessStepId());
+			}
+			
+			if(!ProcessUtils.getPostProcessStepName(processWorkflow.getPostProcessStepId()).equals(StringPool.BLANK)) {
+				postName = ProcessUtils.getPostProcessStepName(processWorkflow.getPostProcessStepId());
+			}
 			// no column
 			row.addText(String.valueOf(row.getPos() + 1));
 		
-			// workflow name
-			row.addText(processWorkflow.getActionName());
 			
 			// Pre StepName
-			row.addText(ProcessUtils.getProcessStepName(processWorkflow.getPreProcessStepId()));
+			row.addText(preName);
+
+			// workflow name
+			row.addText(processWorkflow.getActionName());
 
 			// Post StepName
-			row.addText(ProcessUtils.getProcessStepName(processWorkflow.getPostProcessStepId()));
+			row.addText(postName);
 			
 			if(isPermission) {
 				//action column
@@ -98,12 +116,16 @@
 	
 	</liferay-ui:search-container-row>	
 
-	<liferay-ui:search-iterator/>
+	<liferay-ui:search-iterator paginate="false"/>
 
 </liferay-ui:search-container>
 
+<%!
+	private int ITEM_PERPAGE = 100;
+%>
+
 <aui:script use="liferay-util-window">
-	Liferay.provide(window, 'showDialog', function(action) {
+	Liferay.provide(window, 'addAction', function(action) {
 		page = '<%= editActionURL %>'
 		Liferay.Util.openWindow({
 			dialog: {

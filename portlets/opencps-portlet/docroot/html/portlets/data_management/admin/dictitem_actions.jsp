@@ -32,14 +32,17 @@
 %> 
 
 			
- <liferay-ui:icon-menu>
+<%--  <liferay-ui:icon-menu> --%>
  	<c:if test="<%=DictItemPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_DICTITEM) %>">
  		<portlet:renderURL var="updateDictItemURL">
 			<portlet:param name="mvcPath" value="/html/portlets/data_management/admin/edit_dictitem.jsp"/>
 			<portlet:param name="<%=DictItemDisplayTerms.DICTITEM_ID %>" value="<%=String.valueOf(dictItem.getDictItemId()) %>"/>
 			<portlet:param name="backURL" value="<%=currentURL %>"/>
 		</portlet:renderURL> 
- 		<liferay-ui:icon image="edit" message="edit" url="<%=updateDictItemURL.toString() %>" /> 
+ 		<liferay-ui:icon image="edit" 
+ 						cssClass="search-container-action fa edit" 
+ 						message="edit" 
+ 						url="<%=updateDictItemURL.toString() %>" /> 
  	</c:if>
  	
  	<c:if test="<%=DictItemPermission.contains(permissionChecker, scopeGroupId, ActionKeys.DELETE) %>">
@@ -47,7 +50,7 @@
 			<portlet:param name="<%=DictItemDisplayTerms.DICTITEM_ID %>" value="<%=String.valueOf(dictItem.getDictItemId()) %>"/>
 			<portlet:param name="redirectURL" value="<%=currentURL %>"/>
 		</portlet:actionURL> 
-		<liferay-ui:icon-delete image="delete" confirmation="are-you-sure-delete-entry" message="delete"  url="<%=deleteDictItemURL.toString() %>" />
+		<liferay-ui:icon-delete cssClass="search-container-action fa delete" image="delete" confirmation="are-you-sure-delete-entry" message="delete"  url="<%=deleteDictItemURL.toString() %>" />
  	</c:if>
 	  
-</liferay-ui:icon-menu> 
+<%-- </liferay-ui:icon-menu>  --%>

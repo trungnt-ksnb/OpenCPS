@@ -54,18 +54,18 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 	    long groupId, String keywords, String administrationCode,
 	    String domainCode) {
 
-		String[] names = null;
+		//String[] names = null;
 		boolean andOperator = false;
 
 		if (Validator.isNotNull(keywords)) {
-			names = CustomSQLUtil.keywords(keywords);
+			//names = CustomSQLUtil.keywords(keywords);
 		}
 		else {
 			andOperator = true;
 		}
 
 		return _countService(
-		    groupId, names, administrationCode, domainCode, andOperator);
+		    groupId, keywords, administrationCode, domainCode, andOperator);
 	}
 
 	/**
@@ -81,18 +81,18 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 	    long groupId, String keywords, String administrationCode,
 	    String domainCode, int start, int end) {
 
-		String[] names = null;
+		//String[] names = null;
 		boolean andOperator = false;
 
 		if (Validator.isNotNull(keywords)) {
-			names = CustomSQLUtil.keywords(keywords);
+			//names = CustomSQLUtil.keywords(keywords);
 		}
 		else {
 			andOperator = true;
 		}
 
 		return _searchService(
-		    groupId, names, administrationCode, domainCode, andOperator, start,
+		    groupId, keywords, administrationCode, domainCode, andOperator, start,
 		    end);
 	}
 
@@ -107,10 +107,10 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 	 * @return
 	 */
 	private List<ServiceInfo> _searchService(
-	    long groupId, String[] keywords, String adminCode, String domainCode,
+	    long groupId, String keyword, String adminCode, String domainCode,
 	    boolean andOperator, int start, int end) {
 
-		keywords = CustomSQLUtil.keywords(keywords);
+		//keywords = CustomSQLUtil.keywords(keywords);
 
 		Session session = null;
 		try {
@@ -118,17 +118,23 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 
 			String sql = CustomSQLUtil.get(SEARCH_SERVICE_SQL);
 
-			sql =
+			/*sql =
 			    CustomSQLUtil.replaceKeywords(
 			        sql, "lower(opencps_serviceinfo.serviceName)",
 			        StringPool.LIKE, true, keywords);
 
 			sql =
 			    CustomSQLUtil.replaceKeywords(
-			        sql, "lower(opencps_serviceinfo.shortName)",
+			        sql, "lower(opencps_serviceinfo.fullName)",
 			        StringPool.LIKE, true, keywords);
 
-			sql = CustomSQLUtil.replaceAndOperator(sql, andOperator);
+			sql = CustomSQLUtil.replaceAndOperator(sql, andOperator);*/
+			
+			if(Validator.isNull(keyword)){
+				sql = StringUtil.replace(sql,
+				        "AND ((lower(opencps_serviceinfo.serviceName) LIKE ?) OR (lower(opencps_serviceinfo.fullName) LIKE ?))",
+				        StringPool.BLANK);
+			}
 
 			// remove condition query
 			if (Validator.equals(adminCode, "0") || Validator.equals(adminCode, StringPool.BLANK)) {
@@ -142,9 +148,10 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 			if (Validator.equals(domainCode, "0") || Validator.equals(domainCode, StringPool.BLANK)) {
 				sql =
 				    StringUtil.replace(
-				        sql, "AND (opencps_serviceinfo.domainCode = ?)",
+				        sql, "AND ((opencps_serviceinfo.domainCode = ?) OR (opencps_serviceinfo.domainIndex like ?))",
 				        StringPool.BLANK);
 			}
+			
 
 			SQLQuery q = session.createSQLQuery(sql);
 
@@ -155,16 +162,21 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 			QueryPos qPos = QueryPos.getInstance(q);
 
 			qPos.add(groupId);
+			
+			if(Validator.isNotNull(keyword)){
+				qPos.add("%"+keyword+"%");
+				
+				qPos.add("%"+keyword+"%");
+			}
 
-			qPos.add(keywords, 2);
-			qPos.add(keywords, 2);
-
+			
 			if (!Validator.equals(adminCode, "0") && !Validator.equals(adminCode, StringPool.BLANK) ) {
 				qPos.add(adminCode);
 			}
 
 			if (!Validator.equals(domainCode, "0") && !Validator.equals(domainCode, StringPool.BLANK)) {
 				qPos.add(domainCode);
+				qPos.add(StringPool.PERCENT+domainCode+StringPool.PERIOD+StringPool.PERCENT);
 			}
 
 			return (List<ServiceInfo>) QueryUtil.list(
@@ -195,10 +207,10 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 	 * @return
 	 */
 	private int _countService(
-	    long groupId, String[] keywords, String adminCode, String domainCode,
+	    long groupId, String keyword, String adminCode, String domainCode,
 	    boolean andOperator) {
 
-		keywords = CustomSQLUtil.keywords(keywords);
+		//keywords = CustomSQLUtil.keywords(keywords);
 
 		Session session = null;
 		try {
@@ -206,17 +218,23 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 
 			String sql = CustomSQLUtil.get(COUNT_SERVICE_SQL);
 
-			sql =
+			/*sql =
 			    CustomSQLUtil.replaceKeywords(
 			        sql, "lower(opencps_serviceinfo.serviceName)",
 			        StringPool.LIKE, true, keywords);
 
 			sql =
 			    CustomSQLUtil.replaceKeywords(
-			        sql, "lower(opencps_serviceinfo.shortName)",
+			        sql, "lower(opencps_serviceinfo.fullName)",
 			        StringPool.LIKE, true, keywords);
 
-			sql = CustomSQLUtil.replaceAndOperator(sql, andOperator);
+			sql = CustomSQLUtil.replaceAndOperator(sql, andOperator);*/
+			
+			if(Validator.isNull(keyword)){
+				sql = StringUtil.replace(sql,
+				        "AND ((lower(opencps_serviceinfo.serviceName) LIKE ?) OR (lower(opencps_serviceinfo.fullName) LIKE ?))",
+				        StringPool.BLANK);
+			}
 
 			// remove condition query
 			if (Validator.equals(adminCode, "0") || Validator.equals(adminCode, StringPool.BLANK)) {
@@ -230,7 +248,7 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 			if (Validator.equals(domainCode, "0") || Validator.equals(domainCode, StringPool.BLANK)) {
 				sql =
 				    StringUtil.replace(
-				        sql, "AND (opencps_serviceinfo.domainCode = ?)",
+				        sql, "AND ((opencps_serviceinfo.domainCode = ?) OR (opencps_serviceinfo.domainIndex like ?))",
 				        StringPool.BLANK);
 			}
 
@@ -244,8 +262,11 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 
 			qPos.add(groupId);
 
-			qPos.add(keywords, 2);
-			qPos.add(keywords, 2);
+			if(Validator.isNotNull(keyword)){
+				qPos.add("%"+keyword+"%");
+				
+				qPos.add("%"+keyword+"%");
+			}
 
 			if (!Validator.equals(adminCode, "0") && !Validator.equals(adminCode, StringPool.BLANK) ) {
 				qPos.add(adminCode);
@@ -253,6 +274,7 @@ public class ServiceInfoFinderImpl extends BasePersistenceImpl<ServiceInfo>
 
 			if (!Validator.equals(domainCode, "0") && !Validator.equals(domainCode, StringPool.BLANK)) {
 				qPos.add(domainCode);
+				qPos.add(StringPool.PERCENT+domainCode+StringPool.PERIOD+StringPool.PERCENT);
 			}
 
 			Iterator<Integer> itr = q.iterate();

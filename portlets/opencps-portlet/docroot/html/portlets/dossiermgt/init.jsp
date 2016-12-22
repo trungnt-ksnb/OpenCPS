@@ -1,3 +1,4 @@
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -16,5 +17,58 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
+
+<%@page import="javax.portlet.PortletPreferences"%>
+
 <%@ include file="/init.jsp" %>
+
+<%
+	PortletPreferences preferences = renderRequest.getPreferences();
+	
+	portletResource = ParamUtil.getString(request, "portletResource");
+	
+	if (Validator.isNotNull(portletResource)) {
+		preferences = PortletPreferencesFactoryUtil.getPortletSetup(request, portletResource);
+	}
+	
+	String redirectPaymentURL = preferences.getValue("redirectPaymentURL",StringPool.BLANK);
+	
+	String dossierStatusConfig = preferences.getValue("dossierStatusConfig",StringPool.BLANK);
+	
+	String orderFieldDossierFile = preferences.getValue("orderFieldDossierFile",StringPool.BLANK);
+	
+	String orderBydDossierFile = preferences.getValue("orderBydDossierFile",StringPool.BLANK);
+	
+	long plidRes = GetterUtil.getLong(preferences.getValue("plid", "0"), 0);
+	
+	boolean displayRecentlyResultWhenSearch = GetterUtil.getBoolean(preferences.getValue("displayRecentlyResultWhenSearch", "false"), false);
+	
+	boolean displayDossierNo =  GetterUtil.getBoolean(preferences.getValue("displayDossierNo", "false"), false);
+			
+	boolean showVersionItem = GetterUtil.getBoolean(preferences.getValue("showVersionItem", "true"), true);
+	
+	boolean showBackToListButton = GetterUtil.getBoolean(preferences.getValue("showBackToListButton", "true"), true);
+	
+	boolean showServiceDomainIdTree = GetterUtil.getBoolean(preferences.getValue("showServiceDomainIdTree", "true"), true);
+	
+	boolean hideTabDossierFile = GetterUtil.getBoolean(preferences.getValue("hideTabDossierFile", "false"), false);
+	
+	boolean showTabDossierResultFirst = GetterUtil.getBoolean(preferences.getValue("showTabDossierResultFirst", "false"), false);
+	
+	boolean hiddenTreeNodeEqualNone = GetterUtil.getBoolean(preferences.getValue("hiddenTreeNodeEqualNone", "false"), false);
+	
+	boolean allowResultQuickView = GetterUtil.getBoolean(preferences.getValue("allowResultQuickView", "false"), false);
+	
+	boolean allowQuickCreateDossier = GetterUtil.getBoolean(preferences.getValue("allowQuickCreateDossier", "false"), false);
+
+	String fileTypes = preferences.getValue("fileTypes", StringPool.BLANK);
+	
+	float maxTotalUploadFileSize = GetterUtil.getFloat(preferences.getValue("maxTotalUploadFileSize", StringPool.BLANK));
+	
+	String maxTotalUploadFileSizeUnit = preferences.getValue("maxTotalUploadFileSizeUnit", StringPool.BLANK);
+	
+	float maxUploadFileSize = GetterUtil.getFloat(preferences.getValue("maxUploadFileSize", StringPool.BLANK));
+	
+	String maxUploadFileSizeUnit = preferences.getValue("maxUploadFileSizeUnit", StringPool.BLANK);
+%>
 

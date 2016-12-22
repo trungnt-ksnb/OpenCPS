@@ -1,3 +1,4 @@
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -31,9 +32,19 @@
 <%@page import="org.opencps.usermgt.OutOfLengthEmployeeEmailException"%>
 <%@page import="org.opencps.usermgt.OutOfLengthTelNoException"%>
 <%@page import="org.opencps.usermgt.OutOfLengthMobileException"%>
+<%@page import="org.opencps.usermgt.service.EmployeeLocalServiceUtil"%>
+
 <%@ include file="../../init.jsp"%>
+
+
 <%
-	Employee employee = (Employee)request.getAttribute(WebKeys.EMPLOYEE_ENTRY);
+	long employeeId = ParamUtil.getLong(request, EmployeeDisplayTerm.EMPLOYEE_ID);
+	try {
+		employee = EmployeeLocalServiceUtil.getEmployee(employeeId);
+	} catch(Exception e) {
+		
+	}
+	
 
 	boolean userViewProfile = GetterUtil.getBoolean((Boolean)request.getAttribute(WebKeys.USERMGT_VIEW_PROFILE), false);
 
@@ -47,6 +58,7 @@
 %>
 
 <aui:model-context bean="<%=employee%>" model="<%=Employee.class%>" />
+
 <liferay-ui:error-marker key="errorSection" value="general_info" />
 
 <liferay-ui:error exception="<%= EmptyEmployeeEmailException.class %>" 
@@ -77,11 +89,12 @@
 	message="<%=OutOfLengthTelNoException.class.getName() %>" 
 />
 
-<aui:row>
-	<aui:col width="50">
+<aui:row cssClass="nav-content-row-2">
+	<aui:col width="100">
 		<aui:input 
 			name='<%=EmployeeDisplayTerm.EMPLOYEE_NO %>'
 			disabled='<%=userViewProfile ? true : false %>'
+			cssClass="input100"
 		>
 			<aui:validator name="required"/>
 			<aui:validator name="maxLength">
@@ -89,48 +102,23 @@
 			</aui:validator>
 		</aui:input>
 	</aui:col>
-	<aui:col width="50"></aui:col>
 </aui:row>
-<aui:row>
+
+<aui:row cssClass="nav-content-row-2">
 	<aui:col width="50">
 		<aui:input 
 			name="<%=EmployeeDisplayTerm.FULL_NAME %>" 
+			cssClass="input100"
 		>
 			<aui:validator name="required"/>
 			<aui:validator name="maxLength">
 				<%=PortletPropsValues.USERMGT_EMPLOYEE_FULLNAME_LENGTH %>
 			</aui:validator>
 		</aui:input>
-		
-		<label class="control-label custom-lebel" for='<portlet:namespace/><%=EmployeeDisplayTerm.BIRTH_DATE %>'>
-			<liferay-ui:message key="birth-date"/>
-		</label>
-		
-		<liferay-ui:input-date
-			dayParam="<%=EmployeeDisplayTerm.BIRTH_DATE_DAY %>"
-			dayValue="<%= spd.getDayOfMoth() %>"
-			disabled="<%= false %>"
-			monthParam="<%=EmployeeDisplayTerm.BIRTH_DATE_MONTH %>"
-			monthValue="<%= spd.getMonth() %>"
-			name="<%=EmployeeDisplayTerm.BIRTH_DATE %>"
-			yearParam="<%=EmployeeDisplayTerm.BIRTH_DATE_YEAR %>"
-			yearValue="<%= spd.getYear() %>"
-			formName="fm"
-			autoFocus="<%=true %>"
-		/>
-		
-		
-		<aui:input 
-			name="<%= EmployeeDisplayTerm.MOBILE%>"
-		>
-			<aui:validator name="maxLength">
-				<%=PortletPropsValues.USERMGT_EMPLOYEE_MOBILE_LENGTH%>
-			</aui:validator>
-		</aui:input>
 	</aui:col>
 	
 	<aui:col width="50">
-		<aui:select name="<%= EmployeeDisplayTerm.GENDER%>">
+		<aui:select name="<%= EmployeeDisplayTerm.GENDER%>" cssClass="input100">
 			<%
 				if(PortletPropsValues.USERMGT_GENDER_VALUES != null && 
 					PortletPropsValues.USERMGT_GENDER_VALUES.length > 0){
@@ -147,9 +135,36 @@
 				}
 			%>
 		</aui:select>
+
+	</aui:col>
+</aui:row>
+
+<aui:row cssClass="nav-content-row-2">
+	<aui:col width="50">
+		<label class="control-label bold custom-lebel" for='<portlet:namespace/><%=EmployeeDisplayTerm.BIRTH_DATE %>'>
+			<liferay-ui:message key="birth-date"/>
+		</label>
 		
+		<liferay-ui:input-date
+			dayParam="<%=EmployeeDisplayTerm.BIRTH_DATE_DAY %>"
+			dayValue="<%= spd.getDayOfMoth() %>"
+			disabled="<%= false %>"
+			monthParam="<%=EmployeeDisplayTerm.BIRTH_DATE_MONTH %>"
+			monthValue="<%= spd.getMonth() %>"
+			name="<%=EmployeeDisplayTerm.BIRTH_DATE %>"
+			yearParam="<%=EmployeeDisplayTerm.BIRTH_DATE_YEAR %>"
+			yearValue="<%= spd.getYear() %>"
+			formName="fm"
+			autoFocus="<%=true %>"
+			cssClass="input100"
+		/>
+
+	</aui:col>
+	
+	<aui:col width="50">
 		<aui:input 
 			name="<%= EmployeeDisplayTerm.EMAIL%>"
+			cssClass="input100"
 		>
 			<aui:validator name="required"/>
 			<aui:validator name="email"/>
@@ -157,9 +172,25 @@
 				<%=PortletPropsValues.USERMGT_EMPLOYEE_EMAIL_LENGTH %>
 			</aui:validator>
 		</aui:input>
-		
+	</aui:col>
+</aui:row>
+
+<aui:row cssClass="nav-content-row-2">
+	<aui:col width="50">
+		<aui:input 
+			name="<%= EmployeeDisplayTerm.MOBILE%>"
+			cssClass="input100"
+		>
+			<aui:validator name="maxLength">
+				<%=PortletPropsValues.USERMGT_EMPLOYEE_MOBILE_LENGTH%>
+			</aui:validator>
+		</aui:input>
+	</aui:col>
+	
+	<aui:col width="50">
 		<aui:input 
 			name="<%= EmployeeDisplayTerm.TEL_NO%>"
+			cssClass="input100"
 		>
 			<aui:validator name="maxLength">
 				<%=PortletPropsValues.USERMGT_EMPLOYEE_TELNO_LENGTH%>
@@ -167,5 +198,4 @@
 		</aui:input>
 	</aui:col>
 </aui:row>
-
 

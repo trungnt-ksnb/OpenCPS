@@ -29,7 +29,7 @@
 <%@page import="org.opencps.accountmgt.search.BusinessDisplayTerms"%>
 <%@page import="org.opencps.accountmgt.search.CitizenDisplayTerms"%>
 <%@page import="org.opencps.accountmgt.InvalidCityCodeException"%>
-
+<%@page import="com.liferay.portal.kernel.util.HtmlUtil"%>
 <%@page import="org.opencps.util.MessageKeys"%>
 <%@page import="org.opencps.accountmgt.OutOfLengthBusinessNameException"%>
 <%@page import="org.opencps.accountmgt.OutOfLengthBusinessRepresentativeRoleException"%>
@@ -124,8 +124,7 @@
 	String [] ProfileSections = null;
 	String [][] categorySections = null;
 	String path = StringPool.BLANK;
-	Citizen citizen = null;
-	Business business = null;
+	
 	String backURL = ParamUtil.getString(request, "backURL");
 	if(citizenId > 0 ) {
 		ProfileSections = new String[2];
@@ -155,14 +154,34 @@
 
 <portlet:actionURL var="updateCitizenProfileURL" name="updateCitizenProfile" >
 	<portlet:param name="returnURL" value="<%=currentURL %>"/>
+	<portlet:param name="backURL" value="<%=backURL %>"/>
 </portlet:actionURL>
 
 <portlet:actionURL var="updateBusinessProfileURL" name="updateBusinessProfile" >
 	<portlet:param name="returnURL" value="<%=currentURL %>"/>
+	<portlet:param name="backURL" value="<%=backURL %>"/>
 </portlet:actionURL>
 
 <liferay-util:buffer var="htmlTop">
-	<liferay-ui:icon iconCssClass="icon-home" />
+	<c:choose>
+		<c:when test="<%=citizen != null %>">
+			<div class="form-navigator-topper update-citizen">
+	            <div class="form-navigator-container">
+	                <i aria-hidden="true" class="fa update-citizen"></i>
+	                <span class="form-navigator-topper-name"><%= HtmlUtil.escape(citizen.getFullName()) %></span>
+	            </div>
+        	</div>
+		</c:when>
+		
+		<c:when test="<%=business != null %>">
+			<div class="form-navigator-topper update-business">
+	            <div class="form-navigator-container">
+	                <i aria-hidden="true" class="fa update-business"></i>
+	                <span class="form-navigator-topper-name"><%= HtmlUtil.escape(business.getName()) %></span>
+	            </div>
+        	</div>
+		</c:when>
+	</c:choose>
 </liferay-util:buffer>
 
 <liferay-util:buffer var="htmlBot">
@@ -175,29 +194,31 @@
 	action='<%= citizenId > 0 ? updateCitizenProfileURL.toString() : updateBusinessProfileURL.toString() %>'
 	enctype="multipart/form-data"	
 >
-	
-	<liferay-ui:form-navigator 
-		backURL="<%= currentURL %>"
-		categoryNames= "<%= UserMgtUtil._PROFILE_CATEGORY_NAMES %>"	
-		categorySections="<%=categorySections %>" 
-		htmlBottom="<%= htmlBot %>"
-		htmlTop="<%= htmlTop %>"
-		jspPath="<%=path%>"
+	<div class="opencps-form-navigator-container radius8">
+		<liferay-ui:form-navigator 
+			backURL="<%= currentURL %>"
+			categoryNames= "<%= UserMgtUtil._PROFILE_CATEGORY_NAMES %>"	
+			categorySections="<%=categorySections %>" 
+			htmlBottom="<%= htmlBot %>"
+			htmlTop="<%= htmlTop %>"
+			jspPath="<%=path%>"
+			displayStyle="left-navigator"
 		>	
-	</liferay-ui:form-navigator>
+		</liferay-ui:form-navigator>
+	</div>
 	
 	<c:choose>
 		<c:when test="<%=citizenId > 0 %>">
 			<aui:input 
 				name="<%=CitizenDisplayTerms.CITIZEN_ID %>" 
-				value="<%=String.valueOf(citizen != null ? citizen.getCitizenId() : 0) %>"
+				value="<%=String.valueOf(citizenId) %>"
 				type="hidden"
 			/>
 		</c:when>
 		<c:otherwise>
 			<aui:input 
 				name="<%=BusinessDisplayTerms.BUSINESS_BUSINESSID %>" 
-				value="<%=String.valueOf(business != null ? business.getBusinessId() : 0) %>"
+				value="<%=String.valueOf(businessId) %>"
 				type="hidden"
 			/>
 		</c:otherwise>

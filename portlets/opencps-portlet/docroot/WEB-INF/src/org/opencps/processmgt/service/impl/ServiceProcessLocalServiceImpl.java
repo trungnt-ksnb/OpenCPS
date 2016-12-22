@@ -1,21 +1,30 @@
 /**
- * OpenCPS is the open source Core Public Services software Copyright (C)
- * 2016-present OpenCPS community This program is free software: you can
- * redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3
- * of the License, or any later version. This program is distributed in the hope
- * that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details. You should have received a
- * copy of the GNU Affero General Public License along with this program. If
- * not, see <http://www.gnu.org/licenses/>
+ * OpenCPS is the open source Core Public Services software
+ * Copyright (C) 2016-present OpenCPS community
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
 package org.opencps.processmgt.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.opencps.processmgt.NoSuchServiceProcessException;
+import org.opencps.processmgt.model.ProcessStep;
+import org.opencps.processmgt.model.ProcessWorkflow;
+import org.opencps.processmgt.model.ServiceInfoProcess;
 import org.opencps.processmgt.model.ServiceProcess;
 import org.opencps.processmgt.service.ServiceProcessLocalServiceUtil;
 import org.opencps.processmgt.service.base.ServiceProcessLocalServiceBaseImpl;
@@ -148,6 +157,37 @@ public class ServiceProcessLocalServiceImpl
 
 		return serviceProcess;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.opencps.processmgt.service.ServiceProcessLocalService#deleteProcess(long)
+	 */
+	public void deleteProcess(long serviceProcessId) throws NoSuchServiceProcessException, SystemException {
+		List<ProcessStep> processSteps = new ArrayList<ProcessStep>();
+		List<ServiceInfoProcess> infoProcesses = new ArrayList<ServiceInfoProcess>();
+		List<ProcessWorkflow> processWorkflows = new ArrayList<ProcessWorkflow>();
+		
+		try {
+			processSteps = processStepPersistence.findByS_P_ID(serviceProcessId);
+		}
+		catch (Exception e) {
+		}
+		
+		try {
+			infoProcesses = serviceInfoProcessPersistence.findByServiceProcessId(serviceProcessId); 
+		}
+		catch (Exception e) {
+		}
+		
+		try {
+			processWorkflows = processWorkflowPersistence.findByS_P_ID(serviceProcessId);
+		}
+		catch (Exception e) {
+		}
+		
+		if(processSteps.isEmpty() && infoProcesses.isEmpty() && processWorkflows.isEmpty()) {
+			serviceProcessPersistence.remove(serviceProcessId);
+		}
+	}
 
 	public List<ServiceProcess> getServiceProcesses(long groupId, long dossierTemplateId) 
 					throws SystemException {
@@ -157,5 +197,6 @@ public class ServiceProcessLocalServiceImpl
 	public int countByG_T(long groupId ,long dossierTemplateId) throws SystemException {
 		return serviceProcessPersistence.countByG_T(groupId, dossierTemplateId);
 	}
-
+	
+	
 }

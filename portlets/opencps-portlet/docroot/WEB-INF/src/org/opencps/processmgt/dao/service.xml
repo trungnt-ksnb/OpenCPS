@@ -65,12 +65,14 @@
 		<column name="stepName" type="String" />
 		<column name="sequenceNo" type="int" />
 		<column name="dossierStatus" type="String" />
+		<column name="dossierSubStatus" type="String" />
 		<column name="daysDuration" type="int" />
 		<column name="referenceDossierPartId" type="long" />
 		<column name="externalAppUrl" type="String" />
+		<column name="processStepNo" type="int" />
 		
 		<!-- Order -->
-		<order by="desc">
+		<order by="asc">
 			<order-column name="sequenceNo"/>
 		</order>
 		
@@ -83,6 +85,10 @@
 			<finder-column name="serviceProcessId"/>
 		</finder>
 	
+		<finder return-type="Collection" name="ProcessStepIds">
+			<finder-column name="groupId"/>
+			<finder-column name="processStepId" arrayable-operator="OR"/>
+		</finder>
 	</entity>
 
 	<entity name="ProcessStepDossierPart" local-service="true" remote-service="true"
@@ -90,7 +96,12 @@
 
 		<column name="processStepId" type="long" primary="true" />
 		<column name="dossierPartId" type="long" primary="true" />
-
+		<column name="readOnly" type="boolean" />
+		
+		<finder return-type="Collection" name="ProcessStepId">
+			<finder-column name="processStepId"/>
+		</finder>
+		
 	</entity>
 
 	<entity name="StepAllowance" local-service="true" remote-service="true"
@@ -115,9 +126,12 @@
 			<finder-column name="readOnly"/>
 		</finder>
 		
-		<finder return-type="StepAllowance" name="STEP_ROLE">
+		<finder return-type="StepAllowance" name="P_RoleId">
 			<finder-column name="processStepId"/>
-			<finder-column name="readOnly"/>
+			<finder-column name="roleId"/>
+		</finder>
+		<finder return-type="Collection" name="RoleIds">
+			<finder-column name="roleId" arrayable-operator="OR"/>
 		</finder>
 	</entity>
 
@@ -146,16 +160,54 @@
 		<column name="assignUser" type="boolean"/>
 		<column name="actionUserId" type="long"/>
 		<column name="requestPayment" type="boolean"/>
-		<column name="paymentFee" type="double"/>
-		<column name="generateReceptionNo" type="String"/>
+		<column name="paymentFee" type="String"/>
+		<column name="generateReceptionNo" type="boolean"/>
 		<column name="receptionNoPattern" type="String"/>
 		<column name="generateDeadline" type="boolean"/>
-		<column name="deadlinePattern" type="boolean"/>
-		
+		<column name="deadlinePattern" type="String"/>
+		<column name="isFinishStep" type="boolean"/>
+		<column name="preCondition" type="String"/>
+		<column name="isMultipled" type="boolean"/>
+		<column name="actionCode" type="String"></column>		
 		<finder return-type="Collection" name="S_P_ID">
 			<finder-column name="serviceProcessId"/>
 		</finder>
+        <finder return-type="ProcessWorkflow" name="S_PPSID">
+            <finder-column name="serviceProcessId"></finder-column>
+            <finder-column name="postProcessStepId"></finder-column>
+        </finder>
+        <finder name="S_PRE_PS_ID" return-type="Collection">
+            <finder-column name="serviceProcessId"></finder-column>
+            <finder-column name="preProcessStepId"></finder-column>
+        </finder>
 
+        <finder name="FIRST_WORKFLOW" return-type="ProcessWorkflow" where="preProcessStepId = 0">
+            <finder-column name="serviceProcessId"></finder-column>
+        </finder>
+
+        <finder name="SPI_" return-type="ProcessWorkflow">
+            <finder-column name="serviceProcessId"></finder-column>
+            <finder-column name="preProcessStepId"></finder-column>
+        </finder>
+	
+		<finder return-type="ProcessWorkflow" name="SPI_AEV">
+			<finder-column name="serviceProcessId"/>
+			<finder-column name="autoEvent"/>
+			<finder-column name="preProcessStepId"/>
+		</finder>
+		
+		<finder return-type="Collection" name="AutoEvent">
+			<finder-column name="autoEvent"/>
+		</finder>
+
+        <finder name="ActionCode" return-type="ProcessWorkflow">
+            <finder-column name="actionCode"></finder-column>
+        </finder>
+        <finder name="S_PreP_AN" return-type="ProcessWorkflow">
+            <finder-column name="serviceProcessId"></finder-column>
+            <finder-column name="preProcessStepId"></finder-column>
+            <finder-column name="actionName"></finder-column>
+		</finder>
 	</entity>
 
 	<entity name="WorkflowOutput" local-service="true" remote-service="true"
@@ -165,21 +217,31 @@
 
 		<column name="workflowOutputId" type="long" primary="true" />
 
-		<!-- Audit fields -->
-
-		<column name="companyId" type="long" />
-		<column name="groupId" type="long" />
-		<column name="userId" type="long" />
-		<column name="createDate" type="Date" />
-		<column name="modifiedDate" type="Date" />
 
 		<!-- Other fields -->
 
 		<column name="processWorkflowId" type="long" />
 		<column name="dossierPartId" type="long" />
-		<column name="required" type="int"/>
-		<column name="esign" type="int"/>
-		<column name="postback" type="int"/>
+		<column name="required" type="boolean"/>
+		<column name="esign" type="boolean"/>
+		<column name="postback" type="boolean"/>
+		
+		<finder return-type="Collection" name="P_W_ID">
+			<finder-column name="processWorkflowId"/>
+		</finder>
+		<finder return-type="Collection" name="P_W_ID_PB">
+			<finder-column name="processWorkflowId"/>
+			<finder-column name="postback"/>
+		</finder>
+		<finder return-type="Collection" name="E_S_ID_PB">
+			<finder-column name="processWorkflowId"/>
+			<finder-column name="esign"/>
+		</finder>
+        <finder name="PWID_DPID" return-type="Collection">
+            <finder-column name="processWorkflowId"></finder-column>
+            <finder-column name="dossierPartId"></finder-column>
+        </finder>
+		
 	</entity>
 
 	<entity name="ProcessOrder" local-service="true" remote-service="true"
@@ -213,8 +275,20 @@
 		<column name="actionNote" type="String"/>
 		<column name="assignToUserId" type="long"/>
 		<column name="processWorkflowId" type="long"/>
-		<column name="dossierStatus" type="int"/>
+		<column name="dossierStatus" type="String"/>
 		<column name="errorInfo" type="String"/>
+        <finder name="D_F" return-type="ProcessOrder">
+            <finder-column name="dossierId"></finder-column>
+            <finder-column name="fileGroupId"></finder-column>
+        </finder>
+		
+		<finder return-type="Collection" name="processStepId">
+			<finder-column name="processStepId"/>
+		</finder> 
+		
+		<finder return-type="Collection" name="ServiceInfoId">
+			<finder-column name="serviceInfoId"/>
+		</finder>
 	</entity>
 
 	<entity name="ActionHistory" local-service="true" remote-service="true"
@@ -243,8 +317,87 @@
 		<column name="actionUserId" type="long"/>
 		<column name="daysDoing" type="int"/>
 		<column name="daysDelay" type="int"/>
-	</entity>
+        <column name="oId" type="String"/>
+        <column name="logId" type="long"/>
 
+        <order >
+            <order-column name="createDate" order-by="desc"></order-column>
+            <order-column name="actionHistoryId" order-by="asc"/>
+        </order>
+        
+        <finder name="LOG_ID" return-type="ActionHistory">
+            <finder-column name="logId"/>
+        </finder>
+
+
+        <finder name="POID_PWID" return-type="Collection">
+            <finder-column name="processOrderId"></finder-column>
+            <finder-column name="processWorkflowId"></finder-column>
+        </finder>
+		
+		
+		<finder return-type="Collection" name="F_ProcessOrderId">
+			<finder-column name="groupId"/>
+			<finder-column name="processOrderId"/>
+		</finder>
+		
+		<finder return-type="Collection" name="ProcessOrderId">
+			<finder-column name="processOrderId"/>
+		</finder>
+        <finder name="OId" return-type="ActionHistory">
+            <finder-column name="oId"></finder-column>
+        </finder>
+		
+		
+	</entity>
+	
+	<entity name="ServiceInfoProcess" local-service="true"
+		remote-service="true" table="opencps_serviceinfoprocess">
+		
+		<!-- PK fields -->
+		
+		<column name="serviceProcessId" type="long" primary="true" />
+		<column name="serviceinfoId" type="long" primary="true" />
+		
+		<!-- Finder methods -->
+		<finder return-type="Collection" name="ServiceProcessId" >
+			<finder-column name="serviceProcessId" />
+		</finder>
+		
+		<finder return-type="ServiceInfoProcess" name="I_P" >
+			<finder-column name="serviceProcessId" />
+			<finder-column name="serviceinfoId" />
+		</finder>
+		
+		<finder return-type="ServiceInfoProcess" name="S_I_P" unique="true">
+			<finder-column name="serviceinfoId" />
+		</finder>
+		
+		
+	</entity>
+	<entity name="SchedulerJobs" local-service="true"
+		remote-service="true" table="opencps_scheduler_jobs">
+		
+		<!-- PK fields -->
+		
+		<column name="schedulerJobsId" type="long" primary="true" />
+		
+		<column name="createDate" type="Date"/>
+		<column name="modifiedDate" type="Date"/>
+		<column name="dossierId" type="long"/>
+		<column name="fileGroupId" type="long"/>
+		<column name="processWorkflowId" type="long"/>
+		<column name="schedulerType" type="int"/>
+		<column name="shedulerPattern" type="String"/>
+		<column name="status" type="int"/>
+				
+		<!-- Finder methods -->
+		<finder return-type="Collection" name="S_T" >
+			<finder-column name="schedulerType" />
+		</finder>
+
+	</entity>
+	
 	<exceptions>
 		<exception>EmptyProcessNo</exception>
 		<exception>EmptyProcessName</exception>

@@ -1,0 +1,30 @@
+@font-face {
+	font-family: 'Roboto-Regular';
+	src: url("../fonts/Roboto-Regular.ttf");
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'Roboto-Bold';
+	src: url("../fonts/Roboto-Bold.ttf");
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'Roboto-Medium';
+	src: url("../fonts/Roboto-Medium.ttf");
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'Roboto-Black';
+	src: url("../fonts/Roboto-Black.ttf");
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Glyphicons Halflings';
+	src: url('/opencps-ux-theme/css/../fonts/glyphicons-halflings-regular.eot');
+	src: url('/opencps-ux-theme/css/../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/opencps-ux-theme/css/../fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('/opencps-ux-theme/css/../fonts/glyphicons-halflings-regular.woff') format('woff'), url('/opencps-ux-theme/css/../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}

@@ -168,8 +168,13 @@ public class WorkingUnitLocalServiceImpl
 		Organization org = null;
 		org = OrganizationLocalServiceUtil
 						.getOrganization(workingUnit.getMappingOrganisationId());
-		org.setParentOrganizationId(OrganizationConstants
-						.DEFAULT_PARENT_ORGANIZATION_ID);
+		
+		if(parentWorkingUnitId <= 0) {
+			org.setParentOrganizationId(OrganizationConstants
+					.DEFAULT_PARENT_ORGANIZATION_ID);
+		} else {
+			org.setParentOrganizationId(parentWorkingUnitId);
+		}
 		
 		OrganizationLocalServiceUtil.updateOrganization(org);
 			
@@ -201,7 +206,7 @@ public class WorkingUnitLocalServiceImpl
 
 	public void deleteWorkingUnitByWorkingUnitId(long workingUnitId)
 			throws NoSuchWorkingUnitException, SystemException {
-
+		_log.info("workingUnitId " + workingUnitId);
 		List<Employee> employees = employeePersistence
 				.findByWorkingUnitId(workingUnitId);
 		List<JobPos> jobPos = jobPosPersistence
@@ -211,7 +216,7 @@ public class WorkingUnitLocalServiceImpl
 					.findByPrimaryKey(workingUnitId);
 			try {
 				if (OrganizationLocalServiceUtil
-						.getParentOrganizations(unit.getMappingOrganisationId())
+						.getOrganizations(unit.getCompanyId(), unit.getMappingOrganisationId())
 						.isEmpty()) {
 					OrganizationLocalServiceUtil.deleteOrganization(
 							unit.getMappingOrganisationId());
@@ -252,7 +257,6 @@ public class WorkingUnitLocalServiceImpl
 
 		return workingUnitPersistence.findByG_E_P(groupId, isEmployee,
 				parentWorkingUnitId);
-
 	}
 	public List<WorkingUnit> getWorkingUnit(int start, int end,
 			OrderByComparator odc) throws SystemException {
@@ -264,6 +268,17 @@ public class WorkingUnitLocalServiceImpl
 			throws SystemException {
 
 		return workingUnitPersistence.findByG_E(groupId, isEmployee);
+	}
+	
+	public List<WorkingUnit> getWorkingUnit(long groupId, boolean isEmployee, int start,
+		int end, OrderByComparator orderByComparator)
+					throws SystemException {
+
+				return workingUnitPersistence.findByG_E(groupId, 
+					isEmployee, start, end, orderByComparator);
+			}
+	public int countByG_E(long groupId, boolean isEmployee) throws SystemException {
+		return workingUnitPersistence.countByG_E(groupId, isEmployee);
 	}
 
 	public List<WorkingUnit> getWorkingUnits(long groupId,
@@ -302,5 +317,16 @@ public class WorkingUnitLocalServiceImpl
 		return workingUnitPersistence.findByEmail(email);
 	}
 
+	public WorkingUnit fetchByMappingOrganisationId(long groupId, long mappingOrganisationId)
+					throws NoSuchWorkingUnitException, SystemException {
+		return workingUnitPersistence.fetchByMappingOrganisationId(groupId, mappingOrganisationId);
+	}
+
+	public WorkingUnit getWorkingUnitName(String name)
+		throws NoSuchWorkingUnitException, SystemException {
+
+		return workingUnitPersistence.findByName(name);
+	}
+	
 	private Log _log = LogFactoryUtil.getLog(WorkingUnitLocalServiceImpl.class);
 }

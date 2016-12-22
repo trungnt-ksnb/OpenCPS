@@ -1,5 +1,4 @@
-<%@page import="org.opencps.dossiermgt.permissions.DossierFilePermission"%>
-<%@page import="org.opencps.dossiermgt.permissions.DossierPermission"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -25,12 +24,20 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
+<%@page import="org.opencps.dossiermgt.permissions.DossierFilePermission"%>
+<%@page import="org.opencps.dossiermgt.permissions.DossierPermission"%>
 <%@ include file="../init.jsp"%>
 
 <%
 
-	String[] names = new String[]{DossierMgtUtil.TOP_TABS_DOSSIER, DossierMgtUtil.TOP_TABS_DOSSIER_FILE, DossierMgtUtil.TOP_TABS_EXTERNAL_DOSSIER};
-
+	//String[] names = new String[]{DossierMgtUtil.TOP_TABS_DOSSIER, DossierMgtUtil.TOP_TABS_DOSSIER_FILE, DossierMgtUtil.TOP_TABS_EXTERNAL_DOSSIER};
+	
+	String[] names = null;
+	if(!hideTabDossierFile) {
+		names =new String[]{DossierMgtUtil.TOP_TABS_DOSSIER, DossierMgtUtil.TOP_TABS_DOSSIER_FILE};	
+	} else {
+		names =new String[]{DossierMgtUtil.TOP_TABS_DOSSIER};
+	}
 	String value = ParamUtil.getString(request, "tabs1", DossierMgtUtil.TOP_TABS_DOSSIER);
 
 	List<String> urls = new ArrayList<String>();
@@ -59,10 +66,38 @@
 		urls.add(viewExternalDossierURL.toString());
 	}
 %>
-<liferay-ui:tabs
-	names="<%= StringUtil.merge(names) %>"
-	param="tabs1"
-	url0="<%=urls != null && urls.size() > 0 ? urls.get(0): StringPool.BLANK %>"
-	url1="<%=urls != null && urls.size() > 1 ? urls.get(1): StringPool.BLANK %>"
-	url2="<%=urls != null && urls.size() > 2 ? urls.get(2): StringPool.BLANK %>"
-/>
+<%-- <div class="opencps-toptabs">
+	<div class="container">
+		<liferay-ui:tabs  
+			names="<%= StringUtil.merge(names) %>"
+			param="tabs1"
+			url0="<%=urls != null && urls.size() > 0 ? urls.get(0): StringPool.BLANK %>"
+			url1="<%=urls != null && urls.size() > 1 ? urls.get(1): StringPool.BLANK %>"
+			url2="<%=urls != null && urls.size() > 2 ? urls.get(2): StringPool.BLANK %>"
+		/>
+	</div>
+</div> --%>
+
+<div class="opencps-toptabs">
+	<div class="container">
+		<c:choose>
+			<c:when test="<%= hideTabDossierFile %>">
+				<liferay-ui:tabs  
+					names="<%= StringUtil.merge(names) %>"
+					param="tabs1"
+					url0="<%=urls != null && urls.size() > 0 ? urls.get(0): StringPool.BLANK %>"
+				/>
+			</c:when>
+			<c:otherwise>
+				<liferay-ui:tabs  
+					names="<%= StringUtil.merge(names) %>"
+					param="tabs1"
+					url0="<%=urls != null && urls.size() > 0 ? urls.get(0): StringPool.BLANK %>"
+					url1="<%=urls != null && urls.size() > 1 ? urls.get(1): StringPool.BLANK %>"
+				/>
+			</c:otherwise>
+		</c:choose>
+	</div>
+</div>
+
+

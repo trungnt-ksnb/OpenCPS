@@ -10,11 +10,12 @@
  * copy of the GNU Affero General Public License along with this program. If
  * not, see <http://www.gnu.org/licenses/>
  */
-
 package org.opencps.servicemgt.portlet;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -22,50 +23,258 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.opencps.datamgt.DuplicateItemException;
+import org.opencps.datamgt.EmptyDictItemNameException;
+import org.opencps.datamgt.EmptyItemCodeException;
+import org.opencps.datamgt.NoSuchDictItemException;
+import org.opencps.datamgt.OutOfLengthItemCodeException;
+import org.opencps.datamgt.OutOfLengthItemNameException;
+import org.opencps.datamgt.model.DictCollection;
+import org.opencps.datamgt.model.DictItem;
+import org.opencps.datamgt.portlet.DataMamagementPortlet;
+import org.opencps.datamgt.search.DictItemDisplayTerms;
+import org.opencps.datamgt.service.DictCollectionLocalServiceUtil;
+import org.opencps.datamgt.service.DictItemLocalServiceUtil;
+import org.opencps.dossiermgt.model.Dossier;
+import org.opencps.dossiermgt.model.ServiceConfig;
+import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
+import org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil;
+import org.opencps.processmgt.model.ProcessOrder;
+import org.opencps.processmgt.service.ProcessOrderLocalServiceUtil;
 import org.opencps.servicemgt.DuplicateFileNameException;
 import org.opencps.servicemgt.DuplicateFileNoException;
 import org.opencps.servicemgt.IOFileUploadException;
 import org.opencps.servicemgt.model.ServiceInfo;
 import org.opencps.servicemgt.model.TemplateFile;
 import org.opencps.servicemgt.search.ServiceDisplayTerms;
+import org.opencps.servicemgt.service.ServiceFileTemplateLocalServiceUtil;
 import org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil;
 import org.opencps.servicemgt.service.TemplateFileLocalServiceUtil;
-import org.opencps.util.DateTimeUtil;
 import org.opencps.util.MessageKeys;
+import org.opencps.util.PortletPropsValues;
 import org.opencps.util.WebKeys;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.repository.model.FileEntry;
-import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
-import com.liferay.portal.kernel.upload.LiferayFileItemException;
-import com.liferay.portal.kernel.upload.UploadException;
-import com.liferay.portal.kernel.upload.UploadPortletRequest;
-import com.liferay.portal.kernel.util.Constants;
-import com.liferay.portal.kernel.util.MimeTypesUtil;
+import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
-import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.assetpublisher.util.AssetPublisherUtil;
-import com.liferay.portlet.documentlibrary.FileSizeException;
-import com.liferay.portlet.documentlibrary.model.DLFileEntry;
-import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
-import com.liferay.portlet.journal.NoSuchFolderException;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 /**
  * @author khoavd
  */
 public class ServiceMgtPortlet extends MVCPortlet {
+	
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 * @throws IOException
+	 */
+	public void deleteDomain(ActionRequest actionRequest, ActionResponse actionResponse) throws IOException { 
+		long dictItemId = ParamUtil.getLong(actionRequest,
+				DictItemDisplayTerms.DICTITEM_ID, 0L);
+		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
+		try {
+			DictItemLocalServiceUtil.deleteDictItem(dictItemId);
+		} catch (Exception e) {
+			SessionErrors.add(actionRequest,
+					MessageKeys.DATAMGT_SYSTEM_EXCEPTION_OCCURRED);
+			_log.error(e);
+		} finally {
+			if (Validator.isNotNull(redirectURL)) {
+				actionResponse.sendRedirect(redirectURL);
+			}
+		}
+	}
+	
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 * @throws IOException
+	 */
+	public void updateAdministration(
+		ActionRequest actionRequest, ActionResponse actionResponse)
+		throws IOException {
 
+		long dictItemId =
+			ParamUtil.getLong(actionRequest, DictItemDisplayTerms.DICTITEM_ID);
+		long parentItemId =
+			ParamUtil.getLong(actionRequest, DictItemDisplayTerms.PARENTITEM_ID);
+		String itemName =
+			ParamUtil.getString(actionRequest, DictItemDisplayTerms.ITEM_NAME);
+		String itemCode =
+			ParamUtil.getString(actionRequest, DictItemDisplayTerms.ITEM_CODE);
+		String isAddchirld = ParamUtil.getString(actionRequest, "isAddchirld");
+		String backURL = ParamUtil.getString(actionRequest, "backURL");
+		String currentURL = ParamUtil.getString(actionRequest, "currentURL");
+
+		Map<Locale, String> itemNameMap =
+			LocalizationUtil.getLocalizationMap(
+				actionRequest, DictItemDisplayTerms.ITEM_NAME);
+		DictCollection dictCollection = null;
+
+		try {
+
+			ServiceContext serviceContext =
+				ServiceContextFactory.getInstance(actionRequest);
+			dictCollection =
+				DictCollectionLocalServiceUtil.getDictCollection(
+					serviceContext.getScopeGroupId(),
+					PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_ADMINISTRATION);
+			DataMamagementPortlet.validatetDictItem(
+				dictItemId, itemName, itemCode, serviceContext);
+			if (dictItemId == 0) {
+				DictItemLocalServiceUtil.addDictItem(
+					serviceContext.getUserId(),
+					dictCollection.getDictCollectionId(), itemCode,
+					itemNameMap, parentItemId, serviceContext);
+				SessionMessages.add(
+					actionRequest, MessageKeys.DATAMGT_ADD_SUCESS);
+			}
+			else {
+
+				if (Validator.isNotNull(isAddchirld)) {
+					DictItemLocalServiceUtil.addDictItem(
+						serviceContext.getUserId(),
+						dictCollection.getDictCollectionId(), itemCode,
+						itemNameMap, parentItemId, serviceContext);
+					SessionMessages.add(
+						actionRequest, MessageKeys.DATAMGT_ADD_SUCESS);
+				}
+				else {
+					// tam thoi hard code dictversionId = 0
+
+					DictItemLocalServiceUtil.updateDictItem(
+						dictItemId, dictCollection.getDictCollectionId(), 0,
+						itemCode, itemNameMap, parentItemId, serviceContext);
+					SessionMessages.add(
+						actionRequest, MessageKeys.DATAMGT_UPDATE_SUCESS);
+				}
+			}
+
+			if (Validator.isNotNull(backURL)) {
+				actionResponse.sendRedirect(backURL);
+			}
+		}
+		catch (Exception e) {
+			if (e instanceof EmptyItemCodeException) {
+				SessionErrors.add(actionRequest, EmptyItemCodeException.class);
+			}
+			else if (e instanceof OutOfLengthItemCodeException) {
+				SessionErrors.add(
+					actionRequest, OutOfLengthItemCodeException.class);
+			}
+			else if (e instanceof EmptyDictItemNameException) {
+				SessionErrors.add(
+					actionRequest, EmptyDictItemNameException.class);
+			}
+			else if (e instanceof OutOfLengthItemNameException) {
+				SessionErrors.add(
+					actionRequest, OutOfLengthItemNameException.class);
+			}
+			else if (e instanceof DuplicateItemException) {
+				SessionErrors.add(actionRequest, DuplicateItemException.class);
+			}
+			else if (e instanceof NoSuchDictItemException) {
+				SessionErrors.add(actionRequest, NoSuchDictItemException.class);
+			}
+			else {
+				SessionErrors.add(
+					actionRequest,
+					MessageKeys.DATAMGT_SYSTEM_EXCEPTION_OCCURRED);
+			}
+
+			if (Validator.isNotNull(currentURL)) {
+				actionResponse.sendRedirect(currentURL);
+			}
+		}
+	}
+	
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 * @throws IOException
+	 */
+	public void updateDomain(ActionRequest actionRequest, ActionResponse actionResponse) throws IOException {
+		long dictItemId = ParamUtil.getLong(actionRequest, DictItemDisplayTerms.DICTITEM_ID);
+		long parentItemId = ParamUtil.getLong(actionRequest, DictItemDisplayTerms.PARENTITEM_ID);
+		String itemName = ParamUtil.getString(actionRequest, DictItemDisplayTerms.ITEM_NAME);
+		String itemCode = ParamUtil.getString(actionRequest, DictItemDisplayTerms.ITEM_CODE);
+		String isAddchirld = ParamUtil.getString(actionRequest, "isAddchirld");
+		String backURL = ParamUtil.getString(actionRequest, "backURL");
+		String currentURL = ParamUtil.getString(actionRequest, "currentURL");
+		
+		Map<Locale, String> itemNameMap = LocalizationUtil.getLocalizationMap(
+			actionRequest, DictItemDisplayTerms.ITEM_NAME);
+		DictCollection dictCollection = null;
+		
+		try {
+			
+			ServiceContext serviceContext = ServiceContextFactory
+						    .getInstance(actionRequest);
+	        dictCollection = DictCollectionLocalServiceUtil
+	        				.getDictCollection(serviceContext.getScopeGroupId(), PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN);
+	        DataMamagementPortlet.validatetDictItem(dictItemId, itemName, itemCode, serviceContext);
+	        if(dictItemId == 0) {
+	        	DictItemLocalServiceUtil.addDictItem(serviceContext.getUserId(), dictCollection.getDictCollectionId(),
+	        		itemCode, itemNameMap, parentItemId, serviceContext);
+	        	SessionMessages.add(actionRequest,
+					MessageKeys.DATAMGT_ADD_SUCESS);
+	        } else {
+	        	
+	        	if(Validator.isNotNull(isAddchirld)) {
+	        		DictItemLocalServiceUtil.addDictItem(serviceContext.getUserId(), dictCollection.getDictCollectionId(),
+		        		itemCode, itemNameMap, parentItemId, serviceContext);
+	        		SessionMessages.add(actionRequest,
+						MessageKeys.DATAMGT_ADD_SUCESS);
+	        	} else {
+	        		//tam thoi hard code dictversionId = 0
+	        		
+	        		DictItemLocalServiceUtil.updateDictItem(dictItemId, dictCollection.getDictCollectionId(), 0,
+	        			itemCode, itemNameMap, parentItemId, serviceContext);
+	        		SessionMessages.add(actionRequest,
+						MessageKeys.DATAMGT_UPDATE_SUCESS);
+	        	}
+	        }
+	        
+	        if(Validator.isNotNull(backURL)) {
+	        	actionResponse.sendRedirect(backURL);
+	        }
+        }
+        catch (Exception e) {
+        	if (e instanceof EmptyItemCodeException) {
+				SessionErrors.add(actionRequest, EmptyItemCodeException.class);
+			} else if (e instanceof OutOfLengthItemCodeException) {
+				SessionErrors.add(actionRequest,
+						OutOfLengthItemCodeException.class);
+			} else if (e instanceof EmptyDictItemNameException) {
+				SessionErrors.add(actionRequest,
+						EmptyDictItemNameException.class);
+			} else if (e instanceof OutOfLengthItemNameException) {
+				SessionErrors.add(actionRequest,
+						OutOfLengthItemNameException.class);
+			} else if (e instanceof DuplicateItemException) {
+				SessionErrors.add(actionRequest, DuplicateItemException.class);
+			} else if (e instanceof NoSuchDictItemException) {
+				SessionErrors.add(actionRequest, NoSuchDictItemException.class);
+			} else {
+				SessionErrors.add(actionRequest,
+						MessageKeys.DATAMGT_SYSTEM_EXCEPTION_OCCURRED);
+			}
+        	
+        	if(Validator.isNotNull(currentURL)) {
+	        	actionResponse.sendRedirect(currentURL);
+	        }
+        }
+	}
 	/**
 	 * @param renderRequest
 	 * @param renderResponse
@@ -88,7 +297,8 @@ public class ServiceMgtPortlet extends MVCPortlet {
 		SessionMessages.add(
 		    actionRequest, PortalUtil.getPortletId(actionRequest) +
 		        SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
-
+		String urlOnline = ParamUtil.getString(actionRequest, "urlOnline");
+		String onlineURL = Validator.isNotNull(urlOnline) ? urlOnline : displayTerms.getOnlineUrl();
 		try {
 			ServiceContext serviceContext =
 			    ServiceContextFactory.getInstance(actionRequest);
@@ -101,7 +311,7 @@ public class ServiceMgtPortlet extends MVCPortlet {
 
 				ServiceInfoLocalServiceUtil.addService(
 				    displayTerms.getServiceNo(), displayTerms.getServiceName(),
-				    displayTerms.getShortName(),
+				    displayTerms.getFullName(),
 				    displayTerms.getServiceProcess(),
 				    displayTerms.getServiceMethod(),
 				    displayTerms.getServiceDossier(),
@@ -117,7 +327,7 @@ public class ServiceMgtPortlet extends MVCPortlet {
 				    displayTerms.getDomainCode(),
 				    displayTerms.getDomainIndex(),
 				    displayTerms.getActiveStatus(),
-				    displayTerms.getOnlineUrl(),
+				    onlineURL,
 				    displayTerms.setFileTemplateIds(actionRequest), serviceContext);
 
 				// Redirect page
@@ -133,7 +343,7 @@ public class ServiceMgtPortlet extends MVCPortlet {
 				// Update ServiceInfo
 				ServiceInfoLocalServiceUtil.updateService(
 				    serviceInfoId, displayTerms.getServiceNo(),
-				    displayTerms.getServiceName(), displayTerms.getShortName(),
+				    displayTerms.getServiceName(), displayTerms.getFullName(),
 				    displayTerms.getServiceProcess(),
 				    displayTerms.getServiceMethod(),
 				    displayTerms.getServiceDossier(),
@@ -147,7 +357,7 @@ public class ServiceMgtPortlet extends MVCPortlet {
 				    displayTerms.getAdministrationCode(),
 				    displayTerms.getAdministrationIndex(),
 				    displayTerms.getDomainCode(),
-				    displayTerms.getDomainIndex(), displayTerms.getOnlineUrl(),
+				    displayTerms.getDomainIndex(), onlineURL,
 				    displayTerms.setFileTemplateIds(actionRequest), serviceContext);
 				
 				// Redirect page
@@ -180,49 +390,59 @@ public class ServiceMgtPortlet extends MVCPortlet {
 
 		long templateFileId =
 		    ParamUtil.getLong(actionRequest, "templateFileId");
+		
 		String fileNo = ParamUtil.getString(actionRequest, "fileNo");
 		String fileName = ParamUtil.getString(actionRequest, "fileName");
 
 		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
 		String returnURL = ParamUtil.getString(actionRequest, "returnURL");
-
+		
 		SessionMessages.add(
 		    actionRequest, PortalUtil.getPortletId(actionRequest) +
 		        SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
+		
 
 		try {
 			ServiceContext serviceContext =
 			    ServiceContextFactory.getInstance(actionRequest);
+			
+			serviceContext.setAddGuestPermissions(true);
 
 			if (templateFileId <= 0) {
-				FileEntry file = updateFileEntry(actionRequest, actionResponse);
 
-				if (Validator.isNotNull(file)) {
 					if (TemplateFileLocalServiceUtil.isDuplicateFileName(
-					    serviceContext.getScopeGroupId(), fileName)) {
-						throw new DuplicateFileNameException();
-
+					    templateFileId, serviceContext.getScopeGroupId(), fileName)) {
+						
 					}
 
 					if (TemplateFileLocalServiceUtil.isDuplicateFileNo(
-					    serviceContext.getScopeGroupId(), fileNo)) {
-						throw new DuplicateFileNoException();
+						templateFileId, serviceContext.getScopeGroupId(), fileNo)) {
+						
 					}
 
 					TemplateFileLocalServiceUtil.addServiceTemplateFile(
-					    file.getFileEntryId(), fileNo, fileName, serviceContext);
+					    fileNo, fileName, actionRequest, actionResponse, 
+					    serviceContext);
 					SessionMessages.add(
 					    actionRequest,
 					    MessageKeys.SERVICE_TEMPLATE_FILE_UPDATE_SUCESS);
-				}
-				else {
-					throw new IOFileUploadException("File upload exception");
-				}
 
 			}
 			else {
+								
+				if (TemplateFileLocalServiceUtil.isDuplicateFileName(
+				    templateFileId, serviceContext.getScopeGroupId(), fileName)) {
+					
+				}
+
+				if (TemplateFileLocalServiceUtil.isDuplicateFileNo(
+					templateFileId, serviceContext.getScopeGroupId(), fileNo)) {
+					
+				}
+				
 				TemplateFileLocalServiceUtil.updateServiceTemplateFile(
-				    templateFileId, fileNo, fileName, serviceContext);
+				    templateFileId, fileNo, fileName,actionRequest,actionResponse,
+				    serviceContext);
 				SessionMessages.add(
 				    actionRequest,
 				    MessageKeys.SERVICE_TEMPLATE_FILE_UPDATE_SUCESS);
@@ -261,7 +481,101 @@ public class ServiceMgtPortlet extends MVCPortlet {
 		}
 
 	}
-
+	
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 * @throws PortalException
+	 * @throws SystemException
+	 * @throws IOException
+	 */
+	public void chooseServiceInfo(ActionRequest actionRequest, ActionResponse actionResponse) 
+					throws PortalException, SystemException, IOException {
+		long templatefileId = ParamUtil.getLong(actionRequest, "templateFileId");
+		long [] serviceInfoIds = ParamUtil
+					    .getLongValues(actionRequest, "rowIds");
+		String backURL = ParamUtil.getString(actionRequest, "backURL");
+		TemplateFileLocalServiceUtil.addChooseServceInfo(templatefileId, serviceInfoIds);
+		if(Validator.isNotNull(backURL)) {
+			actionResponse.sendRedirect(backURL);
+		}
+		
+	}
+	
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 * @throws PortalException
+	 * @throws SystemException
+	 * @throws IOException
+	 */
+	public void deteleRelaSeInfoAndTempFile (ActionRequest actionRequest, ActionResponse actionResponse)
+					throws PortalException, SystemException, IOException{
+		long templatefileId = ParamUtil.getLong(actionRequest, "templateFileId");
+		long serviceInfoId = ParamUtil.getLong(actionRequest, "serviceInfoId");
+		String backURL = ParamUtil.getString(actionRequest, "backURL");
+		ServiceFileTemplateLocalServiceUtil.deleteServiceFile(serviceInfoId, templatefileId);
+		if(Validator.isNotNull(backURL)) {
+			actionResponse.sendRedirect(backURL);
+		}
+		
+	}
+	
+	public void deleteTemplate (ActionRequest actionRequest, ActionResponse actionResponse)
+					throws PortalException, SystemException, IOException {
+		long templateId = ParamUtil.getLong(actionRequest, "templateId");
+		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
+		TemplateFileLocalServiceUtil.deleteServiceTemplateFile(templateId);
+		
+		if(Validator.isNotNull(redirectURL)) {
+			actionResponse.sendRedirect(redirectURL);
+		}
+	}
+	
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 * @throws IOException 
+	 * @throws SystemException 
+	 * @throws PortalException 
+	 */
+	public void deleteService(ActionRequest actionRequest , ActionResponse actionResponse) throws IOException, PortalException, SystemException {
+		long serviceinfoId = ParamUtil.getLong(actionRequest, ServiceDisplayTerms.SERVICE_ID);
+		
+		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
+		
+		ServiceConfig serviceConfig = null;
+		java.util.List<Dossier> dossier = new ArrayList<Dossier>();
+		java.util.List<ProcessOrder> processOrder = new ArrayList<ProcessOrder>(); 
+		try {
+			ServiceContext serviceContext = ServiceContextFactory
+						    .getInstance(actionRequest);
+			serviceConfig = ServiceConfigLocalServiceUtil
+							.getServiceConfigByG_S(serviceContext.getScopeGroupId(), serviceinfoId);
+			dossier =  DossierLocalServiceUtil.getDossiersByServiceInfo(serviceinfoId);
+			processOrder = ProcessOrderLocalServiceUtil.getProcessOrdersByServiceInfoId(serviceinfoId);
+		}
+		catch (Exception e) {
+			// nothing to do
+		}
+		
+		if(serviceConfig != null) {
+			SessionErrors.add(actionRequest, MessageKeys.SERVICE_DELERR_EXITS_SERVICECONFIG);
+		} else if(!dossier.isEmpty() ) {
+			SessionErrors.add(actionRequest, MessageKeys.SERVICE_DELERR_EXITS_DOSSIER);
+		} else if(!processOrder.isEmpty()) {
+			SessionErrors.add(actionRequest, MessageKeys.SERVICE_DELERR_EXITS_PROCESSORDER);
+		} else {
+			ServiceInfoLocalServiceUtil.deleteService(serviceinfoId);
+			SessionMessages.add(actionRequest, MessageKeys.SERVICE_DELSUCC);
+		}
+		
+		if(Validator.isNotNull(redirectURL)){
+			actionResponse.sendRedirect(redirectURL);
+		}
+	}
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * @see javax.portlet.GenericPortlet#render(javax.portlet.RenderRequest,
@@ -273,6 +587,8 @@ public class ServiceMgtPortlet extends MVCPortlet {
 	    throws PortletException, IOException {
 
 		long serviceinfoId = ParamUtil.getLong(renderRequest, "serviceinfoId");
+		
+		long dictItemId = ParamUtil.getLong(renderRequest, DictItemDisplayTerms.DICTITEM_ID);
 
 		long templatefileId =
 		    ParamUtil.getLong(renderRequest, "templateFileId");
@@ -280,9 +596,16 @@ public class ServiceMgtPortlet extends MVCPortlet {
 		TemplateFile templateFile = null;
 
 		ServiceInfo serviceInfo = null;
+		
+		DictItem dictItem = null;
 
 		try {
-
+			
+			if(dictItemId > 0) {
+				dictItem = DictItemLocalServiceUtil.getDictItem(dictItemId);
+				renderRequest.setAttribute(WebKeys.DICT_ITEM_ENTRY, dictItem);
+			}
+			
 			templateFile =
 			    TemplateFileLocalServiceUtil.fetchTemplateFile(templatefileId);
 
@@ -308,244 +631,6 @@ public class ServiceMgtPortlet extends MVCPortlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected FileEntry updateFileEntry(
-	    ActionRequest actionRequest, ActionResponse actionResponse)
-	    throws Exception {
-
-		UploadPortletRequest uploadPortletRequest =
-		    PortalUtil.getUploadPortletRequest(actionRequest);
-
-		ThemeDisplay themeDisplay =
-		    (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
-
-		String cmd = ParamUtil.getString(uploadPortletRequest, Constants.CMD);
-
-		long repositoryId = themeDisplay.getScopeGroupId();
-
-		long folderId = 0;
-
-		Folder folderFile = initFolderService(actionRequest, themeDisplay);
-
-		if (Validator.isNotNull(folderFile)) {
-			folderId = folderFile.getFolderId();
-		}
-
-		String sourceFileName =
-		    uploadPortletRequest.getFileName("uploadedFile");
-		String title = ParamUtil.getString(uploadPortletRequest, "fileName");
-
-		String description =
-		    ParamUtil.getString(uploadPortletRequest, "description");
-		String changeLog =
-		    ParamUtil.getString(uploadPortletRequest, "changeLog");
-
-		if (folderId > 0) {
-			Folder folder = DLAppServiceUtil.getFolder(folderId);
-
-			if (folder.getGroupId() != themeDisplay.getScopeGroupId()) {
-				throw new NoSuchFolderException("{folderId=" + folderId + "}");
-			}
-		}
-
-		InputStream inputStream = null;
-
-		try {
-			String contentType =
-			    uploadPortletRequest.getContentType("uploadedFile");
-
-			long size = uploadPortletRequest.getSize("uploadedFile");
-
-			if ((cmd.equals(Constants.ADD) || cmd.equals(Constants.ADD_DYNAMIC)) &&
-			    (size == 0)) {
-
-				contentType = MimeTypesUtil.getContentType(title);
-			}
-
-			inputStream = uploadPortletRequest.getFileAsStream("uploadedFile");
-
-			ServiceContext serviceContext =
-			    ServiceContextFactory.getInstance(
-			        DLFileEntry.class.getName(), uploadPortletRequest);
-
-			FileEntry fileEntry = null;
-
-			// Add file entry
-
-			fileEntry =
-			    DLAppServiceUtil.addFileEntry(
-			        repositoryId, folderId, sourceFileName, contentType,
-			        sourceFileName, description, changeLog, inputStream, size,
-			        serviceContext);
-
-			AssetPublisherUtil.addAndStoreSelection(
-			    actionRequest, DLFileEntry.class.getName(),
-			    fileEntry.getFileEntryId(), -1);
-
-			AssetPublisherUtil.addRecentFolderId(
-			    actionRequest, DLFileEntry.class.getName(), folderId);
-
-			return fileEntry;
-		}
-		catch (Exception e) {
-			UploadException uploadException =
-			    (UploadException) actionRequest.getAttribute(WebKeys.UPLOAD_EXCEPTION);
-
-			if (uploadException != null) {
-				if (uploadException.isExceededLiferayFileItemSizeLimit()) {
-					throw new LiferayFileItemException();
-				}
-				else if (uploadException.isExceededSizeLimit()) {
-					throw new FileSizeException(uploadException.getCause());
-				}
-			}
-
-			throw e;
-		}
-		finally {
-			StreamUtil.cleanUp(inputStream);
-		}
-	}
-
-	/**
-	 * Create tree folder. Return folder contains template files
-	 * 
-	 * @param actionRequest
-	 * @param themeDisplay
-	 * @return
-	 */
-	public Folder initFolderService(
-	    ActionRequest actionRequest, ThemeDisplay themeDisplay) {
-
-		// Folder contains template service files
-
-		String dateFolderName = DateTimeUtil.getStringDate();
-
-		Folder folder = null;
-
-		try {
-			// Check ROOT folder exist
-
-			long rootFolderId = 0;
-
-			long parentFolderId = 0;
-
-			boolean isRootFolderExist =
-			    isFolderExist(
-			        themeDisplay.getScopeGroupId(), 0, ROOT_FOLDER_NAME);
-
-			ServiceContext serviceContext =
-			    ServiceContextFactory.getInstance(actionRequest);
-
-			if (isRootFolderExist) {
-				Folder rootFolder = null;
-
-				rootFolder =
-				    DLAppServiceUtil.getFolder(
-				        themeDisplay.getScopeGroupId(), 0, ROOT_FOLDER_NAME);
-
-				rootFolderId = rootFolder.getFolderId();
-
-			}
-			else {
-				Folder rootFolder =
-				    DLAppServiceUtil.addFolder(
-				        themeDisplay.getScopeGroupId(), 0, ROOT_FOLDER_NAME,
-				        "All documents of OpenCPS", serviceContext);
-
-				rootFolderId = rootFolder.getFolderId();
-			}
-
-			// Check parent folder exist
-
-			boolean isParentFolderExist =
-			    isFolderExist(
-			        themeDisplay.getScopeGroupId(), rootFolderId,
-			        PARENT_FOLDER_NAME);
-
-			if (isParentFolderExist) {
-
-				Folder parentFolder =
-				    DLAppServiceUtil.getFolder(
-				        themeDisplay.getScopeGroupId(), rootFolderId,
-				        PARENT_FOLDER_NAME);
-
-				parentFolderId = parentFolder.getFolderId();
-
-			}
-			else {
-				Folder parentFolder =
-				    DLAppServiceUtil.addFolder(
-				        themeDisplay.getScopeGroupId(), rootFolderId,
-				        PARENT_FOLDER_NAME,
-				        "All documents of Service Template File",
-				        serviceContext);
-
-				parentFolderId = parentFolder.getFolderId();
-			}
-
-			// Check DateFolder exist
-			boolean isDateFolderExist =
-			    isFolderExist(
-			        themeDisplay.getScopeGroupId(), parentFolderId,
-			        dateFolderName);
-
-			Folder dateFolder = null;
-
-			if (isDateFolderExist) {
-
-				dateFolder =
-				    DLAppServiceUtil.getFolder(
-				        themeDisplay.getScopeGroupId(), parentFolderId,
-				        dateFolderName);
-
-			}
-			else {
-				dateFolder =
-				    DLAppServiceUtil.addFolder(
-				        themeDisplay.getScopeGroupId(),
-				        parentFolderId,
-				        dateFolderName,
-				        "All documents of Service Template File upload in a day",
-				        serviceContext);
-			}
-
-			folder = dateFolder;
-
-		}
-		catch (Exception e) {
-			_log.error(e);
-		}
-
-		return folder;
-	}
-
-	/**
-	 * Check folder exist
-	 * 
-	 * @param scopeGroupId
-	 * @param parentFolderId
-	 * @param folderName
-	 * @return
-	 */
-	public boolean isFolderExist(
-	    long scopeGroupId, long parentFolderId, String folderName) {
-
-		boolean folderExist = false;
-		try {
-
-			DLAppServiceUtil.getFolder(scopeGroupId, parentFolderId, folderName);
-			folderExist = true;
-		}
-		catch (Exception e) {
-
-		}
-
-		return folderExist;
-	}
-
-	private String ROOT_FOLDER_NAME = "OPENCPS";
-
-	private String PARENT_FOLDER_NAME = "templates";
 
 	private static final Log _log =
 	    LogFactoryUtil.getLog(ServiceMgtPortlet.class);

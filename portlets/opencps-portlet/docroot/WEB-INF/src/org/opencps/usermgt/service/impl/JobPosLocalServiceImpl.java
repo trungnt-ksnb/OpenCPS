@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.opencps.usermgt.NoSuchJobPosException;
 import org.opencps.usermgt.NoSuchWorkingUnitException;
 import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.JobPos;
@@ -39,9 +40,9 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.ResourceAction;
 import com.liferay.portal.model.ResourceConstants;
+import com.liferay.portal.model.ResourcePermission;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.RoleConstants;
-import com.liferay.portal.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.service.ResourceActionLocalServiceUtil;
 import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
@@ -113,11 +114,9 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 				ResourcePermissionLocalServiceUtil.addResourcePermission(
 					serviceContext.getCompanyId(), 
 					className, ResourceConstants.SCOPE_GROUP, 
-					String.valueOf(role.getRoleId()), 
+					String.valueOf(serviceContext.getScopeGroupId()), 
 					role.getRoleId(), resourceAction.getActionId()
-					);	
-				_log.info("rowIds[jndex]  " + rowIds[jndex] +
-					" resourceAction.getActionId() " + resourceAction.getActionId());
+					);
 			}
 		}
 
@@ -139,7 +138,7 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 
 	public JobPos updateJobPos(long jobPosId, long userId, 
 			String title, String description,
-			long workingUnitId, int leader,
+			long workingUnitId, int leader,long [] rowIds,
 			ServiceContext serviceContext)
 			throws SystemException, PortalException {
 
@@ -148,6 +147,23 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		Role role = RoleServiceUtil.getRole(jobPos.getMappingRoleId());
 		WorkingUnit workingUnit = workingUnitPersistence
 				.findByPrimaryKey(workingUnitId);
+		
+		for(int jndex = 0; jndex < rowIds.length; jndex ++) {
+			
+			if(rowIds[jndex] > 0) {
+				
+				ResourceAction resourceAction = ResourceActionLocalServiceUtil
+				.fetchResourceAction(rowIds[jndex]);
+				String className = resourceAction.getName();
+				
+				ResourcePermissionLocalServiceUtil.addResourcePermission(
+					serviceContext.getCompanyId(), 
+					className, ResourceConstants.SCOPE_GROUP, 
+					String.valueOf(serviceContext.getScopeGroupId()), 
+					role.getRoleId(), resourceAction.getActionId()
+					);
+			}
+		}
 
 		long directWorkingUnitId = getDirectWorkingUnitId(workingUnitId)
 				.getWorkingunitId();
@@ -157,7 +173,7 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		roleName = title + StringPool.UNDERLINE + workingUnit.getName();
 
 		jobPos.setUserId(userId);
-		jobPos.setGroupId(serviceContext.getUserId());
+		jobPos.setGroupId(serviceContext.getScopeGroupId());
 		jobPos.setCompanyId(serviceContext.getCompanyId());
 		jobPos.setCreateDate(currentDate);
 		jobPos.setModifiedDate(currentDate);
@@ -168,7 +184,7 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 		jobPos.setLeader(leader);
 
 		role.setName(roleName);
-
+		role.setTitle(roleName);
 		RoleLocalServiceUtil.updateRole(role);
 
 		return jobPosPersistence.update(jobPos);
@@ -178,10 +194,22 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 			throws SystemException, PortalException {
 		JobPos jobPos = jobPosPersistence.findByPrimaryKey(jobPosId);
 		List<Employee> employees = new ArrayList<Employee>();
+		List<ResourcePermission> resourcePermissions = new ArrayList<ResourcePermission>();
 		employees =	employeePersistence.findByMainJobPosId(jobPosId);
 		if(employees.isEmpty()) {
 			RoleLocalServiceUtil.deleteRole(jobPos.getMappingRoleId());
+			resourcePermissions = ResourcePermissionLocalServiceUtil
+							.getRoleResourcePermissions(jobPos.getMappingRoleId());
+			
+			if(resourcePermissions.size() > 0) {
+				for(ResourcePermission resourcePermission : resourcePermissions) {
+					ResourcePermissionLocalServiceUtil
+					.deleteResourcePermission(resourcePermission);
+				}
+			}
+			
 			jobPosPersistence.remove(jobPosId);
+			
 		}
 		
 
@@ -214,14 +242,34 @@ public class JobPosLocalServiceImpl extends JobPosLocalServiceBaseImpl {
 
 		return jobPosPersistence.findByG_W(groupId, workingUnitId);
 	}
+	
+	public List<JobPos> getJobPossG_W(long groupId, long workingUnitId, int start,
+		int end, OrderByComparator orderByComparator)
+					throws SystemException {
 
+				return jobPosPersistence.findByG_W(groupId, workingUnitId, start, end, orderByComparator);
+			}
+	
+	public int countJobPosG_W(long groupId, long workingUnitId) throws SystemException {
+		return jobPosPersistence.countByG_W(groupId, workingUnitId);
+	}
 	public List<JobPos> getJobPoss(long groupId, long workingUnitId,
 			long directWorkingUnitId) throws SystemException {
 
 		return jobPosPersistence.findByG_W_D(groupId, workingUnitId,
 				directWorkingUnitId);
 	}
-
+	
+	public JobPos getJobPosByTitle(long groupId, String title) 
+					throws NoSuchJobPosException, SystemException {
+		return jobPosPersistence.findByTitle(groupId, title);
+	}
+	
+	public List<JobPos> getJobPosByG_T_W(long groupId, String title,
+			long workingUnitId) throws SystemException {
+		return jobPosPersistence.findByG_T_W(groupId, title, workingUnitId); 
+	}
+	
 	private WorkingUnit getDirectWorkingUnitId(long parentWorkingUnitId)
 			throws NoSuchWorkingUnitException, SystemException {
 		WorkingUnit workingUnit = workingUnitPersistence

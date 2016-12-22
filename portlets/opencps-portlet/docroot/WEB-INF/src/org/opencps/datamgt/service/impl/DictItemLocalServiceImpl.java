@@ -17,22 +17,30 @@
 
 package org.opencps.datamgt.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.opencps.datamgt.NoSuchDictCollectionException;
 import org.opencps.datamgt.NoSuchDictItemException;
 import org.opencps.datamgt.NoSuchDictVersionException;
+import org.opencps.datamgt.model.AdministrationServicedomain;
+import org.opencps.datamgt.model.DictCollection;
 import org.opencps.datamgt.model.DictItem;
 import org.opencps.datamgt.model.DictVersion;
 import org.opencps.datamgt.service.base.DictItemLocalServiceBaseImpl;
+import org.opencps.datamgt.util.DataMgtUtil;
 import org.opencps.util.PortletConstants;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.liferay.counter.service.CounterLocalServiceUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceContext;
 
 /**
@@ -168,6 +176,46 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 		ServiceContext serviceContext)
 		throws SystemException, NoSuchDictItemException {
 
+		return dictItemLocalService.addDictItem(userId, 
+			dictCollectionId, itemCode, itemNameMap, null, 
+			parentId, serviceContext);
+	}
+	
+	/**
+	 * <p> Phuong thuc them moi mot DictItem khong co version va mac dinh trang
+	 * thai inuse </p>
+	 * 
+	 * @param userId
+	 *            - Data type<code>[long]</code> - Id tai khoan nguoi cap nhat
+	 * @param dictCollectionId
+	 *            - Data type<code>[long]</code> - Id ban ghi trong bang quan he
+	 *            DictCollection
+	 * @param itemCode
+	 *            - Data type<code>[String]</code> - Ma code
+	 * @param itemNameMap
+	 *            - Data type<code>[Map&lt;Locale,String&gt;]</code> -
+	 * @param itemDescriptionMap
+	 *            - Data type<code>[Map&lt;Locale,String&gt;]</code> -
+	 * @param parentId
+	 *            - Data type<code>[long]</code> - Id DictItem cha
+	 * @param treeIndex
+	 *            - Data type<code>[String]</code> - Phan cap du lieu dang cay.
+	 *            <ul> <li>Cap cha: 1</li> <li>Cap con: 1.1</li> <li>Cap chau:
+	 *            1.1.1</li> </ul>
+	 * @param serviceContext
+	 *            - Data type<code>[ServiceContext]</code>
+	 * @return DictItem
+	 * @throws SystemException
+	 *             Ngoai le xay ra trong qua trinh thuc thi phuong thuc
+	 * @throws NoSuchDictItemException
+	 *             Ngoai le khong tim duoc treeIndex cap cha
+	 */
+	public DictItem addDictItem(
+		long userId, long dictCollectionId, String itemCode,
+		Map<Locale, String> itemNameMap, Map<Locale, String> itemDescriptionMap, 
+		long parentId, ServiceContext serviceContext)
+		throws SystemException, NoSuchDictItemException {
+
 		long dictItemId = CounterLocalServiceUtil
 			.increment(DictItem.class
 				.getName());
@@ -194,6 +242,8 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 			.setItemCode(itemCode);
 		dictItem
 			.setItemNameMap(itemNameMap);
+		dictItem
+			.setItemDescriptionMap(itemDescriptionMap);
 		dictItem
 			.setModifiedDate(now);
 		dictItem
@@ -246,6 +296,13 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 		}
 	}
 
+	public DictItem getDicItemByTreeIndex(String treeIndex)
+		throws NoSuchDictItemException, SystemException {
+
+		return dictItemPersistence
+			.findByTreeInDexOne(treeIndex);
+	}
+
 	/**
 	 * <p> Phuong thu tim DictItem theo dictItemId </p>
 	 * 
@@ -285,6 +342,53 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 			.findByC_C_I(dictCollectionId, itemCode);
 	}
 
+
+	/**
+	 * @param dictCollectionId
+	 * @param groupId
+	 * @return
+	 * @throws SystemException
+	 */
+	public List<DictItem> findDictItemsByG_DC_S(long groupId, String dictCollectionCode)
+		throws SystemException {
+		
+		return dictItemFinder.findDictItemsByG_DC_S(groupId, dictCollectionCode, DataMgtUtil.ISSUE_STATUS_INUSE);
+	}
+	
+	/**
+	 * @param groupId
+	 * @param dictCollectionCode
+	 * @param itemCode
+	 * @return
+	 * @throws NoSuchDictItemException
+	 * @throws SystemException
+	 * @throws NoSuchDictCollectionException
+	 */
+	public DictItem getDictItemInuseByItemCode(
+		long groupId, String dictCollectionCode, String itemCode)
+		throws NoSuchDictItemException, SystemException,
+		NoSuchDictCollectionException {
+
+		DictCollection dictCollection = dictCollectionLocalService
+			.getDictCollection(groupId, dictCollectionCode);
+
+		if (dictCollection != null) {
+			return dictItemPersistence
+				.findByC_C_I(dictCollection
+					.getDictCollectionId(), itemCode);
+		}
+		else {
+			return null;
+		}
+
+	}
+
+	/**
+	 * @param dictCollectionId
+	 * @param itemName
+	 * @return
+	 * @throws SystemException
+	 */
 	public List<DictItem> getDictItems(long dictCollectionId, String itemName)
 		throws SystemException {
 
@@ -292,6 +396,15 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 			.findByC_N(dictCollectionId, itemName);
 	}
 
+	/**
+	 * @param dictCollectionId
+	 * @param itemNames
+	 * @param start
+	 * @param end
+	 * @param obc
+	 * @return
+	 * @throws SystemException
+	 */
 	public List<DictItem> getDictItems(
 		long dictCollectionId, String[] itemNames, int start, int end,
 		OrderByComparator obc)
@@ -301,6 +414,11 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 			.findByC_N(dictCollectionId, itemNames, start, end, obc);
 	}
 
+	/**
+	 * @param dictCollectionId
+	 * @return
+	 * @throws SystemException
+	 */
 	public List<DictItem> getDictItemsByDictCollectionId(long dictCollectionId)
 		throws SystemException {
 
@@ -308,6 +426,14 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 			.findByDictCollectionId(dictCollectionId);
 	}
 
+	/**
+	 * @param dictCollectionId
+	 * @param start
+	 * @param end
+	 * @param obc
+	 * @return
+	 * @throws SystemException
+	 */
 	public List<DictItem> getDictItemsByDictCollectionId(
 		long dictCollectionId, int start, int end, OrderByComparator obc)
 		throws SystemException {
@@ -316,6 +442,23 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 			.findByDictCollectionId(dictCollectionId, start, end, obc);
 	}
 
+	/**
+	 * @param dictVersionId
+	 * @return
+	 * @throws SystemException
+	 */
+	public List<DictItem> getDictItemsByDictVersionId(long dictVersionId)
+		throws SystemException {
+
+		return dictItemPersistence
+			.findByDictVersionId(dictVersionId);
+	}
+
+	/**
+	 * @param parentItemId
+	 * @return
+	 * @throws SystemException
+	 */
 	public List<DictItem> getDictItemsByParentItemId(long parentItemId)
 		throws SystemException {
 
@@ -323,6 +466,14 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 			.findByParentItemId(parentItemId);
 	}
 
+	/**
+	 * @param parentItemId
+	 * @param start
+	 * @param end
+	 * @param obc
+	 * @return
+	 * @throws SystemException
+	 */
 	public List<DictItem> getDictItemsByParentItemId(
 		long parentItemId, int start, int end, OrderByComparator obc)
 		throws SystemException {
@@ -331,13 +482,11 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 			.findByParentItemId(parentItemId, start, end, obc);
 	}
 
-	public List<DictItem> getDictItemsByDictVersionId(long dictVersionId)
-		throws SystemException {
-
-		return dictItemPersistence
-			.findByDictVersionId(dictVersionId);
-	}
-
+	/**
+	 * @param dictCollectionId
+	 * @return
+	 * @throws SystemException
+	 */
 	public List<DictItem> getDictItemsInUseByDictCollectionId(
 		long dictCollectionId)
 		throws SystemException {
@@ -346,6 +495,12 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 			.findByD_I(dictCollectionId);
 	}
 
+	/**
+	 * @param dictCollectionId
+	 * @param parentItemId
+	 * @return
+	 * @throws SystemException
+	 */
 	public List<DictItem> getDictItemsInUseByDictCollectionIdAndParentItemId(
 		long dictCollectionId, long parentItemId)
 		throws SystemException {
@@ -355,6 +510,13 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 				parentItemId);
 	}
 
+	/**
+	 * @param dictItemId
+	 * @param dictParentItemId
+	 * @return
+	 * @throws NoSuchDictItemException
+	 * @throws SystemException
+	 */
 	protected String getTreeIndex(long dictItemId, long dictParentItemId)
 		throws NoSuchDictItemException, SystemException {
 
@@ -406,6 +568,47 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 		throws NoSuchDictItemException, SystemException,
 		NoSuchDictVersionException {
 
+		return dictItemLocalService.updateDictItem(dictItemId,
+				dictCollectionId, dictVersionId, itemCode, itemNameMap, null,
+				parentItemId, serviceContext);
+	}
+	
+	/**
+	 * <p> Phuong thuc update DictItem. Neu co version thi trang thai la draf,
+	 * neu khong co version thi trang thai la inuse </p>
+	 * 
+	 * @param dictItemId
+	 *            - Data type<code>[long]</code> - Id dictItem
+	 * @param dictCollectionId
+	 *            - Data type<code>[long]</code> - Id ban ghi trong bang quan he
+	 *            DictCollection
+	 * @param dictVersionId
+	 *            - Data type<code>[long]</code> - Id ban ghi trong bang quan he
+	 *            DictVersion
+	 * @param itemCode
+	 *            - Data type<code>[String]</code> - Ma code
+	 * @param itemNameMap
+	 *            - Data type<code>[Map&lt;Locale,String&gt;]</code> -
+	 * @param itemDescriptionMap
+	 *            - Data type<code>[Map&lt;Locale,String&gt;]</code> -
+	 * @param parentItemId
+	 *            - Data type<code>[long]</code> - Id DictItem cha
+	 * @param serviceContext
+	 *            - Data type<code>[ServiceContext]</code>
+	 * @return DictItem
+	 * @throws SystemException
+	 *             Ngoai le xay ra trong qua trinh thuc thi phuong thuc
+	 * @throws NoSuchDictVersionException
+	 *             Ngoai le khong tim thay DictItem voi dictItemId tuong ung
+	 */
+	public DictItem updateDictItem(
+		long dictItemId, long dictCollectionId, long dictVersionId,
+		String itemCode, Map<Locale, String> itemNameMap, 
+		Map<Locale, String> itemDescriptionMap, long parentItemId,
+		ServiceContext serviceContext)
+		throws NoSuchDictItemException, SystemException,
+		NoSuchDictVersionException {
+
 		DictItem dictItem = dictItemPersistence
 			.findByPrimaryKey(dictItemId);
 
@@ -431,6 +634,8 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 		dictItem
 			.setItemNameMap(itemNameMap);
 		dictItem
+			.setItemDescriptionMap(itemDescriptionMap);
+		dictItem
 			.setModifiedDate(now);
 		dictItem
 			.setParentItemId(parentItemId);
@@ -444,5 +649,28 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 		return dictItemPersistence
 			.update(dictItem);
 	}
+	
+	public DictItem getDictItemByCode(String itemCode)
+	    throws PortalException, SystemException {
+		return dictItemPersistence.findByC_I(itemCode);
+	}
+	
+	//alpacajs only
+	public List<DictItem> searchDictItemByName_like(String collectionCode, String itemCode, String keyword, long groupId, 
+			int start, int end, OrderByComparator obc) throws SystemException {
+		
+		return dictItemFinder.searchDictItemByName_like(collectionCode, itemCode, keyword, groupId, start, end, obc);
+		
+	}
 
+	public List<DictItem> getDictItemsByTreeIndex(long dictItemId, long dictParentItemId, int status, int start, int end, OrderByComparator orderByComparator)
+			throws SystemException, NoSuchDictItemException{
+
+		//TODO
+		//--> search: treeIndex + StringPool.PERIOD + StringPool.PERCENT
+		String treeIndex = getTreeIndex(dictItemId, dictParentItemId);
+		return dictItemPersistence
+				.findByF_TreeIndex_Status(treeIndex + StringPool.PERCENT, status, start, end, orderByComparator);
+	}
+	
 }

@@ -1,3 +1,4 @@
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -16,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-
+<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@ include file="init.jsp"%>
 
 <%
@@ -42,7 +43,9 @@
 					
 					String elementName = name + i;
 					
-					long selectedItem = 0;
+					String emptyOptionLabel = StringPool.BLANK;
+					
+					String selectedItem = "0";
 					
 					boolean itemEmptyOption = false;
 					
@@ -58,19 +61,26 @@
 						itemEmptyOption = itemsEmptyOption[i - 1];
 					}
 					
+					if(emptyOptionLabels != null && emptyOptionLabels.length >= i){
+						emptyOptionLabel =  emptyOptionLabels[i - 1];
+					}
+					
 					if(!isHorizontal){
 						%>
 							<aui:row>
 								<aui:col id='<%="col_" + randomInstance + i %>' cssClass='<%=cssClass + "_" + i %>' width="<%=colWidth %>">
 									<aui:select 
 										name='<%=elementName %>' 
-										onchange='<%=themeDisplay.getPortletDisplay().getNamespace() + "renderChildItems(this," + i + ",true)" %>'
+										onchange='<%=themeDisplay.getPortletDisplay().getNamespace() + randomInstance +"renderChildItems(this," + i + ")" %>'
 										cssClass='<%=cssClass %>'
+										inlineField="<%=inlineField %>"
+										inlineLabel="<%=inlineLabel %>"
+										label="<%=showLabel ? elementName : StringPool.BLANK %>"
 									>
 										<%
 											if(!itemEmptyOption){
 												%>
-													<aui:option value="0"></aui:option>
+													<aui:option value="0"><%=emptyOptionLabel %></aui:option>
 												<%
 											}
 										%>
@@ -83,13 +93,16 @@
 							<aui:col id='<%="col_" + randomInstance + i %>' cssClass='<%=cssClass + "_" + i %>' width="<%=colWidth %>">
 							<aui:select 
 								name='<%=elementName %>' 
-								onchange='<%=themeDisplay.getPortletDisplay().getNamespace() + randomInstance + "renderChildItems(this," + i + ",true)" %>'
+								onchange='<%=themeDisplay.getPortletDisplay().getNamespace() + randomInstance + "renderChildItems(this," + i + ")" %>'
 								cssClass='<%=cssClass %>'
+								inlineField="<%=inlineField %>"
+								inlineLabel="<%=inlineLabel %>"
+								label="<%=showLabel ? elementName : StringPool.BLANK %>"
 							>
 								<%
 									if(!itemEmptyOption){
 										%>
-											<aui:option value="0"></aui:option>
+											<aui:option value="0"><%=emptyOptionLabel %></aui:option>
 										<%
 									}
 								%>
@@ -110,17 +123,26 @@
 
 	var localeCode = '<%=themeDisplay.getLanguageId() %>';
 	
-	var depthLevel = parseInt('<%=depthLevel %>');
+	var depthLevel<%=randomInstance %> = parseInt('<%=depthLevel %>');
 	
 	var strSelectItems = '<%=StringUtil.merge(selectedItems) %>';
 	
-	var strItemEmptyOption = '<%=StringUtil.merge(itemsEmptyOption) %>';
+	var strItemEmptyOption<%=randomInstance %> = '<%=StringUtil.merge(itemsEmptyOption) %>';
+	
+	var strEmptyOptionLabel = '<%=StringUtil.merge(emptyOptionLabels) %>';
 	
 	var selectItems<%=randomInstance %> = strSelectItems.split(",");
 	
-	var itemsEmptyOption = strItemEmptyOption.split(",");
+	var itemsEmptyOption<%=randomInstance %> = strItemEmptyOption<%=randomInstance %>.split(",");
+	
+	var emptyOptionLabels<%=randomInstance %> = strEmptyOptionLabel.split(",");
+	
+	var optionValueType<%=randomInstance %> = '<%=optionValueType %>';
 	
 	var rootDictItemsContainer =  null;
+	
+	var dictCollectionId;
+	
 	
 	AUI().ready('aui-base','liferay-portlet-url','aui-io', function(A){
 	
@@ -143,7 +165,7 @@
 				},function(obj) {
 					
 					if(obj){
-						var dictCollectionId = obj.dictCollectionId;
+						dictCollectionId = obj.dictCollectionId;
 						
 						<portlet:namespace/><%=randomInstance %>renderRootDataItemsByCollection(dictCollectionId);
 					}
@@ -171,26 +193,34 @@
 			    parentItemId: 0
 			  },
 			  function(objs) {
-			    <portlet:namespace/><%=randomInstance %>renderDataItems(objs, A.one('#<portlet:namespace/>col_<%=randomInstance %>1'), 1, false);
+			    <portlet:namespace/><%=randomInstance %>renderDataItems(objs, A.one('#<portlet:namespace/>col_<%=randomInstance %>1'), 1);
 			  }
 			);
 		}
 	});
 	
-	Liferay.provide(window, '<portlet:namespace/><%=randomInstance %>renderDataItems', function(objs, boundingBox, level, clearChild) {
-		
-		var labelName = boundingBox.one('label').text().trim();
+	Liferay.provide(window, '<portlet:namespace/><%=randomInstance %>renderDataItems', function(objs, boundingBox, level) {
 		
 		var itemName = '';
 		
 		var opts = '';
 		
-		if(itemsEmptyOption.length >= parseInt(level)){
-			itemEmptyOption = itemsEmptyOption[parseInt(level) - 1];
+		var emptyOptionLabel = '';
+		
+		if(itemsEmptyOption<%=randomInstance %>.length >= parseInt(level)){
+			itemEmptyOption = itemsEmptyOption<%=randomInstance %>[parseInt(level) - 1];
+		}
+		
+		if(emptyOptionLabels<%=randomInstance %>.length >= parseInt(level)){
+			emptyOptionLabel = emptyOptionLabels<%=randomInstance %>[parseInt(level) - 1];
 		}
 			
 		if(itemEmptyOption == 'true'){
-			opts += '<option value="0"></option>'
+			if(optionValueType<%=randomInstance %> ==='code'){
+				opts += '<option value="">' + Liferay.Language.get(emptyOptionLabel) +'</option>'
+			}else{
+				opts += '<option value="0">' + Liferay.Language.get(emptyOptionLabel) +'</option>'
+			}
 		}
 
 		for(var i = 0; i < objs.length; i++){
@@ -228,18 +258,32 @@
 		  		}
 		  	}
 			
-			var selectedItem = 0;
+			var selectedItem = "0";
 			
 			var itemEmptyOption = false;
 			
 			if(selectItems<%=randomInstance %>.length >= parseInt(level)){
 				selectedItem = selectItems<%=randomInstance %>[parseInt(level) - 1];
 			}
-		
-			if(parseInt(opt.dictItemId) == selectedItem && clearChild == false){
-				opts += '<option value="' + opt.dictItemId + '" selected="selected">' + itemName + '</option>'
-			}else{
-				opts += '<option value="' + opt.dictItemId + '">' + itemName + '</option>'
+			
+			if(optionValueType<%=randomInstance %> ==='code'){
+			
+				if(opt.itemCode.toString() === selectedItem.toString()){
+				
+					opts += '<option value="' + opt.itemCode + '" selected="selected">' + itemName + '</option>'
+				}else{
+
+					opts += '<option value="' + opt.itemCode + '" >' + itemName + '</option>'
+				}
+			}else if(optionValueType<%=randomInstance %> ==='id'){
+			
+				if(opt.dictItemId.toString() === selectedItem.toString()){
+				
+					opts += '<option value="' + opt.dictItemId + '" selected="selected">' + itemName + '</option>'
+				}else{
+				
+					opts += '<option value="' + opt.dictItemId + '">' + itemName + '</option>'
+				}
 			}
 		}
 		
@@ -247,60 +291,98 @@
 		
 		boundingBox.one('select').html(opts);
 		
-		<portlet:namespace/><%=randomInstance %>renderChildItems(boundingBox.one('select'), level, clearChild);
+		<portlet:namespace/><%=randomInstance %>renderChildItems(boundingBox.one('select'), level);
 		
-		<%-- if(parseInt(selectedItem) > 0 && clearChild == false){
-			<portlet:namespace/><%=randomInstance %>renderChildItems(boundingBox.one('select'), level, clearChild);
-		}else{
-			<portlet:namespace/><%=randomInstance %>renderChildItems(boundingBox.one('select'), level, clearChild);
-		} --%>
 	});
 	
-	Liferay.provide(window, '<portlet:namespace/><%=randomInstance %>renderChildItems', function(evt, parentLevel, clearChild) {
+	Liferay.provide(window, '<portlet:namespace/><%=randomInstance %>renderChildItems', function(evt, parentLevel) {
 	
 		var A = AUI();
-		
+
 		var parent = A.one(evt);
 		
 		var level = parentLevel + 1;
 		
-		var parentItemId = parent.val();
+		var parentItem = parent.val();
 		
 		var boundingBox = null;
 		
-		if(level <= depthLevel){
-			boundingBox = A.one('#<portlet:namespace/>col_<%=randomInstance %>' + level);
+		if(level <= depthLevel<%=randomInstance %>){
 			
-			if(parentItemId != 0){
-				Liferay.Service(
-				  '/opencps-portlet.dictitem/get-dictitems-by-parentId',
-				  {
-				    parentItemId: parentItemId
-				  },
-				  function(objs) {
-					  if(objs.length > 0){
-					  	 <portlet:namespace/><%=randomInstance %>renderDataItems(objs, boundingBox, level, clearChild);
-					  }else{
-					  	for(var childLevel = level; childLevel <= depthLevel; childLevel++){
-					  	
-							var childBoundingBox = A.one('#<portlet:namespace/>col_<%=randomInstance %>' + childLevel);
-							
-							console.log(childBoundingBox);
-							
-							if(childBoundingBox){
-								childBoundingBox.one('select').empty();
+			boundingBox = A.one('#<portlet:namespace/>col_<%=randomInstance %>' + level);
+			var data = null;
+			if(optionValueType<%=randomInstance %> ==='id'){
+				
+				if(parentItem != 0){
+					Liferay.Service(
+					  '/opencps-portlet.dictitem/get-dictitems-by-parentId',
+					  {
+					    parentItemId: parentItem
+					  },
+					  function(objs) {
+						  if(objs.length > 0){
+						  	data = objs;
+						  }
+						  
+						  if(data != null){
+							<portlet:namespace/><%=randomInstance %>renderDataItems(objs, boundingBox, level);
+						  }else{
+						  	
+							for(var childLevel = level; childLevel <= depthLevel<%=randomInstance %>; childLevel++){
+								var childBoundingBox = A.one('#<portlet:namespace/>col_<%=randomInstance %>' + childLevel);
+								if(childBoundingBox){
+									childBoundingBox.one('select').empty();
+								}
 							}
-						}
-					  }
-				  });
+						  }
+					});
+				}else{
+					<portlet:namespace/><%=randomInstance %>renderDataItems('', boundingBox, level);
+				}
 			}else{
 				
-				for(var childLevel = level; childLevel <= depthLevel; childLevel++){
-					var childBoundingBox = A.one('#<portlet:namespace/>col_<%=randomInstance %>' + childLevel);
-					
-					if(childBoundingBox){
-						childBoundingBox.one('select').empty();
-					}
+				if(parentItem != ''){
+					var itemId = 0;
+						
+					Liferay.Service(
+					  '/opencps-portlet.dictitem/get-dictitem-inuse-by-code',
+					  {
+					    dictCollectionId: dictCollectionId,
+					    itemCode: parentItem
+					  },
+					  function(obj) {
+					  	
+					    itemId = obj.dictItemId;
+					    
+						if(parseInt(itemId) > 0){
+							Liferay.Service(
+						  '/opencps-portlet.dictitem/get-dictitems-by-parentId',
+						  {
+						    parentItemId: itemId,
+						  },
+						  
+						  function(objs) {
+							  if(objs.length > 0){
+							  	 data = objs;
+							  }
+							  
+							  if(data != null){
+								<portlet:namespace/><%=randomInstance %>renderDataItems(objs, boundingBox, level);
+							  }else{
+								for(var childLevel = level; childLevel <= depthLevel<%=randomInstance %>; childLevel++){
+									var childBoundingBox = A.one('#<portlet:namespace/>col_<%=randomInstance %>' + childLevel);
+									
+									if(childBoundingBox){
+										childBoundingBox.one('select').empty();
+									}
+								}
+							  }
+						  });
+						}
+					  }
+					);
+				}else{
+					<portlet:namespace/><%=randomInstance %>renderDataItems('', boundingBox, level);
 				}
 			}
 		}

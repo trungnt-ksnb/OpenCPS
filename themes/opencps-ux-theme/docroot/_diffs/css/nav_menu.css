@@ -1,0 +1,153 @@
+.opencps-theme.ux .nav-container {
+	background: #05253e url("../images/custom/bg_menu.png") 0 center repeat-x;
+	min-height: 50px;
+}
+
+.opencps-theme.ux .nav-container .top-menu {
+	margin: 0 auto;
+	width: 1170px;
+	display: table;
+}
+.opencps-theme.ux .nav-container .top-menu ul li, 
+.opencps-theme.ux .nav-container-small .top-menu ul li {
+	float: left;
+}
+.opencps-theme.ux .nav-container .top-menu ul li a, 
+.opencps-theme.ux .nav-container-small .top-menu ul li a {
+	color: #fff;
+	font-family: 'Roboto-Bold';
+	line-height: 51px;
+	display: block;
+	padding: 0 30px;
+	text-transform: uppercase;
+}
+.opencps-theme.ux .nav-container .top-menu ul li a:hover, 
+.opencps-theme.ux .nav-container-small .top-menu ul li a:hover,  
+.opencps-theme.ux .nav-container .top-menu ul li.selected a, 
+.opencps-theme.ux .nav-container-small .top-menu ul li.selected a, 
+.account-info .logout a:hover {
+	background-color: #0090ff;
+}
+
+.opencps-theme.ux .nav-container-small .top-menu {
+	display: inline-block;
+	float: right;
+	margin-top: 20px;
+}
+.opencps-theme.ux .nav-container-small .top-menu ul li a {
+	line-height: 30px;
+	padding: 0 20px;
+	font-size: 13px;
+}
+
+.opencps-theme.ux .nav-container .top-menu.private ul li a {
+	text-transform: none;
+	font-size: 13px;
+	padding: 0 20px;
+}
+.account-info {
+	float: right;
+	font-size: 13px;
+	color: white;
+	font-family: 'Roboto-Bold';
+}
+.account-info span {
+	display: inline-block;
+}
+.account-info .logout a {
+	padding: 0 20px;
+	line-height: 50px;
+	display: block;
+}
+.account-info .logout a:before {
+	content: "\f08b";
+	font-family: FontAwesome;
+	margin-right: 5px;
+}
+.account-info .account-name {
+    position: relative;
+    z-index: 10;
+    padding: 0 0 0 20px;
+    background: url("../images/custom/welcome_new.png") 0 center no-repeat;
+    line-height: 32px;
+}
+.account-info .account-name .tooltiptext {
+    visibility: hidden;
+    background-color: #0090ff;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 7px 10px;
+    position: absolute;
+    z-index: 11;
+    bottom: -40px;
+    left: 50%;
+    line-height: normal;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+.account-info .account-name .tooltiptext:after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -8px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: transparent transparent #0090ff transparent;
+}
+.account-info .account-name:hover {
+	background: url("../images/custom/welcome_h.png") 0 center no-repeat;
+}
+.account-info .account-name:hover .tooltiptext {
+    visibility: visible;
+}
+
+/*--- Notification ---*/
+.account-info > div {
+	display: inline-block;
+}
+.account-info > div > span {
+	display: inline;
+}
+.opencps-theme > .nav-container .dockbar-user-notifications {
+	list-style: none;
+}
+.opencps-theme > .nav-container .dockbar-user-notifications .dropdown-toggle .user-notifications-count {
+	background-color: transparent;
+    margin: 0px 0 0 20px;
+    line-height: normal;
+    border: 0;
+    padding: 0;
+}
+.opencps-theme > .nav-container .dockbar-user-notifications .user-notifications-count:before {
+	content: "\f086";
+	font-family: FontAwesome;
+	margin-right: 5px;
+}
+.opencps-theme > .nav-container .user-notifications-header {
+	color: #444;
+}
+.opencps-theme > .nav-container .mark-all-as-read {
+	margin: 0;
+}
+.opencps-theme > .nav-container .user-notifications {
+	overflow: hidden;
+	margin-bottom: 15px;
+	color: #444;
+}
+.opencps-theme.ux > .nav-container .top-menu .user-notification {
+	float: none;
+	margin: 0;
+    padding: 5px 10px;
+}
+.timestamp > .portlet-icon > span:first-child img {
+	display: none;
+}
+.timestamp > .portlet-icon > span:first-child:before {
+	content: "\f017";
+	font-family: FontAwesome;
+	font-size: 14px;
+	color: #5594e0;
+}

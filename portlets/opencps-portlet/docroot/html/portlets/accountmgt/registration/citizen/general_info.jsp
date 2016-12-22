@@ -1,3 +1,4 @@
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -16,6 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
+<%@page import="org.opencps.accountmgt.OutOfLengthCitizenNameException"%>
 <%@page import="org.opencps.util.PortletPropsValues"%>
 <%@page import="org.opencps.accountmgt.search.CitizenDisplayTerms"%>
 <%@page import="org.opencps.util.PortletUtil"%>
@@ -40,18 +42,28 @@
 <%@ include file="../../init.jsp" %>
 
 <%
+	long citizenId = 0; 
 
-	Citizen citizen = (Citizen) request.getAttribute(WebKeys.CITIZEN_ENTRY);	
+	Citizen citizenFromProfile = null;
 
 	DictCollection dictCollection = null;
-	
-	long citizenID = citizen != null ? citizen.getCitizenId() : 0L;
 	
 	boolean isViewProfile = GetterUtil.get( (Boolean) request.getAttribute(WebKeys.ACCOUNTMGT_VIEW_PROFILE), false);
 	
 	boolean isAdminViewProfile = GetterUtil.get((Boolean) request.getAttribute(WebKeys.ACCOUNTMGT_ADMIN_PROFILE), false);
 	
-	Citizen citizenFromProfile = null;
+	if(request.getAttribute(CitizenDisplayTerms.CITIZEN_ID) != null && isAdminViewProfile){
+		citizenId = (Long) request.getAttribute(CitizenDisplayTerms.CITIZEN_ID);
+		if(citizenId > 0){
+			try{
+				citizen = CitizenLocalServiceUtil.fetchCitizen(citizenId);
+			}catch(Exception e){
+				//
+			}
+		}
+	}
+	
+	citizenId = citizen != null ? citizen.getCitizenId() : 0L;
 	
 	Date defaultBirthDate = citizen != null && citizen.getBirthdate() != null ? 
 		citizen.getBirthdate() : DateTimeUtil.convertStringToDate("01/01/1970");
@@ -62,89 +74,180 @@
 
 <aui:model-context bean="<%=citizen %>" model="<%=Citizen.class%>" />
 
-<c:if test="<%=isAdminViewProfile && citizenID > 0%>">
-	<aui:row>
+<liferay-ui:error-marker key="errorSection" value="general_info" />
+
+<liferay-ui:error 
+	exception="<%= OutOfLengthCitizenNameException.class %>" 
+	message="<%=OutOfLengthCitizenNameException.class.getName() %>"
+/>
+
+<c:if test="<%=isAdminViewProfile && citizenId > 0%>">
+	<aui:row cssClass="nav-content-row-2">
 		<aui:col width="50">
 			<aui:input 
 				type="text"
 				name="<%=CitizenDisplayTerms.CITIZEN_CREATEDDATE %>" 
 				value="<%=DateTimeUtil.convertDateToString(citizen.getCreateDate(), DateTimeUtil._VN_DATE_FORMAT) %>"
 				disabled="<%=isAdminViewProfile %>"
+				label="create-date"
+				cssClass="input100"
 			/>
 		</aui:col>
 		<aui:col width="50">
-			<aui:input name="<%=CitizenDisplayTerms.CITIZEN_ACCOUNTSTATUS%>" disabled="<%=isAdminViewProfile %>" />
+			<aui:input 
+				name="account-status" 
+				disabled="<%=isAdminViewProfile %>" 
+				cssClass="input100"
+				type="text"
+				value="<%=PortletUtil.getAccountStatus(citizen.getAccountStatus(), themeDisplay.getLocale()) %>"
+			/>
 		</aui:col>
 		
 	</aui:row>
 </c:if>
 
-<aui:row>
-	<aui:col width="50">
-		<aui:input 
-			name="<%=CitizenDisplayTerms.CITIZEN_FULLNAME %>" 
-			disabled="<%=isViewProfile %>"
-		>
-		<aui:validator name="required" />
-		<aui:validator name="maxLength">255</aui:validator>
-		</aui:input>
-	</aui:col>
-	
-	<aui:col width="50">
-		<aui:input 
-			name="<%=CitizenDisplayTerms.CITIZEN_PERSONALID %>"
-			disabled="<%=isViewProfile %>"
-		>
-		<aui:validator name="required" />
-		</aui:input>
-	</aui:col>
-</aui:row>
+<c:choose>
+	<c:when test="<%=isAdminViewProfile && citizenId > 0%>">
+		<aui:row cssClass="nav-content-row-2">
+			<aui:col width="50">
+				<aui:input 
+					name="<%=CitizenDisplayTerms.CITIZEN_FULLNAME %>" 
+					disabled="<%=isViewProfile %>" 
+					cssClass="input100"
+				>
+					<aui:validator name="required" />
+					<aui:validator name="maxLength">255</aui:validator>
+				</aui:input>
+			</aui:col>
+			
+			<aui:col width="50">
+				<aui:input 
+					name="<%=CitizenDisplayTerms.CITIZEN_PERSONALID %>"
+					disabled="<%=isViewProfile %>"
+					cssClass="input100"
+				/>
+			</aui:col>
+		</aui:row>
+		
+		<aui:row cssClass="nav-content-row-2">
+			<aui:col width="50">
+				<label class="control-label custom-lebel bold" for='<portlet:namespace/><%=CitizenDisplayTerms.CITIZEN_BIRTHDATE %>'>
+					<liferay-ui:message key="birth-date"/>
+				</label>
+				<liferay-ui:input-date 
+					
+					dayParam="<%=CitizenDisplayTerms.BIRTH_DATE_DAY %>"
+					dayValue="<%= spd.getDayOfMoth() %>"
+					disabled="<%=isViewProfile%>"
+					monthParam="<%=CitizenDisplayTerms.BIRTH_DATE_MONTH %>"
+					monthValue="<%= spd.getMonth() %>"
+					name="<%=CitizenDisplayTerms.CITIZEN_BIRTHDATE %>"
+					yearParam="<%=CitizenDisplayTerms.BIRTH_DATE_YEAR %>"
+					yearValue="<%= spd.getYear() %>"
+					formName="fm"
+					autoFocus="<%=true %>"
+					cssClass="input100"
+				>
+				</liferay-ui:input-date>
+			</aui:col>
+			
+			<aui:col width="50">
+				<aui:select 
+					name="<%=CitizenDisplayTerms.CITIZEN_GENDER %>"
+					disabled="<%=isViewProfile %>"
+					cssClass="input100"
+				>
+					<aui:option label="<%=StringPool.BLANK %>" value="" />
+					<%
+						if(PortletPropsValues.USERMGT_GENDER_VALUES != null && 
+							PortletPropsValues.USERMGT_GENDER_VALUES.length > 0){
+							for(int g = 0; g < PortletPropsValues.USERMGT_GENDER_VALUES.length; g++){
+								%>
+									<aui:option 
+										value="<%= PortletPropsValues.USERMGT_GENDER_VALUES[g]%>"
+										selected="<%=citizen != null && citizen.getGender() == PortletPropsValues.USERMGT_GENDER_VALUES[g]%>"
+									>
+										<%= PortletUtil.getGender(PortletPropsValues.USERMGT_GENDER_VALUES[g], locale)%>
+									</aui:option>
+								<%
+							}
+						}
+					%>
+				</aui:select>
+			</aui:col>
+		</aui:row>
+	</c:when>
+	<c:otherwise>
+		<aui:row cssClass="nav-content-row-2">
+			<aui:col width="100">
+				<aui:input 
+					name="<%=CitizenDisplayTerms.CITIZEN_FULLNAME %>" 
+					disabled="<%=isViewProfile %>" 
+					cssClass="input100"
+				>
+				<aui:validator name="required" />
+				<aui:validator name="maxLength">255</aui:validator>
+				</aui:input>
+			</aui:col>
+		</aui:row>
+		
+		<aui:row cssClass="nav-content-row-2">
+			<aui:col width="30">
+				<aui:input 
+					name="<%=CitizenDisplayTerms.CITIZEN_PERSONALID %>"
+					disabled="<%=isViewProfile %>"
+					cssClass="input100"
+				/>
+			</aui:col>
+			
+			<aui:col width="30">
+				<label class="control-label custom-lebel" for='<portlet:namespace/><%=CitizenDisplayTerms.CITIZEN_BIRTHDATE %>'>
+					<liferay-ui:message key="birth-date"/>
+				</label>
+				<liferay-ui:input-date 
+					dayParam="<%=CitizenDisplayTerms.BIRTH_DATE_DAY %>"
+					dayValue="<%= spd.getDayOfMoth() %>"
+					disabled="<%=isViewProfile%>"
+					monthParam="<%=CitizenDisplayTerms.BIRTH_DATE_MONTH %>"
+					monthValue="<%= spd.getMonth() %>"
+					name="<%=CitizenDisplayTerms.CITIZEN_BIRTHDATE %>"
+					yearParam="<%=CitizenDisplayTerms.BIRTH_DATE_YEAR %>"
+					yearValue="<%= spd.getYear() %>"
+					formName="fm"
+					autoFocus="<%=true %>"
+					cssClass="input100"
+				>
+				</liferay-ui:input-date>
+			</aui:col>
+			
+			<aui:col width="30">
+				<aui:select 
+					name="<%=CitizenDisplayTerms.CITIZEN_GENDER %>"
+					disabled="<%=isViewProfile %>"
+					cssClass="input100"
+				>
+					<aui:option label="<%=StringPool.BLANK %>" value="" />
+					<%
+						if(PortletPropsValues.USERMGT_GENDER_VALUES != null && 
+							PortletPropsValues.USERMGT_GENDER_VALUES.length > 0){
+							for(int g = 0; g < PortletPropsValues.USERMGT_GENDER_VALUES.length; g++){
+								%>
+									<aui:option 
+										value="<%= PortletPropsValues.USERMGT_GENDER_VALUES[g]%>"
+										selected="<%=citizen != null && citizen.getGender() == PortletPropsValues.USERMGT_GENDER_VALUES[g]%>"
+									>
+										<%= PortletUtil.getGender(PortletPropsValues.USERMGT_GENDER_VALUES[g], locale)%>
+									</aui:option>
+								<%
+							}
+						}
+					%>
+				</aui:select>
+			</aui:col>
+		</aui:row>
+	</c:otherwise>
+</c:choose>
 
-<aui:row>
-	<aui:col width="50">
-		<label class="control-label custom-lebel" for='<portlet:namespace/><%=CitizenDisplayTerms.CITIZEN_BIRTHDATE %>'>
-			<liferay-ui:message key="birth-date"/>
-		</label>
-		<liferay-ui:input-date 
-			dayParam="<%=CitizenDisplayTerms.BIRTH_DATE_DAY %>"
-			dayValue="<%= spd.getDayOfMoth() %>"
-			disabled="<%=isViewProfile%>"
-			monthParam="<%=CitizenDisplayTerms.BIRTH_DATE_MONTH %>"
-			monthValue="<%= spd.getMonth() %>"
-			name="<%=CitizenDisplayTerms.CITIZEN_BIRTHDATE %>"
-			yearParam="<%=CitizenDisplayTerms.BIRTH_DATE_YEAR %>"
-			yearValue="<%= spd.getYear() %>"
-			formName="fm"
-			autoFocus="<%=true %>"
-		>
-		</liferay-ui:input-date>
-	</aui:col>
-	
-	<aui:col width="50">
-		<aui:select 
-			name="<%=CitizenDisplayTerms.CITIZEN_GENDER %>"
-			disabled="<%=isViewProfile %>"
-			required="true"
-		>
-			<aui:option label="<%=StringPool.BLANK %>" value="" />
-			<%
-				if(PortletPropsValues.USERMGT_GENDER_VALUES != null && 
-					PortletPropsValues.USERMGT_GENDER_VALUES.length > 0){
-					for(int g = 0; g < PortletPropsValues.USERMGT_GENDER_VALUES.length; g++){
-						%>
-							<aui:option 
-								value="<%= PortletPropsValues.USERMGT_GENDER_VALUES[g]%>"
-								selected="<%=citizen != null && citizen.getGender() == PortletPropsValues.USERMGT_GENDER_VALUES[g]%>"
-							>
-								<%= PortletUtil.getGender(PortletPropsValues.USERMGT_GENDER_VALUES[g], locale)%>
-							</aui:option>
-						<%
-					}
-				}
-			%>
-		</aui:select>
-	</aui:col>
-</aui:row>
 
 <%!
 	private Log _log = LogFactoryUtil.getLog(".html.portlets.accountmgt.registration/citizen.general_info.jsp");

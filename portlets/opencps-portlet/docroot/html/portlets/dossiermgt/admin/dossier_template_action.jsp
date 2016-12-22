@@ -17,20 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-<%@ include file="../init.jsp"%>
+
 <%@page import="org.opencps.dossiermgt.model.DossierTemplate"%>
 <%@page import="com.liferay.portal.kernel.util.WebKeys"%>
 <%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
 <%@page import="org.opencps.dossiermgt.search.DossierTemplateDisplayTerms"%>
-<%@page import="org.opencps.dossiermgt.permission.DossierTemplatePermission"%>
 <%@page import="org.opencps.util.ActionKeys"%>
+<%@page import="org.opencps.dossiermgt.permissions.DossierTemplatePermission"%>
+
+<%@ include file="../init.jsp"%>
+
 <%
 	ResultRow row = (ResultRow) request.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 	DossierTemplate dossierTemplate = (DossierTemplate)row.getObject();
 	String redirectURL = currentURL;
 %>
 
-<liferay-ui:icon-menu>
+<%-- <liferay-ui:icon-menu> --%>
 	<c:if test="<%=DossierTemplatePermission.contains(permissionChecker, scopeGroupId, ActionKeys.UPDATE) %>">
 		<portlet:renderURL var="updateDossierTemplate">
 			<portlet:param 
@@ -43,7 +46,8 @@
 			<portlet:param name="mvcPath" value='<%=templatePath + "edit_dossier.jsp"%>'/>
 		</portlet:renderURL>
 		
-		<liferay-ui:icon 
+		<liferay-ui:icon
+			cssClass="search-container-action fa edit" 
 			image="edit" 
 			message="edit"
 			url="<%=updateDossierTemplate.toString()%>" 
@@ -58,8 +62,8 @@
 			/>
 			<portlet:param name="backURL" value="<%=currentURL %>"/>
 		</portlet:actionURL>
-		<liferay-ui:icon image="delete" message="delete"
+		<liferay-ui:icon-delete cssClass="search-container-action fa delete" confirmation="do-you-want-to-delete?" image="delete" message="delete"
 			url="<%=deleteDossierTemplateURL.toString()%>" 
 		/>
 	</c:if>
-</liferay-ui:icon-menu>
+<%-- </liferay-ui:icon-menu> --%>

@@ -29,6 +29,7 @@ import org.opencps.usermgt.service.base.EmployeeLocalServiceBaseImpl;
 import org.opencps.util.DateTimeUtil;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.PortletUtil;
+import org.opencps.util.WebKeys;
 
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -39,16 +40,18 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.Address;
 import com.liferay.portal.model.Contact;
 import com.liferay.portal.model.EmailAddress;
 import com.liferay.portal.model.Phone;
+import com.liferay.portal.model.Role;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.Website;
 import com.liferay.portal.service.ContactLocalServiceUtil;
+import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.UserServiceUtil;
 import com.liferay.portlet.announcements.model.AnnouncementsDelivery;
 
 /**
@@ -76,7 +79,8 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 	 * the employee local service.
 	 */
 
-	public Employee addEmployee(long userId, String employeeNo, String fullName,
+	@SuppressWarnings("null")
+    public Employee addEmployee(long userId, String employeeNo, String fullName,
 			int gender, String telNo, String mobile, String email,
 			long workingUnitId, int workingStatus, long mainJobPosId,
 			long[] jobPosIds, boolean isAddUser, String accountEmail,
@@ -87,7 +91,7 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 
 		long employeeId = CounterLocalServiceUtil
 				.increment(Employee.class.getName());
-
+		
 		Employee employee = employeePersistence.create(employeeId);
 
 		// Get main JobPos
@@ -146,7 +150,32 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 				birthDateYear);
 
 		User user = null;
-
+		roleIds.add(jobPos.getMappingRoleId());
+		long [] listRoles = null;	
+		Role defaultRole = null;
+		try {
+			 defaultRole = RoleLocalServiceUtil
+							.getRole(serviceContext.getCompanyId(),WebKeys.EMPLOYEE_ROLE_NAME );
+		}
+		catch (Exception e) {
+			_log.info("role OPCS_EMPLOYEE null");
+		}
+		if(!roleIds.isEmpty()) {
+			listRoles = new long[roleIds.size() + 1];
+			
+			if(Validator.isNotNull(defaultRole)) {
+				listRoles[roleIds.size()] = defaultRole.getRoleId();
+			}
+			
+			for(int i = 0; i < roleIds.size(); i++) {
+				listRoles[i] = roleIds.get(i);
+			}
+		} else {
+			if(Validator.isNotNull(defaultRole)) {
+				listRoles= new long[]{defaultRole.getRoleId()};
+			}
+		}
+		
 		if (isAddUser) {
 			user = userService.addUserWithWorkflow(
 					serviceContext.getCompanyId(), false, password,
@@ -156,7 +185,7 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 					0, (gender == 1), birthDateMonth, birthDateDay,
 					birthDateYear,
 					jobPos != null ? jobPos.getTitle() : StringPool.BLANK,
-					groupIds, organizationIds, ArrayUtil.toLongArray(roleIds),
+					groupIds, organizationIds, listRoles,
 					userGroupIds, new ArrayList<Address>(),
 					new ArrayList<EmailAddress>(), new ArrayList<Phone>(),
 					new ArrayList<Website>(),
@@ -358,6 +387,7 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		employee.setGender(gender);
 		employee.setBirthdate(birthDate);
 		employee.setTelNo(telNo);
+		employee.setEmail(email);
 		employee.setMobile(mobile);
 		employeePersistence.update(employee);
 	}
@@ -402,7 +432,7 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 
 	}
 
-	public Employee updateEmployee(long userId, long employeeId,
+    public Employee updateEmployee(long userId, long employeeId,
 			String employeeNo, String fullName, int gender, String telNo,
 			String mobile, String email, long workingUnitId, int workingStatus,
 			long mainJobPosId, long[] jobPosIds, boolean isAddUser,
@@ -411,7 +441,6 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 			String password, String reTypePassword, long[] groupIds,
 			long[] userGroupIds, ServiceContext serviceContext)
 			throws SystemException, PortalException {
-
 		Employee employee = employeePersistence.findByPrimaryKey(employeeId);
 
 		// Get main JobPos
@@ -420,7 +449,7 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		if (mainJobPosId > 0) {
 			jobPos = jobPosPersistence.findByPrimaryKey(mainJobPosId);
 		}
-
+		
 		Date now = new Date();
 
 		PortletUtil.SplitName spn = PortletUtil.splitName(fullName);
@@ -454,7 +483,8 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 				}
 			}
 		}
-
+		long userIdMapping = employee.getMappingUserId();
+		
 		if (isAddUser) {
 			// Get Working Unit
 			WorkingUnit workingUnit = null;
@@ -471,7 +501,45 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 				organizationIds = new long[]{
 						workingUnit.getMappingOrganisationId()};
 			}
-
+			
+			// delete all mapping user with multiply roles
+			List<Role> roles = new ArrayList<Role>();
+			
+			try {
+				roles = RoleLocalServiceUtil.getUserRoles(userIdMapping);
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+			}
+			
+			if(!roles.isEmpty()) {
+				RoleLocalServiceUtil.deleteUserRoles(userIdMapping, roles);
+			}
+			// add new roles after delete
+			Role defaultRole = null;
+			try {
+				 defaultRole = RoleLocalServiceUtil
+								.getRole(serviceContext.getCompanyId(),WebKeys.EMPLOYEE_ROLE_NAME );
+			}
+			catch (Exception e) {
+			}
+			roleIds.add(jobPos.getMappingRoleId());
+			long [] listRoles = null;	
+			
+			if(!roleIds.isEmpty()) {
+				listRoles = new long[roleIds.size() + 1];
+				if(Validator.isNotNull(defaultRole)) {
+					listRoles[roleIds.size()] = defaultRole.getRoleId();
+				}
+				for(int i = 0; i < roleIds.size(); i++) {
+					listRoles[i] = roleIds.get(i);
+				}
+			} else {
+				if(Validator.isNotNull(defaultRole)) {
+					listRoles = new long[]{defaultRole.getRoleId()};
+				}
+			}
+			
 			mappingUser = userService.addUserWithWorkflow(
 					serviceContext.getCompanyId(), false, password,
 					reTypePassword, false, screenName, accountEmail, 0L,
@@ -480,7 +548,7 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 					0, (gender == 1), birthDateMonth, birthDateDay,
 					birthDateYear,
 					jobPos != null ? jobPos.getTitle() : StringPool.BLANK,
-					groupIds, organizationIds, ArrayUtil.toLongArray(roleIds),
+					groupIds, organizationIds, listRoles,
 					userGroupIds, new ArrayList<Address>(),
 					new ArrayList<EmailAddress>(), new ArrayList<Phone>(),
 					new ArrayList<Website>(),
@@ -517,11 +585,50 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 				}
 
 				// userLocalService.setRoleUsers
-
-				for (Long roleId : roleIds) {
-					userLocalService.setRoleUsers(roleId,
-							new long[]{mappingUser.getUserId()});
+				//Comment tam de test, neu OK thi xoa luon
+//				for (Long roleId : roleIds) {
+//					userLocalService.setRoleUsers(roleId,
+//							new long[]{mappingUser.getUserId()});
+//				}
+				//Comment tam de test, neu OK thi xoa luon END
+				// delete all mapping user with multiply roles
+				List<Role> roles = new ArrayList<Role>();
+				try {
+					roles = RoleLocalServiceUtil.getUserRoles(userIdMapping);
 				}
+				catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+				if(!roles.isEmpty()) {
+					RoleLocalServiceUtil.deleteUserRoles(userIdMapping, roles);
+				}
+				// add new roles after delete
+				Role defaultRole = null;
+				try {
+					 defaultRole = RoleLocalServiceUtil
+									.getRole(serviceContext.getCompanyId(),WebKeys.EMPLOYEE_ROLE_NAME );
+				}
+				catch (Exception e) {
+				}
+				roleIds.add(jobPos.getMappingRoleId());
+				long [] listRoles = null;	
+				
+				if(!roleIds.isEmpty()) {
+					listRoles = new long[roleIds.size() + 1];
+					if(Validator.isNotNull(defaultRole)) {
+						listRoles[roleIds.size()] = defaultRole.getRoleId();
+					}
+					for(int i = 0; i < roleIds.size(); i++) {
+						listRoles[i] = roleIds.get(i);
+					}
+				} else {
+					if(Validator.isNotNull(defaultRole)) {
+						listRoles = new long[]{defaultRole.getRoleId()};
+					}
+				}
+				
+				RoleLocalServiceUtil.addUserRoles(userIdMapping, listRoles);
 
 				mappingUser = userLocalService.updateUser(mappingUser);
 
@@ -545,8 +652,10 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 		employee.setFullName(fullName);
 		employee.setGender(gender);
 		employee.setBirthdate(birthDate);
+		employee.setEmail(email);
 		employee.setTelNo(telNo);
 		employee.setMobile(mobile);
+		employee.setWorkingUnitId(workingUnitId);
 		employee.setMainJobPosId(mainJobPosId);
 		employeePersistence.setJobPoses(employeeId,
 				ArrayUtil.toLongArray(distinctJobPosIds));

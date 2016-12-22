@@ -36,7 +36,13 @@ public class DDRTag extends IncludeTag {
 
 	private String _displayStyle;
 
+	private String _emptyOptionLabels;
+
 	private long _initDictItemId;
+
+	private boolean _inlineField;
+
+	private String _inlineLabel;
 
 	private String _itemNames;
 
@@ -48,6 +54,10 @@ public class DDRTag extends IncludeTag {
 
 	private String _selectedItems;
 
+	private boolean _showLabel;
+
+	private String _optionValueType;
+
 	@Override
 	protected void cleanUp() {
 
@@ -57,11 +67,14 @@ public class DDRTag extends IncludeTag {
 		_cssClass = null;
 		_itemNames = null;
 		_selectedItems = null;
+		_emptyOptionLabels = null;
 		_renderMode = null;
 		_name = "dataItem";
 		_cssClass = null;
 		_displayStyle = "horizontal";
 		_itemsEmptyOption = null;
+		_showLabel = true;
+		_optionValueType = "id";
 	}
 
 	public String getCssClass() {
@@ -84,9 +97,24 @@ public class DDRTag extends IncludeTag {
 		return _displayStyle;
 	}
 
+	public String getEmptyOptionLabels() {
+
+		return _emptyOptionLabels;
+	}
+
 	public long getInitDictItemId() {
 
 		return _initDictItemId;
+	}
+
+	public boolean getInlineField() {
+
+		return _inlineField;
+	}
+
+	public String getInlineLabel() {
+
+		return _inlineLabel;
 	}
 
 	public String getItemNames() {
@@ -120,13 +148,27 @@ public class DDRTag extends IncludeTag {
 		return _selectedItems;
 	}
 
+	public boolean isShowLabel() {
+
+		return _showLabel;
+	}
+
+	public String getOptionValueType() {
+
+		return _optionValueType;
+	}
+
+	public void setOptionValueType(String optionValueType) {
+
+		this._optionValueType = optionValueType;
+	}
+
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
 
 		request
 			.setAttribute("opencps-datamgt:ddr:dictCollectionCode",
 				_dictCollectionCode);
-
 		request
 			.setAttribute("opencps-datamgt:ddr:itemsEmptyOption",
 				_itemsEmptyOption);
@@ -147,6 +189,18 @@ public class DDRTag extends IncludeTag {
 			.setAttribute("opencps-datamgt:ddr:cssClass", _cssClass);
 		request
 			.setAttribute("opencps-datamgt:ddr:displayStyle", _displayStyle);
+		request
+			.setAttribute("opencps-datamgt:ddr:inlineField", _inlineField);
+		request
+			.setAttribute("opencps-datamgt:ddr:inlineLabel", _inlineLabel);
+		request
+			.setAttribute("opencps-datamgt:ddr:showLabel", _showLabel);
+		request
+			.setAttribute("opencps-datamgt:ddr:emptyOptionLabels",
+				_emptyOptionLabels);
+		request
+			.setAttribute("opencps-datamgt:ddr:optionValueType",
+				_optionValueType);
 	}
 
 	public void setCssClass(String _cssClass) {
@@ -169,9 +223,24 @@ public class DDRTag extends IncludeTag {
 		this._displayStyle = _displayStyle;
 	}
 
+	public void setEmptyOptionLabels(String emptyOptionLabels) {
+
+		this._emptyOptionLabels = emptyOptionLabels;
+	}
+
 	public void setInitDictItemId(long _initDictItemId) {
 
 		this._initDictItemId = _initDictItemId;
+	}
+
+	public void setInlineField(boolean inlineField) {
+
+		this._inlineField = inlineField;
+	}
+
+	public void setInlineLabel(String inlineLabel) {
+
+		this._inlineLabel = inlineLabel;
 	}
 
 	public void setItemNames(String _itemNames) {
@@ -199,4 +268,8 @@ public class DDRTag extends IncludeTag {
 		this._selectedItems = _selectedItems;
 	}
 
+	public void setShowLabel(boolean showLabel) {
+
+		this._showLabel = showLabel;
+	}
 }

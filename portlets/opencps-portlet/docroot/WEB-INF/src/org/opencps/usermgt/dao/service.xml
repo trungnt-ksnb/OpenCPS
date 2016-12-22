@@ -74,6 +74,13 @@
         <finder name="GroupId" return-type="Collection">
             <finder-column name="groupId"></finder-column>
         </finder>
+        <finder return-type="WorkingUnit" name="MappingOrganisationId" unique="true">
+       		<finder-column name="groupId"></finder-column>
+			<finder-column name="mappingOrganisationId"></finder-column>
+		</finder>
+				<finder return-type="WorkingUnit" name="Name">
+			<finder-column name="name"></finder-column>
+		</finder>
 	</entity>
 
 	<entity name="JobPos" local-service="true" remote-service="true"
@@ -123,6 +130,17 @@
 		
 		<finder return-type="Collection" name="WorkingUnitId">
 			<finder-column name="workingUnitId"></finder-column>
+		</finder>
+		
+		<finder return-type="JobPos" name="Title">
+		<finder-column name="groupId" />
+			<finder-column name="title" />
+		</finder>
+		
+		<finder name="G_T_W" return-type="Collection">
+			<finder-column name="groupId" />
+			<finder-column name="title" />
+			<finder-column name="workingUnitId" />
 		</finder>
 	</entity>
 
@@ -235,5 +253,8 @@
         <exception>OutOfScope</exception>
         <exception>OutOfLengthMobile</exception>
         <exception>OutOfLengthTelNo</exception>
+        <exception>WorkingUnitHasChild</exception>
+        <exception>JopPosHasExisted</exception>
+        <exception>EmployeeHasExisted</exception>
 	</exceptions>
 </service-builder>
