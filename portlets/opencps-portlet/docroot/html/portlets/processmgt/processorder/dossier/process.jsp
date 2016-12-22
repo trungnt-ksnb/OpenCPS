@@ -677,7 +677,7 @@
 														success: function(event, id, obj) {
 															var response = this.get('responseData');
 															
-															alert(Liferay.Language.get(response.msg));
+															// alert(Liferay.Language.get(response.msg));
 															
 															if(response.msg == '<%=MessageKeys.DEFAULT_SUCCESS_KEY%>'){
 																var redirectURL = A.one('#<portlet:namespace/>redirectURL').val();
