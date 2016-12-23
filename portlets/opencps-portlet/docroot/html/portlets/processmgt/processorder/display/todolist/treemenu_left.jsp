@@ -1,4 +1,7 @@
-
+<%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="org.opencps.util.PortletConstants"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -169,6 +172,7 @@
 				</c:if> --%>
 				<liferay-ui:search-container 
 					searchContainer="<%= new ProcessOrderSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>"
+					
 					headerNames="<%= headers%>"
 				>
 				
@@ -235,9 +239,9 @@
 										processOrder.getActionDatetime() : null,
 										new Date(), processOrder.getDaysDuration(),themeDisplay.getLocale());
 								
+								String redirectURL = processURL.toString() + "#" +renderResponse.getNamespace() +"tab="+ renderResponse.getNamespace() + redirectToPageProcessCfg ;
 								
-						
-								String hrefFix = "location.href='" + processURL.toString()+"'";
+								String hrefFix = "location.href='" + redirectURL+"'";
 								String cssStatusColor = "status-color-" + processOrder.getDossierStatus();
 							%>
 							

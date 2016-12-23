@@ -48,6 +48,14 @@
 	</tr>
 	<tr>
 		<td >
+			<liferay-ui:message key="reception-no"/>
+		</td>
+		<td >
+			<%= dossier != null &&  Validator.isNotNull(dossier.getReceptionNo())? dossier.getReceptionNo() :  StringPool.BLANK %>
+		</td>
+	</tr>
+	<tr>
+		<td >
 			<liferay-ui:message key="service-name"/>
 		</td>
 		<td >
@@ -100,14 +108,6 @@
 		</td>
 		<td >
 			<%= ProcessOrderUtils.getDossierDate(dossier.getDossierId(), 1, "dd/MM/yyyy hh:mm") %>
-		</td>
-	</tr>
-	<tr>
-		<td >
-			<liferay-ui:message key="reception-no"/>
-		</td>
-		<td >
-			<%= dossier != null &&  Validator.isNotNull(dossier.getReceptionNo())? dossier.getReceptionNo() :  StringPool.BLANK %>
 		</td>
 	</tr>
 	<tr>
