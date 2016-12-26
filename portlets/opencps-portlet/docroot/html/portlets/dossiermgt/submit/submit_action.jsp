@@ -1,3 +1,4 @@
+<%@page import="com.liferay.portal.kernel.util.WebKeys"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
