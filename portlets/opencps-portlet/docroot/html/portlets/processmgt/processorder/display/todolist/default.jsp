@@ -1,4 +1,3 @@
-
 <%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
 <%@page import="java.util.LinkedHashMap"%>
 <%@page import="java.util.HashSet"%>
@@ -21,6 +20,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 %>
+<%@page import="org.opencps.processmgt.model.ProcessWorkflow"%>
+<%@page import="org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil"%>
+<%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
 <%@page import="java.util.Date"%>
 <%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
 <%@page import="org.opencps.util.MessageKeys"%>
@@ -82,12 +84,13 @@
 	
 	iteratorURL.setParameter("dossierSubStatus", dossierSubStatus);
 	iteratorURL.setParameter("processOrderStage", processOrderStage);
-	
+	boolean isShowRowChecker = false;
 	if(ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
 			serviceInfoId > 0 && processStepId > 0){
 		
 		rowChecker = new RowChecker(liferayPortletResponse);
+		isShowRowChecker = true;
 		
 	}
 %>
@@ -109,7 +112,7 @@
 		</div>
 		<liferay-ui:search-container 
 				searchContainer="<%= new ProcessOrderSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>"
-				rowChecker="<%=rowChecker%>"
+				
 				headerNames="<%= headers%>"
 			>
 			
@@ -132,6 +135,25 @@
 						
 						pageContext.setAttribute("results", results);
 						pageContext.setAttribute("total", total);
+						
+						try {
+							
+							long processWorkFlowId = ProcessOrderLocalServiceUtil
+									.getProcessOrder(processOrders.get(0).getProcessOrderId()).getProcessWorkflowId();
+							
+							if(processWorkFlowId > 0) {
+								ProcessWorkflow processWorkflow = ProcessWorkflowLocalServiceUtil.getProcessWorkflow(processWorkFlowId);
+								
+								if(Validator.isNotNull(processWorkflow) && processWorkflow.getIsMultipled()) {
+									isMultiAssign = true;
+								}
+							}
+							
+						} catch(Exception e) {}
+						
+						if(isMultiAssign) {
+							searchContainer.setRowChecker(rowChecker);
+						}
 					%>
 				</liferay-ui:search-container-results>	
 				
@@ -267,6 +289,15 @@ AUI().ready(function(A){
 
 		Liferay.Portlet.refresh('#p_p_id<portlet:namespace />', data);
 	
+	}
+	
+	var processDossier = A.one("#<portlet:namespace />processDossier");
+	var isMultiAssignvar = '<%= isMultiAssign %>';
+	var isShowRowChecker = '<%= isShowRowChecker%>';
+	console.log(isMultiAssignvar);
+	console.log(processDossier);
+	if(isMultiAssignvar == 'false' && processDossier && isShowRowChecker == 'false') {
+		processDossier.hide();
 	}
 	
 });
