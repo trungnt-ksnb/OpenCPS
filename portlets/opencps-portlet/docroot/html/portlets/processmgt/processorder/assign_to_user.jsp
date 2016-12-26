@@ -124,7 +124,11 @@
 	
 	long assigerToUserId = ProcessMgtUtil.getAssignUser(processWorkflowId, processOrderId, workflow.getPostProcessStepId());
 	
-	long assigerToUserIdWasActioning = ProcessMgtUtil.getAssignUserWasActioning(processOrderId);
+	// System.out.print("=================  assigerToUserId   " + assigerToUserId);
+	
+	/* long assigerToUserIdWasActioning = ProcessMgtUtil.getAssignUserWasActioning(processOrderId);
+	
+	System.out.print("=================  assigerToUserIdWasActioning   " + assigerToUserIdWasActioning); */
 	
 	PortletURL backTodoListURL =PortletURLFactoryUtil.create(request, WebKeys.PROCESS_ORDER_PORTLET, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
 
@@ -279,7 +283,7 @@
 	
 	<div class="row-fluid">
 	
-	<c:if test="<%= processWorkflow.getAssignUser() %>">
+	<%-- <c:if test="<%= processWorkflow.getAssignUser() %>">
 	
 			<div class="span12">
 				<aui:select 
@@ -299,7 +303,33 @@
 					%>
 				</aui:select>
 			</div>
-		</c:if>
+		</c:if> --%>
+		
+		<c:choose>
+			<c:when test="<%= processWorkflow.getAssignUser() %>">
+				<div class="span12">
+				<aui:select 
+					name="<%=ProcessOrderDisplayTerms.ASSIGN_TO_USER_ID %>" 
+					label="assign-to-next-user" 
+					showEmptyOption="true"
+					cssClass="input100"
+				>
+					<%
+						List<User> assignUsers = ProcessUtils.getAssignUsers(processStepId, 0);
+						
+						for (User userSel : assignUsers) {
+					%>	
+						<aui:option selected="<%= assigerToUserId == userSel.getUserId() ? true : false %>" value="<%= userSel.getUserId() %>"><%= userSel.getFullName() %></aui:option>
+					<%
+						}
+					%>
+				</aui:select>
+			</div>
+			</c:when>
+			<c:otherwise>
+				<aui:input name="<%=ProcessOrderDisplayTerms.ASSIGN_TO_USER_ID %>" type="hidden" value="<%= assigerToUserId %>"/>
+			</c:otherwise>
+		</c:choose>
 		
 		<c:if test="<%= processWorkflow.getRequestPayment() %>">
 		
