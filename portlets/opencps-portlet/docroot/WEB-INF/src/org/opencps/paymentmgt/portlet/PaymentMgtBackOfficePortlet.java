@@ -147,7 +147,6 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 				}
 
 				if (confirmHopLe == 1) {
-					
 					paymentFile.setPaymentStatus(PaymentMgtUtil.PAYMENT_STATUS_APPROVED);
 					paymentFile.setApproveDatetime(new Date());
 					
@@ -326,13 +325,13 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 							CitizenLocalServiceUtil.getByMappingUserId(paymentFile.getOwnerUserId());
 				}
 				
-				if (business != null) {
+				if (Validator.isNotNull(business)) {
 					payloadJSON.put(
 						"ownerOrganizationName", business.getName());
 					payloadJSON.put(
 						"ownerOrganizationAddress", business.getAddress());
 				}
-				else if (citizen != null) {
+				else if (Validator.isNotNull(citizen)) {
 					payloadJSON.put(
 						"ownerOrganizationName", citizen.getFullName());
 					payloadJSON.put(
@@ -427,10 +426,10 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 				payloadJSON.put(
 					"cf_keypayVersion", paymentConfig.getKeypayVersion());
 				payloadJSON.put(
-					"cf_keypayMerchantCode", paymentConfig.getKeypayMerchantCode());
+					"cf_keypayMerchantCode",
+					paymentConfig.getKeypayMerchantCode());
 				payloadJSON.put(
 					"cf_keypaySecureKey", paymentConfig.getKeypaySecureKey());
-				
 				resultJSON.put("opencps", payloadJSON);
 				
 				_log.info("PaymentMgtBackOfficePortlet.createReport()" +
