@@ -276,4 +276,9 @@ public class ActionHistoryLocalServiceImpl
 		return actionHistoryFinder.searchActionHistoryrecent(
 		    processOrderId, preProcessStepId);
 	}
+	
+	public List<ActionHistory> getActionHistoryByPOID_UAID(long processOrderId,
+			long userActionId) throws SystemException {
+		return actionHistoryPersistence.findByPOID_UAID(processOrderId, userActionId);
+	}
 }
