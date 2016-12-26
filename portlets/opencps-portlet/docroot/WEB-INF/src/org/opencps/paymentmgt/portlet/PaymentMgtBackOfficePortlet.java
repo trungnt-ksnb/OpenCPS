@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -28,10 +29,13 @@ import java.util.Map;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
+import org.opencps.accountmgt.model.Business;
 import org.opencps.accountmgt.model.Citizen;
+import org.opencps.accountmgt.service.BusinessLocalServiceUtil;
 import org.opencps.accountmgt.service.CitizenLocalServiceUtil;
 import org.opencps.backend.message.SendToBackOfficeMsg;
 import org.opencps.backend.util.BackendUtils;
+import org.opencps.dossiermgt.bean.AccountBean;
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
 import org.opencps.dossiermgt.service.DossierLogLocalServiceUtil;
@@ -48,6 +52,7 @@ import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
 import org.opencps.usermgt.service.WorkingUnitLocalServiceUtil;
+import org.opencps.util.AccountUtil;
 import org.opencps.util.DLFolderUtil;
 import org.opencps.util.DateTimeUtil;
 import org.opencps.util.MessageKeys;
@@ -71,6 +76,8 @@ import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.Organization;
+import com.liferay.portal.service.OrganizationLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -140,7 +147,24 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 				}
 
 				if (confirmHopLe == 1) {
+					
 					paymentFile.setPaymentStatus(PaymentMgtUtil.PAYMENT_STATUS_APPROVED);
+					paymentFile.setApproveDatetime(new Date());
+					
+					ServiceContext serviceContext = ServiceContextFactory
+							.getInstance(actionRequest);
+					
+					AccountBean accountBean = AccountUtil.getAccountBean(actionRequest);
+					
+					int actor = 0;
+					if (accountBean.isEmployee()) {
+						actor = 2;
+					}
+					
+					ActorBean actorBean = new ActorBean(actor,
+							serviceContext.getUserId());
+					
+					paymentFile.setAccountUserName(actorBean.getActorName());
 				}
 				else if (confirmHopLe == 0) {
 					paymentFile.setPaymentStatus(PaymentMgtUtil.PAYMENT_STATUS_REJECTED);
@@ -283,19 +307,30 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 				// TODO
 
 				Citizen citizen = null;
-				if (paymentFile.getOwnerOrganizationId() != 0)
-					workingUnit =
-						WorkingUnitLocalServiceUtil.fetchByMappingOrganisationId(
-							themeDisplay.getScopeGroupId(),
-							paymentFile.getOwnerOrganizationId());
-				else if (paymentFile.getOwnerUserId() != 0)
+				Business business = null;
+				
+				if (paymentFile.getOwnerOrganizationId() != 0) {
+					/*workingUnit =
+							WorkingUnitLocalServiceUtil.fetchByMappingOrganisationId(
+									themeDisplay.getScopeGroupId(),
+									paymentFile.getOwnerOrganizationId());*/
+					
+					Organization organization = 
+							OrganizationLocalServiceUtil.getOrganization(
+									paymentFile.getOwnerOrganizationId());
+					
+					business = BusinessLocalServiceUtil.getBusiness(organization.getUserId());
+				}
+				else if (paymentFile.getOwnerUserId() != 0) {
 					citizen =
-						CitizenLocalServiceUtil.getByMappingUserId(paymentFile.getOwnerUserId());
-				if (workingUnit != null) {
+							CitizenLocalServiceUtil.getByMappingUserId(paymentFile.getOwnerUserId());
+				}
+				
+				if (business != null) {
 					payloadJSON.put(
-						"ownerOrganizationName", workingUnit.getName());
+						"ownerOrganizationName", business.getName());
 					payloadJSON.put(
-						"ownerOrganizationAddress", workingUnit.getAddress());
+						"ownerOrganizationAddress", business.getAddress());
 				}
 				else if (citizen != null) {
 					payloadJSON.put(
@@ -318,8 +353,15 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 						DateTimeUtil._VN_DATE_TIME_FORMAT));
 				payloadJSON.put("amount", paymentFile.getAmount());
 				// TODO
-				payloadJSON.put("amountNumber", paymentFile.getAmount());
-				payloadJSON.put("amountString", paymentFile.getAmount());
+				Locale vnLocale = new Locale("vi", "VN");
+				 
+ 				NumberFormat vnFormat =
+					NumberFormat.getCurrencyInstance(vnLocale);
+				
+				payloadJSON.put("amountNumber", vnFormat.format(paymentFile.getAmount()));
+				payloadJSON.put("amountString", 
+						PortletUtil.convertAmountToWriting(
+								paymentFile.getAmount(), vnLocale));
 
 				payloadJSON.put("requestNote", paymentFile.getRequestNote());
 				payloadJSON.put("keypayUrl", paymentFile.getKeypayUrl());
@@ -350,7 +392,7 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 				payloadJSON.put(
 					"approveDatetime", DateTimeUtil.convertDateToString(
 						paymentFile.getApproveDatetime(),
-						DateTimeUtil._VN_DATE_TIME_FORMAT));
+						DateTimeUtil._VN_DATE_FORMAT));
 				payloadJSON.put(
 					"accountUserName", paymentFile.getAccountUserName());
 				payloadJSON.put("approveNote", paymentFile.getApproveNote());
@@ -385,12 +427,13 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 				payloadJSON.put(
 					"cf_keypayVersion", paymentConfig.getKeypayVersion());
 				payloadJSON.put(
-					"cf_keypayMerchantCode",
-					paymentConfig.getKeypayMerchantCode());
+					"cf_keypayMerchantCode", paymentConfig.getKeypayMerchantCode());
 				payloadJSON.put(
 					"cf_keypaySecureKey", paymentConfig.getKeypaySecureKey());
+				
 				resultJSON.put("opencps", payloadJSON);
-				System.out.println("PaymentMgtBackOfficePortlet.createReport()" +
+				
+				_log.info("PaymentMgtBackOfficePortlet.createReport()" +
 					resultJSON.toString());
 
 				String jrxmlTemplate = paymentConfig.getReportTemplate();
