@@ -175,7 +175,7 @@
 
 		<liferay-ui:header 
 			backURL="<%= backURL %>"
-			title='<%= (dossier == null) ? "add-dossier" : (cmd.equals(Constants.VIEW) ? "view-dossier" : "update-dossier") %>' 
+			title=' ' 
 		/>
 
 		<portlet:actionURL var="updateDossierURL" name="updateDossier" />
@@ -228,7 +228,7 @@
 								
 								<liferay-ui:icon 
 									cssClass="search-container-action fa forward"
-									image="forward" message="send"
+									image="forward" message="send-dossier"
 									url="<%=jsUpdateDossierStatus %>"
 								/>
 							</c:if>

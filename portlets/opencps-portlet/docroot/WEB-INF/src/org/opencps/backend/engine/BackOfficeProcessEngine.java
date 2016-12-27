@@ -47,9 +47,11 @@ import org.opencps.paymentmgt.service.PaymentFileLocalServiceUtil;
 import org.opencps.processmgt.model.ProcessOrder;
 import org.opencps.processmgt.model.ProcessStep;
 import org.opencps.processmgt.model.ProcessWorkflow;
+import org.opencps.processmgt.model.StepAllowance;
 import org.opencps.processmgt.model.impl.ProcessStepImpl;
 import org.opencps.processmgt.service.ProcessOrderLocalServiceUtil;
 import org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil;
+import org.opencps.processmgt.service.StepAllowanceLocalServiceUtil;
 import org.opencps.processmgt.util.ProcessMgtUtil;
 import org.opencps.processmgt.util.ProcessUtils;
 import org.opencps.usermgt.model.Employee;
@@ -57,6 +59,7 @@ import org.opencps.util.AccountUtil;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.WebKeys;
 
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -67,7 +70,10 @@ import com.liferay.portal.kernel.messaging.MessageListenerException;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.Role;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.RoleLocalServiceUtil;
+import com.liferay.portal.service.UserLocalServiceUtil;
 
 /**
  * @author khoavd
@@ -474,7 +480,9 @@ public class BackOfficeProcessEngine implements MessageListener {
 				toBackOffice.setPayment(isPayment);
 				toBackOffice.setResubmit(isResubmit);
 				toBackOffice.setEstimateDatetime(toEngineMsg.getEstimateDatetime());
-				toBackOffice.setReceiveDatetime(toEngineMsg.getReceiveDate());
+				//TODO 
+				//receiveDateTime alway set???
+//				toBackOffice.setReceiveDatetime(toEngineMsg.getReceiveDate());
 
 				long preProcessStepId = -1;
 				String autoEvent = StringPool.BLANK;
@@ -585,6 +593,7 @@ public class BackOfficeProcessEngine implements MessageListener {
 			notiMsg.setDossierId(dossierId);
 			notiMsg.setNotificationEventName(event);
 			notiMsg.setProcessOrderId(processOrderId);
+			notiMsg.setPaymentFileId(paymentFileId);
 			notiMsg.setType("SMS, INBOX, EMAIL");
 
 			SendNotificationMessage.InfoList info = new SendNotificationMessage.InfoList();
@@ -602,13 +611,14 @@ public class BackOfficeProcessEngine implements MessageListener {
 				info.setUserId(citizen.getUserId());
 				info.setUserMail(citizen.getEmail());
 				info.setUserPhone(citizen.getTelNo());
-
+				info.setFullName(citizen.getFullName());
 			}
 
 			if (Validator.isNotNull(bussines)) {
 				info.setUserId(bussines.getUserId());
 				info.setUserMail(bussines.getEmail());
 				info.setUserPhone(bussines.getTelNo());
+				info.setFullName(bussines.getName());
 
 			}
 
@@ -637,6 +647,7 @@ public class BackOfficeProcessEngine implements MessageListener {
 			notiMsg.setDossierId(dossierId);
 			notiMsg.setNotificationEventName(employEvent);
 			notiMsg.setProcessOrderId(processOrderId);
+			notiMsg.setPaymentFileId(paymentFileId);
 			notiMsg.setType("SMS, INBOX, EMAIL");
 
 			if (assignToUserId != 0) {
@@ -659,6 +670,7 @@ public class BackOfficeProcessEngine implements MessageListener {
 					infoEmploy.setUserMail(employee.getEmail());
 					infoEmploy.setUserPhone(employee.getTelNo());
 					infoEmploy.setGroupId(groupId);
+					infoEmploy.setFullName(employee.getFullName());
 				}
 
 				infoListEmploy.add(infoEmploy);
@@ -696,6 +708,7 @@ public class BackOfficeProcessEngine implements MessageListener {
 					infoEmploy.setUserMail(employee.getEmail());
 					infoEmploy.setUserPhone(employee.getTelNo());
 					infoEmploy.setGroupId(groupId);
+					infoEmploy.setFullName(employee.getFullName());
 
 					if (employEvent.contains(NotificationEventKeys.OFFICIALS.EVENT3)) {
 						infoEmploy.setGroup(NotificationEventKeys.GROUP4);
@@ -703,8 +716,27 @@ public class BackOfficeProcessEngine implements MessageListener {
 					else {
 						infoEmploy.setGroup(NotificationEventKeys.GROUP1);
 					}
-
-					infoListEmploy.add(infoEmploy);
+					//processWorkflow --> processStepId
+					// + roleId --> check readyOnly
+					// --> add sendmail if readyOnly = 0
+					boolean flag = false;
+					try {
+						List<Role> listRole = RoleLocalServiceUtil.getUserRoles(employee.getMappingUserId());
+						for (Role role : listRole) {
+							StepAllowance stepAllowance = StepAllowanceLocalServiceUtil.getStepAllowance(processWorkflow.getPostProcessStepId(), role.getRoleId());
+							if(Validator.isNotNull(stepAllowance) && !stepAllowance.getReadOnly()){
+								flag = true;
+								break;
+							}
+						}
+					} catch (SystemException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if(flag){
+						infoListEmploy.add(infoEmploy);
+					}
+					
 				}
 
 				if (employEvent.contains(NotificationEventKeys.OFFICIALS.EVENT3)) {

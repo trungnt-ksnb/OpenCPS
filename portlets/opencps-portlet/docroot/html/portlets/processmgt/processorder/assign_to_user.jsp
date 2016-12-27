@@ -324,42 +324,35 @@
 		
 		<c:if test="<%= processWorkflow.getGenerateDeadline() %>">
 			<div class="span12">
-				<aui:row>
-					<label class="control-label custom-lebel" for='<portlet:namespace/><%="deadline" %>'>
-						<liferay-ui:message key="return-date"/>
-					</label>
-				</aui:row>
 				
-				<aui:row>
-					<span class="span8">
-						<liferay-ui:input-date
-							dayParam="<%=ProcessOrderDisplayTerms.ESTIMATE_DATETIME_DAY %>"
-							disabled="<%= false %>"
-							monthParam="<%=ProcessOrderDisplayTerms.ESTIMATE_DATETIME_MONTH %>"
-							name="<%=ProcessOrderDisplayTerms.ESTIMATE_DATE %>"
-							yearParam="<%=ProcessOrderDisplayTerms.ESTIMATE_DATETIME_YEAR %>"
-							formName="fm"
-							autoFocus="<%=true %>"
-							dayValue="<%=Validator.isNotNull(spd) ? spd.getDayOfMoth() : 0 %>"
-							monthValue="<%=Validator.isNotNull(spd) ? spd.getMonth() : 0 %>"
-							yearValue="<%=Validator.isNotNull(spd) ? spd.getYear() : 0 %>"
-							nullable="<%=spd == null ? true: false %>"
-							cssClass="input100"
-						/>
-					</span>
-					
-					<span class="span4">
-						<liferay-ui:input-time 
-							minuteParam="<%= ProcessOrderDisplayTerms.ESTIMATE_DATETIME_HOUR %>"
-							amPmParam="AM" 
-							hourParam="<%= ProcessOrderDisplayTerms.ESTIMATE_DATETIME_MINUTE %>"
-							cssClass="input100"
-							hourValue="<%= Validator.isNotNull(spd) ? spd.getHour() : 0 %>"
-							minuteValue="<%= Validator.isNotNull(spd) ? spd.getMinute() : 0 %>"
-							name="<%=ProcessOrderDisplayTerms.ESTIMATE_TIME %>"
-						/>
-					</span>
-				</aui:row>
+				<label class="control-label custom-lebel" for='<portlet:namespace/><%="deadline" %>'>
+					<liferay-ui:message key="return-date"/>
+				</label>
+
+				<liferay-ui:input-date
+					dayParam="<%=ProcessOrderDisplayTerms.ESTIMATE_DATETIME_DAY %>"
+					disabled="<%= false %>"
+					monthParam="<%=ProcessOrderDisplayTerms.ESTIMATE_DATETIME_MONTH %>"
+					name="<%=ProcessOrderDisplayTerms.ESTIMATE_DATE %>"
+					yearParam="<%=ProcessOrderDisplayTerms.ESTIMATE_DATETIME_YEAR %>"
+					formName="fm"
+					autoFocus="<%=true %>"
+					dayValue="<%=Validator.isNotNull(spd) ? spd.getDayOfMoth() : 0 %>"
+					monthValue="<%=Validator.isNotNull(spd) ? spd.getMonth() : 0 %>"
+					yearValue="<%=Validator.isNotNull(spd) ? spd.getYear() : 0 %>"
+					nullable="<%=spd == null ? true: false %>"
+					cssClass="input100"
+				/>
+
+				<liferay-ui:input-time 
+					minuteParam="<%= ProcessOrderDisplayTerms.ESTIMATE_DATETIME_HOUR %>"
+					amPmParam="AM" 
+					hourParam="<%= ProcessOrderDisplayTerms.ESTIMATE_DATETIME_MINUTE %>"
+					cssClass="input100"
+					hourValue="<%= Validator.isNotNull(spd) ? spd.getHour() : 0 %>"
+					minuteValue="<%= Validator.isNotNull(spd) ? spd.getMinute() : 0 %>"
+					name="<%=ProcessOrderDisplayTerms.ESTIMATE_TIME %>"
+				/>
 			</div>
 		</c:if>
 	</div>
@@ -368,6 +361,9 @@
 	<div class="row-fluid">
 		<div class="span12">
 			<aui:input name="<%=ProcessOrderDisplayTerms.ACTION_NOTE %>" label="action-note" type="textarea" cssClass="input100"/>
+		</div>
+		<div id="<portlet:namespace/>defErrActionNote" style="text-align: left; color: #b50303; margin-left:7px; margin-bottom: 10px; display: none;">
+			<liferay-ui:message key="required-field"/>
 		</div>
 	</div>
 	
@@ -444,14 +440,19 @@
 			</aui:select>
 		</div>
 	</c:if>
-
-	<aui:button type="button" value="submit" name="submit"/>
-	
-	<c:if test="<%=esign %>">
-		<%-- <aui:button type="button" value="esign" name="esign"/> --%>
-		<aui:button type="button" value="esign" name="esign" onClick="getFileComputerHash(1);"/>
-	</c:if>
-	<aui:button type="button" value="cancel" name="cancel"/>
+	<div class="button-holder">
+		
+		<c:choose>
+			<c:when test="<%=esign %>">
+				<aui:button type="button" value="esign" name="esign" onClick="getFileComputerHash(1);"/>
+			</c:when>
+			<c:otherwise>
+				<aui:button type="button" value="submit" name="submit"/>
+			</c:otherwise>
+		</c:choose>
+		
+		<aui:button type="button" value="cancel" name="cancel"/>
+	</div>
 	
 	<div id="myProgressBar" class="aui-progress-warning"></div>
 </aui:form>
@@ -726,14 +727,14 @@
 										completeSignature(sign, signFieldName, filePath, fileName, $("#<portlet:namespace/>dossierId").val(), dossierFileId, dossierPartId, index, indexSize, '<%=signatureURL%>');
 										
 	 								}else{
-	 									alert("signer error");
+	 									alert('<%=LanguageUtil.get(pageContext, "signer-error") %>');
 	 					            }
 								}else{
-									alert(msg);
+									alert('<%=LanguageUtil.get(pageContext, "signer-error-lien-he") %>');
 								}
 					        	
 					        } else {
-					         	alert("Plugin is not working");
+					         	alert('<%=LanguageUtil.get(pageContext, "plugin-is-not-working") %>');
 					        }
 						}
 					}
@@ -772,11 +773,11 @@
 										}
 									}
 								} else {
-										alert("--------- vao day completeSignature- ky so ko dc-------------");
+										alert('<%=LanguageUtil.get(pageContext, "signer-error") %>');
 								}
 						},
 				    	error: function(){
-				    		alert("--------- vao day completeSignature- ky so ko dc-------------");
+				    		alert('<%=LanguageUtil.get(pageContext, "signer-fail") %>');
 				    	}
 					}
 				}

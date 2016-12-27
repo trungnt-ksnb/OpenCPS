@@ -21,7 +21,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
@@ -227,14 +229,18 @@ public class DateTimeUtil {
 		return seconds;
 	}
 
-	public static String convertTimemilisecondsToFormat(long time) {
+	public static String convertTimemilisecondsToFormat(long time, Locale locale) {
 
-		String format = DATE_TIME_FORMAT;
+		String format = new String(DATE_TIME_FORMAT);
+		String day = LanguageUtil.get(locale, "day");
+		
+		format = format.replace("{D}", day);
+		
 		long diffSeconds = 0;
 		long diffMinutes = 0;
 		long diffHours = 0;
 		long diffDays = 0;
-
+		
 		diffSeconds = time / 1000 % 60;
 		diffMinutes = time / (60 * 1000) % 60;
 		diffHours = time / (60 * 60 * 1000) % 24;
@@ -247,7 +253,7 @@ public class DateTimeUtil {
 
 		return format;
 	}
-	private static final String DATE_TIME_FORMAT = "{d} {HH}:{mm}:{ss}";
+	private static final String DATE_TIME_FORMAT = "{d} {D} {HH}:{mm}:{ss}";
 
 	public static final String _TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -256,6 +262,8 @@ public class DateTimeUtil {
 	public static final String _VN_DATE_FORMAT = "dd/MM/yyyy";
 
 	public static final String _EMPTY_DATE_TIME = "__/__/__";
+	
+	public static final String _DATE_TIME_TO_NAME = "yyyyMMdd";
 
 	private static Log _log = LogFactoryUtil.getLog(DateTimeUtil.class);
 }

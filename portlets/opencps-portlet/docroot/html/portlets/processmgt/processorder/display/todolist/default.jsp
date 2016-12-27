@@ -17,6 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 %>
+<%@page import="org.opencps.processmgt.model.ProcessWorkflow"%>
+<%@page import="org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil"%>
+<%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
 <%@page import="java.util.Date"%>
 <%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
 <%@page import="org.opencps.util.MessageKeys"%>
@@ -56,7 +59,7 @@
 	
 	int totalCount = 0;
 	
-	RowChecker rowChecker = new RowChecker(liferayPortletResponse);
+	RowChecker rowChecker = null;
 	
 	List<String> headerNames = new ArrayList<String>();
 	
@@ -65,6 +68,27 @@
 	headerNames.add("action");
 	
 	String headers = StringUtil.merge(headerNames, StringPool.COMMA);
+	
+	String dossierSubStatus = ParamUtil.getString(request, "dossierSubStatus");
+	
+	String processOrderStage = ParamUtil.getString(request, "processOrderStage", "false");
+	
+	String tabs1 = ParamUtil.getString(request, "tabs1", ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS);
+	
+	long serviceInfoId = ParamUtil.getLong(request, "serviceInfoId");
+	
+	long processStepId = ParamUtil.getLong(request, "processStepId");
+	
+	iteratorURL.setParameter("dossierSubStatus", dossierSubStatus);
+	iteratorURL.setParameter("processOrderStage", processOrderStage);
+	
+	if(ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
+			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
+			serviceInfoId > 0 && processStepId > 0){
+		
+		rowChecker = new RowChecker(liferayPortletResponse);
+		
+	}
 %>
 
 <c:if test="<%=stopRefresh %>">
@@ -75,9 +99,16 @@
 
 <aui:form name="fm">
 	<div class="opencps-searchcontainer-wrapper">
+		
+		<div class="opcs-serviceinfo-list-label">
+			<div class="title_box">
+			    <p class="file_manage_title ds"><liferay-ui:message key="title-danh-sach-process-order" /></p>
+				<p class="count"></p>
+			</div>
+		</div>
 		<liferay-ui:search-container 
 				searchContainer="<%= new ProcessOrderSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>"
-				rowChecker="<%=rowChecker%>"
+				
 				headerNames="<%= headers%>"
 			>
 			
@@ -85,10 +116,6 @@
 					<%
 						ProcessOrderSearchTerms searchTerms = (ProcessOrderSearchTerms)searchContainer.getSearchTerms();
 					
-						long serviceInfoId = searchTerms.getServiceInfoId();
-						
-						long processStepId = searchTerms.getProcessStepId();
-						
 						long assignToUserId = themeDisplay.getUserId();
 						try{
 							
@@ -98,12 +125,31 @@
 						}catch(Exception e){
 							_log.error(e);
 						}
-					
+
 						total = totalCount;
 						results = processOrders;
 						
 						pageContext.setAttribute("results", results);
 						pageContext.setAttribute("total", total);
+						
+						try {
+							
+							long processWorkFlowId = ProcessOrderLocalServiceUtil
+									.getProcessOrder(processOrders.get(0).getProcessOrderId()).getProcessWorkflowId();
+							
+							if(processWorkFlowId > 0) {
+								ProcessWorkflow processWorkflow = ProcessWorkflowLocalServiceUtil.getProcessWorkflow(processWorkFlowId);
+								
+								if(Validator.isNotNull(processWorkflow) && processWorkflow.getIsMultipled()) {
+									isMultiAssign = true;
+								}
+							}
+							
+						} catch(Exception e) {}
+						
+						if(isMultiAssign) {
+							searchContainer.setRowChecker(rowChecker);
+						}
 					%>
 				</liferay-ui:search-container-results>	
 				
@@ -121,10 +167,10 @@
 						processURL.setParameter(ProcessOrderDisplayTerms.PROCESS_ORDER_ID, String.valueOf(processOrder.getProcessOrderId()));
 						processURL.setParameter("backURL", currentURL);
 						processURL.setParameter("isEditDossier", (processOrder.isReadOnly() || (processOrder.getAssignToUsesrId() != 0 &&  processOrder.getAssignToUsesrId() != user.getUserId())) ? String.valueOf(false) : String.valueOf(true));
-
-						int dateOver = HolidayCheckUtils.calculatorDateOver(Validator.isNotNull(processOrder.getActionDatetime()) ? 
-								processOrder.getActionDatetime() : new Date(),
-								new Date(), processOrder.getDaysDuration());
+						
+						String dateOver = HolidayCheckUtils.calculatorDateUntilDealineReturnFormart(Validator.isNotNull(processOrder.getActionDatetime()) ? 
+								processOrder.getActionDatetime() : null,
+								new Date(), processOrder.getDaysDuration(),themeDisplay.getLocale());
 						
 						//String deadLine = Validator.isNotNull(processOrder.getDealine()) ? processOrder.getDealine() : StringPool.DASH;
 						
@@ -197,13 +243,16 @@
 							</div>
 							
 							<div class='<%="span7"%>'>
-								<%=dateOver >= 0 ? "<div class='ocps-free-day'>"+ StringUtil.replace(LanguageUtil.get(themeDisplay.getLocale(), "until-x-day"), "{0}", String.valueOf(dateOver))+"</div>":"<div class='ocps-over-day'>"+StringUtil.replace(LanguageUtil.get(themeDisplay.getLocale(), "over-x-day"), "{0}", String.valueOf(Math.abs(dateOver))) +"</div>"%>
+								<%=dateOver.trim().length() >0 ? "<div class='ocps-free-day'>"+ StringUtil.replace(LanguageUtil.get(themeDisplay.getLocale(), "until-x-day1"), "{0}", dateOver)+"</div>":"<div class='ocps-over-day'>"+StringUtil.replace(LanguageUtil.get(themeDisplay.getLocale(), "over-x-day1"), "{0}", dateOver) +"</div>"%>
 							</div>
 						</div>
 					</liferay-util:buffer>
 					<%
 						
 						String actionBtn = LanguageUtil.get(portletConfig, themeDisplay.getLocale(), "action");
+						if((processOrder.isReadOnly() || (processOrder.getAssignToUsesrId() != 0 &&  processOrder.getAssignToUsesrId() != user.getUserId()))){
+							actionBtn = LanguageUtil.get(portletConfig, themeDisplay.getLocale(), "view");
+						}
 						row.setClassName("opencps-searchcontainer-row");
 						row.addText(generalInfo);
 						row.addText(detail);
@@ -235,6 +284,15 @@ AUI().ready(function(A){
 
 		Liferay.Portlet.refresh('#p_p_id<portlet:namespace />', data);
 	
+	}
+	
+	var processDossier = A.one("#<portlet:namespace />processDossier");
+	var isMultiAssignvar = '<%= isMultiAssign %>';
+	
+	console.log(isMultiAssignvar);
+	console.log(processDossier);
+	if(isMultiAssignvar == 'false' && processDossier) {
+		processDossier.hide();
 	}
 	
 });
