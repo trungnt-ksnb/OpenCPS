@@ -311,10 +311,11 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 		if (mappingUser != null) {
 			// Reset password
 			if (isChangePassWord) {
+				userLocalService.updateModifiedDate(mappingUser.getUserId(), now);
+				
 				mappingUser = userLocalService.updatePassword(
 						mappingUser.getUserId(), newPassword, reTypePassword,
 						false);
-				userLocalService.updateModifiedDate(mappingUser.getUserId(), now);
 			}
 
 			if ((cityCode != citizen.getCityCode()
