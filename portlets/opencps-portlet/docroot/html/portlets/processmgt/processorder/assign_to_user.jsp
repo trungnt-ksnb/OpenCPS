@@ -124,6 +124,8 @@
 	
 	long assigerToUserId = ProcessMgtUtil.getAssignUser(processWorkflowId, processOrderId, workflow.getPostProcessStepId());
 	
+	long assigerToUserIdWasActioning = ProcessMgtUtil.getAssignUserWasActioning(processOrderId);
+	
 	PortletURL backTodoListURL =PortletURLFactoryUtil.create(request, WebKeys.PROCESS_ORDER_PORTLET, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
 
 	backTodoListURL.setParameter("mvcPath", "/html/portlets/processmgt/processorder/processordertodolist.jsp");
@@ -291,7 +293,7 @@
 						
 						for (User userSel : assignUsers) {
 					%>	
-						<aui:option selected="<%= assigerToUserId == userSel.getUserId() ? true : false  %>" value="<%= userSel.getUserId() %>"><%= userSel.getFullName() %></aui:option>
+						<aui:option selected="<%= ((assigerToUserId == userSel.getUserId()) || (assigerToUserIdWasActioning == userSel.getUserId())) ? true : false  %>" value="<%= userSel.getUserId() %>"><%= userSel.getFullName() %></aui:option>
 					<%
 						}
 					%>
@@ -361,6 +363,9 @@
 	<div class="row-fluid">
 		<div class="span12">
 			<aui:input name="<%=ProcessOrderDisplayTerms.ACTION_NOTE %>" label="action-note" type="textarea" cssClass="input100"/>
+		</div>
+		<div id="<portlet:namespace/>defErrActionNote" style="text-align: left; color: #b50303; margin-left:7px; margin-bottom: 10px; display: none;">
+			<liferay-ui:message key="required-field"/>
 		</div>
 	</div>
 	

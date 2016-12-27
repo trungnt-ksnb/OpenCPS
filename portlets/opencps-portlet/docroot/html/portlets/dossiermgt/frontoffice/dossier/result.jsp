@@ -1,4 +1,3 @@
-
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -19,13 +18,6 @@
 %>
 <%@page import="org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil"%>
 <%@page import="org.opencps.servicemgt.model.ServiceInfo"%>
-<%@page import="org.opencps.dossiermgt.search.DossierSearchUtil"%>
-<%@page import="com.liferay.portal.kernel.dao.orm.QueryUtil"%>
-<%@page import="com.liferay.portlet.documentlibrary.util.DLUtil"%>
-<%@page import="org.opencps.util.DLFileEntryUtil"%>
-<%@page import="com.liferay.portal.kernel.repository.model.FileEntry"%>
-<%@page import="org.opencps.dossiermgt.service.DossierFileLocalServiceUtil"%>
-<%@page import="org.opencps.dossiermgt.model.DossierFile"%>
 <%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%@page import="org.opencps.dossiermgt.service.DossierPartLocalServiceUtil"%>
 <%@page import="java.util.ArrayList"%>
@@ -36,11 +28,10 @@
 <%@page import="org.opencps.dossiermgt.service.DossierLogLocalServiceUtil"%>
 <%@page import="org.opencps.dossiermgt.model.DossierLog"%>
 <%@page import="java.util.List"%>
-<%@page import="org.opencps.util.DictItemUtil"%>
 <%@page import="org.opencps.util.DateTimeUtil"%>
 <%@page import="org.opencps.util.PortletConstants"%>
 <%@page import="org.opencps.util.PortletUtil"%>
-<%@page import="com.liferay.portal.kernel.util.OrderByComparator"%>
+
 
 <%@ include file="../../init.jsp"%>
 
@@ -99,11 +90,25 @@
 		
 		
 		<aui:row>
-			<aui:col width="20" cssClass="bold">
-				<liferay-ui:message key="dossier-reception-no"/>
+			<aui:col width="50">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
 			</aui:col>
-			<aui:col width="80">
-				<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+			<aui:col width="50">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-reception-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
 			</aui:col>
 		</aui:row>
 		<aui:row cssClass="pd_b20">
@@ -270,7 +275,7 @@
 		
 		<!-- cau hinh hien thi sap xep giay to ket qua -->
 		<c:choose>
-			<c:when test="<%=Validator.isNotNull(orderFieldDossierFile) %>">
+			<c:when test="<%=Validator.isNotNull(dossierFileListOrderByField) %>">
 			<%-- 	<%@ include file="/html/portlets/dossiermgt/frontoffice/dossier/result_display/result_order.jsp" %>
 			 --%>
 			 

@@ -20,6 +20,7 @@ package org.opencps.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,12 +49,12 @@ import org.opencps.dossiermgt.service.DossierFileLocalServiceUtil;
 import org.opencps.dossiermgt.service.DossierPartLocalServiceUtil;
 import org.opencps.paymentmgt.util.PaymentMgtUtil;
 import org.opencps.processmgt.model.ProcessStepDossierPart;
-import org.opencps.processmgt.model.ProcessWorkflow;
 import org.opencps.processmgt.model.WorkflowOutput;
-import org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil;
 import org.opencps.processmgt.service.WorkflowOutputLocalServiceUtil;
 import org.opencps.processmgt.util.ProcessUtils;
+import org.opencps.util.PortletConstants.FileSizeUnit;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONException;
@@ -65,6 +66,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -1127,20 +1129,29 @@ public class PortletUtil {
 		return dossierPartTypeName;
 	}
 
-	public static float convertSizeUnitToByte(float size, String fileUnit) {
+	public static float convertSizeUnitToByte(float size, FileSizeUnit unit) {
 
-		if (fileUnit.equals(PortletConstants.SIZE_UNIT_B)
-				|| Validator.isNull(fileUnit)) {
-			return size;
-		} else if (fileUnit.equals(PortletConstants.SIZE_UNIT_KB)) {
-			return size * 1024;
-		} else if (fileUnit.equals(PortletConstants.SIZE_UNIT_MB)) {
-			return size * 1024 * 1024;
-		} else if (fileUnit.equals(PortletConstants.SIZE_UNIT_GB)) {
-			return size * 1024 * 1024 * 1024;
+		switch (unit) {
+		case B:
+			break;
+		case KB:
+			size = size * 1024;
+			break;
+		case MB:
+			size = size * 1024 * 1024;
+			break;
+		case GB:
+			size = size * 1024 * 1024 * 1024;
+			break;
+		case TB:
+			size = size * 1024 * 1024 * 1024 * 1024;
+			break;
+		default:
+			break;
+
 		}
 
-		return 0;
+		return size;
 	}
 
 	public static List<Long> getDossierPartResultRequired(
@@ -1150,18 +1161,9 @@ public class PortletUtil {
 
 		List<ProcessStepDossierPart> processStepDossierParts = new ArrayList<ProcessStepDossierPart>();
 
-		ProcessWorkflow processWorkflow = null;
-		
-		try {
-			processWorkflow = ProcessWorkflowLocalServiceUtil
-					.getProcessWorkflow(processWorkflowId);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-		if (Validator.isNotNull(processWorkflow)) {
+		if (processStepId > 0) {
 			processStepDossierParts = ProcessUtils
-					.getDossierPartByStep(processWorkflow.getPreProcessStepId());
+					.getDossierPartByStep(processStepId);
 		}
 
 		if (processStepDossierParts != null) {
@@ -1252,6 +1254,218 @@ public class PortletUtil {
 				.getHttpServletRequest(actionRequest);
 		ServletResponseUtil.sendFile(request, response, fileName, is,
 				contentLength, contentType);
+	}
+
+	/**
+	 * @param groupId
+	 * @param collectionCode
+	 * @return
+	 */
+	public static List<String> getDictItemCode(long groupId,
+			String collectionCode) {
+		List<String> dictItemCodes = new ArrayList<String>();
+		try {
+			DictCollection collection = DictCollectionLocalServiceUtil
+					.getDictCollection(groupId, collectionCode);
+			List<DictItem> dictItems = DictItemLocalServiceUtil
+					.getDictItemsByDictCollectionId(collection
+							.getDictCollectionId());
+
+			if (dictItems != null) {
+				for (DictItem dictItem : dictItems) {
+					if (!dictItemCodes.contains(dictItem.getItemCode())) {
+						dictItemCodes.add(dictItem.getItemCode());
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			_log.equals(e);
+		}
+
+		return dictItemCodes;
+	}
+	
+	public static boolean isResetGenerateNumber(String pattern, Date date) {
+		boolean isReset = false;
+		
+		Date now = new Date();
+		
+		//if different month then reset 
+		if(pattern.contains("n-M") && (now.getMonth()) != date.getMonth()) {
+			isReset = true;
+		}
+		
+		//if different year then reset 
+		if(pattern.contains("n-Y") && (now.getYear()) != date.getYear()) {
+			isReset = true;
+		}
+		
+		return isReset;
+	}
+	
+	public Date getDateFromToolbar(HttpServletRequest request , String[] paramLst) {
+		String day = ParamUtil.getString(request, paramLst[0]);
+		String month = ParamUtil.getString(request, paramLst[1]);
+		String year = ParamUtil.getString(request, paramLst[2]);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(day);
+		sb.append(StringPool.FORWARD_SLASH);
+		sb.append(month);
+		sb.append(StringPool.FORWARD_SLASH);
+		sb.append(year);
+		
+		String strDate = sb.toString();
+		
+		if(strDate.equalsIgnoreCase("0/0/0")) {
+			return null;
+		}
+		
+		return DateTimeUtil.convertStringToDate(strDate);
+		
+	}
+	
+	public static String convertAmountToWriting(double amount, Locale locale) {
+		
+		String sNumber = formatNumberForRead(amount);
+		
+		String sReturn = StringPool.BLANK;
+		
+		int iLen = sNumber.length();
+
+		String sNumber1 = StringPool.BLANK;
+		for (int i = iLen - 1; i >= 0; i--) {
+			sNumber1 += sNumber.charAt(i);
+		}
+
+		int iRe = 0;
+		do {
+			String sCut = StringPool.BLANK;
+			if (iLen > 3) {
+				sCut = sNumber1.substring((iRe * 3), (iRe * 3) + 3);
+				sReturn = Read(sCut, iRe, locale) + sReturn;
+				iRe++;
+				iLen -= 3;
+			} else {
+				sCut = sNumber1.substring((iRe * 3), (iRe * 3) + iLen);
+				sReturn = Read(sCut, iRe, locale) + sReturn;
+				break;
+			}
+		} while (true);
+		if (sReturn.length() > 1) {
+			sReturn = sReturn.substring(0, 1).toUpperCase()
+					+ sReturn.substring(1);
+		}
+		sReturn = sReturn + LanguageUtil.get(locale, "dong");
+		return sReturn;
+	}
+	
+	private static String formatNumberForRead(double number) {
+		NumberFormat nf = NumberFormat.getInstance();
+		String temp = nf.format(number);
+		String strReturn = StringPool.BLANK;
+		int slen = temp.length();
+		for (int i = 0; i < slen; i++) {
+			if (String.valueOf(temp.charAt(i)).equals(StringPool.PERIOD))
+				break;
+			else if (Character.isDigit(temp.charAt(i))) {
+				strReturn += String.valueOf(temp.charAt(i));
+			}
+		}
+		return strReturn;
+	}
+	
+	private static String Read(String sNumber, int iPo, Locale locale) {
+		
+		String sReturn = StringPool.BLANK;
+		
+		String sPo[] = { 
+				StringPool.BLANK,
+				LanguageUtil.get(locale, "ngan") + StringPool.SPACE,
+				LanguageUtil.get(locale, "trieu") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "ty") + StringPool.SPACE };
+		
+		String sSo[] = { 
+				LanguageUtil.get(locale, "khong") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "mot") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "hai") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "ba") + StringPool.SPACE,
+				LanguageUtil.get(locale, "bon") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "nam") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "sau") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "bay") + StringPool.SPACE,
+				LanguageUtil.get(locale, "tam") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "chin") + StringPool.SPACE };
+		
+		String sDonvi[] = { 
+				StringPool.BLANK, 
+				LanguageUtil.get(locale, "muoi") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "tram") + StringPool.SPACE };
+		
+		int iLen = sNumber.length();
+		
+		int iRe = 0;
+		
+		for (int i = 0; i < iLen; i++) {
+			String sTemp = StringPool.BLANK + sNumber.charAt(i);
+			int iTemp = Integer.parseInt(sTemp);
+			
+			String sRead = StringPool.BLANK;
+			
+			if (iTemp == 0) {
+				switch (iRe) {
+				case 0:
+					break;
+				case 1: {
+					if (Integer.parseInt(StringPool.BLANK + sNumber.charAt(0)) != 0) {
+						sRead = LanguageUtil.get(locale, "le") + StringPool.SPACE;
+					}
+					break;
+				}
+				case 2: {
+					if (Integer.parseInt(StringPool.BLANK + sNumber.charAt(0)) != 0
+							&& Integer.parseInt(StringPool.BLANK + sNumber.charAt(1)) != 0) {
+						sRead = LanguageUtil.get(locale, "khong-tram", "khong tram") + StringPool.SPACE;
+					}
+					break;
+				}
+				}
+			} else if (iTemp == 1) {
+				switch (iRe) {
+				case 1:
+					sRead = LanguageUtil.get(locale, "muoif", "muoi") + StringPool.SPACE;
+					break;
+				default:
+					sRead = LanguageUtil.get(locale, "mot") + StringPool.SPACE + sDonvi[iRe];
+					break;
+				}
+			} else if (iTemp == 5) {
+				switch (iRe) {
+				case 0: {
+					if (sNumber.length() <= 1) {
+						sRead = LanguageUtil.get(locale, "nam") + StringPool.SPACE;
+					} else if (Integer.parseInt(StringPool.BLANK + sNumber.charAt(1)) != 0) {
+						sRead = LanguageUtil.get(locale, "lam") + StringPool.SPACE;
+					} else
+						sRead = LanguageUtil.get(locale, "nam") + StringPool.SPACE;
+					break;
+				}
+				default:
+					sRead = sSo[iTemp] + sDonvi[iRe];
+				}
+			} else {
+				sRead = sSo[iTemp] + sDonvi[iRe];
+			}
+
+			sReturn = sRead + sReturn;
+			iRe++;
+		}
+		if (sReturn.length() > 0) {
+			sReturn += sPo[iPo];
+		}
+
+		return sReturn;
 	}
 
 	private static Log _log = LogFactoryUtil

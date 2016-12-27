@@ -42,7 +42,6 @@
 <%@page import="org.opencps.dossiermgt.OutOfLengthDossierContactTelNoException"%>
 <%@page import="org.opencps.dossiermgt.EmptyDossierContactNameException"%>
 <%@page import="org.opencps.dossiermgt.OutOfLengthDossierAddressException"%>
-<%@page import="org.opencps.dossiermgt.InvalidDossierObjectException"%>
 
 <%@ include file="../../init.jsp"%>
 
@@ -135,6 +134,29 @@
 	</aui:col>
 </aui:row>
 
+	<aui:row>
+			<aui:col width="50">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
+			<aui:col width="50">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-reception-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
+	</aui:row>
+	
 <aui:row cssClass="nav-content-row hidden">
 	<aui:col width="100">
 		<aui:input 

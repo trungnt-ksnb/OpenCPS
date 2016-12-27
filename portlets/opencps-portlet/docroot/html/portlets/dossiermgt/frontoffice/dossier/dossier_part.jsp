@@ -98,6 +98,29 @@
 		</aui:col>
 	</aui:row>
 
+	<aui:row>
+			<aui:col width="50">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
+			<aui:col width="50">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-reception-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
+	</aui:row>
+	
 	<div class="opencps dossiermgt dossier-part-row r-0">
 					
 		<div class="level-0 opencps dossiermgt dossier-part dossier-part-title-left">
@@ -220,7 +243,7 @@
 												
 												<portlet:param 
 													name="showVersionItemReference" 
-													value="<%=String.valueOf(showVersionItem) %>"
+													value="<%=String.valueOf(showDossierFileVersion) %>"
 												/>
 											
 												<portlet:param 
@@ -301,7 +324,7 @@
 													>
 														<portlet:param 
 															name="showVersionItemReference" 
-															value="<%=String.valueOf(showVersionItem) %>"
+															value="<%=String.valueOf(showDossierFileVersion) %>"
 														/>
 													
 														<portlet:param 

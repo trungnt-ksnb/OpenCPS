@@ -1,4 +1,3 @@
-
 <%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
 <%@page import="java.util.Set"%>
 <%@page import="java.util.HashSet"%>
@@ -21,6 +20,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
+<%@page import="org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil"%>
+<%@page import="org.opencps.processmgt.model.ProcessWorkflow"%>
+<%@page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil"%>
+<%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
+<%@page import="org.opencps.util.PortletConstants"%>
 <%@page import="java.util.Date"%>
 <%@page import="com.liferay.portal.kernel.dao.search.RowChecker"%>
 <%@page import="com.liferay.portal.kernel.json.JSONFactoryUtil"%>
@@ -92,11 +96,14 @@
 	iteratorURL.setParameter("dossierSubStatus", dossierSubStatus);
 	iteratorURL.setParameter("processOrderStage", processOrderStage);
 	
+	boolean isShowRowChecker = false;
+	
 	if(ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
 			serviceInfoId > 0 && processStepId > 0){
 		
 		rowChecker = new RowChecker(liferayPortletResponse);
+		isShowRowChecker = true;
 		
 	}
 %>
@@ -159,9 +166,13 @@
 				           <p class="count"></p>
 				    </div>
 				</div>
+				<%-- <c:if test="<%=ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
+				serviceInfoId > 0 && processStepId > 0 %>">
+					<aui:button name="multiAssignToUserBtn" value="multiAssignToUserBtn"/>
+				</c:if> --%>
 				<liferay-ui:search-container 
 					searchContainer="<%= new ProcessOrderSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>"
-					rowChecker="<%=rowChecker%>"
+					
 					headerNames="<%= headers%>"
 				>
 				
@@ -188,6 +199,25 @@
 							
 							pageContext.setAttribute("results", results);
 							pageContext.setAttribute("total", total);
+							
+							try {
+								
+								long processWorkFlowId = ProcessOrderLocalServiceUtil
+										.getProcessOrder(processOrders.get(0).getProcessOrderId()).getProcessWorkflowId();
+								
+								if(processWorkFlowId > 0) {
+									ProcessWorkflow processWorkflow = ProcessWorkflowLocalServiceUtil.getProcessWorkflow(processWorkFlowId);
+									
+									if(Validator.isNotNull(processWorkflow) && processWorkflow.getIsMultipled()) {
+										isMultiAssign = true;
+									}
+								}
+								
+							} catch(Exception e) {}
+							
+							if(isMultiAssign) {
+								searchContainer.setRowChecker(rowChecker);
+							}
 						%>
 					</liferay-ui:search-container-results>	
 						<liferay-ui:search-container-row 
@@ -209,9 +239,9 @@
 										processOrder.getActionDatetime() : null,
 										new Date(), processOrder.getDaysDuration(),themeDisplay.getLocale());
 								
+								String redirectURL = processURL.toString() + "#" +renderResponse.getNamespace() +"tab="+ renderResponse.getNamespace() + redirectToPageProcessCfg ;
 								
-						
-								String hrefFix = "location.href='" + processURL.toString()+"'";
+								String hrefFix = "location.href='" + redirectURL+"'";
 								String cssStatusColor = "status-color-" + processOrder.getDossierStatus();
 							%>
 							
@@ -305,3 +335,68 @@
 <%!
 	private Log _log = LogFactoryUtil.getLog("html.portlets.dossiermgt.frontoffice.display.default.jsp");
 %>
+
+<aui:script use="liferay-util-list-fields,liferay-portlet-url">
+
+AUI().ready(function(A){
+	
+	var processDossier = A.one("#<portlet:namespace />processDossier");
+	var isMultiAssignvar = '<%= isMultiAssign %>';
+	var isShowRowChecker = '<%= isShowRowChecker%>';
+	console.log(isMultiAssignvar);
+	console.log(processDossier);
+	if(isMultiAssignvar == 'false' && processDossier && isShowRowChecker == 'false') {
+		processDossier.hide();
+	}
+	
+	/* var processDossier = A.one("#<portlet:namespace />multiAssignToUserBtn");
+	var isMultiAssignvar = '<%= isMultiAssign %>';
+	
+	console.log(isMultiAssignvar);
+	console.log(processDossier);
+	processDossier.hide();
+	if(isMultiAssignvar == 'true' && processDossier) {
+		
+		processDossier.show();
+		
+		processDossier.on('click', function() {
+			
+			var currentURL = '<%=currentURL.toString()%>';
+			
+			var processOrderIds = Liferay.Util.listCheckedExcept(document.<portlet:namespace />fm, '<portlet:namespace />allRowIds');
+			
+			processOrderIds = processOrderIds.split(",");
+			
+			if(processOrderIds != ''){
+				if(processOrderIds.length > 1){
+					// alert('<%= UnicodeLanguageUtil.get(pageContext, "multiple-process-order-handle-is-developing") %>');
+					var multiAssignURL = Liferay.PortletURL.createURL('<%= PortletURLFactoryUtil.create(request, WebKeys.PROCESS_ORDER_PORTLET, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>');
+					multiAssignURL.setParameter("mvcPath","/html/portlets/processmgt/processorder/assign_multil_process_order.jsp");
+					multiAssignURL.setParameter("processOrderIds",processOrderIds.toString());
+					multiAssignURL.setWindowState("<%=LiferayWindowState.POP_UP.toString()%>");
+					multiAssignURL.setPortletMode("normal");
+					openDialog(multiAssignURL.toString(), "assign-multi-dossier", "assign-multi-dossier");
+					return;
+				}else if(processOrderIds.length == 0){
+					alert('<%= UnicodeLanguageUtil.get(pageContext, "you-need-select-any-process-order-to-process") %>');
+					return;
+				}else{
+					var portletURL = Liferay.PortletURL.createURL('<%= PortletURLFactoryUtil.create(request, WebKeys.PROCESS_ORDER_PORTLET, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>');
+					portletURL.setParameter("mvcPath", "/html/portlets/processmgt/processorder/process_order_detail.jsp");
+					portletURL.setWindowState("<%=LiferayWindowState.NORMAL.toString()%>"); 
+					portletURL.setPortletMode("normal");
+				
+					portletURL.setParameter("processOrderId", processOrderIds[0]);
+					portletURL.setParameter("backURL", currentURL);
+					window.location.href = portletURL.toString();
+				}
+			}else{
+				alert('<%= UnicodeLanguageUtil.get(pageContext, "you-need-select-any-process-order-to-process") %>');
+				return;
+			}
+		});
+	} */
+	
+});
+
+</aui:script>

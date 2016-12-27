@@ -56,7 +56,7 @@
 		passwordPolicy = mappingUser.getPasswordPolicy();
 	}
 	
-	String[] processOrderSections = new String[]{"dossieroverview", "dossierfile", "dossierhistory"};
+	String[] processOrderSections = new String[]{"dossierfile", "dossierhistory", "dossieroverview"};
 	
 	String[][] categorySections = {processOrderSections};
 	
