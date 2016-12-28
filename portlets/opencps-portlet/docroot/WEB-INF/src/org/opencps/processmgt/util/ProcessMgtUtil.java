@@ -28,6 +28,7 @@ import org.opencps.processmgt.service.ProcessOrderLocalServiceUtil;
 import org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil;
 import org.opencps.processmgt.service.StepAllowanceLocalServiceUtil;
 
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
@@ -106,6 +107,15 @@ public class ProcessMgtUtil {
 							ActionHistory actionHistory = getLastestActionHistory(actionHistories);
 							
 							userId = actionHistory.getActionUserId();
+						} else {
+							actionHistories = ActionHistoryLocalServiceUtil
+									.getActionHistoryByProcessOrderId(processOrderId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, false);
+							
+							if(actionHistories.size() > 0) {
+								ActionHistory actionHistory = getLastestActionHistory(actionHistories);
+								
+								userId = actionHistory.getActionUserId();
+							}
 						}
 						
 					}

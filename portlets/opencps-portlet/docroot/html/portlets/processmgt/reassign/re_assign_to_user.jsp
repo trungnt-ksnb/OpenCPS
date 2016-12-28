@@ -693,7 +693,9 @@
 		var url = '<%=getDataAjax%>';
 		
 		var nanoTime = $('#<portlet:namespace/>nanoTimePDF').val();
-		
+		var offsetX = '<%= offsetX %>';
+		var offsetY = '<%= offsetY %>';
+		var imageZoom = '<%= imageZoom %>';
 		url = url + "&nanoTimePDF="+nanoTime;
 		
 		var listFileToSigner = $("#<portlet:namespace/>listFileToSigner").val().split(","); 
@@ -712,6 +714,9 @@
 					<portlet:namespace/>dossierId: $("#<portlet:namespace/>dossierId").val(),
 					<portlet:namespace/>dossierPartId: listDossierPartToSigner[i],
 					<portlet:namespace/>dossierFileId: listDossierFileToSigner[i],
+					<portlet:namespace/>offsetX: offsetX,
+					<portlet:namespace/>offsetY: offsetY,
+					<portlet:namespace/>imageZoom: imageZoom,
 					<portlet:namespace/>type: 'getComputerHash'
 				},
 				success : function(data) {
