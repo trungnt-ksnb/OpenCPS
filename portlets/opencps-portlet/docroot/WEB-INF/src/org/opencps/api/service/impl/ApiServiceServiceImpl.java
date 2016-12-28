@@ -30,6 +30,7 @@ import org.opencps.accountmgt.service.CitizenLocalServiceUtil;
 import org.opencps.api.service.ApiServiceLocalServiceUtil;
 import org.opencps.api.service.base.ApiServiceServiceBaseImpl;
 import org.opencps.api.util.APIServiceConstants;
+import org.opencps.api.util.APIUtils;
 import org.opencps.backend.message.SendToEngineMsg;
 import org.opencps.backend.message.UserActionMsg;
 import org.opencps.dossiermgt.NoSuchDossierException;
@@ -134,6 +135,8 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 				APIServiceConstants.CODE_07, serviceContext.getRemoteAddr(), event, 
 				input.toString(), APIServiceConstants.IN,
 				serviceContext);
+			
+			dossierInfo = APIUtils.quoteJSON(dossierInfo);
 			
 			JSONObject dossierInfoObj = JSONFactoryUtil.createJSONObject(dossierInfo);
 			
@@ -579,6 +582,8 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 				APIServiceConstants.CODE_04, serviceContext.getRemoteAddr(), oid, 
 				input.toString(), APIServiceConstants.IN,
 				serviceContext);
+			
+			dossierfile = APIUtils.quoteJSON(dossierfile);
 			
 			JSONObject dossierfileObj = JSONFactoryUtil.createJSONObject(dossierfile);
 			String dossierFileOid = dossierfileObj.getString("dossierFileOid");
