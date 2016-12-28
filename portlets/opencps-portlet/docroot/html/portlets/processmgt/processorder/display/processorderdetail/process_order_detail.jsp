@@ -54,11 +54,31 @@
 	
 	<aui:row>
 		<aui:col width="25">
-			<div style="margin-bottom: 25px;" class="opencps-searchcontainer-wrapper default-box-shadow radius8" id='<portlet:namespace/>containerP'>
-				<p id='<portlet:namespace/>p-dossier-content'><aui:a href='<%="#" + renderResponse.getNamespace() + "div-dossier-content"%>'><%=LanguageUtil.get(pageContext, "dossier_content") %></aui:a></p>
-				<p id='<portlet:namespace/>p-dossier-info'><aui:a href='<%="#" + renderResponse.getNamespace() + "div-dossier-info"%>'><%=LanguageUtil.get(pageContext, "dossier-info") %></aui:a></p>
-				<p id='<portlet:namespace/>p-process'><aui:a href='<%="#" + renderResponse.getNamespace() + "div-process"%>'><%=LanguageUtil.get(pageContext, "process") %></aui:a></p>
-				<p id='<portlet:namespace/>p-history'><aui:a href='<%="#" + renderResponse.getNamespace() + "div-history"%>'><%=LanguageUtil.get(pageContext, "history") %></aui:a></p>
+			<div style="margin-bottom: 25px;" class="opencps-searchcontainer-wrapper default-box-shadow radius8" data-spy="affix" data-offset-top="200" id='<portlet:namespace/>containerP'>
+				<p id='<portlet:namespace/>p-dossier-content'>
+					<aui:a href='<%="#" + renderResponse.getNamespace() + "dossier_content"%>'>
+						<i class="fa dossier_content"></i>
+						<%=LanguageUtil.get(pageContext, "dossier_content") %>
+					</aui:a>
+				</p>
+				<p id='<portlet:namespace/>p-dossier-info'>
+					<aui:a href='<%="#" + renderResponse.getNamespace() + "dossier_info_line"%>'>
+						<i class="fa dossier_info"></i>
+						<%=LanguageUtil.get(pageContext, "dossier-info") %>
+					</aui:a>
+				</p>
+				<p id='<portlet:namespace/>p-process'>
+					<aui:a href='<%="#" + renderResponse.getNamespace() + "process_line"%>'>
+						<i class="fa process"></i>
+						<%=LanguageUtil.get(pageContext, "process") %>
+					</aui:a>
+				</p>
+				<p id='<portlet:namespace/>p-history'>
+					<aui:a href='<%="#" + renderResponse.getNamespace() + "history_line"%>'>
+						<i class="fa history"></i>
+						<%=LanguageUtil.get(pageContext, "history") %>
+					</aui:a>
+				</p>
 			</div>
 		</aui:col>
 		
@@ -79,30 +99,32 @@
 						value="<%= currentURL%>"
 					/>
 					
-					<div id="<portlet:namespace/>div-dossier-content">
-						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "dossier_content") %></h4>
-						<liferay-util:include page='<%=templatePath + "/dossier/dossier_content_view_part_file.jsp" %>' servletContext="<%=application %>" />
-					</div>
-					
-					<div class="separate-line"></div>
-					
-					<div id="<portlet:namespace/>div-dossier-info">
-						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "dossier-info") %></h4>
-						<liferay-util:include page='<%=templatePath + "/dossier/dossier_info.jsp" %>' servletContext="<%=application %>" />
-					</div>
-					
-					<div class="separate-line"></div>
-					
-					<div id="<portlet:namespace/>div-process">
-						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "process") %></h4>
-						<liferay-util:include page='<%=templatePath + "/dossier/process.jsp" %>' servletContext="<%=application %>" />
-					</div>
-					
-					<div class="separate-line"></div>
-					
-					<div id="<portlet:namespace/>div-history">
-						<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "history") %></h4>
-						<liferay-util:include page='<%=templatePath + "/dossier/history.jsp" %>' servletContext="<%=application %>" />
+					<div class="process-order-detail-container">
+						<div id="<portlet:namespace/>dossier_content">
+							<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "dossier_content") %></h4>
+							<liferay-util:include page='<%=templatePath + "/dossier/dossier_content_view_part_file.jsp" %>' servletContext="<%=application %>" />
+						</div>
+						
+						<div id="<portlet:namespace/>dossier_info_line" class="separate-line"></div>
+						
+						<div id="<portlet:namespace/>dossier_info">
+							<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "dossier-info") %></h4>
+							<liferay-util:include page='<%=templatePath + "/dossier/dossier_info.jsp" %>' servletContext="<%=application %>" />
+						</div>
+						
+						<div id="<portlet:namespace/>process_line" class="separate-line"></div>
+						
+						<div id="<portlet:namespace/>process">
+							<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "process") %></h4>
+							<liferay-util:include page='<%=templatePath + "/dossier/process.jsp" %>' servletContext="<%=application %>" />
+						</div>
+						
+						<div id="<portlet:namespace/>history_line" class="separate-line"></div>
+						
+						<div id="<portlet:namespace/>history">
+							<h4 style="text-align: center;"><%=LanguageUtil.get(pageContext, "history") %></h4>
+							<liferay-util:include page='<%=templatePath + "/dossier/history.jsp" %>' servletContext="<%=application %>" />
+						</div>
 					</div>
 					
 				</aui:form>
@@ -113,10 +135,10 @@
 <aui:script>
 	AUI().ready(function(A){
 		
-		var dossierContentDiv = A.one('#<portlet:namespace/>div-dossier-content');
-		var dossierInfoDiv = A.one('#<portlet:namespace/>div-dossier-info');
-		var processDiv = A.one('#<portlet:namespace/>div-process');
-		var historyDiv = A.one('#<portlet:namespace/>div-history');
+		var dossierContentDiv = A.one('#<portlet:namespace/>dossier_content');
+		var dossierInfoDiv = A.one('#<portlet:namespace/>dossier_info');
+		var processDiv = A.one('#<portlet:namespace/>process');
+		var historyDiv = A.one('#<portlet:namespace/>history');
 		
 		var dossierContentP = A.one('#<portlet:namespace/>p-dossier-content');
 		var dossierInfoP = A.one('#<portlet:namespace/>p-dossier-info');
@@ -124,14 +146,6 @@
 		var historyP = A.one('#<portlet:namespace/>p-history');
 		
 		var containerP = A.one('#<portlet:namespace/>containerP');
-		
-		if (document.documentElement.scrollTop > dossierContentDiv.getY()){
-			containerP.setStyle('top', '15px');
-			containerP.setStyle('position', 'fixed');
-	    } else {
-	    	containerP.setStyle('top', '0px');
-	    	containerP.setStyle('position', '');
-	    }
 		
 		if (document.documentElement.scrollTop < dossierInfoDiv.getY() - 75){
 	        dossierContentP.addClass('changeDefErr');
@@ -147,14 +161,6 @@
 		
 		A.on('scroll', function(){
 			console.log('scroll');
-			
-			if (document.documentElement.scrollTop > dossierContentDiv.getY() - 15){
-				containerP.setStyle('top', '15px');
-				containerP.setStyle('position', 'fixed');
-		    } else {
-		    	containerP.setStyle('top', '0px');
-		    	containerP.setStyle('position', '');
-		    }
 			
 			if (document.documentElement.scrollTop < dossierInfoDiv.getY() - 75){
 		        

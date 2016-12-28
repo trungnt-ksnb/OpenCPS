@@ -159,7 +159,6 @@
 	if(readOnly){
 		isEditDossier = false;
 	}
-	
 %>
 
 <table class="dossier-actions-wraper">
@@ -233,7 +232,7 @@
 										title="view-attachment"
 									/>
 									
-									<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+									<i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" />
 								</c:when>
 								<c:otherwise>
 									<c:if test="<%=isEditDossier && readOnly == false %>">
@@ -282,12 +281,12 @@
 				<td width="10%" align="right">
 					<c:if test="<%=isEditDossier && readOnly == false%>">
 						<aui:a
-							cssClass="opencps dossiermgt part-file-ctr remove-dossier-file"
+							cssClass='<%="opencps dossiermgt part-file-ctr remove-dossier-file " + (version == 0 ? StringPool.BLANK : "remove-dossier-file-has-file")%>'
 							dossier-part="<%=String.valueOf(isChildDossierPart ? childDossierPartId : dossierPartId) %>"
 							dossier-file="<%=String.valueOf(dossierFileId) %>"
 							group-dossier-part="<%=String.valueOf(groupDossierPartId) %>"
 							group-name="<%=groupName %>"
-							href="javascript:void(0);" 
+							href='<%=version == 0 ? StringPool.BLANK : "javascript:void(0);" %>'
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
@@ -342,7 +341,7 @@
 								title="view-attachment"
 							/>
 							
-							<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+							<i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" />
 						</c:when>
 						<c:otherwise>
 							<c:if test="<%=isEditDossier && readOnly == false%>">
@@ -389,13 +388,13 @@
 				<td width="10%" align="right">
 					<c:if test="<%=isEditDossier && readOnly == false%>">
 						<aui:a 
-							cssClass="opencps dossiermgt part-file-ctr remove-dossier-file"
+							cssClass='<%="opencps dossiermgt part-file-ctr remove-dossier-file " + (version == 0 ? StringPool.BLANK : "remove-dossier-file-has-file")%>'
 							dossier-part="<%=String.valueOf(isChildDossierPart ? childDossierPartId : dossierPartId) %>"
 							dossier-file="<%=String.valueOf(dossierFileId) %>"
 							group-dossier-part="<%=String.valueOf(groupDossierPartId) %>"
 							group-name="<%=groupName %>"
 							level = "<%=level %>"
-							href="javascript:void(0);" 
+							href='<%=version == 0 ? StringPool.BLANK : "javascript:void(0);" %>'
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
@@ -466,7 +465,7 @@
 								title="view-attachment"
 							/>
 							
-							<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+							<i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" />
 						</c:when>
 						<c:otherwise>
 							<c:if test="<%=isEditDossier && readOnly == false%>">
@@ -513,13 +512,13 @@
 				<td width="10%" align="right">
 					<c:if test="<%=isEditDossier && readOnly == false%>">
 						<aui:a 
-							cssClass="opencps dossiermgt part-file-ctr remove-dossier-file"
+							cssClass='<%="opencps dossiermgt part-file-ctr remove-dossier-file " + (version == 0 ? StringPool.BLANK : "remove-dossier-file-has-file")%>'
 							dossier-file="<%=String.valueOf(dossierFileId) %>"
 							dossier-part="<%=String.valueOf(isChildDossierPart ? childDossierPartId : dossierPartId) %>"
 							group-dossier-part="<%=String.valueOf(groupDossierPartId) %>"
 							group-name="<%=groupName %>"
 							level = "<%=level %>"
-							href="javascript:void(0);" 
+							href='<%=version == 0 ? StringPool.BLANK : "javascript:void(0);" %>'
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
@@ -610,7 +609,7 @@
 										title="view-attachment"
 									/>
 									
-									<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+									<i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" />
 								</c:when>
 								<c:otherwise>
 									<c:if test="<%=isEditDossier && readOnly == false%>">
@@ -659,11 +658,11 @@
 				<td width="10%" align="right">
 					<c:if test="<%=isEditDossier && readOnly == false%>">
 						<aui:a
-							cssClass="opencps dossiermgt part-file-ctr remove-dossier-file"
+							cssClass='<%="opencps dossiermgt part-file-ctr remove-dossier-file " + (version == 0 ? StringPool.BLANK : "remove-dossier-file-has-file")%>'
 							process-order="<%=String.valueOf(processOrderId) %>"
 							dossier-file="<%=String.valueOf(dossierFileId) %>"
 							level = "<%=level %>"
-							href="javascript:void(0);" 
+							href='<%=version == 0 ? StringPool.BLANK : "javascript:void(0);" %>'
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
@@ -680,7 +679,7 @@
 </table>
 
 <aui:script>
-	AUI().ready('aui-tooltip', 'aui-base', function(A){
+	/* AUI().ready('aui-tooltip', 'aui-base', function(A){
 		
 		var items = A.all('#<portlet:namespace />signInfoMsg');
 		
@@ -696,9 +695,5 @@
 			})
 		});
 
-	}); 
-	
-	
-	
-	
+	}); */
 </aui:script>

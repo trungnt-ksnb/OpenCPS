@@ -488,7 +488,7 @@
 		}
 		
 		//Remove buttons
-		var removeDossierFiles = A.all('.remove-dossier-file');
+		var removeDossierFiles = A.all('.remove-dossier-file-has-file');
 		
 		if(removeDossierFiles){
 			removeDossierFiles.each(function(e){
