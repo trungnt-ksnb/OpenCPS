@@ -290,7 +290,7 @@
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
-							<i class="fa fa-certificate" aria-hidden="true" ></i>
+							<i class="" aria-hidden="true" ></i>
 							
 						</aui:a>
 					</c:if>
@@ -398,7 +398,7 @@
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
-							<i class="fa fa-certificate" aria-hidden="true"></i>
+							<i class="" aria-hidden="true"></i>
 							
 						</aui:a>
 					</c:if>
@@ -522,7 +522,7 @@
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
-							<i class="fa fa-certificate" aria-hidden="true" ></i>
+							<i class="" aria-hidden="true" ></i>
 							
 						</aui:a>
 					</c:if>
@@ -666,7 +666,7 @@
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
-							<i class="fa fa-certificate" aria-hidden="true"  ></i>
+							<i class="" aria-hidden="true"  ></i>
 							
 						</aui:a>
 					</c:if>
