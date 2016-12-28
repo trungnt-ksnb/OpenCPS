@@ -160,7 +160,6 @@
 	    }
 		
 		A.on('scroll', function(){
-			console.log('scroll');
 			
 			if (document.documentElement.scrollTop < dossierInfoDiv.getY() - 75){
 		        
