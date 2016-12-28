@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.Base64;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
@@ -53,6 +54,14 @@ public class BCYSignatureUtil extends SignatureUtil {
 			long indexSize) throws IOException {
 
 		// String result = StringPool.BLANK;
+		
+		float offsetX = ParamUtil.getFloat(resourceRequest, "offsetX");
+		float offsetY = ParamUtil.getFloat(resourceRequest, "offsetX");
+		float imageZoom = ParamUtil.getFloat(resourceRequest, "offsetX");
+		
+		_log.info("dlt ^^^^^^^^  offsetX  " + offsetX);
+		_log.info("dlt ^^^^^^^^  offsetY  " + offsetY);
+		_log.info("dlt ^^^^^^^^  imageZoom  " + imageZoom);
 
 		long userId = PortalUtil.getUserId(resourceRequest);
 
@@ -145,14 +154,14 @@ public class BCYSignatureUtil extends SignatureUtil {
 
 			int signatureImageHeight = (bufferedImage != null && bufferedImage
 					.getHeight() > 0) ? bufferedImage.getHeight() : 80;
-			float llx = textLocation.getAnchorX();
+			float llx = textLocation.getAnchorX() + offsetX;
 
-			float urx = llx + signatureImageWidth / 3;
+			float urx = llx + signatureImageWidth * imageZoom;
 
 			float lly = textLocation.getPageURY() - textLocation.getAnchorY()
-					- signatureImageHeight / 3;
+					- signatureImageHeight * imageZoom + offsetY;
 
-			float ury = lly + signatureImageHeight / 3;
+			float ury = lly + signatureImageHeight * imageZoom;
 
 			// inHash = signer.computeHash(new Rectangle(llx + 65, lly - 55, urx
 			// + 114, ury-20), 1);
