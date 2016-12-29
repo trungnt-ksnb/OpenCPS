@@ -136,8 +136,6 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 				input.toString(), APIServiceConstants.IN,
 				serviceContext);
 			
-			dossierInfo = APIUtils.quoteJSON(dossierInfo);
-			
 			JSONObject dossierInfoObj = JSONFactoryUtil.createJSONObject(dossierInfo);
 			
 			String govAgencyCode = dossierInfoObj.getString("govAgencyCode");
@@ -582,8 +580,6 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 				APIServiceConstants.CODE_04, serviceContext.getRemoteAddr(), oid, 
 				input.toString(), APIServiceConstants.IN,
 				serviceContext);
-			
-			dossierfile = APIUtils.quoteJSON(dossierfile);
 			
 			JSONObject dossierfileObj = JSONFactoryUtil.createJSONObject(dossierfile);
 			String dossierFileOid = dossierfileObj.getString("dossierFileOid");
