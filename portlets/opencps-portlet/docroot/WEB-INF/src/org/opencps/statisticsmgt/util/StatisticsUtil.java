@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import org.opencps.statisticsmgt.bean.DossierStatisticsBean;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
@@ -17,6 +18,10 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
@@ -705,13 +710,52 @@ public class StatisticsUtil {
 		return dossierStatistics;
 	}
 
+	/**
+	 * @param dossiersStatistics
+	 * @param language
+	 * @return
+	 */
+	public static JSONArray statisticsDossierMonthly(
+			List<DossiersStatistics> dossiersStatistics, String language) {
+
+		JSONArray months = JSONFactoryUtil.createJSONArray();
+
+		Locale locale = new Locale(language);
+
+		if (dossiersStatistics != null) {
+			for (DossiersStatistics statistics : dossiersStatistics) {
+				JSONObject monthObject = JSONFactoryUtil.createJSONObject();
+				monthObject.put("month", String.valueOf(statistics.getMonth()));
+
+				JSONArray columns = JSONFactoryUtil.createJSONArray();
+				columns.put(LanguageUtil.get(locale, "remaining-number"));
+				columns.put(LanguageUtil.get(locale, "received-number"));
+				columns.put(LanguageUtil.get(locale, "ontime-number"));
+				columns.put(LanguageUtil.get(locale, "overtime-number"));
+				columns.put(LanguageUtil.get(locale, "processing-number"));
+				columns.put(LanguageUtil.get(locale, "delaying-number"));
+
+				monthObject.put("columns", columns);
+
+				JSONArray values = JSONFactoryUtil.createJSONArray();
+
+				values.put(String.valueOf(statistics.getRemainingNumber()));
+				values.put(String.valueOf(statistics.getReceivedNumber()));
+				values.put(String.valueOf(statistics.getOntimeNumber()));
+				values.put(String.valueOf(statistics.getOvertimeNumber()));
+				values.put(String.valueOf(statistics.getProcessingNumber()));
+				values.put(String.valueOf(statistics.getDelayingNumber()));
+
+				monthObject.put("values", values);
+
+				months.put(monthObject);
+
+			}
+		}
+
+		return months;
+	}
+
 	private static Log _log = LogFactoryUtil.getLog(StatisticsUtil.class
 			.getName());
-
-	/*
-	 * public static void main(String[] args) { String tree1 = "1-2016-100.";
-	 * String tree2 = "1-2016-100.102"; System.out.print(tree2.contains(tree1));
-	 * System.out.print(tree1.lastIndexOf(StringPool.PERIOD));
-	 * System.out.print(tree1.length()); }
-	 */
 }

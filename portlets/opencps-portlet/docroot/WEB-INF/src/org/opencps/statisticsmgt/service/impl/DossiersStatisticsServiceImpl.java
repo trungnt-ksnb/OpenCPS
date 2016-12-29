@@ -152,13 +152,13 @@ public class DossiersStatisticsServiceImpl extends
 		return array;
 	}
 
-	@JSONWebService(value = "statistics-dossier-all-months-of-year", method = "POST")
-	public JSONArray statisticsDossierAllMonthsOfYear(long groupId, int year,
-			String language) throws SystemException {
+	/*@JSONWebService(value = "statistics-dossier-monthly", method = "POST")
+	public JSONArray statisticsDossierMonthly(long groupId, int year,
+			int level, String language) throws SystemException {
 
-		List<DossiersStatistics> dossiersStatistics = dossiersStatisticsLocalService
-				.getDossiersStatisticsByG_GC_DC_Y(groupId, StringPool.BLANK,
-						StringPool.BLANK, year);
+		List<DossiersStatistics> dossiersStatistics = DossiersStatisticsLocalServiceUtil
+				.getDossiersStatisticsByG_GC_DC_Y_L(groupId, StringPool.BLANK,
+						StringPool.BLANK, year, level);
 
 		JSONArray months = JSONFactoryUtil.createJSONArray();
 
@@ -166,27 +166,35 @@ public class DossiersStatisticsServiceImpl extends
 
 		if (dossiersStatistics != null) {
 			for (DossiersStatistics statistics : dossiersStatistics) {
-				JSONObject month = JSONFactoryUtil.createJSONObject();
-				month.put("month", String.valueOf(statistics.getMonth()));
+				JSONObject monthObject = JSONFactoryUtil.createJSONObject();
+				monthObject.put("month", String.valueOf(statistics.getMonth()));
 
-				month.put(LanguageUtil.get(locale, "remaining-number"),
-						String.valueOf(statistics.getRemainingNumber()));
-				month.put("receivedNumber",
-						String.valueOf(statistics.getReceivedNumber()));
-				month.put("ontimeNumber",
-						String.valueOf(statistics.getOntimeNumber()));
-				month.put("overtimeNumber",
-						String.valueOf(statistics.getOvertimeNumber()));
-				month.put("processingNumber",
-						String.valueOf(statistics.getProcessingNumber()));
-				month.put("delayingNumber",
-						String.valueOf(statistics.getDelayingNumber()));
+				JSONArray columns = JSONFactoryUtil.createJSONArray();
+				columns.put(LanguageUtil.get(locale, "remaining-number"));
+				columns.put(LanguageUtil.get(locale, "received-number"));
+				columns.put(LanguageUtil.get(locale, "ontime-number"));
+				columns.put(LanguageUtil.get(locale, "overtime-number"));
+				columns.put(LanguageUtil.get(locale, "processing-number"));
+				columns.put(LanguageUtil.get(locale, "delaying-number"));
 
-				months.put(month);
+				monthObject.put("columns", columns);
+
+				JSONArray values = JSONFactoryUtil.createJSONArray();
+
+				values.put(String.valueOf(statistics.getRemainingNumber()));
+				values.put(String.valueOf(statistics.getReceivedNumber()));
+				values.put(String.valueOf(statistics.getOntimeNumber()));
+				values.put(String.valueOf(statistics.getOvertimeNumber()));
+				values.put(String.valueOf(statistics.getProcessingNumber()));
+				values.put(String.valueOf(statistics.getDelayingNumber()));
+
+				monthObject.put("values", values);
+
+				months.put(monthObject);
 
 			}
 		}
 
 		return months;
-	}
+	}*/
 }

@@ -47,6 +47,13 @@
             <finder-column name="domainCode"></finder-column>
             <finder-column name="year"></finder-column>
         </finder>
+        <finder name="G_GC_DC_Y_L" return-type="Collection">
+            <finder-column name="groupId"></finder-column>
+            <finder-column name="govAgencyCode"></finder-column>
+            <finder-column name="domainCode"></finder-column>
+            <finder-column name="year"></finder-column>
+            <finder-column name="administrationLevel"></finder-column>
+        </finder>
         <finder name="G_GC_DC_M_Y_L" return-type="DossiersStatistics">
             <finder-column name="groupId"></finder-column>
             <finder-column name="govAgencyCode"></finder-column>
