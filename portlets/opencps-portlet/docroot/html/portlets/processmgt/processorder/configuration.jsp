@@ -104,6 +104,33 @@
 		name="hiddenTreeNodeEqualNone" 
 		value="<%=hiddenTreeNodeEqualNone %>"
 	/>
+	
+	<aui:select name="redirectToPageProcessCfg">
+		<aui:option 
+			value="dossier_content"
+			selected='<%=redirectToPageProcessCfg.equals("dossier_content") %>'
+		>
+			dossier_content
+		</aui:option>
+		<aui:option 
+			value="dossier_info"
+			selected='<%=redirectToPageProcessCfg.equals("dossier_info") %>'
+		>
+			dossier_info
+		</aui:option>
+		<aui:option 
+			value="history"
+			selected='<%=redirectToPageProcessCfg.equals("history") %>'
+		>
+			history
+		</aui:option>
+		<aui:option 
+			value="process"
+			selected='<%=redirectToPageProcessCfg.equals("process") %>'
+		>
+			process
+		</aui:option>
+	</aui:select>
 	<aui:button type="submit" name="Save" value="save"/>
 
 </aui:form>

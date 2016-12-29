@@ -71,8 +71,10 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 			updateDigitalSignature(preferences, actionRequest, actionResponse);
 		}
 
-		boolean hiddenTreeNodeEqualNone = ParamUtil.getBoolean(actionRequest, "hiddenTreeNodeEqualNone");
-		preferences.setValue("hiddenTreeNodeEqualNone", String.valueOf(hiddenTreeNodeEqualNone));
+		boolean hiddenTreeNodeEqualNone = ParamUtil.getBoolean(actionRequest, "hiddenToDoListTreeMenuEmptyNode");
+		String redirectToPageProcessCfg = ParamUtil.getString(actionRequest, "redirectToPageProcessCfg", "dossier_info");
+		preferences.setValue("hiddenToDoListTreeMenuEmptyNode", String.valueOf(hiddenTreeNodeEqualNone));
+		preferences.setValue("redirectToPageProcessCfg", String.valueOf(redirectToPageProcessCfg));
 		
 		preferences.store();
 

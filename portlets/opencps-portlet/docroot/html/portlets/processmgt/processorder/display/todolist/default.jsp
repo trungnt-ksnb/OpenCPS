@@ -1,4 +1,7 @@
-
+<%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
+<%@page import="java.util.LinkedHashMap"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.Set"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -81,12 +84,13 @@
 	
 	iteratorURL.setParameter("dossierSubStatus", dossierSubStatus);
 	iteratorURL.setParameter("processOrderStage", processOrderStage);
-	
+	boolean isShowRowChecker = false;
 	if(ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
 			serviceInfoId > 0 && processStepId > 0){
 		
 		rowChecker = new RowChecker(liferayPortletResponse);
+		isShowRowChecker = true;
 		
 	}
 %>
@@ -173,8 +177,9 @@
 								new Date(), processOrder.getDaysDuration(),themeDisplay.getLocale());
 						
 						//String deadLine = Validator.isNotNull(processOrder.getDealine()) ? processOrder.getDealine() : StringPool.DASH;
-						
-						String href = "location.href='" + processURL.toString()+"'";
+						String redirectURL = processURL.toString() + "#" +renderResponse.getNamespace() +"tab="+ renderResponse.getNamespace() + redirectToPageProcessCfg ;
+								
+						String href = "location.href='" + redirectURL+"'";
 						
 						String cssStatusColor = "status-color-" + processOrder.getDossierStatus();
 					%>
@@ -288,10 +293,10 @@ AUI().ready(function(A){
 	
 	var processDossier = A.one("#<portlet:namespace />processDossier");
 	var isMultiAssignvar = '<%= isMultiAssign %>';
-	
+	var isShowRowChecker = '<%= isShowRowChecker%>';
 	console.log(isMultiAssignvar);
 	console.log(processDossier);
-	if(isMultiAssignvar == 'false' && processDossier) {
+	if(isMultiAssignvar == 'false' && processDossier && isShowRowChecker == 'false') {
 		processDossier.hide();
 	}
 	

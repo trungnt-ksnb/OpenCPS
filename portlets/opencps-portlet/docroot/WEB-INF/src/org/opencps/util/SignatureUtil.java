@@ -33,7 +33,6 @@ import org.opencps.dossiermgt.service.DossierFileLocalServiceUtil;
 import org.opencps.pki.PdfPkcs7Signer;
 import org.opencps.pki.PdfSigner;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

@@ -124,6 +124,8 @@
 	
 	long assigerToUserId = ProcessMgtUtil.getAssignUser(processWorkflowId, processOrderId, workflow.getPostProcessStepId());
 	
+	long assigerToUserIdWasActioning = ProcessMgtUtil.getAssignUserWasActioning(processOrderId);
+	
 	PortletURL backTodoListURL =PortletURLFactoryUtil.create(request, WebKeys.PROCESS_ORDER_PORTLET, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
 
 	backTodoListURL.setParameter("mvcPath", "/html/portlets/processmgt/processorder/processordertodolist.jsp");
@@ -291,7 +293,7 @@
 						
 						for (User userSel : assignUsers) {
 					%>	
-						<aui:option selected="<%= assigerToUserId == userSel.getUserId() ? true : false  %>" value="<%= userSel.getUserId() %>"><%= userSel.getFullName() %></aui:option>
+						<aui:option selected="<%= ((assigerToUserId == userSel.getUserId()) || (assigerToUserIdWasActioning == userSel.getUserId())) ? true : false  %>" value="<%= userSel.getUserId() %>"><%= userSel.getFullName() %></aui:option>
 					<%
 						}
 					%>

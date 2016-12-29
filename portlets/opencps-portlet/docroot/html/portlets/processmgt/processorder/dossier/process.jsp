@@ -119,6 +119,28 @@
 		<liferay-ui:message key="process"/>
 	</aui:col>
 </aui:row>
+<aui:row>
+	<aui:col width="50">
+		<aui:row>
+			<aui:col width="30" cssClass="bold">
+				<liferay-ui:message key="dossier-no"/>
+			</aui:col>
+			<aui:col width="70">
+				<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+			</aui:col>
+		</aui:row>
+	</aui:col>
+	<aui:col width="50">
+		<aui:row>
+			<aui:col width="30" cssClass="bold">
+				<liferay-ui:message key="dossier-reception-no"/>
+			</aui:col>
+			<aui:col width="70">
+				<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+			</aui:col>
+		</aui:row>
+	</aui:col>
+</aui:row>
 	<table class="process-workflow-info">
 	  <tr class="odd">
 	    <td width="20%" class="opcs-dosier-process-key"><liferay-ui:message key="step-name"/></td>
@@ -699,7 +721,7 @@
 														success: function(event, id, obj) {
 															var response = this.get('responseData');
 															
-															alert(Liferay.Language.get(response.msg));
+															// alert(Liferay.Language.get(response.msg));
 															
 															if(response.msg == '<%=MessageKeys.DEFAULT_SUCCESS_KEY%>'){
 																var redirectURL = A.one('#<portlet:namespace/>redirectURL').val();

@@ -54,4 +54,6 @@
 
 	boolean hiddenTreeNodeEqualNone = GetterUtil.getBoolean(preferences.getValue("hiddenTreeNodeEqualNone", "false"));
 
+	String redirectToPageProcessCfg = preferences.getValue("redirectToPageProcessCfg", "popup");
+
 %>

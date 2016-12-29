@@ -1,4 +1,7 @@
-
+<%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="org.opencps.util.PortletConstants"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -93,11 +96,14 @@
 	iteratorURL.setParameter("dossierSubStatus", dossierSubStatus);
 	iteratorURL.setParameter("processOrderStage", processOrderStage);
 	
+	boolean isShowRowChecker = false;
+	
 	if(ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
 			serviceInfoId > 0 && processStepId > 0){
 		
 		rowChecker = new RowChecker(liferayPortletResponse);
+		isShowRowChecker = true;
 		
 	}
 %>
@@ -160,10 +166,10 @@
 				           <p class="count"></p>
 				    </div>
 				</div>
-				<c:if test="<%=ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
+				<%-- <c:if test="<%=ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 				serviceInfoId > 0 && processStepId > 0 %>">
 					<aui:button name="multiAssignToUserBtn" value="multiAssignToUserBtn"/>
-				</c:if>
+				</c:if> --%>
 				<liferay-ui:search-container 
 					searchContainer="<%= new ProcessOrderSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>"
 					
@@ -233,9 +239,9 @@
 										processOrder.getActionDatetime() : null,
 										new Date(), processOrder.getDaysDuration(),themeDisplay.getLocale());
 								
+								String redirectURL = processURL.toString() + "#" +renderResponse.getNamespace() +"tab="+ renderResponse.getNamespace() + redirectToPageProcessCfg ;
 								
-						
-								String hrefFix = "location.href='" + processURL.toString()+"'";
+								String hrefFix = "location.href='" + redirectURL+"'";
 								String cssStatusColor = "status-color-" + processOrder.getDossierStatus();
 							%>
 							
@@ -334,7 +340,16 @@
 
 AUI().ready(function(A){
 	
-	var processDossier = A.one("#<portlet:namespace />multiAssignToUserBtn");
+	var processDossier = A.one("#<portlet:namespace />processDossier");
+	var isMultiAssignvar = '<%= isMultiAssign %>';
+	var isShowRowChecker = '<%= isShowRowChecker%>';
+	console.log(isMultiAssignvar);
+	console.log(processDossier);
+	if(isMultiAssignvar == 'false' && processDossier && isShowRowChecker == 'false') {
+		processDossier.hide();
+	}
+	
+	/* var processDossier = A.one("#<portlet:namespace />multiAssignToUserBtn");
 	var isMultiAssignvar = '<%= isMultiAssign %>';
 	
 	console.log(isMultiAssignvar);
@@ -380,7 +395,7 @@ AUI().ready(function(A){
 				return;
 			}
 		});
-	}
+	} */
 	
 });
 
