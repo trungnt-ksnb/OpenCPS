@@ -86,8 +86,8 @@ public class DossiersStatisticsModelImpl extends BaseModelImpl<DossiersStatistic
 		};
 	public static final String TABLE_SQL_CREATE = "create table opencps_dossierstatistics (dossierStatisticId LONG not null primary key,companyId LONG,groupId LONG,userId LONG,createDate DATE null,modifiedDate DATE null,remainingNumber INTEGER,receivedNumber INTEGER,ontimeNumber INTEGER,overtimeNumber INTEGER,processingNumber INTEGER,delayingNumber INTEGER,month INTEGER,year INTEGER,govAgencyCode VARCHAR(75) null,domainCode VARCHAR(75) null,administrationLevel INTEGER)";
 	public static final String TABLE_SQL_DROP = "drop table opencps_dossierstatistics";
-	public static final String ORDER_BY_JPQL = " ORDER BY dossiersStatistics.dossierStatisticId ASC";
-	public static final String ORDER_BY_SQL = " ORDER BY opencps_dossierstatistics.dossierStatisticId ASC";
+	public static final String ORDER_BY_JPQL = " ORDER BY dossiersStatistics.month ASC";
+	public static final String ORDER_BY_SQL = " ORDER BY opencps_dossierstatistics.month ASC";
 	public static final String DATA_SOURCE = "liferayDataSource";
 	public static final String SESSION_FACTORY = "liferaySessionFactory";
 	public static final String TX_MANAGER = "liferayTransactionManager";
@@ -106,7 +106,6 @@ public class DossiersStatisticsModelImpl extends BaseModelImpl<DossiersStatistic
 	public static long GROUPID_COLUMN_BITMASK = 8L;
 	public static long MONTH_COLUMN_BITMASK = 16L;
 	public static long YEAR_COLUMN_BITMASK = 32L;
-	public static long DOSSIERSTATISTICID_COLUMN_BITMASK = 64L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -492,7 +491,7 @@ public class DossiersStatisticsModelImpl extends BaseModelImpl<DossiersStatistic
 
 	@Override
 	public void setMonth(int month) {
-		_columnBitmask |= MONTH_COLUMN_BITMASK;
+		_columnBitmask = -1L;
 
 		if (!_setOriginalMonth) {
 			_setOriginalMonth = true;
@@ -661,17 +660,23 @@ public class DossiersStatisticsModelImpl extends BaseModelImpl<DossiersStatistic
 
 	@Override
 	public int compareTo(DossiersStatistics dossiersStatistics) {
-		long primaryKey = dossiersStatistics.getPrimaryKey();
+		int value = 0;
 
-		if (getPrimaryKey() < primaryKey) {
-			return -1;
+		if (getMonth() < dossiersStatistics.getMonth()) {
+			value = -1;
 		}
-		else if (getPrimaryKey() > primaryKey) {
-			return 1;
+		else if (getMonth() > dossiersStatistics.getMonth()) {
+			value = 1;
 		}
 		else {
-			return 0;
+			value = 0;
 		}
+
+		if (value != 0) {
+			return value;
+		}
+
+		return 0;
 	}
 
 	@Override

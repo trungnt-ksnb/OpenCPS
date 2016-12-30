@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import org.opencps.statisticsmgt.bean.DossierStatisticsBean;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
@@ -17,6 +18,10 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
@@ -705,13 +710,60 @@ public class StatisticsUtil {
 		return dossierStatistics;
 	}
 
+	/**
+	 * @param dossiersStatistics
+	 * @param language
+	 * @return
+	 */
+	public static JSONArray statisticsDossierMonthly(
+			List<DossiersStatistics> dossiersStatistics, Locale locale) {
+
+		JSONArray datas = JSONFactoryUtil.createJSONArray();
+		String[] names = new String[] { "remaining-number", "received-number",
+				"ontime-number", "overtime-number", "processing-number",
+				"delaying-number" };
+
+		if (dossiersStatistics != null) {
+			for (int n = 0; n < names.length; n++) {
+				JSONArray months = JSONFactoryUtil.createJSONArray();
+				JSONArray values = JSONFactoryUtil.createJSONArray();
+				JSONObject data = JSONFactoryUtil.createJSONObject();
+				for (DossiersStatistics statistics : dossiersStatistics) {
+
+					months.put(String.valueOf(statistics.getMonth()));
+
+					if (names[n].equals("remaining-number")) {
+						values.put(String.valueOf(statistics
+								.getRemainingNumber()));
+					} else if (names[n].equals("received-number")) {
+						values.put(String.valueOf(statistics
+								.getReceivedNumber()));
+					} else if (names[n].equals("ontime-number")) {
+						values.put(String.valueOf(statistics.getOntimeNumber()));
+					} else if (names[n].equals("overtime-number")) {
+						values.put(String.valueOf(statistics
+								.getOvertimeNumber()));
+					} else if (names[n].equals("processing-number")) {
+						values.put(String.valueOf(statistics
+								.getProcessingNumber()));
+					} else if (names[n].equals("delaying-number")) {
+						values.put(String.valueOf(statistics
+								.getDelayingNumber()));
+					}
+
+				}
+
+				data.put("name", LanguageUtil.get(locale, names[n]));
+				data.put("months", months);
+				data.put("values", values);
+				datas.put(data);
+			}
+
+		}
+
+		return datas;
+	}
+
 	private static Log _log = LogFactoryUtil.getLog(StatisticsUtil.class
 			.getName());
-
-	/*
-	 * public static void main(String[] args) { String tree1 = "1-2016-100.";
-	 * String tree2 = "1-2016-100.102"; System.out.print(tree2.contains(tree1));
-	 * System.out.print(tree1.lastIndexOf(StringPool.PERIOD));
-	 * System.out.print(tree1.length()); }
-	 */
 }
