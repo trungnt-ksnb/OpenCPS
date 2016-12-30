@@ -54,11 +54,11 @@
 	Dossier dossier = (Dossier) request.getAttribute(WebKeys.DOSSIER_ENTRY);
 %>
 <div class="ocps-dossier-content">
-<aui:row cssClass="header-title custom-title">
+<%-- <aui:row cssClass="header-title custom-title">
 	<aui:col width="100">
 		<liferay-ui:message key="dossier_content"/>
 	</aui:col>
-</aui:row>
+</aui:row> --%>
 <aui:row>
 	<aui:col width="50">
 		<aui:row>

@@ -114,12 +114,12 @@
 
 %>
 <div class="ocps-dossier-process">
-<aui:row cssClass="header-title custom-title">
+<%-- <aui:row cssClass="header-title custom-title">
 	<aui:col width="100">
 		<liferay-ui:message key="process"/>
 	</aui:col>
-</aui:row>
-<aui:row>
+</aui:row> --%>
+<%-- <aui:row>
 	<aui:col width="50">
 		<aui:row>
 			<aui:col width="30" cssClass="bold">
@@ -140,8 +140,17 @@
 			</aui:col>
 		</aui:row>
 	</aui:col>
-</aui:row>
+</aui:row> --%>
 	<table class="process-workflow-info">
+	
+		
+	  <tr class="odd">
+	    <td width="20%" class="opcs-dosier-process-key"><liferay-ui:message key="dossier-no"/></td>
+	    <td width="30%"><%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %></td>
+	    <td width="20%" class="opcs-dosier-process-key"><liferay-ui:message key="dossier-reception-no"/></td>
+	    <td width="30%"><%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %></td>
+	  </tr>
+	  	
 	  <tr class="odd">
 	    <td width="20%" class="opcs-dosier-process-key"><liferay-ui:message key="step-name"/></td>
 	    <td width="30%"><%=processStep != null ? processStep.getStepName() : StringPool.BLANK %></td>
@@ -988,7 +997,11 @@
 	var complateSignatureURL = '<%=signatureURL%>';
 
 	function getFileComputerHash(symbolType) {
-
+		
+		var offsetX = '<%= offsetX %>';
+		var offsetY = '<%= offsetY %>';
+		var imageZoom = '<%= imageZoom %>';
+		var showSignatureInfo = '<%= showSignatureInfo %>';
 		var url = '<%=getDataAjax%>';
 		
 		var nanoTime = $('#<portlet:namespace/>nanoTimePDF').val();
@@ -1011,6 +1024,10 @@
 					<portlet:namespace/>dossierId: $("#<portlet:namespace/>dossierId").val(),
 					<portlet:namespace/>dossierPartId: listDossierPartToSigner[i],
 					<portlet:namespace/>dossierFileId: listDossierFileToSigner[i],
+					<portlet:namespace/>offsetX: offsetX,
+					<portlet:namespace/>offsetY: offsetY,
+					<portlet:namespace/>imageZoom: imageZoom,
+					<portlet:namespace/>showSignatureInfo: showSignatureInfo,
 					<portlet:namespace/>type: 'getComputerHash'
 				},
 				success : function(data) {
@@ -1038,6 +1055,8 @@
 							if(plugin().valid){
 								if(msg === 'success'){
 	 								var code = plugin().Sign(hashComputer);
+	 								
+	 								console.log("code   " + code);
 	 								if(code ===0 || code === 7){
 	 									var sign = plugin().Signature;
 										completeSignature(sign, signFieldName, filePath, fileName, $("#<portlet:namespace/>dossierId").val(), dossierFileId, dossierPartId, index, indexSize, '<%=signatureURL%>');
@@ -1083,15 +1102,42 @@
 						var msg = res.msg;
 						var newis = indexSize-1;
 							if (msg === 'success') {
-								alert(Liferay.Language.get('signature-success'));
+								 // alert(Liferay.Language.get('signature-success'));
 								if(index == newis){
+									
+									console.log("assignTaskAfterSign      " + assignTaskAfterSign);
 									if(assignTaskAfterSign == 'true'){
 										var action = A.one('#<portlet:namespace/>assignActionURL').val();
 										var form =  A.one("#<portlet:namespace/>pofm");
+										
 										if(form){
-											form.attr('action', action);
-											document.getElementById('<portlet:namespace />pofm').submit();
+											A.io.request(
+													form.attr('action'),
+													{
+														dataType: 'json',
+														form: {
+															id: form
+														},
+														on: {
+															success: function(event, id, obj) {
+																var response = this.get('responseData');
+																
+																// alert(Liferay.Language.get(response.msg));
+																
+																if(response.msg == '<%=MessageKeys.DEFAULT_SUCCESS_KEY%>'){
+																	var redirectURL = A.one('#<portlet:namespace/>redirectURL').val();
+																	window.location = redirectURL;
+																}
+															}
+														}
+													}
+												);
 										}
+									}  else {
+										var data = {
+									 			'conserveHash': true
+									 		};
+									 		Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id_<%= WebKeys.PROCESS_ORDER_PORTLET %>_', data);
 									}
 									
 								}

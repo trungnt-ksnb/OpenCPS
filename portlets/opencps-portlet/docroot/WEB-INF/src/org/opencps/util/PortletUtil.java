@@ -1243,10 +1243,10 @@ public class PortletUtil {
 	 * @param contentType
 	 * @throws IOException
 	 */
+
 	public static void sendFile(ActionRequest actionRequest,
 			ActionResponse actionResponse, String fileName, InputStream is,
 			long contentLength, String contentType) throws IOException {
-
 		HttpServletResponse response = PortalUtil
 				.getHttpServletResponse(actionResponse);
 
@@ -1254,6 +1254,8 @@ public class PortletUtil {
 				.getHttpServletRequest(actionRequest);
 		ServletResponseUtil.sendFile(request, response, fileName, is,
 				contentLength, contentType);
+		
+		/*ServletResponseUtil.sendFile(response, fileName, is);*/
 	}
 
 	/**

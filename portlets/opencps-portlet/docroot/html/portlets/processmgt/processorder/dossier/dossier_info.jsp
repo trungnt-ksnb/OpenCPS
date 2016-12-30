@@ -34,9 +34,9 @@
 	ServiceConfig serviceConfig = (ServiceConfig)request.getAttribute(WebKeys.SERVICE_CONFIG_ENTRY);
 %>
 <div class="ocps-dossier-info">
-<div class="header-title custom-title pdl20">
+<%-- <div class="header-title custom-title pdl20">
 		<liferay-ui:message key="dossier_info"/>
-</div>
+</div> --%>
 <table class="table table-bordered dossier-info-table">
 	<tr>
 		<td width="150">
