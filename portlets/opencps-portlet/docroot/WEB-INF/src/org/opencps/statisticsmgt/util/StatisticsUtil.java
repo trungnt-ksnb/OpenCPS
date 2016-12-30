@@ -716,44 +716,52 @@ public class StatisticsUtil {
 	 * @return
 	 */
 	public static JSONArray statisticsDossierMonthly(
-			List<DossiersStatistics> dossiersStatistics, String language) {
+			List<DossiersStatistics> dossiersStatistics, Locale locale) {
 
-		JSONArray months = JSONFactoryUtil.createJSONArray();
-
-		Locale locale = new Locale(language);
+		JSONArray datas = JSONFactoryUtil.createJSONArray();
+		String[] names = new String[] { "remaining-number", "received-number",
+				"ontime-number", "overtime-number", "processing-number",
+				"delaying-number" };
 
 		if (dossiersStatistics != null) {
-			for (DossiersStatistics statistics : dossiersStatistics) {
-				JSONObject monthObject = JSONFactoryUtil.createJSONObject();
-				monthObject.put("month", String.valueOf(statistics.getMonth()));
-
-				JSONArray columns = JSONFactoryUtil.createJSONArray();
-				columns.put(LanguageUtil.get(locale, "remaining-number"));
-				columns.put(LanguageUtil.get(locale, "received-number"));
-				columns.put(LanguageUtil.get(locale, "ontime-number"));
-				columns.put(LanguageUtil.get(locale, "overtime-number"));
-				columns.put(LanguageUtil.get(locale, "processing-number"));
-				columns.put(LanguageUtil.get(locale, "delaying-number"));
-
-				monthObject.put("columns", columns);
-
+			for (int n = 0; n < names.length; n++) {
+				JSONArray months = JSONFactoryUtil.createJSONArray();
 				JSONArray values = JSONFactoryUtil.createJSONArray();
+				JSONObject data = JSONFactoryUtil.createJSONObject();
+				for (DossiersStatistics statistics : dossiersStatistics) {
 
-				values.put(String.valueOf(statistics.getRemainingNumber()));
-				values.put(String.valueOf(statistics.getReceivedNumber()));
-				values.put(String.valueOf(statistics.getOntimeNumber()));
-				values.put(String.valueOf(statistics.getOvertimeNumber()));
-				values.put(String.valueOf(statistics.getProcessingNumber()));
-				values.put(String.valueOf(statistics.getDelayingNumber()));
+					months.put(String.valueOf(statistics.getMonth()));
 
-				monthObject.put("values", values);
+					if (names[n].equals("remaining-number")) {
+						values.put(String.valueOf(statistics
+								.getRemainingNumber()));
+					} else if (names[n].equals("received-number")) {
+						values.put(String.valueOf(statistics
+								.getReceivedNumber()));
+					} else if (names[n].equals("ontime-number")) {
+						values.put(String.valueOf(statistics.getOntimeNumber()));
+					} else if (names[n].equals("overtime-number")) {
+						values.put(String.valueOf(statistics
+								.getOvertimeNumber()));
+					} else if (names[n].equals("processing-number")) {
+						values.put(String.valueOf(statistics
+								.getProcessingNumber()));
+					} else if (names[n].equals("delaying-number")) {
+						values.put(String.valueOf(statistics
+								.getDelayingNumber()));
+					}
 
-				months.put(monthObject);
+				}
 
+				data.put("name", LanguageUtil.get(locale, names[n]));
+				data.put("months", months);
+				data.put("values", values);
+				datas.put(data);
 			}
+
 		}
 
-		return months;
+		return datas;
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(StatisticsUtil.class

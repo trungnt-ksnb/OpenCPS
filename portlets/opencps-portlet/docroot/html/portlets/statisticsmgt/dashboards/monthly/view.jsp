@@ -12,7 +12,7 @@
 
 	try {
 		dossiersStatistics = DossiersStatisticsLocalServiceUtil
-				.getDossiersStatistics(themeDisplay.getScopeGroupId(),
+				.getDossiersStatisticsByG_GC_DC_Y_L(themeDisplay.getScopeGroupId(),
 						StringPool.BLANK, StringPool.BLANK,
 						currentYear, 0);
 	} catch (Exception e) {
@@ -20,7 +20,7 @@
 	}
 
 	JSONArray statistics = StatisticsUtil.statisticsDossierMonthly(
-			dossiersStatistics, locale.getCountry());
+			dossiersStatistics, locale);
 
 	String strJSON = statistics.toString();
 %>
@@ -29,26 +29,28 @@
 
 <script type="text/javascript">
 	var strJSON = '<%=strJSON%>';
-	var json = JSON.parse(strJSON);
+	var objects = JSON.parse(strJSON);
+	var data = [];
 	console.log(json);
-	var trace1 = {
-		  x: ['giraffes', 'orangutans', 'monkeys'],
-		  y: [20, 14, 23],
-		  name: 'SF Zoo',
-		  type: 'bar'
+	for(var i = 0; i < objects.length; i++){
+		console.log(objects[i]);
+		var json = objects[i];
+		console.log(json.name);
+		console.log(json.months);
+		console.log(json.values);
+		var trace = {
+			x: json.months,
+		  	y: json.values,
+		  	name: json.name,
+		  	type: 'bar'	
 		};
+		
+		data.push(trace);
+	}
+	
 
-		var trace2 = {
-		  x: ['giraffes', 'orangutans', 'monkeys'],
-		  y: [12, 18, 29],
-		  name: 'LA Zoo',
-		  type: 'bar'
-		};
+	var layout = {barmode: 'group'};
 
-		var data = [trace1, trace2];
-
-		var layout = {barmode: 'group'};
-
-		Plotly.newPlot('<portlet:namespace/>statistics', data, layout);
+	Plotly.newPlot('<portlet:namespace/>statistics', data, layout);
 
 </script>

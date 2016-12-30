@@ -23,6 +23,9 @@
         <column name="govAgencyCode" type="String"></column>
         <column name="domainCode" type="String"></column>
         <column name="administrationLevel" type="int"></column>
+        <order by="asc">
+            <order-column name="month" order-by="asc"></order-column>
+        </order>
         <finder name="Month" return-type="Collection">
             <finder-column name="month"></finder-column>
             <finder-column name="year"></finder-column>
