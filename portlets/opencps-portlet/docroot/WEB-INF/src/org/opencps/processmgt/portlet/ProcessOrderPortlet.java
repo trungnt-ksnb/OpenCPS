@@ -613,7 +613,6 @@ public class ProcessOrderPortlet extends MVCPortlet {
 					actionResponse.sendRedirect(redirectURL);
 				}
 			} else {
-
 				PortletUtil
 						.writeJSON(actionRequest, actionResponse, jsonObject);
 			}
@@ -2814,7 +2813,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 				DossierFileDisplayTerms.DOSSIER_FILE_ID);
 
 		String docType = ParamUtil.getString(actionRequest, "docType");
-
+		
 		InputStream inputStream = null;
 
 		File file = null;
@@ -2852,7 +2851,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 					+ dossierPart.getDossierpartId() + docType;
 
 			DocType type = DocType.getEnum(docType);
-
+			
 			fileExportDir = exportReportFile(jrxmlTemplate, formData, null,
 					outputDestination, fileName, type);
 

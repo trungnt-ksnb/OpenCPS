@@ -696,6 +696,7 @@
 		var offsetX = '<%= offsetX %>';
 		var offsetY = '<%= offsetY %>';
 		var imageZoom = '<%= imageZoom %>';
+		var showSignatureInfo = '<%= showSignatureInfo %>';
 		url = url + "&nanoTimePDF="+nanoTime;
 		
 		var listFileToSigner = $("#<portlet:namespace/>listFileToSigner").val().split(","); 
@@ -717,6 +718,7 @@
 					<portlet:namespace/>offsetX: offsetX,
 					<portlet:namespace/>offsetY: offsetY,
 					<portlet:namespace/>imageZoom: imageZoom,
+					<portlet:namespace/>showSignatureInfo: showSignatureInfo,
 					<portlet:namespace/>type: 'getComputerHash'
 				},
 				success : function(data) {

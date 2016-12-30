@@ -56,7 +56,7 @@
 	String war_opencpsportlet_26_cfg = GetterUtil.getString(portletPreferences.getValue("war_opencpsportlet_26_cfg", ""));
 	
 	String itemCode_cfg = GetterUtil.getString(portletPreferences.getValue("itemCode_cfg", ""));
-	
+	String[] reportTypes = StringUtil.split(preferences.getValue("reportTypes", ".pdf"));
 	/* dossier  */
 	String dossierDisplayStyle = preferences.getValue("dossierDisplayStyle", "default");
 	

@@ -73,11 +73,11 @@
 
 <div class="ocps-title-detail">
 
-<aui:row cssClass="header-title custom-title">
+<%-- <aui:row cssClass="header-title custom-title">
 	<aui:col width="100">
 		<liferay-ui:message key="history"/>
 	</aui:col>
-</aui:row>
+</aui:row> --%>
 
 <aui:row>
 	<aui:col width="50">

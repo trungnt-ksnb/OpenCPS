@@ -146,7 +146,7 @@
 					'<%=menuCounterSubStatusUrl.toString() %>',
 					dossierSubStatus,
 					'<%=renderResponse.getNamespace() %>',
-					'<%=hiddenTreeNodeEqualNone%>');
+					'<%=hiddenToDoListTreeMenuEmptyNode%>');
 			
 		});
 			
@@ -243,6 +243,8 @@
 								
 								String hrefFix = "location.href='" + redirectURL+"'";
 								String cssStatusColor = "status-color-" + processOrder.getDossierStatus();
+								
+								// System.out.println("processOrder.getDaysDuration()  " + processOrder.getDaysDuration() + "   ------  " + processOrder.getReceptionNo());
 							%>
 							
 							<liferay-util:buffer var="boundcol1">

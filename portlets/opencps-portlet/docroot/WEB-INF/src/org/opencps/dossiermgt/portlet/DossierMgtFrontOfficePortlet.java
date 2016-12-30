@@ -115,6 +115,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.liferay.portal.RolePermissionsException;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -1548,6 +1549,120 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
 		return JRReportUtil.createReportFile(jrxmlTemplate, formData, map,
 				outputDestination, fileName, docType);
+	}
+	
+	public void exportReport(ActionRequest actionRequest,
+			ActionResponse actionResponse) throws IOException {
+
+		AccountBean accountBean = AccountUtil.getAccountBean(actionRequest);
+
+		long dossierFileId = ParamUtil.getLong(actionRequest,
+				DossierFileDisplayTerms.DOSSIER_FILE_ID);
+
+		String docType = ParamUtil.getString(actionRequest, "docType");
+		
+		_log.info("docType &&&&&&&& ^^^^^^^^^^  " + docType);
+
+		InputStream inputStream = null;
+
+		File file = null;
+
+		// JSONObject responseJSON = JSONFactoryUtil.createJSONObject();
+
+		String fileExportDir = StringPool.BLANK;
+
+		try {
+			validateCreateDynamicForm(dossierFileId, accountBean);
+
+			ServiceContext serviceContext = ServiceContextFactory
+					.getInstance(actionRequest);
+			serviceContext.setAddGroupPermissions(true);
+			serviceContext.setAddGuestPermissions(true);
+
+			// Get dossier file
+			DossierFile dossierFile = DossierFileLocalServiceUtil
+					.getDossierFile(dossierFileId);
+
+			// Get dossier part
+			DossierPart dossierPart = DossierPartLocalServiceUtil
+					.getDossierPart(dossierFile.getDossierPartId());
+
+			String formData = dossierFile.getFormData();
+			String jrxmlTemplate = dossierPart.getFormReport();
+
+			// Validate json string
+
+			JSONFactoryUtil.createJSONObject(formData);
+
+			String outputDestination = PortletPropsValues.OPENCPS_FILE_SYSTEM_TEMP_DIR;
+			String fileName = System.currentTimeMillis() + StringPool.DASH
+					+ dossierFileId + StringPool.DASH
+					+ dossierPart.getDossierpartId() + docType;
+
+			DocType type = DocType.getEnum(docType);
+			
+			_log.info("type ^%%%%%%%%********* ^^^^^^^^ " + type.toString());
+
+			fileExportDir = exportReportFile(jrxmlTemplate, formData, null,
+					outputDestination, fileName, type);
+
+			if (Validator.isNotNull(fileExportDir)) {
+
+				file = new File(fileExportDir);
+				inputStream = new FileInputStream(file);
+				String mimeType = MimeTypesUtil.getContentType(file);
+
+				PortletUtil.sendFile(actionRequest, actionResponse, fileName,
+						inputStream, file.length(), mimeType);
+
+			}
+
+			SessionMessages.add(actionRequest, MessageKeys.DEFAULT_SUCCESS_KEY);
+
+		} catch (Exception e) {
+			if (e instanceof NoSuchDossierFileException) {
+				SessionErrors.add(actionRequest,
+						NoSuchDossierFileException.class);
+			} else if (e instanceof NoSuchAccountException) {
+				SessionErrors.add(actionRequest, NoSuchAccountException.class);
+			} else if (e instanceof NoSuchAccountTypeException) {
+				SessionErrors.add(actionRequest,
+						NoSuchAccountTypeException.class);
+			} else if (e instanceof NoSuchAccountFolderException) {
+				SessionErrors.add(actionRequest,
+						NoSuchAccountFolderException.class);
+			} else if (e instanceof NoSuchAccountOwnUserIdException) {
+				SessionErrors.add(actionRequest,
+						NoSuchAccountOwnUserIdException.class);
+			} else if (e instanceof NoSuchAccountOwnOrgIdException) {
+				SessionErrors.add(actionRequest,
+						NoSuchAccountOwnOrgIdException.class);
+			} else if (e instanceof PermissionDossierException) {
+				SessionErrors.add(actionRequest,
+						PermissionDossierException.class);
+			} else if (e instanceof DuplicateFileException) {
+				SessionErrors.add(actionRequest, DuplicateFileException.class);
+			} else if (e instanceof RolePermissionsException) {
+				SessionErrors
+						.add(actionRequest, RolePermissionsException.class);
+			} else {
+				SessionErrors.add(actionRequest, PortalException.class);
+			}
+
+			_log.error(e);
+		} finally {
+			// responseJSON.put("fileExportDir", fileExportDir);
+			// PortletUtil.writeJSON(actionRequest, actionResponse,
+			// responseJSON);
+
+			if (inputStream != null) {
+				inputStream.close();
+			}
+
+			if (file.exists()) {
+				file.delete();
+			}
+		}
 	}
 
 	/**

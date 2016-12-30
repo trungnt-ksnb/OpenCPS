@@ -182,6 +182,9 @@ public class ConfigurationImpl implements ConfigurationAction {
 
 		int dossierRecentItemDisplay = ParamUtil.getInteger(actionRequest,
 				"dossierRecentItemDisplay", 2);
+		
+		String[] reportTypes = ParamUtil.getParameterValues(actionRequest,
+				"reportType", new String[] { ".pdf" });
 
 		String[] dossierStatusCodes = ParamUtil.getParameterValues(
 				actionRequest, "dossierStatusCodes");
@@ -205,6 +208,9 @@ public class ConfigurationImpl implements ConfigurationAction {
 				war_opencpsportlet_26_cfg);
 
 		preferences.setValue("itemCode_cfg", itemCode_cfg);
+		
+		preferences.setValue("reportTypes",
+				String.valueOf(StringUtil.merge(reportTypes)));
 
 	}
 

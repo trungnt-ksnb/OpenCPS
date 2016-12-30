@@ -234,7 +234,7 @@
 										title="view-attachment"
 									/>
 									
-									<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 								</c:when>
 								<c:otherwise>
 									<c:if test="<%=isEditDossier %>">
@@ -343,7 +343,7 @@
 								title="view-attachment"
 							/>
 							
-							<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 						</c:when>
 						<c:otherwise>
 							<c:if test="<%=isEditDossier %>">
@@ -467,7 +467,7 @@
 								title="view-attachment"
 							/>
 							
-							<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 						</c:when>
 						<c:otherwise>
 							<c:if test="<%=isEditDossier %>">
@@ -611,7 +611,7 @@
 										title="view-attachment"
 									/>
 									
-									<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 								</c:when>
 								<c:otherwise>
 									<c:if test="<%=isEditDossier %>">
@@ -680,7 +680,7 @@
 	</tr>
 </table>
 
-<aui:script>
+<%-- <aui:script>
 	AUI().ready('aui-tooltip', 'aui-base', function(A){
 		
 		var items = A.all('#<portlet:namespace />signInfoMsg');
@@ -698,8 +698,4 @@
 		});
 
 	}); 
-	
-	
-	
-	
-</aui:script>
+</aui:script> --%>

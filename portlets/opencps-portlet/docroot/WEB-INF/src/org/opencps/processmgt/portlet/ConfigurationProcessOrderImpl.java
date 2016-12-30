@@ -160,6 +160,9 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 		double offsetY = ParamUtil.getDouble(actionRequest, "offsetY", 0.0);
 
 		double imageZoom = ParamUtil.getDouble(actionRequest, "imageZoom", 1.0);
+		
+		boolean showSignatureInfo = ParamUtil.getBoolean(actionRequest,
+				"showSignatureInfo", false);
 
 		preferences.setValue("assignTaskAfterSign",
 				String.valueOf(assignTaskAfterSign));
@@ -170,6 +173,8 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 
 		preferences.setValue("imageZoom", String.valueOf(imageZoom));
 
+		preferences.setValue("showSignatureInfo",
+				String.valueOf(showSignatureInfo));
 	}
 
 	/*

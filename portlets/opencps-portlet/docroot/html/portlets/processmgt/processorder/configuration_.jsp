@@ -280,7 +280,7 @@
 			<aui:fieldset>
 				<aui:input 
 					type="checkbox"
-					name="assign-task-after-sign" 
+					name="assignTaskAfterSign" 
 					value="<%=assignTaskAfterSign %>"
 				/>
 			</aui:fieldset>
@@ -297,6 +297,14 @@
 						<aui:input name="offsetY" value="<%=offsetY %>"/>
 					</aui:col>
 				</aui:row>
+			</aui:fieldset>
+			
+			<aui:fieldset>
+				<aui:input 
+					type="checkbox"
+					name="showSignatureInfo" 
+					value="<%= showSignatureInfo %>"
+				/>
 			</aui:fieldset>
 		</c:when>
 		

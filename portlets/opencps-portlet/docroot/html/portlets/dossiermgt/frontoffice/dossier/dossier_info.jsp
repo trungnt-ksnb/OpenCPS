@@ -141,7 +141,7 @@
 						<liferay-ui:message key="dossier-no"/>
 					</aui:col>
 					<aui:col width="70">
-						<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+						<%=Validator.isNotNull(dossier) ? dossier.getDossierId() : StringPool.DASH %>
 					</aui:col>
 				</aui:row>
 			</aui:col>
@@ -151,7 +151,7 @@
 						<liferay-ui:message key="dossier-reception-no"/>
 					</aui:col>
 					<aui:col width="70">
-						<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+						<%=Validator.isNotNull(dossier) ? dossier.getReceptionNo() : StringPool.DASH %>
 					</aui:col>
 				</aui:row>
 			</aui:col>

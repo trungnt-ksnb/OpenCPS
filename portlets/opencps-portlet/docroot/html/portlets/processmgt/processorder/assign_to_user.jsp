@@ -180,12 +180,7 @@
 		value="<%=assignToUserURL.toString() %>" 
 		type="hidden"
 	/>
-	
-	<aui:input 
-		name="assignActionURL" 
-		value="<%=assignToUserURL.toString() %>" 
-		type="hidden"
-	/>
+
 	<aui:input 
 		name="redirectURL" 
 		value="<%=currentURL %>" 
@@ -476,6 +471,9 @@
 		
 		<c:choose>
 			<c:when test="<%=esign %>">
+				<c:if test="<%= !assignTaskAfterSign %>">
+					<aui:button type="button" value="submit" name="submit"/>
+				</c:if>
 				<aui:button type="button" value="esign" name="esign" onClick="getFileComputerHash(1);"/>
 			</c:when>
 			<c:otherwise>
@@ -709,6 +707,8 @@
 		var offsetY = '<%= offsetY %>';
 		var imageZoom = '<%= imageZoom %>';
 		
+		var showSignatureInfo = '<%= showSignatureInfo %>';
+		
 		var url = '<%=getDataAjax%>';
 		
 		var nanoTime = $('#<portlet:namespace/>nanoTimePDF').val();
@@ -734,6 +734,7 @@
 					<portlet:namespace/>offsetX: offsetX,
 					<portlet:namespace/>offsetY: offsetY,
 					<portlet:namespace/>imageZoom: imageZoom,
+					<portlet:namespace/>showSignatureInfo: showSignatureInfo,
 					<portlet:namespace/>type: 'getComputerHash'
 				},
 				success : function(data) {
@@ -809,6 +810,8 @@
 									if(index == newis){
 										if(assignTaskAfterSign == 'true'){
 											formSubmit();
+										} else {
+											Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id_16_WAR_opencpsportlet');
 										}
 									}
 								} else {
