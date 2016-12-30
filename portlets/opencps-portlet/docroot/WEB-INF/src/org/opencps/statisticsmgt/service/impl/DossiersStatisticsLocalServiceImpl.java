@@ -24,6 +24,7 @@ import org.opencps.statisticsmgt.service.base.DossiersStatisticsLocalServiceBase
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
 /**
  * The implementation of the dossiers statistics local service.
@@ -217,6 +218,43 @@ public class DossiersStatisticsLocalServiceImpl extends
 	}
 
 	/**
+	 * @param groupId
+	 * @param govAgencyCode
+	 * @param domainCode
+	 * @param year
+	 * @param level
+	 * @return
+	 * @throws SystemException
+	 */
+	public List<DossiersStatistics> getDossiersStatisticsByG_GC_DC_Y_L(
+			long groupId, String govAgencyCode, String domainCode, int year,
+			int level) throws SystemException {
+		return dossiersStatisticsPersistence.findByG_GC_DC_Y_L(groupId,
+				govAgencyCode, domainCode, year, level);
+	}
+
+	/**
+	 * @param groupId
+	 * @param govAgencyCode
+	 * @param domainCode
+	 * @param year
+	 * @param level
+	 * @param start
+	 * @param end
+	 * @param orderByComparator
+	 * @return
+	 * @throws SystemException
+	 */
+	public List<DossiersStatistics> getDossiersStatisticsByG_GC_DC_Y_L(
+			long groupId, String govAgencyCode, String domainCode, int year,
+			int level, int start, int end, OrderByComparator orderByComparator)
+			throws SystemException {
+		return dossiersStatisticsPersistence.findByG_GC_DC_Y_L(groupId,
+				govAgencyCode, domainCode, year, level, start, end,
+				orderByComparator);
+	}
+
+	/**
 	 * @param dossierStatisticId
 	 * @param remainingNumber
 	 * @param receivedNumber
@@ -247,5 +285,40 @@ public class DossiersStatisticsLocalServiceImpl extends
 		dossiersStatistics.setRemainingNumber(remainingNumber);
 
 		return dossiersStatisticsPersistence.update(dossiersStatistics);
+	}
+
+	/**
+	 * @param groupId
+	 * @param govCoce
+	 * @param domainCode
+	 * @param year
+	 * @param level
+	 * @return
+	 * @throws SystemException
+	 */
+	public List<DossiersStatistics> getDossiersStatisticsG_GC_DC_Y_L(
+			long groupId, String govCoce, String domainCode, int year, int level)
+			throws SystemException {
+
+		return dossiersStatisticsPersistence.findByG_GC_DC_Y_L(groupId,
+				govCoce, domainCode, year, level);
+	}
+
+	/**
+	 * @param groupId
+	 * @param month
+	 * @param year
+	 * @param govCode
+	 * @param domainCode
+	 * @param level
+	 * @param notNullGov
+	 * @param notNullDomain
+	 * @return
+	 */
+	public List<DossiersStatistics> getStatsByGovAndDomain(long groupId,
+			int month, int year, String govCode, String domainCode, int level,
+			boolean notNullGov, boolean notNullDomain) {
+		return dossiersStatisticsFinder.getStatsByGovAndDomain(groupId, month,
+				year, govCode, domainCode, level, notNullGov, notNullDomain);
 	}
 }

@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.opencps.api.model.ApiService;
+import org.opencps.api.service.ApiServiceLocalServiceUtil;
+import org.opencps.api.service.ApiServiceServiceUtil;
+import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.util.WebKeys;
 
@@ -53,10 +57,15 @@ public class YearlyDashBoardPortletDisplayTemplateHandler extends
 				"dossierStatistics", DossiersStatistics.class,
 				"curDossierStatistics", "year");
 
-		templateVariableGroup.addVariable("dossierStatistics", List.class,
-				PortletDisplayTemplateConstants.ENTRIES, "curDossierStatistics");
-		
-		
+		templateVariableGroup
+				.addVariable("dossierStatistics", List.class,
+						PortletDisplayTemplateConstants.ENTRIES,
+						"curDossierStatistics");
+
+		templateVariableGroup
+				.addServiceLocatorVariables(DossierLocalServiceUtil.class);
+		templateVariableGroup
+				.addServiceLocatorVariables(ApiServiceServiceUtil.class);
 
 		return templateVariableGroups;
 	}

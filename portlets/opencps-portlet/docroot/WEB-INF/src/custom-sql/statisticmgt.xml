@@ -161,7 +161,7 @@
 				$FILTER$
 				
 			GROUP BY 
-				opencps_processorder.govAgencyCode;
+				d.itemCode, opencps_processorder.govAgencyCode;
 			
 		]]>
 	</sql>
