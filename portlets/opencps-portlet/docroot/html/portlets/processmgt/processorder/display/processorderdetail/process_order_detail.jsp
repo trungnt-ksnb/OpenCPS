@@ -147,13 +147,13 @@
 		
 		var containerP = A.one('#<portlet:namespace/>containerP');
 		
-		if (document.documentElement.scrollTop < dossierInfoDiv.getY() - 75){
+		if ($(document).scrollTop() < dossierInfoDiv.getY() - 75){
 	        dossierContentP.addClass('changeDefErr');
 	    } else 
-	    if (document.documentElement.scrollTop < processDiv.getY() - 75){
+	    if ($(document).scrollTop() < processDiv.getY() - 75){
 	    	dossierInfoP.addClass('changeDefErr');
 	    } else
-	    if (document.documentElement.scrollTop < historyDiv.getY() - 75){
+	    if ($(document).scrollTop() < historyDiv.getY() - 75){
 	    	processP.addClass('changeDefErr');
 	    } else {
 	    	historyP.addClass('changeDefErr');
@@ -161,7 +161,7 @@
 		
 		A.on('scroll', function(){
 			
-			if (document.documentElement.scrollTop < dossierInfoDiv.getY() - 75){
+			if ($(document).scrollTop() < dossierInfoDiv.getY() - 75){
 		        
 		        dossierInfoP.removeClass('changeDefErr');
 		        processP.removeClass('changeDefErr');
@@ -169,15 +169,15 @@
 		        
 		        dossierContentP.addClass('changeDefErr');
 		    } else 
-		    if (document.documentElement.scrollTop < processDiv.getY() - 75){
-		    	
+		    if ($(document).scrollTop() < processDiv.getY() - 75){
+		    	console.info("processDiv.getY(): "+processDiv.getY());
 		    	dossierContentP.removeClass('changeDefErr');
 		    	processP.removeClass('changeDefErr');
 		    	historyP.removeClass('changeDefErr');
 		    	
 		    	dossierInfoP.addClass('changeDefErr');
 		    } else
-		    if (document.documentElement.scrollTop < historyDiv.getY() - 75){
+		    if ($(document).scrollTop() < historyDiv.getY() - 75){
 		    	
 		    	dossierContentP.removeClass('changeDefErr');
 		    	dossierInfoP.removeClass('changeDefErr');
