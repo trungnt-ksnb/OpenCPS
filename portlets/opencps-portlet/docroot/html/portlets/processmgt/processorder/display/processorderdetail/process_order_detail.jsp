@@ -170,7 +170,7 @@
 		        dossierContentP.addClass('changeDefErr');
 		    } else 
 		    if ($(document).scrollTop() < processDiv.getY() - 75){
-		    	console.info("processDiv.getY(): "+processDiv.getY());
+		    	
 		    	dossierContentP.removeClass('changeDefErr');
 		    	processP.removeClass('changeDefErr');
 		    	historyP.removeClass('changeDefErr');
