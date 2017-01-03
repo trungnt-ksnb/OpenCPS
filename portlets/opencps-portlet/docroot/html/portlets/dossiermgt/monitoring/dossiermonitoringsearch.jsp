@@ -23,7 +23,6 @@
 <%@page import="javax.portlet.PortletRequest"%>
 <%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
 <%@page import="com.liferay.portal.theme.ThemeDisplay"%>
-<%@page import="com.liferay.portal.kernel.util.WebKeys"%>
 <%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
 <%@page import="com.liferay.portal.kernel.log.Log"%>
 <%@page import="com.liferay.portal.kernel.exception.SystemException"%>
@@ -46,9 +45,9 @@
 <%@ include file="../init.jsp"%>
 
 <div class="home-search-sologan">
-	<h2><liferay-ui:message key="beautiful-life"/></h2>
+	<h2> </h2>
 	
-	<p><liferay-ui:message key="slogan-key"/></p>
+	<p><liferay-ui:message key="slogan-key-lv"/></p>
 </div>
 
 <div class = "home-search">

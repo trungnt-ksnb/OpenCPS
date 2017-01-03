@@ -19,16 +19,19 @@
 
  <%
             WorkingUnitSearchTerms searchTerms = (WorkingUnitSearchTerms) searchContainer.getSearchTerms();
-            if(Validator.isNotNull(isEmployeeRequest) && !isEmployeeRequest.equals("fillall")) {
+            if(Validator.isNotNull(isEmployeeRequest) && !isEmployeeRequest.equals("fillall") && isEmployeeRequest.equals("isEmploy")) {
                 workingUnits = WorkingUnitLocalServiceUtil
                                 .getWorkingUnit(scopeGroupId, isEmployee, 
                                     searchContainer.getStart(), searchContainer.getEnd(),
                                     searchContainer.getOrderByComparator());
                 totalCount = WorkingUnitLocalServiceUtil.countByG_E(scopeGroupId, isEmployee);
-            } else {
+                
+	            } else {
                  workingUnits = WorkingUnitLocalServiceUtil.getWorkingUnit(searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator());
                  totalCount = WorkingUnitLocalServiceUtil.countAll();
+                 
             }
+            
             total = totalCount;
             results = workingUnits;
             pageContext.setAttribute("results", results);

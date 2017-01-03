@@ -874,7 +874,7 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 	 */
 	public int countProcessOrderKeyWords(
 		long serviceInfoId, long processStepId, long loginUserId,
-		long assignToUserId, String keyWords, String dossierSubStatus) {
+		long assignToUserId, String keyWords, String dossierSubStatus, String processOrderStage) {
 
 		Session session = null;
 		try {
@@ -907,6 +907,12 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 							StringPool.BLANK);
 			}
 			
+			if(Boolean.valueOf(processOrderStage)){
+				sql = StringUtil
+						.replace(sql, "OR opencps_processorder.assignToUserId = ?",
+							"OR opencps_processorder.assignToUserId = ? OR 1=1");
+			}
+			
 			SQLQuery q = session
 				.createSQLQuery(sql);
 			q
@@ -928,6 +934,12 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 					.add(processStepId);
 			}
 
+			qPos
+				.add(loginUserId);
+
+			qPos
+				.add(Boolean.valueOf(processOrderStage));
+			
 			qPos
 				.add(loginUserId);
 			
@@ -988,7 +1000,7 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 	 */
 	public List searchProcessOrderKeyWords(long serviceInfoId,
 
-		long processStepId, long loginUserId, long assignToUserId, String keyWords, String dossierSubStatus, int start,
+		long processStepId, long loginUserId, long assignToUserId, String keyWords, String dossierSubStatus, String processOrderStage, int start,
 		int end, OrderByComparator orderByComparator) {
 
 		Session session = null;
@@ -1020,6 +1032,12 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 				sql = StringUtil
 						.replace(sql, "AND opencps_processstep.dossierSubStatus = ?",
 							StringPool.BLANK);
+			}
+			
+			if(Boolean.valueOf(processOrderStage)){
+				sql = StringUtil
+						.replace(sql, "OR opencps_processorder.assignToUserId = ?",
+							"OR opencps_processorder.assignToUserId = ? OR 1=1");
 			}
 			
 			sql = CustomSQLUtil.replaceOrderBy(sql, orderByComparator);
@@ -1070,6 +1088,12 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 					.add(processStepId);
 			}
 
+			qPos
+				.add(loginUserId);
+
+			qPos
+				.add(Boolean.valueOf(processOrderStage));
+			
 			qPos
 				.add(loginUserId);
 			

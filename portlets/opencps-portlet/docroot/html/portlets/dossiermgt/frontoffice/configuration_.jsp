@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.jasperreport.util.JRReportUtil.DocType"%>
 <%@page import="org.opencps.util.PortletUtil"%>
 <%
 /**
@@ -180,6 +181,20 @@
 							name="displayDossierNo"
 							value='<%= displayDossierNo %>'
 						/>
+					</aui:fieldset>
+					
+					<aui:fieldset>
+						<aui:select name="reportType" id="reportType" multiple="true">		
+							<%
+								for(DocType docType : DocType.values()){
+									%>
+										<aui:option value="<%=docType.getValue() %>" selected="<%=ArrayUtil.contains(reportTypes, docType.getValue()) %>">
+											<%=docType.getValue() %>
+										</aui:option>
+									<%
+								}
+							%>
+						</aui:select>
 					</aui:fieldset>
 					
 				</liferay-ui:panel>

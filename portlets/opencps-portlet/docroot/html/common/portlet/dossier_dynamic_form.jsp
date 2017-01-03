@@ -117,22 +117,26 @@
 		ownerCitizen = (Citizen) accBean.getAccountInstance();
 		if(dossier != null && (dossier.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_NEW) || 
 						dossier.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_WAITING))){
-			isViewForm = false;
+			isViewForm = false;//TODO config
 		}
+		
 	} else if (accBean.isBusiness()) {
 		ownerBusiness = (Business) accBean.getAccountInstance();
 		if(dossier != null && (dossier.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_NEW) || 
 						dossier.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_WAITING))){
-			isViewForm = false;
+			isViewForm = false;//TODO config
 		}
+		
 	}else if(accBean.isEmployee()){
 		if(dossierPart.getPartType() != PortletConstants.DOSSIER_PART_TYPE_MULTIPLE_RESULT && 
 						dossierPart.getPartType() != PortletConstants.DOSSIER_PART_TYPE_RESULT){
 			isViewForm = true;
 		}else{
-			isViewForm = false;
+			isViewForm = false;//TODO config
 		}
 	}
+	
+	System.out.println("######################################### " + dossierPart.getPartName() + " | " + dossierPart.getPartType());
 	
 	String formData = "";
 	
@@ -184,7 +188,7 @@
 	<aui:input name="<%=DossierFileDisplayTerms.DOSSIER_FILE_TYPE %>" type="hidden" value="<%=String.valueOf(renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) ? PortletConstants.DOSSIER_FILE_TYPE_INPUT : PortletConstants.DOSSIER_FILE_TYPE_OUTPUT) %>"/>
 	<aui:input name="groupDossierPartId" type="hidden" value="<%=groupDossierPartId%>"/>
 	
-	<aui:fieldset id="dynamicForm"></aui:fieldset>
+	<div id="dynamicForm"></div>
 	<aui:fieldset>
 		<c:choose>
 			<c:when test="<%=!isViewForm %>">
@@ -194,28 +198,33 @@
 					
 				<c:if test="<%=dossierFileId > 0%>">
 					<aui:button type="button" value="preview" name="preview"/>
-					<aui:nav id="dropdownContainer" cssClass="btn export-report">
-						<aui:nav-item dropdown="<%= true %>" label="download">
-						
-							<%
-								if(docTypes != null){
-									for(int i = 0; i < docTypes.length; i++){
-										String extension = docTypes[i];
-								
-										String taglibURL = "javascript:" + renderResponse.getNamespace() + "exportReport('"+ extension +"')";
-										%>
-											<aui:nav-item href="<%= taglibURL %>" label="<%=StringUtil.replace(extension, StringPool.PERIOD, StringPool.BLANK).toUpperCase() %>" />
-										<%
-									}
-								}
-							%>
-			
-						</aui:nav-item>
-					</aui:nav>
+					
 <%-- 				<aui:button type="button" value="create-file" name="create-file"/> --%>
 				</c:if>
 			</c:when>
 		</c:choose>
+		
+		<c:if test="<%=dossierFileId > 0%>">
+			<aui:nav id="dropdownContainer" cssClass="btn export-report">
+				<aui:nav-item dropdown="<%= true %>" label="download">
+				
+					<%
+						if(docTypes != null){
+							for(int i = 0; i < docTypes.length; i++){
+								String extension = docTypes[i];
+								
+								//String taglibURL = "javascript:" + renderResponse.getNamespace() + "exportReport('"+ extension +"')";
+								String taglibURL = PortletPropsValues.OPENCPS_SERVLET_EXPORT_FILE_URL + dossierFileId + "&docType=" + extension;
+								%>
+									<aui:nav-item href="<%= taglibURL %>" label="<%=StringUtil.replace(extension, StringPool.PERIOD, StringPool.BLANK).toUpperCase() %>" />
+								<%
+							}
+						}
+					%>
+	
+				</aui:nav-item>
+			</aui:nav>
+		</c:if>
 	</aui:fieldset>
 </aui:form>
 
@@ -236,6 +245,7 @@
 			//Overwrite function
 			alpacaSchema.postRender = function(control){
 				$(".saveForm").click(function(e) {
+					//Liferay.Util.getOpener().Liferay.fire('turnOnOverlaymask');
 					var formData = control.getValue();
 					$("#<portlet:namespace />formData" ).val(JSON.stringify(formData));
 					
@@ -255,7 +265,7 @@
 					  
 					});
 					
-					console.log("Alpacajs-required: "+errorMessage);
+					//console.log("Alpacajs-required: "+errorMessage);
 					
 					if(errorMessage.length == 0){
 					
@@ -279,7 +289,7 @@
 			};
 		
 		}
-		var el = $("#<portlet:namespace/>dynamicForm");
+		var el = $("#dynamicForm");
 		
 		Alpaca(el, alpacaSchema);
 		
@@ -300,6 +310,7 @@
 		var success = '<%=success%>';
 		
 		if(success == 'true'){
+			
 			var data = {
 				'conserveHash': true
 			};
@@ -307,6 +318,7 @@
 			Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id' + '<portlet:namespace/>', data);
 			
 			<portlet:namespace/>createReport(dossierFileId);
+			Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 		}
 	});
 	
@@ -340,14 +352,17 @@
 						
 						loadingMask.hide();
 						if(fileExportDir == ''){
+							Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 							alert('<%= UnicodeLanguageUtil.get(pageContext, "error-while-export-file") %>');
 						}else{
 							var ns = '<portlet:namespace/>';
 							ns = ns.substring(1, ns.length);
 							closeDialog('<portlet:namespace/>dossier-dynamic-form', ns);
+							Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 						}
 					},
 			    	error: function(){
+			    		Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 			    		loadingMask.hide();
 			    	}
 				}
@@ -374,6 +389,8 @@
 		window.location.href = portletURL.toString();
 		
 		loadingMask.hide();
+		
+		Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 	},['aui-io','liferay-portlet-url', 'aui-loading-mask-deprecated']);
 	
 	Liferay.provide(window, '<portlet:namespace/>previewForm', function(dossierFileId) {

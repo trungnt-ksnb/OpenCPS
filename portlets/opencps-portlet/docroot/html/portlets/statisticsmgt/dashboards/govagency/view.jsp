@@ -29,10 +29,11 @@
 	List<DossiersStatistics> dossiersStatistics = new ArrayList<DossiersStatistics>();
 	try {
 		for(int i = 1; i <= currentMonth; i++){
-			DossiersStatistics statistics = DossiersStatisticsLocalServiceUtil
-					.getDossiersStatisticsByG_GC_DC_M_Y_L(scopeGroupId, StringPool.BLANK,
-							StringPool.BLANK, i, currentYear, 0);
-			dossiersStatistics.add(statistics);
+			List<DossiersStatistics> statistics = DossiersStatisticsLocalServiceUtil
+					.getStatsByGovAndDomain(themeDisplay.getScopeGroupId(), i, currentYear, StringPool.BLANK, StringPool.BLANK, 0, true, false);
+			if(statistics != null){
+				dossiersStatistics.addAll(statistics);
+			}
 		}
 	} catch (Exception e) {
 
@@ -53,11 +54,12 @@
 				receivedNumber += statistics.getReceivedNumber();
 				ontimeNumber += statistics.getOntimeNumber();
 				overtimeNumber += statistics.getOvertimeNumber();
+				System.out.println("###################################### " + statistics.getGovAgencyCode() + " | " + statistics.getMonth() + " | " + statistics.getDomainCode());
 			}
 			
 			processingNumber += dossiersStatistics.get(dossiersStatistics.size() - 1).getProcessingNumber();
 			delayingNumber += dossiersStatistics.get(dossiersStatistics.size() - 1).getDelayingNumber();
-		%>
+		%>	
 		
 		<c:choose>
 			<c:when test="<%=portletDisplayDDMTemplateId > 0 %>">

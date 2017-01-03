@@ -49,8 +49,13 @@
 	double offsetY = GetterUtil.getDouble(preferences.getValue("offsetY", "0.0"), 0.0);
 	
 	double imageZoom = GetterUtil.getDouble(preferences.getValue("imageZoom", "1.0"), 1.0);
-
-	boolean hiddenTreeNodeEqualNone = GetterUtil.getBoolean(preferences.getValue("hiddenTreeNodeEqualNone", "false"), false);
 	
 	String processOrderDetailPage = GetterUtil.getString(portletPreferences.getValue("processOrderViewer", "default"));
+
+	boolean hiddenTreeNodeEqualNone = GetterUtil.getBoolean(preferences.getValue("hiddenTreeNodeEqualNone", "false"));
+
+	String redirectToPageProcessCfg = preferences.getValue("redirectToPageProcessCfg", "popup");
+	
+	boolean showSignatureInfo = GetterUtil.getBoolean(preferences.getValue("showSignatureInfo", "true"), true);
+
 %>

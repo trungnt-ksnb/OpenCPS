@@ -67,7 +67,7 @@
 		ParamUtil.getString(request, Constants.CMD, Constants.UPDATE);
 
 	String[] dossierSections = dossier != null ? new String[] {
-		"dossier_part", "dossier_info", "result", "history"
+		"dossier_part", "result", "history", "dossier_info"
 	} : new String[] {
 		"dossier_info"
 	};
@@ -175,7 +175,7 @@
 
 		<liferay-ui:header 
 			backURL="<%= backURL %>"
-			title='<%= (dossier == null) ? "add-dossier" : (cmd.equals(Constants.VIEW) ? "view-dossier" : "update-dossier") %>' 
+			title=' ' 
 		/>
 
 		<portlet:actionURL var="updateDossierURL" name="updateDossier" />

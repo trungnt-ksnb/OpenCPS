@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opencps.dossiermgt.model.DossierFile;
 import org.opencps.statisticsmgt.bean.DossierStatisticsBean;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
+import org.opencps.statisticsmgt.model.impl.DossiersStatisticsImpl;
 import org.opencps.statisticsmgt.util.StatisticsUtil;
 import org.opencps.statisticsmgt.util.StatisticsUtil.StatisticsFieldNumber;
 
@@ -460,34 +460,54 @@ public class DossiersStatisticsFinderImpl extends
 				sql = StringUtil.replace(sql,
 						"(opencps_dossierstatistics.domainCode = ?)",
 						"(opencps_dossierstatistics.domainCode != '')");
+			}else{
+				if(Validator.isNull(domainCode)){
+					sql = StringUtil.replace(sql,
+							"(opencps_dossierstatistics.domainCode = ?)",
+							"(opencps_dossierstatistics.domainCode = '')");
+				}
 			}
 
 			if (notNullGov) {
 				sql = StringUtil.replace(sql,
 						"(opencps_dossierstatistics.govAgencyCode = ?)",
 						"(opencps_dossierstatistics.govAgencyCode != '')");
+			}else{
+				if(Validator.isNull(govCode)){
+					sql = StringUtil.replace(sql,
+							"(opencps_dossierstatistics.govAgencyCode = ?)",
+							"(opencps_dossierstatistics.govAgencyCode = '')");
+				}
 			}
+			
+			
 
 			if (month <= 0) {
 				sql = StringUtil.replace(sql,
 						"AND (opencps_dossierstatistics.month = ?)",
 						StringPool.BLANK);
 			}
-
+			_log.info(sql);
 			SQLQuery q = session.createSQLQuery(sql);
 
-			q.addEntity("dossiersStatistics", DossiersStatistics.class);
+			q.addEntity("DossiersStatistics", DossiersStatisticsImpl.class);
 
 			QueryPos qPos = QueryPos.getInstance(q);
 
 			qPos.add(groupId);
 
-			if (Validator.isNotNull(domainCode)) {
+			if (Validator.isNotNull(domainCode) && !notNullDomain) {
 				qPos.add(domainCode);
 			}
 
-			if (Validator.isNotNull(govCode)) {
+			if (Validator.isNotNull(govCode) && !notNullGov) {
 				qPos.add(govCode);
+			}
+			
+			qPos.add(level);
+			
+			if(month > 0){
+				qPos.add(month);
 			}
 
 			qPos.add(year);

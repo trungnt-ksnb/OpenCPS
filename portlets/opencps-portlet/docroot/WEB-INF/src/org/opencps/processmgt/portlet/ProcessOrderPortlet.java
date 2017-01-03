@@ -239,22 +239,23 @@ public class ProcessOrderPortlet extends MVCPortlet {
 					inputStream, accountBean);
 			inputStream = uploadPortletRequest
 					.getFileAsStream(DossierFileDisplayTerms.DOSSIER_FILE_UPLOAD);
-			
+
 			String filePath = uploadPortletRequest.getFile(
 					DossierFileDisplayTerms.DOSSIER_FILE_UPLOAD).getPath();
-			
+
 			File file = new File(filePath);
-			
-			System.out.println("#########################################" + filePath);
-			
+
+			System.out.println("#########################################"
+					+ filePath);
+
 			System.out.println(file.getPath());
-			
+
 			String extension = FileUtil.getExtension(sourceFileName);
 
 			int signCheck = SignatureUtil.getSignCheck(filePath, extension);
-			
+
 			String signinfo = SignatureUtil.getSignInfo(filePath, extension);
-			
+
 			if (dossierFileId > 0) {
 				dossierFile = DossierFileLocalServiceUtil
 						.getDossierFile(dossierFileId);
@@ -612,7 +613,6 @@ public class ProcessOrderPortlet extends MVCPortlet {
 					actionResponse.sendRedirect(redirectURL);
 				}
 			} else {
-
 				PortletUtil
 						.writeJSON(actionRequest, actionResponse, jsonObject);
 			}
@@ -2635,6 +2635,9 @@ public class ProcessOrderPortlet extends MVCPortlet {
 		long processStepId = ParamUtil.getLong(actionRequest, "processStepId");
 		String keywords = ParamUtil.getString(actionRequest, "keywords");
 
+		String processOrderStage = ParamUtil.getString(actionRequest,
+				"processOrderStage", "false");
+
 		String tabs1 = ParamUtil.getString(actionRequest, "tabs1");
 
 		long counterVal = 0;
@@ -2651,7 +2654,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 						.countProcessOrderKeyWords(serviceInfoId,
 								processStepId, themeDisplay.getUserId(),
 								themeDisplay.getUserId(), keywords,
-								item.getItemCode());
+								item.getItemCode(), processOrderStage);
 
 			}
 			obj.put("code", item.getItemCode());
@@ -2810,7 +2813,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 				DossierFileDisplayTerms.DOSSIER_FILE_ID);
 
 		String docType = ParamUtil.getString(actionRequest, "docType");
-
+		
 		InputStream inputStream = null;
 
 		File file = null;
@@ -2848,7 +2851,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 					+ dossierPart.getDossierpartId() + docType;
 
 			DocType type = DocType.getEnum(docType);
-
+			
 			fileExportDir = exportReportFile(jrxmlTemplate, formData, null,
 					outputDestination, fileName, type);
 

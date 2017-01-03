@@ -71,6 +71,11 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 			updateDigitalSignature(preferences, actionRequest, actionResponse);
 		}
 
+		boolean hiddenTreeNodeEqualNone = ParamUtil.getBoolean(actionRequest, "hiddenToDoListTreeMenuEmptyNode");
+		String redirectToPageProcessCfg = ParamUtil.getString(actionRequest, "redirectToPageProcessCfg", "dossier_info");
+		preferences.setValue("hiddenToDoListTreeMenuEmptyNode", String.valueOf(hiddenTreeNodeEqualNone));
+		preferences.setValue("redirectToPageProcessCfg", String.valueOf(redirectToPageProcessCfg));
+		
 		preferences.store();
 
 		SessionMessages.add(actionRequest, "potlet-config-saved");
@@ -155,6 +160,9 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 		double offsetY = ParamUtil.getDouble(actionRequest, "offsetY", 0.0);
 
 		double imageZoom = ParamUtil.getDouble(actionRequest, "imageZoom", 1.0);
+		
+		boolean showSignatureInfo = ParamUtil.getBoolean(actionRequest,
+				"showSignatureInfo", false);
 
 		preferences.setValue("assignTaskAfterSign",
 				String.valueOf(assignTaskAfterSign));
@@ -165,6 +173,8 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 
 		preferences.setValue("imageZoom", String.valueOf(imageZoom));
 
+		preferences.setValue("showSignatureInfo",
+				String.valueOf(showSignatureInfo));
 	}
 
 	/*

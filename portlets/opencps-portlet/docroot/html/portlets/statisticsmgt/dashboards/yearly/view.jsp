@@ -68,53 +68,53 @@
 			
 				<div class="widget-wrapper">
 					<div class="widget-header">
-						<span class="span8">
+						<span class="span8 key">
 							<liferay-ui:message key="stats-in-year"/>
 						</span>
-						<span class="span4"><%=currentYear %></span>
+						<span class="span4 number"><%=currentYear %></span>
 					</div>
 					
 					<ul class="widget-content">
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="remaining-number"/>
 							</span>
-							<span class="span4"><%=remainingNumber %></span>
+							<span class="span4 number"><%=remainingNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="received-number"/>
 							</span>
-							<span class="span4"><%=receivedNumber %></span>
+							<span class="span4 number"><%=receivedNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="ontime-number"/>
 							</span>
-							<span class="span4"><%=ontimeNumber %></span>
+							<span class="span4 number"><%=ontimeNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="overtime-number"/>
 							</span>
-							<span class="span4"><%=overtimeNumber %></span>
+							<span class="span4 number"><%=overtimeNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="processing-number"/>
 							</span>
-							<span class="span4"><%=processingNumber %></span>
+							<span class="span4 number"><%=processingNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="delaying-number"/>
 							</span>
-							<span class="span4"><%=delayingNumber %></span>
+							<span class="span4 number"><%=delayingNumber %></span>
 						</li>
 					</ul>
 				</div>
