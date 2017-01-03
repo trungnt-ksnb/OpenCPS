@@ -233,11 +233,8 @@
 										title="view-attachment"
 									/>
 									
-<<<<<<< HEAD
-									<i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" />
-=======
+									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
 									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
->>>>>>> sync-issue-fix
 								</c:when>
 								<c:otherwise>
 									<c:if test="<%=isEditDossier %>">
