@@ -228,19 +228,80 @@
 			<%
 				String signUrl = PortletPropsValues.OPENCPS_SERVLET_EXPORT_FILE_URL + dossierFileId + "&sign=" + "true" +"&docType=.doc"; 
 			%>
-			<aui:button name="sign" value="sign" href="<%=signUrl %>"/>
 		</c:if>
 	</aui:fieldset>
 </aui:form>
+<portlet:resourceURL var="getDataAjax"></portlet:resourceURL>
+
+<c:if test="<%= portleName.equals(WebKeys.DOSSIER_MGT_PORTLET) && dossierFileId > 0 %>">
+	<aui:button value="sign" onclick="signatureFrontOffice()" />
+</c:if>
 
 <aui:script>
-
+	var url = '<%= getDataAjax %>';
+	
 	var alpacaSchema = <%=Validator.isNotNull(alpacaSchema) ? alpacaSchema : PortletConstants.UNKNOW_ALPACA_SCHEMA%>;
 	var formData = '<%=formData%>';
 	var dossierFileId = '<%=dossierFileId%>';
 	
+	/* function pluginload(loaded)
+	{
+		if(loaded)
+			alert('Plugin is loaded!');
+			// $(".notify").text("Load plugin success");
+		else
+			alert('Loading plugin is failed!');
+			// $(".notify").text("Load plugin error");
+			
+	}
+	
+	function callbackPathFile(jsondata) {
+		alert("data    " + jsondata.data);
+	}
+	
+	
+	//function to test
+	function SigningCallback(jsondata)
+	{			
+		if(jsondata.code == 0)
+		{
+			alert('suc:' + jsondata.data.path);
+			PDFSigningHelper.openFile(jsondata.data.path);
+		}
+		else
+		{
+			alert('error with code:' + jsondata.code);
+		}
+	}
+	
+	function signatureFrontOffice(){
+	    AUI().use('aui-io-request', function(A){
+	    	$.ajax({
+	    		type : 'POST',
+				url : url,
+				data : {
+					<portlet:namespace/>dossierFileId: dossierFileId
+				},
+				success : function(data) {
+					if(data) {
+						var jsonData = JSON.parse(data);
+						
+						alert(jsonData.base64FileContent);
+						
+						PDFSigningHelper.writeBase64ToFile(jsonData.fileName, jsonData.base64FileContent, function(jsondata) {
+							alert(jsondata.data);
+						});
+						
+					}
+				}
+	    	});
+   		 });
+	}
+	 */
 	AUI().ready(function(A){
-
+		
+		// PDFSigningHelper.init(pluginload);
+		
 		if(alpacaSchema.options != 'undefined' && alpacaSchema.schema != 'undefined'){
 			
 			if(formData != ''){
