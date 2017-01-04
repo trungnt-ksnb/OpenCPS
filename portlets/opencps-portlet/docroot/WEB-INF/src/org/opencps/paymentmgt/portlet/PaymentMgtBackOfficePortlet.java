@@ -400,7 +400,6 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 					"approveDatetime", DateTimeUtil.convertDateToString(
 						paymentFile.getApproveDatetime(),
 						DateTimeUtil._VN_DATE_FORMAT));
-				_log.info("================== paymentFile.getApproveDatetime(): "+paymentFile.getApproveDatetime());
 				payloadJSON.put(
 					"accountUserName", paymentFile.getAccountUserName());
 				payloadJSON.put("approveNote", paymentFile.getApproveNote());
