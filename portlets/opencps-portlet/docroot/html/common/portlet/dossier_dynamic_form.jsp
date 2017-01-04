@@ -224,6 +224,11 @@
 	
 				</aui:nav-item>
 			</aui:nav>
+			
+			<%
+				String signUrl = PortletPropsValues.OPENCPS_SERVLET_EXPORT_FILE_URL + dossierFileId + "&sign=" + "true" +"&docType=.doc"; 
+			%>
+			<aui:button name="sign" value="sign" href="<%=signUrl %>"/>
 		</c:if>
 	</aui:fieldset>
 </aui:form>
