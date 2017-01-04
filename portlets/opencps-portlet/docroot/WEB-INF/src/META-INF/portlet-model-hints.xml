@@ -474,6 +474,7 @@
 		<field name="estimateDatetime" type="Date" />
 		<field name="finishDatetime" type="Date" />
 		<field name="dossierStatus" type="String" />
+		<field name="dossierSubStatus" type="String" />
 		<field name="dossierSource" type="int" />
 		<field name="keypayRedirectUrl" type="String" />
 		<field name="delayStatus" type="int" />
