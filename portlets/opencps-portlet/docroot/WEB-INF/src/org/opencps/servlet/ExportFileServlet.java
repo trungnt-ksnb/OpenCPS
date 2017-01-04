@@ -18,13 +18,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.struts.action.ActionServlet;
 import org.opencps.dossiermgt.model.DossierFile;
 import org.opencps.dossiermgt.model.DossierPart;
@@ -36,7 +35,7 @@ import org.opencps.jasperreport.util.JRReportUtil.DocType;
 import org.opencps.util.PortletPropsValues;
 
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -66,6 +65,8 @@ public class ExportFileServlet extends ActionServlet {
 				DossierFileDisplayTerms.DOSSIER_FILE_ID);
 
 		String docType = ParamUtil.getString(request, "docType");
+		
+		String sign = ParamUtil.getString(request, "sign");
 
 		InputStream inputStream = null;
 		OutputStream os = null;
@@ -82,7 +83,7 @@ public class ExportFileServlet extends ActionServlet {
 					.getInstance(request);
 			serviceContext.setAddGroupPermissions(true);
 			serviceContext.setAddGuestPermissions(true);
-
+			
 			// Get dossier file
 			DossierFile dossierFile = DossierFileLocalServiceUtil
 					.getDossierFile(dossierFileId);
@@ -111,6 +112,13 @@ public class ExportFileServlet extends ActionServlet {
 
 				file = new File(fileExportDir);
 				inputStream = new FileInputStream(file);
+				
+				byte[] byteArray = IOUtils.toByteArray(inputStream);
+				
+				String  base64String = Base64.encode(byteArray);
+				
+				System.out.println("base64String  " + base64String);
+				
 				String mimeType = MimeTypesUtil.getContentType(file);
 
 				response.setContentType(mimeType);
@@ -118,7 +126,7 @@ public class ExportFileServlet extends ActionServlet {
 			                     "attachment;filename=" + fileName);
 				//ServletContext ctx = getServletContext();
 				//InputStream is = ctx.getResourceAsStream("/testing.txt");
-
+				
 				int read=0;
 				byte[] bytes = new byte[2048];
 				os = response.getOutputStream();
@@ -128,7 +136,6 @@ public class ExportFileServlet extends ActionServlet {
 				}
 			}
 			
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

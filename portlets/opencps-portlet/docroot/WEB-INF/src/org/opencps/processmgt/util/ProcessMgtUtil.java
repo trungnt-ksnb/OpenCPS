@@ -107,7 +107,7 @@ public class ProcessMgtUtil {
 							ActionHistory actionHistory = getLastestActionHistory(actionHistories);
 							
 							userId = actionHistory.getActionUserId();
-						} else {
+						} /*else {
 							actionHistories = ActionHistoryLocalServiceUtil
 									.getActionHistoryByProcessOrderId(processOrderId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, false);
 							
@@ -116,7 +116,7 @@ public class ProcessMgtUtil {
 								
 								userId = actionHistory.getActionUserId();
 							}
-						}
+						}*/
 						
 					}
 				}
