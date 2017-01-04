@@ -136,7 +136,7 @@
 						</c:if>
 					</div>
 					<div>
-					    <p><span><liferay-ui:message key="ngay-yeu-cau"></liferay-ui:message>:</span> </p><%=paymentFile != null ? HtmlUtil.escape(DateTimeUtil.convertDateToString(paymentFile.getRequestDatetime(), DateTimeUtil._VN_DATE_FORMAT)): "-" %>
+					    <p><span><liferay-ui:message key="ngay-yeu-cau"></liferay-ui:message>:</span> </p><%=paymentFile != null ? HtmlUtil.escape(DateTimeUtil.convertDateToString(paymentFile.getRequestDatetime(), DateTimeUtil._VN_DATE_TIME_FORMAT)): "-" %>
 					</div>
 					
 					<div>
