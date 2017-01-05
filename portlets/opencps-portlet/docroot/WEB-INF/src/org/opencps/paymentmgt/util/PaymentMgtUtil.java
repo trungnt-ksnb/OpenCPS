@@ -324,7 +324,7 @@ public class PaymentMgtUtil {
 					(paymentFile.getPaymentStatus() != PaymentMgtUtil.PAYMENT_STATUS_APPROVED)) {
 
 					paymentFile.setPaymentStatus(PaymentMgtUtil.PAYMENT_STATUS_APPROVED);
-					paymentFile.setPaymentMethod(WebKeys.PAYMENT_METHOD_VTCPAY);
+					paymentFile.setPaymentMethod(WebKeys.PAYMENT_METHOD_KEYPAY);
 					
 					ActorBean actorBean = new ActorBean(1, dossier.getUserId());
 					
