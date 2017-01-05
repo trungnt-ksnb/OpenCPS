@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -77,6 +78,9 @@
 	String redirectURL = ParamUtil.getString(request, "redirectURL");
 	
 	String sampleData = StringPool.BLANK;
+	
+	String base64Str = StringPool.BLANK;
+	String fileName = StringPool.BLANK;
 	
 	String[] docTypes = StringUtil.split(ParamUtil.getString(request, "reportTypes", ".pdf"));
 	
@@ -234,6 +238,11 @@
 <portlet:resourceURL var="getDataAjax"></portlet:resourceURL>
 
 <c:if test="<%= portleName.equals(WebKeys.DOSSIER_MGT_PORTLET) && dossierFileId > 0 %>">
+
+	<%
+		 base64Str = DossierMgtUtil.base64File(dossierFileId);
+		 fileName = DossierMgtUtil.getFileName(dossierFileId);
+	%>
 	<aui:button value="sign" onclick="signatureFrontOffice()" />
 </c:if>
 
@@ -244,15 +253,11 @@
 	var formData = '<%=formData%>';
 	var dossierFileId = '<%=dossierFileId%>';
 	
-	/* function pluginload(loaded)
+	function pluginload(loaded)
 	{
-		if(loaded)
-			alert('Plugin is loaded!');
-			// $(".notify").text("Load plugin success");
-		else
+		if(!loaded) {
 			alert('Loading plugin is failed!');
-			// $(".notify").text("Load plugin error");
-			
+		} 
 	}
 	
 	function callbackPathFile(jsondata) {
@@ -270,37 +275,80 @@
 		}
 		else
 		{
-			alert('error with code:' + jsondata.code);
+			alert('error with code:' + jsondata.errormsg);
 		}
 	}
 	
 	function signatureFrontOffice(){
-	    AUI().use('aui-io-request', function(A){
-	    	$.ajax({
-	    		type : 'POST',
-				url : url,
-				data : {
-					<portlet:namespace/>dossierFileId: dossierFileId
-				},
-				success : function(data) {
-					if(data) {
-						var jsonData = JSON.parse(data);
+		
+		var base64String = '<%= base64Str %>';
+		var fileName = '<%= fileName %>';
+		var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
+		
+		if(base64String != '' && fileName != '') {
+			
+			PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
+				
+				PDFSigningHelper.getCertIndex( function(dataJSON) {
+					
+					// alert("xxxx   " + dataJSON.data);
+					
+					if(dataJSON.data != '-1') {
 						
-						alert(jsonData.base64FileContent);
-						
-						PDFSigningHelper.writeBase64ToFile(jsonData.fileName, jsonData.base64FileContent, function(jsondata) {
-							alert(jsondata.data);
+						PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, "C:\\Users\\Default.Default-PC\\Downloads\\chuky\\chuky\\vuquangkhoi.ct.png",
+								author, "", dataJSON.data , "", function(jsondataSigned) {
+							if(jsondataSigned.code == 0)
+							{
+								// alert('suc:' + jsondataSigned.data.path);
+								// PDFSigningHelper.openFile(jsondataSigned.data.path);
+								
+								PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+									
+									//alert(jsondataBase64.data);
+									
+									AUI().use('aui-io-request', function(A){
+								    	$.ajax({
+								    		type : 'POST',
+											url : url,
+											data : {
+												<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
+												<portlet:namespace/>dossierFileId: dossierFileId
+											},
+											success : function(datares) {
+												if(datares) {
+													// PDFSigningHelper.openFile(jsondataSigned.data.path);
+													
+													var jsonDataResponse = JSON.parse(datares);
+													
+													if(jsonDataResponse.msg == 'success') {
+														// open file on client after signed success
+														PDFSigningHelper.openFile(jsondataSigned.data.path);
+														
+														// close dialog when signed success
+														var ns = '<portlet:namespace/>';
+														ns = ns.substring(1, ns.length);
+														closeDialog('<portlet:namespace/>dossier-dynamic-form', ns);
+													}
+												}
+											}
+								    	});
+							   		 });
+								});
+							}
+							else
+							{
+								alert('error with code:' + jsondataSigned.errormsg);
+							}
 						});
-						
 					}
-				}
-	    	});
-   		 });
+				});
+			});
+		}
 	}
-	 */
+	
 	AUI().ready(function(A){
 		
-		// PDFSigningHelper.init(pluginload);
+		PDFSigningHelper.init(pluginload);
 		
 		if(alpacaSchema.options != 'undefined' && alpacaSchema.schema != 'undefined'){
 			
