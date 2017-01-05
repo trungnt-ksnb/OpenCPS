@@ -81,7 +81,7 @@ public class ProcessMgtUtil {
 						
 					}*/
 					if(processWorkflow.getPostProcessStepId() > 0) {
-						List<StepAllowance> allowances = StepAllowanceLocalServiceUtil.getByProcessStep(processWorkflow.getPostProcessStepId());
+						List<StepAllowance> allowances = StepAllowanceLocalServiceUtil.getByProcessStep(processWorkflow.getPostProcessStepId(), false);
 						
 						List<Long> roleWasActs = getRoleActions(allowances);
 						

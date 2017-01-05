@@ -32,10 +32,13 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.opencps.accountmgt.NoSuchAccountException;
 import org.opencps.accountmgt.NoSuchAccountFolderException;
 import org.opencps.accountmgt.NoSuchAccountOwnOrgIdException;
@@ -132,6 +135,7 @@ import com.liferay.portal.kernel.servlet.PortalSessionContext;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
+import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
@@ -159,6 +163,37 @@ import com.liferay.util.bridges.mvc.MVCPortlet;
  * @author trungnt
  */
 public class DossierMgtFrontOfficePortlet extends MVCPortlet {
+	
+	public void serveResource(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws IOException {
+		
+		long dossierFileId = ParamUtil.getLong(resourceRequest, "dossierFileId");
+		
+		 System.out.println("#############AJAX CALL####################" + dossierFileId);
+		 DossierFile dossierFile = null;
+		 
+		 try {
+			 if(dossierFileId > 0) {
+				  dossierFile = DossierFileLocalServiceUtil.getDossierFile(dossierFileId);
+				  DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(dossierFile.getFileEntryId());
+				  
+				  InputStream is = fileEntry.getContentStream();
+				  
+				  byte[] bytes = IOUtils.toByteArray(is);
+				  
+				  String  base64FileContent = Base64.encode(bytes);
+				  
+				  JSONObject jsonResponse = JSONFactoryUtil.createJSONObject();
+					 
+					 jsonResponse.put("base64FileContent", base64FileContent);
+					 jsonResponse.put("fileName", fileEntry.getTitle());
+					 PrintWriter out = resourceResponse.getWriter();
+						out.print(jsonResponse.toString());
+			 }
+		 } catch (Exception e) {
+			 _log.error(e);
+		 }
+		
+	}
 
 	/**
 	 * @param actionRequest

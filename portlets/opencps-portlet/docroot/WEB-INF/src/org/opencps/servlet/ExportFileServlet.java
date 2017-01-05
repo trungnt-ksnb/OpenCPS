@@ -23,7 +23,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.struts.action.ActionServlet;
 import org.opencps.dossiermgt.model.DossierFile;
 import org.opencps.dossiermgt.model.DossierPart;
@@ -35,7 +34,6 @@ import org.opencps.jasperreport.util.JRReportUtil.DocType;
 import org.opencps.util.PortletPropsValues;
 
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -66,7 +64,7 @@ public class ExportFileServlet extends ActionServlet {
 
 		String docType = ParamUtil.getString(request, "docType");
 		
-		String sign = ParamUtil.getString(request, "sign");
+		// String sign = ParamUtil.getString(request, "sign");
 
 		InputStream inputStream = null;
 		OutputStream os = null;
@@ -113,11 +111,11 @@ public class ExportFileServlet extends ActionServlet {
 				file = new File(fileExportDir);
 				inputStream = new FileInputStream(file);
 				
-				byte[] byteArray = IOUtils.toByteArray(inputStream);
+				/*byte[] byteArray = IOUtils.toByteArray(inputStream);
 				
 				String  base64String = Base64.encode(byteArray);
 				
-				System.out.println("base64String  " + base64String);
+				System.out.println("base64String  " + base64String);*/
 				
 				String mimeType = MimeTypesUtil.getContentType(file);
 
