@@ -1,4 +1,6 @@
 
+<%@page import="org.opencps.statisticsmgt.service.DossiersStatisticsServiceUtil"%>
+<%@page import="com.liferay.portal.kernel.json.JSONArray"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -26,102 +28,74 @@
 <%@ include file="../../init.jsp" %>
 
 <%
-	List<DossiersStatistics> dossiersStatistics = new ArrayList<DossiersStatistics>();
+	List<DossiersStatistics> dossiersStatistics =
+		new ArrayList<DossiersStatistics>();
 	try {
-		for(int i = 1; i <= currentMonth; i++){
-			List<DossiersStatistics> statistics = DossiersStatisticsLocalServiceUtil
-					.getStatsByGovAndDomain(themeDisplay.getScopeGroupId(), i, currentYear, StringPool.BLANK, StringPool.BLANK, 0, true, false);
-			if(statistics != null){
+		for (int i = 1; i <= currentMonth; i++) {
+			List<DossiersStatistics> statistics =
+				DossiersStatisticsLocalServiceUtil.getStatsByGovAndDomain(
+					themeDisplay.getScopeGroupId(), i, currentYear,
+					StringPool.BLANK, StringPool.BLANK, 0, true, false);
+			if (statistics != null) {
 				dossiersStatistics.addAll(statistics);
 			}
 		}
-	} catch (Exception e) {
+	}
+	catch (Exception e) {
 
 	}
+
+	JSONArray jsonArray =
+		DossiersStatisticsServiceUtil.statisticsDossierByCode(
+			dossiersStatistics, null, "gov", currentMonth, currentYear,
+			locale);
+	
+	String strJSON = jsonArray.toString();
+	
+	System.out.println("###########################################################" +jsonArray);
 %>
 
-<c:choose>
-	<c:when test="<%=dossiersStatistics != null && !dossiersStatistics.isEmpty() %>">
-		<%
-			int remainingNumber = 0;
-			int receivedNumber = 0;
-			int ontimeNumber = 0;
-			int overtimeNumber = 0;
-			int processingNumber = 0;
-			int delayingNumber = 0;
-			
-			for(DossiersStatistics statistics : dossiersStatistics){
-				receivedNumber += statistics.getReceivedNumber();
-				ontimeNumber += statistics.getOntimeNumber();
-				overtimeNumber += statistics.getOvertimeNumber();
-				System.out.println("###################################### " + statistics.getGovAgencyCode() + " | " + statistics.getMonth() + " | " + statistics.getDomainCode());
-			}
-			
-			processingNumber += dossiersStatistics.get(dossiersStatistics.size() - 1).getProcessingNumber();
-			delayingNumber += dossiersStatistics.get(dossiersStatistics.size() - 1).getDelayingNumber();
-		%>	
+<div id="<portlet:namespace/>statistics"></div>
+
+<script>
+	var strJSON = '<%=strJSON%>';
+	
+	var objects = JSON.parse(strJSON);
+	
+	var data = [];
+	
+	var ultimateColors = [['rgb(244, 98, 66)', 'rgb(8, 142, 62)', 'rgb(3, 51, 122)', 'rgb(247, 4, 4)', 'rgb(239, 247, 4)', 'rgb(247, 146, 4)']];
+	
+	var delta  = 1/objects.length;
+	
+	console.log(delta)
+	
+	for(var i = 0; i < objects.length; i++){
 		
-		<c:choose>
-			<c:when test="<%=portletDisplayDDMTemplateId > 0 %>">
-				<%= PortletDisplayTemplateUtil.renderDDMTemplate(pageContext, portletDisplayDDMTemplateId, dossiersStatistics) %>
-			</c:when>
-			
-			<c:otherwise>
-			
-				<div class="widget-wrapper">
-					<div class="widget-header">
-						<span class="span8">
-							<liferay-ui:message key="stats-in-year"/>
-						</span>
-						<span class="span4"><%=currentYear %></span>
-					</div>
-					
-					<div class="widget-content">
-						<span class="span8">
-							<liferay-ui:message key="remaining-number"/>
-						</span>
-						<span class="span4"><%=remainingNumber %></span>
-					</div>
-					
-					<div class="widget-content">
-						<span class="span8">
-							<liferay-ui:message key="received-number"/>
-						</span>
-						<span class="span4"><%=receivedNumber %></span>
-					</div>
-					
-					<div class="widget-content">
-						<span class="span8">
-							<liferay-ui:message key="ontime-number"/>
-						</span>
-						<span class="span4"><%=ontimeNumber %></span>
-					</div>
-					
-					<div class="widget-content">
-						<span class="span8">
-							<liferay-ui:message key="overtime-number"/>
-						</span>
-						<span class="span4"><%=overtimeNumber %></span>
-					</div>
-					
-					<div class="widget-content">
-						<span class="span8">
-							<liferay-ui:message key="processing-number"/>
-						</span>
-						<span class="span4"><%=processingNumber %></span>
-					</div>
-					
-					<div class="widget-content">
-						<span class="span8">
-							<liferay-ui:message key="delaying-number"/>
-						</span>
-						<span class="span4"><%=delayingNumber %></span>
-					</div>
-				</div>
-			</c:otherwise>
-		</c:choose>
-	</c:when>
-	<c:otherwise>
-		<div class="portlet-msg-alert"><liferay-ui:message key="not-found-stats"/></div>
-	</c:otherwise>
-</c:choose>
+		var json = objects[i];
+		var lOffsetX = (i)*delta;
+		var uOffsetX = lOffsetX + delta * 0.9;
+		
+		var item = {
+			  values: json.values,
+			  labels: json.labels,
+			  type: 'pie',
+			  name: json.code,
+			  marker: {
+			    colors: ultimateColors[0]
+			  },
+			  domain: {
+			    x: [lOffsetX, uOffsetX],
+			    y: [0, 0.8]
+			  },
+			  hoverinfo: 'label+percent+name'
+		}
+		data.push(item);
+	}
+	
+	var layout = {
+	  height: 320
+	};
+	
+	Plotly.newPlot('<portlet:namespace/>statistics', data, layout);
+</script>
