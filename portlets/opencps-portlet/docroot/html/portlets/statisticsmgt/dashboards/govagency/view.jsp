@@ -1,6 +1,4 @@
 
-<%@page import="org.opencps.statisticsmgt.service.DossiersStatisticsServiceUtil"%>
-<%@page import="com.liferay.portal.kernel.json.JSONArray"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -24,6 +22,8 @@
 <%@page import="java.util.List"%>
 <%@page import="org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil"%>
 <%@page import="org.opencps.statisticsmgt.model.DossiersStatistics"%>
+<%@page import="org.opencps.statisticsmgt.service.DossiersStatisticsServiceUtil"%>
+<%@page import="com.liferay.portal.kernel.json.JSONArray"%>
 
 <%@ include file="../../init.jsp" %>
 
@@ -54,9 +54,9 @@
 	
 	System.out.println("###########################################################" +jsonArray);
 %>
-
-<div id="<portlet:namespace/>statistics"></div>
-
+<div class="widget-wrapper">
+	<div id="<portlet:namespace/>statistics"></div>
+</div>
 <script>
 	var strJSON = '<%=strJSON%>';
 	

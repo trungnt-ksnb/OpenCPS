@@ -24,9 +24,9 @@
 
 	String strJSON = statistics.toString();
 %>
-
-<div id="<portlet:namespace/>statistics"></div>
-
+<div class="widget-wrapper">
+	<div id="<portlet:namespace/>statistics"></div>
+</div>
 <script type="text/javascript">
 	var strJSON = '<%=strJSON%>';
 	var objects = JSON.parse(strJSON);
