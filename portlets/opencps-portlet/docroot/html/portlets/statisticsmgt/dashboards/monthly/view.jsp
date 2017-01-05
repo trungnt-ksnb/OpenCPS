@@ -31,7 +31,6 @@
 	var strJSON = '<%=strJSON%>';
 	var objects = JSON.parse(strJSON);
 	var data = [];
-	console.log(json);
 	for(var i = 0; i < objects.length; i++){
 		console.log(objects[i]);
 		var json = objects[i];

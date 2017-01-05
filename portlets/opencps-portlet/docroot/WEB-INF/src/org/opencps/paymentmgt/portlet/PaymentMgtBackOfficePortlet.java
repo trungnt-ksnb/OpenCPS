@@ -176,7 +176,6 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 				}
 
 				paymentFile.setModifiedDate(new Date());
-				paymentFile.setApproveDatetime(new Date());
 				
 				User user = (User) actionRequest.getAttribute(com.liferay.portal.kernel.util.WebKeys.USER);
 				paymentFile.setAccountUserName(user.getFullName());
@@ -639,13 +638,16 @@ public class PaymentMgtBackOfficePortlet extends MVCPortlet {
 			paymentFile.setPaymentStatus(PaymentMgtUtil.PAYMENT_STATUS_APPROVED);
 			paymentFile.setPaymentMethod(PaymentMgtUtil.PAYMENT_METHOD_CASH);
 			paymentFile.setModifiedDate(new Date());
+			paymentFile.setApproveDatetime(new Date());
+			
+			ServiceContext serviceContext =
+					ServiceContextFactory.getInstance(actionRequest);
+			ActorBean actorBean = new ActorBean(2, serviceContext.getUserId());
+			
+			paymentFile.setAccountUserName(actorBean.getActorName());
+			
 			PaymentFileLocalServiceUtil.updatePaymentFile(paymentFile);
 			addProcessActionSuccessMessage = false;
-
-			ServiceContext serviceContext =
-				ServiceContextFactory.getInstance(actionRequest);
-
-			ActorBean actorBean = new ActorBean(2, serviceContext.getUserId());
 
 			// Add dossierLog for confirm payment
 			DossierLogLocalServiceUtil.addDossierLog(
