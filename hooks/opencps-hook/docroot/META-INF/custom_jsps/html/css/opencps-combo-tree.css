@@ -83,6 +83,6 @@ background-color: #0075c7;
 	z-index:-1;
 }
 
-ul.tree-container > li.tree-node{
+.opencps-theme ul.tree-container > li.tree-node{
 	display: none;
 }
