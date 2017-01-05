@@ -1,3 +1,6 @@
+<%@page import="org.opencps.util.DateTimeUtil"%>
+<%@page import="org.opencps.dossiermgt.service.DossierLocalServiceUtil"%>
+<%@page import="org.opencps.dossiermgt.model.Dossier"%>
 <%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
 <%@page import="java.util.LinkedHashMap"%>
 <%@page import="java.util.HashSet"%>
@@ -195,6 +198,24 @@
 								</div>
 								<div class="span7">
 									<%=processOrder.getReceptionNo() %>
+								</div>
+							</div>
+							
+							<%
+								Dossier dossier = DossierLocalServiceUtil.getDossierByReceptionNo(processOrder.getReceptionNo());
+							%>
+							
+							<div class="row-fluid">
+								<div class="span1"></div>
+								<div class="span4 bold-label">
+									<liferay-ui:message key="submit-date-time"/>
+								</div>
+								<div class="span7">
+									<%=
+										Validator.isNotNull(dossier.getReceiveDatetime()) ? 
+										DateTimeUtil.convertDateToString(dossier.getSubmitDatetime(), DateTimeUtil._VN_DATE_TIME_FORMAT): 
+										DateTimeUtil._EMPTY_DATE_TIME  
+									%>
 								</div>
 							</div>
 							
