@@ -3717,8 +3717,6 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
 		}
 
-		boolean requiredFlag = false;
-
 		List<Long> requiredDossierPartIds = new ArrayList<Long>();
 
 		if (dossierPartsLevel1 != null) {
@@ -3727,13 +3725,10 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 						.getTreeDossierPart(dossierPartLevel1
 								.getDossierpartId());
 
-				if (requiredFlag) {
-					break;
-				}
-
 				for (DossierPart dossierPart : dossierParts) {
 					if (dossierPart.getPartType() != PortletConstants.DOSSIER_PART_TYPE_RESULT
 							&& dossierPart.getPartType() != PortletConstants.DOSSIER_PART_TYPE_MULTIPLE_RESULT
+							&& dossierPart.getPartType() != PortletConstants.DOSSIER_PART_TYPE_OPTION
 							&& dossierPart.getRequired()) {
 						DossierFile dossierFile = null;
 						try {
