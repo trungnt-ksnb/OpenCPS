@@ -17,7 +17,6 @@
 
 package org.opencps.dossiermgt.portlet;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -113,12 +112,6 @@ import org.opencps.util.PortletUtil.SplitDate;
 import org.opencps.util.SignatureUtil;
 import org.opencps.util.WebKeys;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import com.liferay.portal.RolePermissionsException;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -165,39 +158,84 @@ import com.liferay.util.bridges.mvc.MVCPortlet;
  */
 public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
+	/**
+	 * @param resourceRequest
+	 * @param resourceResponse
+	 * @throws IOException
+	 */
 	public void serveResource(ResourceRequest resourceRequest,
 			ResourceResponse resourceResponse) throws IOException {
+		
+		int functionCase = ParamUtil.getInteger(resourceRequest, "functionCase");
+		
+		switch (functionCase) {
+		case PortletConstants.FO_SIGNATURE_DYNAMIC_FORM_ACTION:
+			signatureDynamicForm(resourceRequest, resourceResponse);
+			break;
+		case PortletConstants.FO_SIGNATURE_UPLOAD_FORM_ACTION:
+			signatureUploadForm(resourceRequest, resourceResponse);
+			break;
 
+		default:
+			break;
+		}
+
+	}
+	
+	private void signatureUploadForm(ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
+		//to do something.
+		_log.info("AJAX CALL#############################");
+		
+		long dossierFileId = ParamUtil
+				.getLong(resourceRequest, "dossierFileId");
+		try {
+			DLFileEntry dlFileEntry = getDLFileFromDossierFile(dossierFileId);
+			InputStream is = dlFileEntry.getContentStream();
+			byte [] bytes = IOUtils.toByteArray(is);
+			
+			String base64ContentString = Base64.encode(bytes);
+			String fileName = dlFileEntry.getTitle();
+			
+			String extension = FileUtil.getExtension(fileName);
+			
+			_log.info("EXTENSION ###################  " + extension);
+			
+			JSONObject jsonResponse = JSONFactoryUtil.createJSONObject();
+			jsonResponse.put("base64ContentString", base64ContentString);
+			jsonResponse.put("fileName", fileName);
+			
+			PrintWriter out = resourceResponse.getWriter();
+			out.print(jsonResponse.toString());
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
+	/**
+	 * @param resourceRequest
+	 * @param resourceResponse
+	 */
+	private void signatureDynamicForm(ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
 		String dataSigned = ParamUtil.getString(resourceRequest, "dataSigned");
 		long dossierFileId = ParamUtil
 				.getLong(resourceRequest, "dossierFileId");
-		DossierFile dossierFile = null;
-
 		try {
 
 			ServiceContext serviceContext = ServiceContextFactory
 					.getInstance(resourceRequest);
 			serviceContext.setAddGroupPermissions(true);
 			serviceContext.setAddGuestPermissions(true);
+			
 			if (Validator.isNotNull(dataSigned)) {
 
 				System.out.println("dataSigned    " + dataSigned);
 				
 				byte [] bytes = Base64.decode(dataSigned);
 				
-				//InputStream is = new ByteArrayInputStream(bytes);
+				updateFileSigned(dossierFileId, bytes, serviceContext);
 
-				dossierFile = DossierFileLocalServiceUtil
-						.getDossierFile(dossierFileId);
-
-				DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil
-						.getDLFileEntry(dossierFile.getFileEntryId());
-				
-				DLAppServiceUtil.updateFileEntry(dlFileEntry.getFileEntryId(), dlFileEntry.getTitle(), dlFileEntry.getMimeType(),
-						dlFileEntry.getTitle(), dlFileEntry.getDescription(), StringPool.BLANK, false, bytes, serviceContext);
-				
 				JSONObject jsonResponse = JSONFactoryUtil.createJSONObject();
-
 				jsonResponse.put("msg", "success");
 				// jsonResponse.put("fileName", fileEntry.getTitle());
 
@@ -207,7 +245,35 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 		} catch (Exception e) {
 			_log.error(e);
 		}
+	}
+	
+	/**
+	 * @param dossierFileId
+	 * @param bytes
+	 * @param serviceContext
+	 * @throws PortalException
+	 * @throws SystemException
+	 */
+	private void updateFileSigned(long dossierFileId, byte[] bytes,
+			ServiceContext serviceContext) throws PortalException, SystemException {
+		
+		DLFileEntry dlFileEntry = getDLFileFromDossierFile(dossierFileId);
+		
+		DLAppServiceUtil.updateFileEntry(dlFileEntry.getFileEntryId(), dlFileEntry.getTitle(), dlFileEntry.getMimeType(),
+				dlFileEntry.getTitle(), dlFileEntry.getDescription(), StringPool.BLANK, false, bytes, serviceContext);
+	}
+	
+	private DLFileEntry getDLFileFromDossierFile(long dossierFileId)
+			throws PortalException, SystemException {
+		
+		DossierFile dossierFile = null;
+		
+		dossierFile = DossierFileLocalServiceUtil
+				.getDossierFile(dossierFileId);
 
+		 return DLFileEntryLocalServiceUtil
+				.getDLFileEntry(dossierFile.getFileEntryId());
+		
 	}
 
 	/**
@@ -4312,4 +4378,6 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
 	private Log _log = LogFactoryUtil.getLog(DossierMgtFrontOfficePortlet.class
 			.getName());
+	
+	
 }

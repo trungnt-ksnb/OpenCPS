@@ -16,8 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
+<%@page import="com.liferay.portal.kernel.util.FileUtil"%>
+<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%@page import="org.opencps.util.SignatureUtil"%>
-<%@page import="java.util.List"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="org.opencps.dossiermgt.service.DossierFileLocalServiceUtil"%>
 <%@page import="org.opencps.processmgt.search.ProcessOrderDisplayTerms"%>
@@ -72,11 +73,21 @@
 	int version  = 0;
 	
 	StringBuilder sbMessage = new StringBuilder();
+	String extension = StringPool.BLANK;
+	String fileName = StringPool.BLANK;
+	boolean isExtensionSignature = false;
+	if(dossierFileId > 0) {
+		fileName = DossierMgtUtil.getFileName(dossierFileId);
+		extension = FileUtil.getExtension(fileName);
+	}
+	if(extension.equals("pdf")) {
+		isExtensionSignature = true;
+	}
+	
 	
 	try {
 		
 		DossierFile dossierFile = DossierFileLocalServiceUtil.getDossierFile(dossierFileId);
-		
 		int signCheck = dossierFile.getSignCheck();
 		
 		if(signCheck == 0) {
@@ -160,6 +171,8 @@
 		isEditDossier = false;
 		isReadOnly = true;
 	}
+	
+	System.out.println("================== renderResponse.getNamespace()  ^^^^^^^^^^^^^^^^^^^^^    " + renderResponse.getNamespace());
 %>
 
 <table class="dossier-actions-wraper">
@@ -232,7 +245,14 @@
 										cssClass="label opencps dossiermgt part-file-ctr view-attachment"
 										title="view-attachment"
 									/>
-									
+									<c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+										<%-- <aui:button value="Sign" /> --%>
+										<aui:a href="javascript:void(0);" 
+											   label="Sign" 
+											   cssClass="signatureCls"
+											   dossier-file="<%=String.valueOf(dossierFileId) %>"
+										/>
+									</c:if>
 									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
 									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 								</c:when>
@@ -342,7 +362,12 @@
 								cssClass="label opencps dossiermgt part-file-ctr view-attachment"
 								title="view-attachment"
 							/>
-							
+							<c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+								<%-- <aui:button value="Sign" /> --%>
+								<aui:a href="javascript:void(0);" 
+									label="Sign" 
+									cssClass="signatureCls" />
+							</c:if>
 							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
 							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 						</c:when>
@@ -467,6 +492,11 @@
 								cssClass="label opencps dossiermgt part-file-ctr view-attachment"
 								title="view-attachment"
 							/>
+							
+							<c:if test="<%= isExtensionSignature &&  renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+								<%-- <aui:button value="Sign" /> --%>
+								<aui:a href="javascript:void(0);" label="Sign" cssClass="signatureCls"/>
+							</c:if>
 							
 							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
 							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
@@ -612,7 +642,11 @@
 										
 										title="view-attachment"
 									/>
-									
+									<c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+										<%-- <aui:button value="Sign" /> --%>
+										
+										<aui:a href="javascript:void(0);" label="Sign" cssClass="signatureCls"/>
+									</c:if>
 									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
 									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 								</c:when>
@@ -683,22 +717,29 @@
 	</tr>
 </table>
 
-<%-- <aui:script>
-	AUI().ready('aui-tooltip', 'aui-base', function(A){
-		
-		var items = A.all('#<portlet:namespace />signInfoMsg');
-		
-		items.each(function(item) {
-			console.log("aaaaaaa");
-			item.on('mouseover',function(){
-				new A.Tooltip(
-			      {
-			        trigger: item,
-			        position: 'right'
-			      }
-			    ).render();
-			})
-		});
+<aui:script>
 
-	}); 
-</aui:script> --%>
+	/* 
+	 
+	AUI().ready('aui-tooltip', 'aui-io-request' ,'aui-base', function(A){
+		 
+		
+		
+			
+			  
+			 var items = A.all('#<portlet:namespace />signInfoMsg');
+			
+			items.each(function(item) {
+				console.log("aaaaaaa");
+				item.on('mouseover',function(){
+					new A.Tooltip(
+				      {
+				        trigger: item,
+				        position: 'right'
+				      }
+				    ).render();
+				})
+			}); 
+	
+		}); */
+</aui:script>

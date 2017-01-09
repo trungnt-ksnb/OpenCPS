@@ -338,9 +338,11 @@
 				if (fileUploadSizeInByte == 0){
 					alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "please-upload-dossier-part-required-before-send") %>');
 				} else
+				
 				if (fileUploadSizeInByte > maxUploadFileSizeInByte && maxUploadFileSizeInByte > 0) {
 					alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "please-upload-dossier-part-size-smaller-than") %>' + ' ' + '<%=maxUploadFileSize%>' + ' ' + '<%=maxUploadFileSizeUnit%>');
 				}else 
+				
 				if (totalUploadFileSizeInByte > maxTotalUploadFileSizeInByte && maxTotalUploadFileSizeInByte > 0) {
 					alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "overload-total-file-upload-size") %>' + ' ' + '<%=maxTotalUploadFileSize%>' + ' ' + '<%=maxTotalUploadFileSizeUnit%>');
 				}else 

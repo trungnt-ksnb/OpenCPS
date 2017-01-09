@@ -312,7 +312,8 @@
 											url : url,
 											data : {
 												<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
-												<portlet:namespace/>dossierFileId: dossierFileId
+												<portlet:namespace/>dossierFileId: dossierFileId,
+												<portlet:namespace/>functionCase: '<%= PortletConstants.FO_SIGNATURE_DYNAMIC_FORM_ACTION %>'
 											},
 											success : function(datares) {
 												if(datares) {

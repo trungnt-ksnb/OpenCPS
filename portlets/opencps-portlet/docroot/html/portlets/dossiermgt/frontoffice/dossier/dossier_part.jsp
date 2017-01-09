@@ -478,9 +478,121 @@
 
 	<font class="requiredStyleCSS"><liferay-ui:message key="dossier-part-with-star-is-required"/></font>
 </div>
+
+<portlet:resourceURL var="signatureFrontOffice" />
+
 <aui:script>
 	
 	AUI().ready('aui-base','liferay-portlet-url','aui-io', function(A){
+		
+		PDFSigningHelper.init(pluginload);
+		
+		function pluginload(loaded)
+		{
+			if(!loaded) {
+				alert('Loading plugin is failed!');
+			}
+		}
+		
+		function SigningCallback(jsondata)
+		{			
+			if(jsondata.code == 0)
+			{
+				alert('suc:' + jsondata.data.path);
+				PDFSigningHelper.openFile(jsondata.data.path);
+			}
+			else
+			{
+				alert('error with code:' + jsondata.errormsg);
+			}
+		}
+		
+		var url = '<%= signatureFrontOffice %>';
+		var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
+		var signatureItems = A.all('.signatureCls');
+		signatureItems.each( function(signatureItem) {
+			// console.log('start sign at here : ' + signatureItem);
+			var dossierFileId = signatureItem.attr("dossier-file");
+			signatureItem.on('click', function() {
+				
+				$.ajax({
+		    		type : 'POST',
+					url : url,
+					data : {
+						<portlet:namespace/>dossierFileId: dossierFileId,
+						<portlet:namespace/>functionCase: '<%= PortletConstants.FO_SIGNATURE_UPLOAD_FORM_ACTION %>'
+					},
+					success : function(datares) {
+						var jsonDataResponse = JSON.parse(datares);
+						var nameOfFile = jsonDataResponse.fileName;
+						var base64String = jsonDataResponse.base64ContentString;
+						
+						
+						if(base64String != '' && nameOfFile != '') {
+							
+							PDFSigningHelper.writeBase64ToFile(nameOfFile, base64String, function(jsondata) {
+								
+								// console.log("jsonDataResponse   " + nameOfFile);
+								
+								PDFSigningHelper.getCertIndex( function(dataJSON) {
+									
+									// alert("xxxx   " + dataJSON.data);
+									
+									if(dataJSON.data != '-1') {
+										
+										PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, "C:\\Users\\Default.Default-PC\\Downloads\\chuky\\chuky\\vuquangkhoi.ct.png",
+												author, "", dataJSON.data , "", function(jsondataSigned) {
+											if(jsondataSigned.code == 0)
+											{
+												 alert('suc:' + jsondataSigned.data.path);
+												// PDFSigningHelper.openFile(jsondataSigned.data.path);
+												
+												PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+													
+													//alert(jsondataBase64.data);
+													
+													AUI().use('aui-io-request', function(A){
+												    	$.ajax({
+												    		type : 'POST',
+															url : url,
+															data : {
+																<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
+																<portlet:namespace/>dossierFileId: dossierFileId,
+																<portlet:namespace/>functionCase: '<%= PortletConstants.FO_SIGNATURE_DYNAMIC_FORM_ACTION %>'
+															},
+															success : function(datares) {
+																if(datares) {
+																	// PDFSigningHelper.openFile(jsondataSigned.data.path);
+																	
+																	var jsonDataResponse = JSON.parse(datares);
+																	
+																	if(jsonDataResponse.msg == 'success') {
+																		// open file on client after signed success
+																		
+																		PDFSigningHelper.openFile(jsondataSigned.data.path);
+							
+																		Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id_<%= WebKeys.DOSSIER_MGT_PORTLET %>_', data);
+																	}
+																}
+															}
+												    	});
+											   		 });
+												});
+											}
+											else
+											{
+												alert('error with code:' + jsondataSigned.errormsg);
+											}
+										});
+									}
+								});
+							});
+						}
+						
+					}
+		    	});
+			});
+		});
 		
 		//Upload buttons
 		var uploadDossierFiles = A.all('.upload-dossier-file');
@@ -511,7 +623,6 @@
 					portletURL.setParameter("dossierFileId", dossierFileId);
 					portletURL.setPortletMode("view");
 					portletURL.setWindowState('<%=WindowState.NORMAL%>');
-					
 					viewDossierAttachment(this, portletURL.toString());
 				});
 			});
