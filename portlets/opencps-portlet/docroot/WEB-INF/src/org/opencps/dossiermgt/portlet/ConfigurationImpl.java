@@ -188,7 +188,11 @@ public class ConfigurationImpl implements ConfigurationAction {
 
 		String[] dossierStatusCodes = ParamUtil.getParameterValues(
 				actionRequest, "dossierStatusCodes");
-
+		System.out.println("========= dossierStatusCodes lenght: "+dossierStatusCodes.length);
+		for (String string : dossierStatusCodes) {
+			
+			System.out.println("========= dossierStatusCodes: "+string);
+		}
 		preferences.setValue("showServiceDomainTree",
 				String.valueOf(showServiceDomainTree));
 		preferences

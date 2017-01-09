@@ -121,7 +121,8 @@
 					PortletConstants.TREE_VIEW_LEVER_0, 
 					"radio",
 					true,
-					renderRequest);
+					renderRequest,
+					new String[]{});
 			%>
 		</div>
 	
