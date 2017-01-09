@@ -428,8 +428,8 @@
 	<portlet>
 		<portlet-name>35</portlet-name>
 		<icon>/icon.png</icon>
-		<configuration-action-class>org.opencps.statisticsmgt.dashboard.portlet.TreeDashBoardConfigurationImpl</configuration-action-class>
-		<template-handler>org.opencps.statisticsmgt.dashboard.template.TreeDashBoardPortletDisplayTemplateHandler</template-handler>
+		<configuration-action-class>org.opencps.statisticsmgt.dashboard.portlet.DetailDashBoardConfigurationImpl</configuration-action-class>
+		<template-handler>org.opencps.statisticsmgt.dashboard.template.DetailDashBoardPortletDisplayTemplateHandler</template-handler>
 		<header-portlet-css>/css/statistics.css</header-portlet-css>
 		<footer-portlet-javascript>
 			/js/main.js

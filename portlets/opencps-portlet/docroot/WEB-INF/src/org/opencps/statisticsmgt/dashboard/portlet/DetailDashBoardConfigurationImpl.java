@@ -13,7 +13,7 @@ import com.liferay.portlet.PortletPreferencesFactoryUtil;
 /**
  * @author trungnt
  */
-public class MonthlyDashBoardConfigurationImpl
+public class DetailDashBoardConfigurationImpl
 	extends DefaultConfigurationAction {
 
 	@Override
@@ -34,13 +34,11 @@ public class MonthlyDashBoardConfigurationImpl
 
 		String chartTitle = ParamUtil.getString(actionRequest, "chartTitle");
 
-		String xaxisUnit = ParamUtil.getString(actionRequest, "xaxisUnit");
-
-		String yaxisUnit = ParamUtil.getString(actionRequest, "yaxisUnit");
-
 		String govCode = ParamUtil.getString(actionRequest, "govCode");
 
 		String domainCode = ParamUtil.getString(actionRequest, "domainCode");
+		
+		String filterKey = ParamUtil.getString(actionRequest, "filterKey");
 
 		int startMonth = ParamUtil.getInteger(actionRequest, "startMonth");
 
@@ -48,19 +46,25 @@ public class MonthlyDashBoardConfigurationImpl
 
 		int period = ParamUtil.getInteger(actionRequest, "period");
 
+		boolean notNullGov = ParamUtil.getBoolean(actionRequest, "notNullGov");
+
+		boolean notNullDomain =
+			ParamUtil.getBoolean(actionRequest, "notNullDomain");
+
 		preferences.setValue("chartTitle", chartTitle);
 
-		preferences.setValue("xaxisUnit", xaxisUnit);
-		preferences.setValue("yaxisUnit", yaxisUnit);
+		preferences.setValue("notNullGov", String.valueOf(notNullGov));
+		preferences.setValue("notNullDomain", String.valueOf(notNullDomain));
 		preferences.setValue("govCode", govCode);
 		preferences.setValue("domainCode", domainCode);
 		preferences.setValue("startMonth", String.valueOf(startMonth));
 		preferences.setValue("startYear", String.valueOf(startYear));
 		preferences.setValue("period", String.valueOf(period));
 		preferences.setValue("displayStyle", displayStyle);
+		preferences.setValue("filterKey", filterKey);
 
 		preferences.store();
-
+		
 		super.processAction(portletConfig, actionRequest, actionResponse);
 	}
 }

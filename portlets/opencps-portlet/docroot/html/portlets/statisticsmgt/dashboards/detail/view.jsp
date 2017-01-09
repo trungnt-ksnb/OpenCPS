@@ -1,6 +1,4 @@
 
-<%@page import="org.opencps.statisticsmgt.service.DossiersStatisticsServiceUtil"%>
-<%@page import="com.liferay.portal.kernel.json.JSONArray"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -24,39 +22,30 @@
 <%@page import="java.util.List"%>
 <%@page import="org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil"%>
 <%@page import="org.opencps.statisticsmgt.model.DossiersStatistics"%>
+<%@page import="org.opencps.statisticsmgt.service.DossiersStatisticsServiceUtil"%>
+<%@page import="com.liferay.portal.kernel.json.JSONArray"%>
 
-<%@ include file="../../init.jsp" %>
+<%@ include file="init.jsp" %>
 
 <%
+	
 	List<DossiersStatistics> dossiersStatistics =
-		new ArrayList<DossiersStatistics>();
-	try {
-		for (int i = 1; i <= currentMonth; i++) {
-			List<DossiersStatistics> statistics =
-				DossiersStatisticsLocalServiceUtil.getStatsByGovAndDomain(
-					themeDisplay.getScopeGroupId(), i, currentYear,
-					StringPool.BLANK, StringPool.BLANK, 0, true, false);
-			if (statistics != null) {
-				dossiersStatistics.addAll(statistics);
-			}
-		}
-	}
-	catch (Exception e) {
-
-	}
+		DossiersStatisticsLocalServiceUtil.getStatsByGovAndDomain(scopeGroupId, startMonth, startYear, period, 
+			govCode, domainCode, level, notNullGov, notNullDomain);
 
 	JSONArray jsonArray =
 		DossiersStatisticsServiceUtil.statisticsDossierByCode(
-			dossiersStatistics, null, "gov", currentMonth, currentYear,
+			dossiersStatistics, null, filterKey, currentMonth, currentYear,
 			locale);
-	
+
 	String strJSON = jsonArray.toString();
-	
-	System.out.println("###########################################################" +jsonArray);
+
+	System.out.println("###########################################################" +
+		jsonArray);
 %>
-
-<div id="<portlet:namespace/>statistics"></div>
-
+<div class="widget-wrapper">
+	<div id="<portlet:namespace/>statistics"></div>
+</div>
 <script>
 	var strJSON = '<%=strJSON%>';
 	
@@ -68,8 +57,6 @@
 	
 	var delta  = 1/objects.length;
 	
-	console.log(delta)
-	
 	for(var i = 0; i < objects.length; i++){
 		
 		var json = objects[i];
@@ -77,6 +64,7 @@
 		var uOffsetX = lOffsetX + delta * 0.9;
 		
 		var item = {
+			  title: json.code,
 			  values: json.values,
 			  labels: json.labels,
 			  type: 'pie',
@@ -86,7 +74,7 @@
 			  },
 			  domain: {
 			    x: [lOffsetX, uOffsetX],
-			    y: [0, 0.8]
+			    y: [0, 1]
 			  },
 			  hoverinfo: 'label+percent+name'
 		}
@@ -94,7 +82,8 @@
 	}
 	
 	var layout = {
-	  height: 320
+		title: '<%=chartTitle%>',
+		height: 400
 	};
 	
 	Plotly.newPlot('<portlet:namespace/>statistics', data, layout);
