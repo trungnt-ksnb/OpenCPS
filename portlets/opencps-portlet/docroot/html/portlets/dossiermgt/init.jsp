@@ -73,6 +73,8 @@
 	
 	boolean showBackToListButton = GetterUtil.getBoolean(preferences.getValue("showBackToListButton", "true"), true);
 	
+	boolean showDossierSuggestionButton = GetterUtil.getBoolean(preferences.getValue("showDossierSuggestionButton", "true"), true);
+	
 	String uploadFileTypes = preferences.getValue("uploadFileTypes", "pdf,doc,docx,xls,png");
 
 	
@@ -101,6 +103,6 @@
 	long plidRes = GetterUtil.getLong(preferences.getValue("plid", "0"), 0);
 	
 	boolean displayRecentlyResultWhenSearch = GetterUtil.getBoolean(preferences.getValue("displayRecentlyResultWhenSearch", "false"), false);
-
+	
 %>
 

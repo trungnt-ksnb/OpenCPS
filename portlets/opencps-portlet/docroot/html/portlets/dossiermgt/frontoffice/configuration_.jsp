@@ -309,6 +309,14 @@
 						/>
 					</aui:fieldset>
 					
+					<aui:fieldset>
+						<aui:input 
+							type="checkbox"
+							name="showDossierSuggestionButton" 
+							value="<%= showDossierSuggestionButton %>"
+						/>
+					</aui:fieldset>
+					
 				</liferay-ui:panel>
 				
 				<liferay-ui:panel 

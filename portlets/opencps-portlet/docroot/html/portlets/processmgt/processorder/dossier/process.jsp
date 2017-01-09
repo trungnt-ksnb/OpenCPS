@@ -1102,7 +1102,7 @@
 						var msg = res.msg;
 						var newis = indexSize-1;
 							if (msg === 'success') {
-								 // alert(Liferay.Language.get('signature-success'));
+								alert(Liferay.Language.get('signature-success'));
 								if(index == newis){
 									
 									console.log("assignTaskAfterSign      " + assignTaskAfterSign);

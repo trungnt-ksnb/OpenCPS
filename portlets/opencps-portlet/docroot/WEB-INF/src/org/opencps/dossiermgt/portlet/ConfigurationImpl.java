@@ -110,6 +110,9 @@ public class ConfigurationImpl implements ConfigurationAction {
 
 		boolean showBackToListButton = ParamUtil.getBoolean(actionRequest,
 				"showBackToListButton");
+		
+		boolean showDossierSuggestionButton = ParamUtil.getBoolean(actionRequest,
+				"showDossierSuggestionButton");
 
 		boolean showDossierFileVersion = ParamUtil.getBoolean(actionRequest,
 				"showDossierFileVersion", true);
@@ -139,6 +142,8 @@ public class ConfigurationImpl implements ConfigurationAction {
 				String.valueOf(allowQuickCreateDossier));
 		preferences.setValue("showBackToListButton",
 				String.valueOf(showBackToListButton));
+		preferences.setValue("showDossierSuggestionButton",
+				String.valueOf(showDossierSuggestionButton));
 		preferences.setValue("showDossierFileVersion",
 				String.valueOf(showDossierFileVersion));
 		preferences.setValue("allowQuickViewResult",

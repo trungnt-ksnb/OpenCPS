@@ -1203,6 +1203,10 @@
 			<name>view-template</name>
 			<value>/html/portlets/statisticsmgt/dashboards/monthly/view.jsp</value>
 		</init-param>
+		<init-param>
+			<name>config-template</name>
+			<value>/html/portlets/statisticsmgt/dashboards/monthly/configuration.jsp</value>
+		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
@@ -1236,7 +1240,11 @@
 		</portlet-class>
 		<init-param>
 			<name>view-template</name>
-			<value>/html/portlets/statisticsmgt/dashboards/govagency/view.jsp</value>
+			<value>/html/portlets/statisticsmgt/dashboards/detail/view.jsp</value>
+		</init-param>
+		<init-param>
+			<name>config-template</name>
+			<value>/html/portlets/statisticsmgt/dashboards/detail/configuration.jsp</value>
 		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>

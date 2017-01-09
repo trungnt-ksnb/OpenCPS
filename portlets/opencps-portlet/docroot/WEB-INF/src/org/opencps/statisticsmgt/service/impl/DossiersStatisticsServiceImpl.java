@@ -331,7 +331,8 @@ public class DossiersStatisticsServiceImpl
 					itemObject.put("labels", columnLabels);
 					itemObject.put("values", values);
 					
-					datas.put(itemObject);		
+					datas.put(itemObject);	
+					
 				}
 			}
 		}
