@@ -209,7 +209,10 @@
 		</c:if>
 	</c:when>
 
-	<c:when test="<%= BackendUtils.isDossierCancel(dossier.getDossierId()) %>">
+	<c:when test="<%= BackendUtils.isDossierCancel(dossier.getDossierId())
+					&& !Validator.equals(dossier.getDossierStatus(), PortletConstants.DOSSIER_STATUS_DONE) 
+					&& !Validator.equals(dossier.getDossierStatus(), PortletConstants.DOSSIER_STATUS_DENIED)
+					&& !Validator.equals(dossier.getDossierStatus(), PortletConstants.DOSSIER_STATUS_CANCELED) %>">
 		<portlet:actionURL var="cancelDossierURL" name="cancelDossier">
 			<portlet:param name="<%=DossierDisplayTerms.DOSSIER_ID%>"
 				value="<%=String.valueOf(dossier.getDossierId())%>" />
