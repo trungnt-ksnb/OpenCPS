@@ -23,13 +23,13 @@ public class MonthlyDashBoardPortletDisplayTemplateHandler extends
 	@Override
 	public String getName(Locale arg0) {
 		// TODO Auto-generated method stub
-		return "Yearly DashBoard";
+		return "Monthly DashBoard";
 	}
 
 	@Override
 	public String getResourceName() {
 		// TODO Auto-generated method stub
-		return WebKeys.YEARLY_DASHBOARD_PORTLET;
+		return WebKeys.MONTHLY_DASHBOARD_PORTLET;
 	}
 
 	public Map<String, TemplateVariableGroup> getTemplateVariableGroups(

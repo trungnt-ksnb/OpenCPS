@@ -5,31 +5,33 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.opencps.statisticsmgt.model.DossiersStatistics;
+import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
+import org.opencps.statisticsmgt.service.DossiersStatisticsServiceUtil;
+import org.opencps.statisticsmgt.util.StatisticsUtil;
 import org.opencps.util.WebKeys;
 
 import com.liferay.portal.kernel.portletdisplaytemplate.BasePortletDisplayTemplateHandler;
 import com.liferay.portal.kernel.template.TemplateVariableGroup;
 import com.liferay.portlet.portletdisplaytemplate.util.PortletDisplayTemplateConstants;
 
-public class TreeDashBoardPortletDisplayTemplateHandler extends
+public class DetailDashBoardPortletDisplayTemplateHandler extends
 		BasePortletDisplayTemplateHandler {
 
 	@Override
 	public String getClassName() {
 		// TODO Auto-generated method stub
-		return DossiersStatistics.class.getName();
+		return DossiersStatistics.class.getName() + "#DETAIL";
 	}
 
 	@Override
 	public String getName(Locale arg0) {
 		// TODO Auto-generated method stub
-		return "Yearly DashBoard";
+		return "Detail DashBoard";
 	}
 
 	@Override
 	public String getResourceName() {
-		// TODO Auto-generated method stub
-		return WebKeys.YEARLY_DASHBOARD_PORTLET;
+		return WebKeys.DETAIL_DASHBOARD_PORTLET;
 	}
 
 	public Map<String, TemplateVariableGroup> getTemplateVariableGroups(
@@ -55,9 +57,10 @@ public class TreeDashBoardPortletDisplayTemplateHandler extends
 
 		templateVariableGroup.addVariable("dossierStatistics", List.class,
 				PortletDisplayTemplateConstants.ENTRIES, "curDossierStatistics");
+		templateVariableGroup.addServiceLocatorVariables(StatisticsUtil.class);
+		templateVariableGroup.addServiceLocatorVariables(DossiersStatisticsLocalServiceUtil.class);
+		templateVariableGroup.addServiceLocatorVariables(DossiersStatisticsServiceUtil.class);
 		
-		
-
 		return templateVariableGroups;
 	}
 }
