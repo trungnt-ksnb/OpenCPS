@@ -70,11 +70,6 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 		} else if (tabs2.equals("digital-signature")) {
 			updateDigitalSignature(preferences, actionRequest, actionResponse);
 		}
-
-		boolean hiddenTreeNodeEqualNone = ParamUtil.getBoolean(actionRequest, "hiddenToDoListTreeMenuEmptyNode");
-		String redirectToPageProcessCfg = ParamUtil.getString(actionRequest, "redirectToPageProcessCfg", "dossier_info");
-		preferences.setValue("hiddenToDoListTreeMenuEmptyNode", String.valueOf(hiddenTreeNodeEqualNone));
-		preferences.setValue("redirectToPageProcessCfg", String.valueOf(redirectToPageProcessCfg));
 		
 		preferences.store();
 
@@ -90,7 +85,13 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 		
 		String processOrderViewer = ParamUtil.getString(actionRequest,
 				"processOrderViewer", "default");
-
+		
+		String redirectToPageProcessCfg = 
+				ParamUtil.getString(actionRequest, 
+						"redirectToPageProcessCfg", "dossier_info");
+		
+		preferences.setValue("redirectToPageProcessCfg", 
+				String.valueOf(redirectToPageProcessCfg));
 		preferences.setValue("reportTypes",
 				String.valueOf(StringUtil.merge(reportTypes)));
 		
