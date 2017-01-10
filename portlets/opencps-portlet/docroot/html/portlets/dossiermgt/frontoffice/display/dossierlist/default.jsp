@@ -129,7 +129,7 @@
 							pageContext.setAttribute("results", results);
 							pageContext.setAttribute("total", total);
 						%>
-			s		</liferay-ui:search-container-results>	
+					</liferay-ui:search-container-results>	
 						<liferay-ui:search-container-row 
 							className="org.opencps.dossiermgt.bean.DossierBean" 
 							modelVar="dossierBean" 
