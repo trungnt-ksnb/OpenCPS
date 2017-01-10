@@ -38,12 +38,12 @@
 	Calendar calendar = Calendar.getInstance();
 	calendar.setTime(now);
 	
-	//int currentMonth = calendar.get(Calendar.MONTH) + 1;
-	//int currentYear = calendar.get(Calendar.YEAR);
+	int currentMonth = calendar.get(Calendar.MONTH) + 1;
+	int currentYear = calendar.get(Calendar.YEAR);
 	
-	int currentMonth = 12;
+	//int currentMonth = 12;
 	
-	int currentYear = 2016;
+	//int currentYear = 2016;
 	
 	
 	String displayStyle = GetterUtil.getString(portletPreferences
