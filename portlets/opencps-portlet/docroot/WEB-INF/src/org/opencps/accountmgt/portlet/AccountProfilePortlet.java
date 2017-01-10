@@ -198,7 +198,6 @@ public class AccountProfilePortlet extends MVCPortlet {
 			ward = DictItemLocalServiceUtil.getDictItem(wardId);
 
 			if (citizenId > 0) {
-	            district.getItemName(serviceContext.getLocale(), true);
 				CitizenLocalServiceUtil.updateCitizen(
 					citizenId, address, city.getItemCode(),
 					district.getItemCode(), ward.getItemCode(),
