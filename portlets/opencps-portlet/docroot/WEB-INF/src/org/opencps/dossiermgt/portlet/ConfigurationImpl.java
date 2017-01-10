@@ -193,7 +193,7 @@ public class ConfigurationImpl implements ConfigurationAction {
 
 		String[] dossierStatusCodes = ParamUtil.getParameterValues(
 				actionRequest, "dossierStatusCodes");
-
+		
 		preferences.setValue("showServiceDomainTree",
 				String.valueOf(showServiceDomainTree));
 		preferences
