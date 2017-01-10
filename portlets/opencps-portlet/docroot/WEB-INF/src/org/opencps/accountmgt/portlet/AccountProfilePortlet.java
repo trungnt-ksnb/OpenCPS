@@ -176,28 +176,8 @@ public class AccountProfilePortlet extends MVCPortlet {
 		if (Validator.isNotNull(curPass) && Validator.isNotNull(newPass) &&
 			Validator.isNotNull(rePass)) {
 			isChangePassword = true;
-		} else { 
-			if(Validator.isNull(curPass)
-					&& Validator.isNotNull(newPass) 
-					&& Validator.isNotNull(rePass)){
-				SessionErrors.add(actionRequest, "chua-nhap-mat-khau-cu");
-				actionResponse.setRenderParameter(
-						"mvcPath",
-						"/html/portlets/accountmgt/profile/edit_profile.jsp");
-				return;
-
-			}
-			if(Validator.isNotNull(curPass)
-					&&Validator.isNotNull(newPass)
-					&&Validator.isNull(rePass)){
-				SessionErrors.add(actionRequest, "chua-nhap-lai-mat-khau-moi");
-				actionResponse.setRenderParameter(
-						"mvcPath",
-						"/html/portlets/accountmgt/profile/edit_profile.jsp");
-				return;
-			}
 		}
-
+		
 		boolean updated = false;
 
 		try {
@@ -205,8 +185,11 @@ public class AccountProfilePortlet extends MVCPortlet {
 				citizenId, StringPool.BLANK, StringPool.BLANK, address,
 				StringPool.BLANK, telNo, 1, StringPool.BLANK, cityId,
 				districtId, wardId, StringPool.BLANK);
+			
 			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
+			
+			AccountRegPortlet.validatePassword(curPass, newPass, rePass, serviceContext);
 
 			city = DictItemLocalServiceUtil.getDictItem(cityId);
 
@@ -215,31 +198,6 @@ public class AccountProfilePortlet extends MVCPortlet {
 			ward = DictItemLocalServiceUtil.getDictItem(wardId);
 
 			if (citizenId > 0) {
-				Company company = CompanyLocalServiceUtil.getCompany(serviceContext.getCompanyId());
-	            User user = UserLocalServiceUtil.getUser(serviceContext.getUserId());
-	            
-	            String authType = company.getAuthType();
-	            String login = StringPool.BLANK;
-	            
-	            if(authType.equals(CompanyConstants.AUTH_TYPE_EA)){
-	              login = user.getEmailAddress();
-	            }else if(authType.equals(CompanyConstants.AUTH_TYPE_SN)){
-	              login = user.getScreenName();
-	            }else if(authType.equals(CompanyConstants.AUTH_TYPE_ID)){
-	              login = String.valueOf(user.getUserId());
-	            }
-	            
-	            long userChangePasswordId = 
-	                UserLocalServiceUtil.authenticateForBasic(
-	                              serviceContext.getCompanyId(), 
-	                              authType, 
-	                              login, 
-	                              curPass);
-	            
-	            if (!Validator.equals(userChangePasswordId, 
-	                serviceContext.getUserId())){
-	              throw new UserPasswordException(0);
-	            }
 	            district.getItemName(serviceContext.getLocale(), true);
 				CitizenLocalServiceUtil.updateCitizen(
 					citizenId, address, city.getItemCode(),
@@ -383,28 +341,8 @@ public class AccountProfilePortlet extends MVCPortlet {
 		if (Validator.isNotNull(curPass) && Validator.isNotNull(newPass) &&
 			Validator.isNotNull(rePass)) {
 			isChangePassword = true;
-		} else { 
-			if(Validator.isNull(curPass)
-					&& Validator.isNotNull(newPass) 
-					&& Validator.isNotNull(rePass)){
-				SessionErrors.add(actionRequest, "chua-nhap-mat-khau-cu");
-				actionResponse.setRenderParameter(
-						"mvcPath",
-						"/html/portlets/accountmgt/profile/edit_profile.jsp");
-				return;
-
-			}
-			if(Validator.isNotNull(curPass)
-					&&Validator.isNotNull(newPass)
-					&&Validator.isNull(rePass)){
-				SessionErrors.add(actionRequest, "chua-nhap-lai-mat-khau-moi");
-				actionResponse.setRenderParameter(
-						"mvcPath",
-						"/html/portlets/accountmgt/profile/edit_profile.jsp");
-				return;
-			}
-		}
-
+		} 
+		
 		boolean updated = false;
 
 		DictItem city = null;
@@ -427,36 +365,13 @@ public class AccountProfilePortlet extends MVCPortlet {
 			ward = DictItemLocalServiceUtil.getDictItem(wardId);
 
 			busType = DictItemLocalServiceUtil.getDictItem(type);
+			
 			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
+			
+			AccountRegPortlet.validatePassword(curPass, newPass, rePass, serviceContext);
+			
 			if (businessId > 0) {
-				
-				Company company = CompanyLocalServiceUtil.getCompany(serviceContext.getCompanyId());
-	            User user = UserLocalServiceUtil.getUser(serviceContext.getUserId());
-	            
-	            String authType = company.getAuthType();
-	            String login = StringPool.BLANK;
-	            
-	            if(authType.equals(CompanyConstants.AUTH_TYPE_EA)){
-	              login = user.getEmailAddress();
-	            }else if(authType.equals(CompanyConstants.AUTH_TYPE_SN)){
-	              login = user.getScreenName();
-	            }else if(authType.equals(CompanyConstants.AUTH_TYPE_ID)){
-	              login = String.valueOf(user.getUserId());
-	            }
-	            
-	            long userChangePasswordId = 
-	                UserLocalServiceUtil.authenticateForBasic(
-	                              serviceContext.getCompanyId(), 
-	                              authType, 
-	                              login, 
-	                              curPass);
-	            
-	            if (!Validator.equals(userChangePasswordId, 
-	                serviceContext.getUserId())){
-	              throw new UserPasswordException(0);
-	            }
-
 				district.getItemName(serviceContext.getLocale(), true);
 				BusinessLocalServiceUtil.updateBusiness(
 					businessId, name, enName, shortName, busType.getItemCode(),
