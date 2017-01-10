@@ -121,7 +121,8 @@
 					PortletConstants.TREE_VIEW_LEVER_2, 
 					"radio",
 					false,
-					renderRequest);
+					renderRequest,
+					new String[]{});
 			%>
 		</div>
 	</c:if>
@@ -138,7 +139,8 @@
 				PortletConstants.TREE_VIEW_LEVER_0, 
 				"radio",
 				true,
-				renderRequest);
+				renderRequest,
+				dossierStatusCodes);
 		%>
 	</div>
 	
