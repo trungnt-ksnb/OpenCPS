@@ -72,6 +72,9 @@ import org.opencps.util.WebKeys;
 
 import com.liferay.portal.DuplicateUserEmailAddressException;
 import com.liferay.portal.ContactBirthdayException;
+import com.liferay.portal.UserPasswordException;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
@@ -82,7 +85,10 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.Company;
+import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.UserLocalServiceUtil;
@@ -711,6 +717,46 @@ public class AccountRegPortlet extends MVCPortlet {
 		}
 
 	}
+	protected static void validatePassword(String curPass,String newPass, String rePass, 
+			ServiceContext serviceContext) throws PortalException, SystemException{
+		if(Validator.isNull(curPass)
+				&& Validator.isNotNull(newPass) 
+				&& Validator.isNotNull(rePass)){
+			throw new UserPasswordException(0);
+		}
+		if(Validator.isNotNull(curPass)
+				&&Validator.isNotNull(newPass)
+				&&Validator.isNull(rePass)){
+			throw new UserPasswordException(0);
+		}
+		Company company = CompanyLocalServiceUtil.getCompany(serviceContext.getCompanyId());
+        User user = UserLocalServiceUtil.getUser(serviceContext.getUserId());
+        
+        String authType = company.getAuthType();
+        String login = StringPool.BLANK;
+        
+        if(authType.equals(CompanyConstants.AUTH_TYPE_EA)){
+          login = user.getEmailAddress();
+        }else if(authType.equals(CompanyConstants.AUTH_TYPE_SN)){
+          login = user.getScreenName();
+        }else if(authType.equals(CompanyConstants.AUTH_TYPE_ID)){
+          login = String.valueOf(user.getUserId());
+        }
+        
+        long userChangePasswordId = 
+            UserLocalServiceUtil.authenticateForBasic(
+                          serviceContext.getCompanyId(), 
+                          authType, 
+                          login, 
+                          curPass);
+        
+        if (!Validator.equals(userChangePasswordId, 
+            serviceContext.getUserId())){
+          throw new UserPasswordException(0);
+        }
+		
+	}
+		
 
 	protected static void validateBusiness(
 	    long businessId, String email, String name, String enName,
