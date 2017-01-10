@@ -1,3 +1,4 @@
+<%@page import="org.opencps.processmgt.util.ReportUtils"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -64,7 +65,7 @@
 />
 
 <%
-
+	
 	Dossier dossier = (Dossier) request.getAttribute(WebKeys.DOSSIER_ENTRY);
 	
 	ServiceConfig serviceConfig = (ServiceConfig) request.getAttribute(WebKeys.SERVICE_CONFIG_ENTRY);
@@ -478,9 +479,117 @@
 
 	<font class="requiredStyleCSS"><liferay-ui:message key="dossier-part-with-star-is-required"/></font>
 </div>
+
+<portlet:resourceURL var="signatureFrontOffice" />
+
 <aui:script>
 	
 	AUI().ready('aui-base','liferay-portlet-url','aui-io', function(A){
+		
+		PDFSigningHelper.init(pluginload);
+		
+		function pluginload(loaded)
+		{
+			if(!loaded) {
+				alert('Loading plugin is failed!');
+			}
+		}
+		
+		function SigningCallback(jsondata)
+		{			
+			if(jsondata.code == 0)
+			{
+				alert('suc:' + jsondata.data.path);
+				PDFSigningHelper.openFile(jsondata.data.path);
+			}
+			else
+			{
+				alert('error with code:' + jsondata.errormsg);
+			}
+		}
+		
+		var url = '<%= signatureFrontOffice %>';
+		var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
+		var imgSrcName = '<%= Validator.isNotNull(user) ? user.getScreenName() : StringPool.BLANK %>';
+		var signatureItems = A.all('.signatureCls');
+		signatureItems.each( function(signatureItem) {
+			// console.log('start sign at here : ' + signatureItem);
+			var dossierFileId = signatureItem.attr("dossier-file");
+			signatureItem.on('click', function() {
+				
+				$.ajax({
+		    		type : 'POST',
+					url : url,
+					data : {
+						<portlet:namespace/>dossierFileId: dossierFileId,
+						<portlet:namespace/>imgSrcName: imgSrcName,
+						<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_REQUEST_DATA %>'
+					},
+					success : function(datares) {
+						var jsonDataResponse = JSON.parse(datares);
+						
+						var nameOfFile = jsonDataResponse.fileName;
+						var base64String = jsonDataResponse.base64ContentString;
+						var condauImageSrc = imgSrcName + "_condau.png";
+						var imgContentBase64Str = jsonDataResponse.imgContentBase64Str;
+						
+						if(imgContentBase64Str != '' && condauImageSrc != '') {
+							PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
+								if(base64String != '' && nameOfFile != '') {
+									
+									PDFSigningHelper.writeBase64ToFile(nameOfFile, base64String, function(jsondata) {
+										
+										PDFSigningHelper.getCertIndex( function(dataJSON) {
+											
+											if(dataJSON.data != '-1') {
+												
+												PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
+														author, "", dataJSON.data , "", function(jsondataSigned) {
+													if(jsondataSigned.code == 0)
+													{
+														PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+															
+															AUI().use('aui-io-request', function(A){
+														    	$.ajax({
+														    		type : 'POST',
+																	url : url,
+																	data : {
+																		<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
+																		<portlet:namespace/>dossierFileId: dossierFileId,
+																		<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_UPDATE_DATA_AFTER_SIGN %>'
+																	},
+																	success : function(datares) {
+																		if(datares) {
+																			
+																			var jsonDataResponse = JSON.parse(datares);
+																			
+																			if(jsonDataResponse.msg == 'success') {
+																				
+																				PDFSigningHelper.openFile(jsondataSigned.data.path);
+									
+																				Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id_<%= WebKeys.DOSSIER_MGT_PORTLET %>_', data);
+																			}
+																		}
+																	}
+														    	});
+													   		 });
+														});
+													}
+													else
+													{
+														alert('error with code:' + jsondataSigned.errormsg);
+													}
+												});
+											}
+										});
+									});
+								}
+							});
+						}
+					}
+		    	});
+			});
+		});
 		
 		//Upload buttons
 		var uploadDossierFiles = A.all('.upload-dossier-file');
@@ -511,7 +620,6 @@
 					portletURL.setParameter("dossierFileId", dossierFileId);
 					portletURL.setPortletMode("view");
 					portletURL.setWindowState('<%=WindowState.NORMAL%>');
-					
 					viewDossierAttachment(this, portletURL.toString());
 				});
 			});

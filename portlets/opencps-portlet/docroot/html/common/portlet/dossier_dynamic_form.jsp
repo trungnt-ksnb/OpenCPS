@@ -1,4 +1,6 @@
 
+<%@page import="org.opencps.processmgt.util.ReportUtils"%>
+<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -48,6 +50,7 @@
 <%@ include file="/init.jsp"%>
 
 <%
+	
 	boolean success = false;
 
 	boolean isViewForm = true;
@@ -77,6 +80,9 @@
 	String redirectURL = ParamUtil.getString(request, "redirectURL");
 	
 	String sampleData = StringPool.BLANK;
+	
+	String base64Str = StringPool.BLANK;
+	String fileName = StringPool.BLANK;
 	
 	String[] docTypes = StringUtil.split(ParamUtil.getString(request, "reportTypes", ".pdf"));
 	
@@ -239,20 +245,14 @@
 
 <aui:script>
 	var url = '<%= getDataAjax %>';
-	
 	var alpacaSchema = <%=Validator.isNotNull(alpacaSchema) ? alpacaSchema : PortletConstants.UNKNOW_ALPACA_SCHEMA%>;
 	var formData = '<%=formData%>';
 	var dossierFileId = '<%=dossierFileId%>';
-	
-	/* function pluginload(loaded)
+	function pluginload(loaded)
 	{
-		if(loaded)
-			alert('Plugin is loaded!');
-			// $(".notify").text("Load plugin success");
-		else
+		if(!loaded) {
 			alert('Loading plugin is failed!');
-			// $(".notify").text("Load plugin error");
-			
+		} 
 	}
 	
 	function callbackPathFile(jsondata) {
@@ -270,37 +270,96 @@
 		}
 		else
 		{
-			alert('error with code:' + jsondata.code);
+			alert('error with code:' + jsondata.errormsg);
 		}
 	}
 	
 	function signatureFrontOffice(){
-	    AUI().use('aui-io-request', function(A){
-	    	$.ajax({
-	    		type : 'POST',
-				url : url,
-				data : {
-					<portlet:namespace/>dossierFileId: dossierFileId
-				},
-				success : function(data) {
-					if(data) {
-						var jsonData = JSON.parse(data);
-						
-						alert(jsonData.base64FileContent);
-						
-						PDFSigningHelper.writeBase64ToFile(jsonData.fileName, jsonData.base64FileContent, function(jsondata) {
-							alert(jsondata.data);
-						});
-						
-					}
-				}
-	    	});
-   		 });
-	}
-	 */
-	AUI().ready(function(A){
 		
-		// PDFSigningHelper.init(pluginload);
+		var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
+		var imgSrcName = '<%= Validator.isNotNull(user) ? user.getScreenName() : StringPool.BLANK %>';
+		$.ajax({
+			
+			type : 'POST',
+			url : url,
+			data : {
+				<portlet:namespace/>dossierFileId: dossierFileId,
+				<portlet:namespace/>imgSrcName: imgSrcName,
+				<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_REQUEST_DATA%>'
+			},
+			success : function(datares) {
+				var jsonDataResponse = JSON.parse(datares);
+				
+				var fileName = jsonDataResponse.fileName;
+				var base64String = jsonDataResponse.base64ContentString;
+				var condauImageSrc = imgSrcName + "_condau.png";
+				var imgContentBase64Str = jsonDataResponse.imgContentBase64Str;
+				
+				if(imgContentBase64Str != '' && condauImageSrc != '') {
+					
+					PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
+						
+						if(base64String != '' && fileName != '') {
+							
+							PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
+								
+								PDFSigningHelper.getCertIndex( function(dataJSON) {
+									
+									if(dataJSON.data != '-1') {
+										
+										PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
+												author, "", dataJSON.data , "", function(jsondataSigned) {
+											if(jsondataSigned.code == 0)
+											{
+												PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+													
+													
+													AUI().use('aui-io-request', function(A){
+												    	$.ajax({
+												    		type : 'POST',
+															url : url,
+															data : {
+																<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
+																<portlet:namespace/>dossierFileId: dossierFileId,
+																<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_UPDATE_DATA_AFTER_SIGN %>'
+															},
+															success : function(datares) {
+																if(datares) {
+																	
+																	var jsonDataResponse = JSON.parse(datares);
+																	
+																	if(jsonDataResponse.msg == 'success') {
+																		// open file on client after signed success
+																		PDFSigningHelper.openFile(jsondataSigned.data.path);
+																		
+																		// close dialog when signed success
+																		var ns = '<portlet:namespace/>';
+																		ns = ns.substring(1, ns.length);
+																		closeDialog('<portlet:namespace/>dossier-dynamic-form', ns);
+																	}
+																}
+															}
+												    	});
+											   		 });
+												});
+											}
+											else
+											{
+												alert('error with code:' + jsondataSigned.errormsg);
+											}
+										});
+									}
+								});
+							});
+						}
+					});
+				}
+			}
+		});
+	}
+	
+	AUI().ready(function(A){
+		PDFSigningHelper.init(pluginload);
 		
 		if(alpacaSchema.options != 'undefined' && alpacaSchema.schema != 'undefined'){
 			
