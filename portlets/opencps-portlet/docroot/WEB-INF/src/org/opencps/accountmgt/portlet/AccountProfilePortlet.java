@@ -61,10 +61,14 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.Company;
+import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.UserGroup;
+import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
@@ -172,6 +176,26 @@ public class AccountProfilePortlet extends MVCPortlet {
 		if (Validator.isNotNull(curPass) && Validator.isNotNull(newPass) &&
 			Validator.isNotNull(rePass)) {
 			isChangePassword = true;
+		} else { 
+			if(Validator.isNull(curPass)
+					&& Validator.isNotNull(newPass) 
+					&& Validator.isNotNull(rePass)){
+				SessionErrors.add(actionRequest, "chua-nhap-mat-khau-cu");
+				actionResponse.setRenderParameter(
+						"mvcPath",
+						"/html/portlets/accountmgt/profile/edit_profile.jsp");
+				return;
+
+			}
+			if(Validator.isNotNull(curPass)
+					&&Validator.isNotNull(newPass)
+					&&Validator.isNull(rePass)){
+				SessionErrors.add(actionRequest, "chua-nhap-lai-mat-khau-moi");
+				actionResponse.setRenderParameter(
+						"mvcPath",
+						"/html/portlets/accountmgt/profile/edit_profile.jsp");
+				return;
+			}
 		}
 
 		boolean updated = false;
@@ -191,6 +215,32 @@ public class AccountProfilePortlet extends MVCPortlet {
 			ward = DictItemLocalServiceUtil.getDictItem(wardId);
 
 			if (citizenId > 0) {
+				Company company = CompanyLocalServiceUtil.getCompany(serviceContext.getCompanyId());
+	            User user = UserLocalServiceUtil.getUser(serviceContext.getUserId());
+	            
+	            String authType = company.getAuthType();
+	            String login = StringPool.BLANK;
+	            
+	            if(authType.equals(CompanyConstants.AUTH_TYPE_EA)){
+	              login = user.getEmailAddress();
+	            }else if(authType.equals(CompanyConstants.AUTH_TYPE_SN)){
+	              login = user.getScreenName();
+	            }else if(authType.equals(CompanyConstants.AUTH_TYPE_ID)){
+	              login = String.valueOf(user.getUserId());
+	            }
+	            
+	            long userChangePasswordId = 
+	                UserLocalServiceUtil.authenticateForBasic(
+	                              serviceContext.getCompanyId(), 
+	                              authType, 
+	                              login, 
+	                              curPass);
+	            
+	            if (!Validator.equals(userChangePasswordId, 
+	                serviceContext.getUserId())){
+	              throw new UserPasswordException(0);
+	            }
+	            district.getItemName(serviceContext.getLocale(), true);
 				CitizenLocalServiceUtil.updateCitizen(
 					citizenId, address, city.getItemCode(),
 					district.getItemCode(), ward.getItemCode(),
@@ -333,6 +383,26 @@ public class AccountProfilePortlet extends MVCPortlet {
 		if (Validator.isNotNull(curPass) && Validator.isNotNull(newPass) &&
 			Validator.isNotNull(rePass)) {
 			isChangePassword = true;
+		} else { 
+			if(Validator.isNull(curPass)
+					&& Validator.isNotNull(newPass) 
+					&& Validator.isNotNull(rePass)){
+				SessionErrors.add(actionRequest, "chua-nhap-mat-khau-cu");
+				actionResponse.setRenderParameter(
+						"mvcPath",
+						"/html/portlets/accountmgt/profile/edit_profile.jsp");
+				return;
+
+			}
+			if(Validator.isNotNull(curPass)
+					&&Validator.isNotNull(newPass)
+					&&Validator.isNull(rePass)){
+				SessionErrors.add(actionRequest, "chua-nhap-lai-mat-khau-moi");
+				actionResponse.setRenderParameter(
+						"mvcPath",
+						"/html/portlets/accountmgt/profile/edit_profile.jsp");
+				return;
+			}
 		}
 
 		boolean updated = false;
@@ -360,6 +430,32 @@ public class AccountProfilePortlet extends MVCPortlet {
 			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
 			if (businessId > 0) {
+				
+				Company company = CompanyLocalServiceUtil.getCompany(serviceContext.getCompanyId());
+	            User user = UserLocalServiceUtil.getUser(serviceContext.getUserId());
+	            
+	            String authType = company.getAuthType();
+	            String login = StringPool.BLANK;
+	            
+	            if(authType.equals(CompanyConstants.AUTH_TYPE_EA)){
+	              login = user.getEmailAddress();
+	            }else if(authType.equals(CompanyConstants.AUTH_TYPE_SN)){
+	              login = user.getScreenName();
+	            }else if(authType.equals(CompanyConstants.AUTH_TYPE_ID)){
+	              login = String.valueOf(user.getUserId());
+	            }
+	            
+	            long userChangePasswordId = 
+	                UserLocalServiceUtil.authenticateForBasic(
+	                              serviceContext.getCompanyId(), 
+	                              authType, 
+	                              login, 
+	                              curPass);
+	            
+	            if (!Validator.equals(userChangePasswordId, 
+	                serviceContext.getUserId())){
+	              throw new UserPasswordException(0);
+	            }
 
 				district.getItemName(serviceContext.getLocale(), true);
 				BusinessLocalServiceUtil.updateBusiness(

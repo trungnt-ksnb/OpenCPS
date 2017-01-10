@@ -326,22 +326,20 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 				String[] newFolderNames = new String[] {
 						PortletConstants.DestinationRoot.CITIZEN.toString(),
 						cityName, districtName, wardName };
-
 				String destination = PortletUtil
 						.getDestinationFolder(newFolderNames);
-
 				DLFolder parentFolder = DLFolderUtil
 						.getTargetFolder(mappingUser.getUserId(),
 								serviceContext.getScopeGroupId(), repositoryId,
 								false, 0, destination, StringPool.BLANK, false,
 								serviceContext);
-
 				FileEntry fileEntry = DLAppServiceUtil.getFileEntry(citizen
-						.getAttachFile());
+							.getAttachFile());
 
 				DLFolderLocalServiceUtil.moveFolder(mappingUser.getUserId(),
-						fileEntry.getFolderId(), parentFolder.getFolderId(),
-						serviceContext);
+							fileEntry.getFolderId(), parentFolder.getFolderId(),
+							serviceContext);
+				
 			}
 		}
 

@@ -110,6 +110,14 @@
 			key="<%=MessageKeys.DATAMGT_SYSTEM_EXCEPTION_OCCURRED %>" 
 			message="system.exception.occured" 
 		/>
+		<liferay-ui:error 
+			key="chua-nhap-mat-khau-cu" 
+			message="chua-nhap-mat-khau-cu" 
+		/>
+		<liferay-ui:error 
+			key="chua-nhap-lai-mat-khau-moi" 
+			message="chua-nhap-lai-mat-khau-moi" 
+		/>
 		
 		<portlet:actionURL var="updateCitizenProfileURL" name="updateCitizenProfile"/>
 		
