@@ -1,3 +1,4 @@
+<%@page import="org.opencps.processmgt.util.ReportUtils"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -64,7 +65,7 @@
 />
 
 <%
-
+	
 	Dossier dossier = (Dossier) request.getAttribute(WebKeys.DOSSIER_ENTRY);
 	
 	ServiceConfig serviceConfig = (ServiceConfig) request.getAttribute(WebKeys.SERVICE_CONFIG_ENTRY);
@@ -509,6 +510,7 @@
 		
 		var url = '<%= signatureFrontOffice %>';
 		var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
+		var imgSrcName = '<%= Validator.isNotNull(user) ? user.getScreenName() : StringPool.BLANK %>';
 		var signatureItems = A.all('.signatureCls');
 		signatureItems.each( function(signatureItem) {
 			// console.log('start sign at here : ' + signatureItem);
@@ -520,75 +522,70 @@
 					url : url,
 					data : {
 						<portlet:namespace/>dossierFileId: dossierFileId,
-						<portlet:namespace/>functionCase: '<%= PortletConstants.FO_SIGNATURE_UPLOAD_FORM_ACTION %>'
+						<portlet:namespace/>imgSrcName: imgSrcName,
+						<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_REQUEST_DATA %>'
 					},
 					success : function(datares) {
 						var jsonDataResponse = JSON.parse(datares);
+						
 						var nameOfFile = jsonDataResponse.fileName;
 						var base64String = jsonDataResponse.base64ContentString;
+						var condauImageSrc = imgSrcName + "_condau.png";
+						var imgContentBase64Str = jsonDataResponse.imgContentBase64Str;
 						
-						
-						if(base64String != '' && nameOfFile != '') {
-							
-							PDFSigningHelper.writeBase64ToFile(nameOfFile, base64String, function(jsondata) {
-								
-								// console.log("jsonDataResponse   " + nameOfFile);
-								
-								PDFSigningHelper.getCertIndex( function(dataJSON) {
+						if(imgContentBase64Str != '' && condauImageSrc != '') {
+							PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
+								if(base64String != '' && nameOfFile != '') {
 									
-									// alert("xxxx   " + dataJSON.data);
-									
-									if(dataJSON.data != '-1') {
+									PDFSigningHelper.writeBase64ToFile(nameOfFile, base64String, function(jsondata) {
 										
-										PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, "C:\\Users\\Default.Default-PC\\Downloads\\chuky\\chuky\\vuquangkhoi.ct.png",
-												author, "", dataJSON.data , "", function(jsondataSigned) {
-											if(jsondataSigned.code == 0)
-											{
-												 alert('suc:' + jsondataSigned.data.path);
-												// PDFSigningHelper.openFile(jsondataSigned.data.path);
+										PDFSigningHelper.getCertIndex( function(dataJSON) {
+											
+											if(dataJSON.data != '-1') {
 												
-												PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
-													
-													//alert(jsondataBase64.data);
-													
-													AUI().use('aui-io-request', function(A){
-												    	$.ajax({
-												    		type : 'POST',
-															url : url,
-															data : {
-																<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
-																<portlet:namespace/>dossierFileId: dossierFileId,
-																<portlet:namespace/>functionCase: '<%= PortletConstants.FO_SIGNATURE_DYNAMIC_FORM_ACTION %>'
-															},
-															success : function(datares) {
-																if(datares) {
-																	// PDFSigningHelper.openFile(jsondataSigned.data.path);
-																	
-																	var jsonDataResponse = JSON.parse(datares);
-																	
-																	if(jsonDataResponse.msg == 'success') {
-																		// open file on client after signed success
-																		
-																		PDFSigningHelper.openFile(jsondataSigned.data.path);
-							
-																		Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id_<%= WebKeys.DOSSIER_MGT_PORTLET %>_', data);
+												PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
+														author, "", dataJSON.data , "", function(jsondataSigned) {
+													if(jsondataSigned.code == 0)
+													{
+														PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+															
+															AUI().use('aui-io-request', function(A){
+														    	$.ajax({
+														    		type : 'POST',
+																	url : url,
+																	data : {
+																		<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
+																		<portlet:namespace/>dossierFileId: dossierFileId,
+																		<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_UPDATE_DATA_AFTER_SIGN %>'
+																	},
+																	success : function(datares) {
+																		if(datares) {
+																			
+																			var jsonDataResponse = JSON.parse(datares);
+																			
+																			if(jsonDataResponse.msg == 'success') {
+																				
+																				PDFSigningHelper.openFile(jsondataSigned.data.path);
+									
+																				Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id_<%= WebKeys.DOSSIER_MGT_PORTLET %>_', data);
+																			}
+																		}
 																	}
-																}
-															}
-												    	});
-											   		 });
+														    	});
+													   		 });
+														});
+													}
+													else
+													{
+														alert('error with code:' + jsondataSigned.errormsg);
+													}
 												});
 											}
-											else
-											{
-												alert('error with code:' + jsondataSigned.errormsg);
-											}
 										});
-									}
-								});
+									});
+								}
 							});
 						}
-						
 					}
 		    	});
 			});

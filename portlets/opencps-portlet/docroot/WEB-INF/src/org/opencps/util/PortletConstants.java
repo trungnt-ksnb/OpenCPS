@@ -36,8 +36,8 @@ public class PortletConstants {
 	public static final int WORKING_STATUS_ACTIVATE = 1;
 	public static final int WORKING_STATUS_DEACTIVATE = 0;
 	
-	public static final int FO_SIGNATURE_DYNAMIC_FORM_ACTION = 0;
-	public static final int FO_SIGNATURE_UPLOAD_FORM_ACTION = 1;
+	public static final int SIGNATURE_UPDATE_DATA_AFTER_SIGN = 0;
+	public static final int SIGNATURE_REQUEST_DATA = 1;
 
 	public static final int ACCOUNT_STATUS_REGISTERED = 0;
 	public static final int ACCOUNT_STATUS_CONFIRMED = 1;

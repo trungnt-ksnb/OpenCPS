@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -97,6 +98,7 @@ import org.opencps.dossiermgt.util.DossierMgtUtil;
 import org.opencps.jasperreport.util.JRReportUtil;
 import org.opencps.jasperreport.util.JRReportUtil.DocType;
 import org.opencps.processmgt.model.ProcessStep;
+import org.opencps.processmgt.util.ReportUtils;
 import org.opencps.servicemgt.model.ServiceInfo;
 import org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil;
 import org.opencps.util.AccountUtil;
@@ -169,11 +171,11 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 		int functionCase = ParamUtil.getInteger(resourceRequest, "functionCase");
 		
 		switch (functionCase) {
-		case PortletConstants.FO_SIGNATURE_DYNAMIC_FORM_ACTION:
-			signatureDynamicForm(resourceRequest, resourceResponse);
+		case PortletConstants.SIGNATURE_REQUEST_DATA:
+			signatureDataRequest(resourceRequest, resourceResponse);
 			break;
-		case PortletConstants.FO_SIGNATURE_UPLOAD_FORM_ACTION:
-			signatureUploadForm(resourceRequest, resourceResponse);
+		case PortletConstants.SIGNATURE_UPDATE_DATA_AFTER_SIGN:
+			signatureUpdateData(resourceRequest, resourceResponse);
 			break;
 
 		default:
@@ -182,33 +184,32 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
 	}
 	
-	private void signatureUploadForm(ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
+	private void signatureDataRequest(ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
 		//to do something.
-		_log.info("AJAX CALL#############################");
-		
 		long dossierFileId = ParamUtil
 				.getLong(resourceRequest, "dossierFileId");
+		String imgSrcName = ParamUtil.getString(resourceRequest, "imgSrcName");
 		try {
 			DLFileEntry dlFileEntry = getDLFileFromDossierFile(dossierFileId);
 			InputStream is = dlFileEntry.getContentStream();
-			byte [] bytes = IOUtils.toByteArray(is);
+			String condauImageSrc = ReportUtils.getTemplateReportFilePath(resourceRequest) + "resources/" + imgSrcName + "_condau.png";
 			
+			byte [] bytes = IOUtils.toByteArray(is);
+			byte[] byteArray = Files.readAllBytes(new File(condauImageSrc).toPath());
+			
+			String imgContentBase64Str = Base64.encode(byteArray);
 			String base64ContentString = Base64.encode(bytes);
 			String fileName = dlFileEntry.getTitle();
-			
-			String extension = FileUtil.getExtension(fileName);
-			
-			_log.info("EXTENSION ###################  " + extension);
-			
 			JSONObject jsonResponse = JSONFactoryUtil.createJSONObject();
 			jsonResponse.put("base64ContentString", base64ContentString);
 			jsonResponse.put("fileName", fileName);
-			
+			jsonResponse.put("condauImageSrc", condauImageSrc);
+			jsonResponse.put("imgContentBase64Str", imgContentBase64Str);
 			PrintWriter out = resourceResponse.getWriter();
 			out.print(jsonResponse.toString());
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			_log.equals(e);
 		}
 	}
 	
@@ -216,7 +217,7 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 	 * @param resourceRequest
 	 * @param resourceResponse
 	 */
-	private void signatureDynamicForm(ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
+	private void signatureUpdateData(ResourceRequest resourceRequest, ResourceResponse resourceResponse) {
 		String dataSigned = ParamUtil.getString(resourceRequest, "dataSigned");
 		long dossierFileId = ParamUtil
 				.getLong(resourceRequest, "dossierFileId");
@@ -229,8 +230,6 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 			
 			if (Validator.isNotNull(dataSigned)) {
 
-				System.out.println("dataSigned    " + dataSigned);
-				
 				byte [] bytes = Base64.decode(dataSigned);
 				
 				updateFileSigned(dossierFileId, bytes, serviceContext);

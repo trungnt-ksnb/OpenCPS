@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.processmgt.util.ReportUtils"%>
 <%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%
 /**
@@ -49,6 +50,7 @@
 <%@ include file="/init.jsp"%>
 
 <%
+	
 	boolean success = false;
 
 	boolean isViewForm = true;
@@ -238,21 +240,14 @@
 <portlet:resourceURL var="getDataAjax"></portlet:resourceURL>
 
 <c:if test="<%= portleName.equals(WebKeys.DOSSIER_MGT_PORTLET) && dossierFileId > 0 %>">
-
-	<%
-		 base64Str = DossierMgtUtil.base64File(dossierFileId);
-		 fileName = DossierMgtUtil.getFileName(dossierFileId);
-	%>
 	<aui:button value="sign" onclick="signatureFrontOffice()" />
 </c:if>
 
 <aui:script>
 	var url = '<%= getDataAjax %>';
-	
 	var alpacaSchema = <%=Validator.isNotNull(alpacaSchema) ? alpacaSchema : PortletConstants.UNKNOW_ALPACA_SCHEMA%>;
 	var formData = '<%=formData%>';
 	var dossierFileId = '<%=dossierFileId%>';
-	
 	function pluginload(loaded)
 	{
 		if(!loaded) {
@@ -281,74 +276,89 @@
 	
 	function signatureFrontOffice(){
 		
-		var base64String = '<%= base64Str %>';
-		var fileName = '<%= fileName %>';
 		var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
-		
-		if(base64String != '' && fileName != '') {
+		var imgSrcName = '<%= Validator.isNotNull(user) ? user.getScreenName() : StringPool.BLANK %>';
+		$.ajax({
 			
-			PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
+			type : 'POST',
+			url : url,
+			data : {
+				<portlet:namespace/>dossierFileId: dossierFileId,
+				<portlet:namespace/>imgSrcName: imgSrcName,
+				<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_REQUEST_DATA%>'
+			},
+			success : function(datares) {
+				var jsonDataResponse = JSON.parse(datares);
 				
-				PDFSigningHelper.getCertIndex( function(dataJSON) {
+				var fileName = jsonDataResponse.fileName;
+				var base64String = jsonDataResponse.base64ContentString;
+				var condauImageSrc = imgSrcName + "_condau.png";
+				var imgContentBase64Str = jsonDataResponse.imgContentBase64Str;
+				
+				if(imgContentBase64Str != '' && condauImageSrc != '') {
 					
-					// alert("xxxx   " + dataJSON.data);
-					
-					if(dataJSON.data != '-1') {
+					PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
 						
-						PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, "C:\\Users\\Default.Default-PC\\Downloads\\chuky\\chuky\\vuquangkhoi.ct.png",
-								author, "", dataJSON.data , "", function(jsondataSigned) {
-							if(jsondataSigned.code == 0)
-							{
-								// alert('suc:' + jsondataSigned.data.path);
-								// PDFSigningHelper.openFile(jsondataSigned.data.path);
+						if(base64String != '' && fileName != '') {
+							
+							PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
 								
-								PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+								PDFSigningHelper.getCertIndex( function(dataJSON) {
 									
-									//alert(jsondataBase64.data);
-									
-									AUI().use('aui-io-request', function(A){
-								    	$.ajax({
-								    		type : 'POST',
-											url : url,
-											data : {
-												<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
-												<portlet:namespace/>dossierFileId: dossierFileId,
-												<portlet:namespace/>functionCase: '<%= PortletConstants.FO_SIGNATURE_DYNAMIC_FORM_ACTION %>'
-											},
-											success : function(datares) {
-												if(datares) {
-													// PDFSigningHelper.openFile(jsondataSigned.data.path);
+									if(dataJSON.data != '-1') {
+										
+										PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
+												author, "", dataJSON.data , "", function(jsondataSigned) {
+											if(jsondataSigned.code == 0)
+											{
+												PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
 													
-													var jsonDataResponse = JSON.parse(datares);
 													
-													if(jsonDataResponse.msg == 'success') {
-														// open file on client after signed success
-														PDFSigningHelper.openFile(jsondataSigned.data.path);
-														
-														// close dialog when signed success
-														var ns = '<portlet:namespace/>';
-														ns = ns.substring(1, ns.length);
-														closeDialog('<portlet:namespace/>dossier-dynamic-form', ns);
-													}
-												}
+													AUI().use('aui-io-request', function(A){
+												    	$.ajax({
+												    		type : 'POST',
+															url : url,
+															data : {
+																<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
+																<portlet:namespace/>dossierFileId: dossierFileId,
+																<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_UPDATE_DATA_AFTER_SIGN %>'
+															},
+															success : function(datares) {
+																if(datares) {
+																	
+																	var jsonDataResponse = JSON.parse(datares);
+																	
+																	if(jsonDataResponse.msg == 'success') {
+																		// open file on client after signed success
+																		PDFSigningHelper.openFile(jsondataSigned.data.path);
+																		
+																		// close dialog when signed success
+																		var ns = '<portlet:namespace/>';
+																		ns = ns.substring(1, ns.length);
+																		closeDialog('<portlet:namespace/>dossier-dynamic-form', ns);
+																	}
+																}
+															}
+												    	});
+											   		 });
+												});
 											}
-								    	});
-							   		 });
+											else
+											{
+												alert('error with code:' + jsondataSigned.errormsg);
+											}
+										});
+									}
 								});
-							}
-							else
-							{
-								alert('error with code:' + jsondataSigned.errormsg);
-							}
-						});
-					}
-				});
-			});
-		}
+							});
+						}
+					});
+				}
+			}
+		});
 	}
 	
 	AUI().ready(function(A){
-		
 		PDFSigningHelper.init(pluginload);
 		
 		if(alpacaSchema.options != 'undefined' && alpacaSchema.schema != 'undefined'){

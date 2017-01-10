@@ -172,7 +172,6 @@
 		isReadOnly = true;
 	}
 	
-	System.out.println("================== renderResponse.getNamespace()  ^^^^^^^^^^^^^^^^^^^^^    " + renderResponse.getNamespace());
 %>
 
 <table class="dossier-actions-wraper">

@@ -60,11 +60,6 @@ public class BCYSignatureUtil extends SignatureUtil {
 		float imageZoom = ParamUtil.getFloat(resourceRequest, "imageZoom");
 		
 		boolean showSignatureInfo = ParamUtil.getBoolean(resourceRequest, "showSignatureInfo");
-		
-		_log.info("dlt ^^^^^^^^  offsetX  " + offsetX);
-		_log.info("dlt ^^^^^^^^  offsetY  " + offsetY);
-		_log.info("dlt ^^^^^^^^  imageZoom  " + imageZoom);
-		_log.info("dlt ^^^^^^^^  showSignatureInfo  " + showSignatureInfo);
 
 		long userId = PortalUtil.getUserId(resourceRequest);
 

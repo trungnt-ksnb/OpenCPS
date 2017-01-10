@@ -318,8 +318,6 @@ public class JRReportUtil {
 			break;
 		}
 		
-		_log.info("sourceFileName ^^^^^^^^^^ %%%%%%%%%%%%%%%%%%%%%%%   " + sourceFileName);
-
 		return sourceFileName;
 	}
 
