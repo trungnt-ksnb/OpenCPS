@@ -3499,10 +3499,6 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 			throw new OutOfLengthDossierSubjectNameException();
 		}
 
-		if (Validator.isNull(subjectId)) {
-			throw new EmptyDossierSubjectIdException();
-		}
-
 		if (subjectId.trim().length() > PortletPropsValues.DOSSIERMGT_DOSSIER_SUBJECT_ID_LENGTH) {
 			throw new OutOfLengthDossierSubjectIdException();
 		}
@@ -3585,10 +3581,6 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
 		if (subjectName.trim().length() > PortletPropsValues.DOSSIERMGT_DOSSIER_SUBJECT_NAME_LENGTH) {
 			throw new OutOfLengthDossierSubjectNameException();
-		}
-
-		if (Validator.isNull(subjectId)) {
-			throw new EmptyDossierSubjectIdException();
 		}
 
 		if (subjectId.trim().length() > PortletPropsValues.DOSSIERMGT_DOSSIER_SUBJECT_ID_LENGTH) {
