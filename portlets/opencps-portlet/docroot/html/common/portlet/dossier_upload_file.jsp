@@ -326,6 +326,7 @@
 		
 		var fileUploadSizeInByte = 0;
 		var totalUploadFileSizeInByte = '<%=totalUploadFileSizeInByte%>';
+		totalUploadFileSizeInByte = parseFloat(totalUploadFileSizeInByte);
 		
 		$('#<portlet:namespace />dossierFileUpload').on('change', function() {
 			fileUploadSizeInByte = this.files[0].size;
