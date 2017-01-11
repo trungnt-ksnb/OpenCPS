@@ -40,6 +40,11 @@
 			<finder-column name="groupId" />
 			<finder-column name="dossierTemplateId" />
 		</finder>
+		
+		<finder return-type="ServiceProcess" name="G_P">
+			<finder-column name="groupId" />
+			<finder-column name="processNo" />
+		</finder>
 
 
 	</entity>
