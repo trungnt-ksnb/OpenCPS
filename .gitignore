@@ -295,3 +295,10 @@ portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/holidayconfig/service/p
 
 portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/paymentmgt/service/persistence/PaymentStatusCodePersistenceImpl.java
 
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/service/http/
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/service/persistence/DossiersStatisticsPersistenceImpl.java 
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/service/persistence/GovagencyLevelPersistenceImpl.java 
+
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/model/impl/DossiersStatisticsBaseImpl.java 
+portlets/opencps-portlet/docroot/WEB-INF/lib/opencps-portlet-service.jar
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/service/base/

@@ -506,7 +506,7 @@
 
 <aui:script use="aui-base,liferay-portlet-url,aui-io,aui-loading-mask-deprecated">
 
-	function validateRequiredResult(dossierId, processStepId, processWorkflowId) {
+	function validateRequiredResult(dossierId, processStepId, processWorkflowId, style) {
 		
 		var A = AUI();
 
@@ -575,14 +575,17 @@
 		if (required){
 			return 'please-upload-dossier-part-required-before-send';
 		}
-		if (requiredActionNote == true && actionNote.val() == ''){
-			actionNote.addClass('changeDefErr');
-			A.one('#<portlet:namespace/>defErrActionNote').addClass('displayDefErr');
-			
-			return 'please-add-note-before-send';
-		} else {
-			actionNote.removeClass('changeDefErr');
-			A.one('#<portlet:namespace/>defErrActionNote').removeClass('displayDefErr');
+		
+		if(style == 'form'){
+			if (requiredActionNote == true && actionNote.val() == ''){
+				actionNote.addClass('changeDefErr');
+				A.one('#<portlet:namespace/>defErrActionNote').addClass('displayDefErr');
+				
+				return 'please-add-note-before-send';
+			} else {
+				actionNote.removeClass('changeDefErr');
+				A.one('#<portlet:namespace/>defErrActionNote').removeClass('displayDefErr');
+			}
 		}
 		
 		return '';
@@ -636,7 +639,7 @@
 			portletURL.setWindowState("<%=LiferayWindowState.POP_UP.toString()%>");
 			portletURL.setParameter("backURL", '<%=backURL%>');
 			//<portlet:namespace/>validateRequiredResult(dossierId, processStepId, processWorkflowId);
-			var msg = validateRequiredResult(dossierId, processStepId, processWorkflowId);
+			var msg = validateRequiredResult(dossierId, processStepId, processWorkflowId, 'popup');
 			if(msg != '') {
 				alert(Liferay.Language.get(msg));
 				return;
@@ -683,7 +686,7 @@
 							
 								if(submitButton){
 									submitButton.on('click', function(){
-										var msg = validateRequiredResult(dossierId, processStepId, processWorkflowId);
+										var msg = validateRequiredResult(dossierId, processStepId, processWorkflowId, 'form');
 										if(msg != '') {
 											alert(Liferay.Language.get(msg));
 											return;
