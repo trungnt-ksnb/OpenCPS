@@ -114,7 +114,7 @@
                              <p><span><liferay-ui:message key="ten-phi-thanh-toan"></liferay-ui:message>:</span></p><%= paymentFile != null ? paymentFile.getPaymentName() : "-" %>
                         </div>
                         <div>
-                        	<p><span><liferay-ui:message key="request-datetime"></liferay-ui:message>:</span> </p><%= Validator.isNotNull(paymentFile.getRequestDatetime())?HtmlUtil.escape(DateTimeUtil.convertDateToString(paymentFile.getRequestDatetime(), DateTimeUtil._VN_DATE_FORMAT)): "-" %>
+                        	<p><span><liferay-ui:message key="request-datetime"></liferay-ui:message>:</span> </p><%= Validator.isNotNull(paymentFile.getRequestDatetime())?HtmlUtil.escape(DateTimeUtil.convertDateToString(paymentFile.getRequestDatetime(), DateTimeUtil._VN_DATE_TIME_FORMAT)): "-" %>
                         </div>
                         <div>
                             <p><span><liferay-ui:message key="amount"></liferay-ui:message>: </span></p><span class="black bold"><%= NumberFormat.getInstance(new Locale("vi", "VN")).format(paymentFile.getAmount()) %> <liferay-ui:message key="vnd"></liferay-ui:message></span>
@@ -156,7 +156,7 @@
                            	</c:choose>
                         </div>
                         <div>
-                            <p><span><liferay-ui:message key="ngay-da-bao-nop"></liferay-ui:message>:</span></p><%= Validator.isNotNull(paymentFile.getConfirmDatetime())?HtmlUtil.escape(DateTimeUtil.convertDateToString(paymentFile.getConfirmDatetime(), DateTimeUtil._VN_DATE_FORMAT)): "-" %>
+                            <p><span><liferay-ui:message key="ngay-da-bao-nop"></liferay-ui:message>:</span></p><%= Validator.isNotNull(paymentFile.getConfirmDatetime())?HtmlUtil.escape(DateTimeUtil.convertDateToString(paymentFile.getConfirmDatetime(), DateTimeUtil._VN_DATE_TIME_FORMAT)): "-" %>
                         </div>
                         <div>
                             <p><span><liferay-ui:message key="request-note"></liferay-ui:message>:</span></p> <%= Validator.isNotNull(paymentFile) ? paymentFile.getRequestNote() : "-" %>

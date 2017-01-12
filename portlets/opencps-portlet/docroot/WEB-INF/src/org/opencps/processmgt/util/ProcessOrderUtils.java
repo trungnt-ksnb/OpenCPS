@@ -387,7 +387,8 @@ public class ProcessOrderUtils {
 
 	public static String generateTreeView(String collectionCode,
 			String itemCode, String myLabel, int level, String type,
-			boolean isCode, RenderRequest renderRequest)
+			boolean isCode, RenderRequest renderRequest, 
+			String[] showedCodesArray)
 			throws SystemException, PortalException {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) renderRequest
@@ -409,56 +410,71 @@ public class ProcessOrderUtils {
 
 		for (DictItem dictItem : result) {
 
-			jsonObject = JSONFactoryUtil.createJSONObject();
-			String[] treeIn = dictItem.getTreeIndex().split(
-					StringPool.BACK_SLASH + StringPool.PERIOD);
-
-			countPeriod = StringUtil.count(dictItem.getTreeIndex(),
-					StringPool.PERIOD);
-
-			if (countPeriod <= level) {
-
-				jsonObject.put("label",
-						dictItem.getItemName(themeDisplay.getLocale()));
-
-				jsonObject.put("type", type);
-
-				if (isCode) {
-					jsonObject.put("id", dictItem.getItemCode());
-				} else {
-					jsonObject.put("id",
-							StringUtil.valueOf(dictItem.getDictItemId()));
-				}
-
-				jsonObject.put("expanded", true);
-
-				if (countPeriod < level) {
-
-					jsonObject.put("leaf", false);
-
-				} else {
-					jsonObject.put("leaf", true);
-				}
-
-				jsonObject.put("children", JSONFactoryUtil.createJSONArray());
-
-				if (countPeriod > 0) {
-
-					jsonObject.put("parentId",
-							StringUtil.valueOf(treeIn[countPeriod - 1]));
-
-					for (int y = 0; y < jsonArray.length(); y++) {
-
-						buildChildJsonTreeData(jsonObject, 0,
-								jsonArray.getJSONObject(y));
-
+			boolean isShowedCode = false;
+			if(showedCodesArray.length == 0){
+				isShowedCode = true;
+			} else {
+				for (String showedCode : showedCodesArray) {
+					if(Validator.equals(showedCode, dictItem.getItemCode())){
+						isShowedCode = true;
+						break;
 					}
-				} else {
-
-					jsonArray.put(jsonObject);
-
 				}
-
+			}
+			
+			if (isShowedCode){
+				
+				jsonObject = JSONFactoryUtil.createJSONObject();
+				String[] treeIn = dictItem.getTreeIndex().split(
+						StringPool.BACK_SLASH + StringPool.PERIOD);
+				
+				countPeriod = StringUtil.count(dictItem.getTreeIndex(),
+						StringPool.PERIOD);
+				
+				if (countPeriod <= level) {
+					
+					jsonObject.put("label",
+							dictItem.getItemName(themeDisplay.getLocale()));
+					
+					jsonObject.put("type", type);
+					
+					if (isCode) {
+						jsonObject.put("id", dictItem.getItemCode());
+					} else {
+						jsonObject.put("id",
+								StringUtil.valueOf(dictItem.getDictItemId()));
+					}
+					
+					jsonObject.put("expanded", true);
+					
+					if (countPeriod < level) {
+						
+						jsonObject.put("leaf", false);
+						
+					} else {
+						jsonObject.put("leaf", true);
+					}
+					
+					jsonObject.put("children", JSONFactoryUtil.createJSONArray());
+					
+					if (countPeriod > 0) {
+						
+						jsonObject.put("parentId",
+								StringUtil.valueOf(treeIn[countPeriod - 1]));
+						
+						for (int y = 0; y < jsonArray.length(); y++) {
+							
+							buildChildJsonTreeData(jsonObject, 0,
+									jsonArray.getJSONObject(y));
+							
+						}
+					} else {
+						
+						jsonArray.put(jsonObject);
+						
+					}
+					
+				}
 			}
 		}
 

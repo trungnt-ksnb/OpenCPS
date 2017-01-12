@@ -270,11 +270,26 @@ public class JRReportUtil {
 					sourceFileName));
 			break;
 		case DOCX:
-			JRDocxExporter docxExporter = new JRDocxExporter();
+			/*JRDocxExporter docxExporter = new JRDocxExporter();
 			docxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 			docxExporter
 					.setExporterOutput(new SimpleOutputStreamExporterOutput(
-							sourceFileName));
+							sourceFileName));*/
+			
+			JRDocxExporter docxExporter = new JRDocxExporter();
+
+			SimpleDocxReportConfiguration simpleDocxxReportConfiguration = new SimpleDocxReportConfiguration();
+			simpleDocxxReportConfiguration.setFlexibleRowHeight(true);
+			docxExporter.setConfiguration(simpleDocxxReportConfiguration);
+
+			ExporterInput input = new SimpleExporterInput(jasperPrint);
+			docxExporter.setExporterInput(input);
+
+			OutputStreamExporterOutput outputStreamExporterOutputx = new SimpleOutputStreamExporterOutput(
+					sourceFileName);
+			docxExporter.setExporterOutput(outputStreamExporterOutputx);
+
+			docxExporter.exportReport();
 			break;
 		case PPTX:
 			JRPptxExporter pptxExporter = new JRPptxExporter();
@@ -302,7 +317,7 @@ public class JRReportUtil {
 		default:
 			break;
 		}
-
+		
 		return sourceFileName;
 	}
 
@@ -375,5 +390,13 @@ public class JRReportUtil {
 			_log.error(e);
 
 		}
+	}
+	
+	public static String exportReportFile(String jrxmlTemplate, String formData,
+			Map<String, Object> map, String outputDestination, String fileName,
+			DocType docType) {
+
+		return JRReportUtil.createReportFile(jrxmlTemplate, formData, map,
+				outputDestination, fileName, docType);
 	}
 }

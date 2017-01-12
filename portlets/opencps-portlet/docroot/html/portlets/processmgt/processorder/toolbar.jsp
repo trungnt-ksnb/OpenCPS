@@ -237,9 +237,10 @@
 		 					autoFocus="<%=true %>"
 		 					cssClass="input100"
 		 				>
-		 				</liferay-ui:input-date>
-					</aui:col> --%>
-				</aui:row>
+		 				</liferay-ui:input-date> 
+					</aui:col>
+				</aui:row> --%>
+
 			</aui:form>
 		</div>
 	</aui:nav-bar-search>

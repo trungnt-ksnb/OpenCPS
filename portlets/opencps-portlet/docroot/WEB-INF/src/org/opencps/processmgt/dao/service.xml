@@ -351,6 +351,11 @@
             <finder-column name="processOrderId"></finder-column>
             <finder-column name="processWorkflowId"></finder-column>
         </finder>
+        
+        <finder name="POID_UAID" return-type="Collection">
+            <finder-column name="processOrderId"></finder-column>
+            <finder-column name="actionUserId"></finder-column>
+        </finder>
 		
 		
 		<finder return-type="Collection" name="F_ProcessOrderId">

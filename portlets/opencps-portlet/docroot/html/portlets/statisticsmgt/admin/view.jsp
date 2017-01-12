@@ -5,15 +5,37 @@
 <liferay-portlet:actionURL var="doStatisticsURL" name="doStatistics"/>
 
 <aui:form name="fm" action="<%=doStatisticsURL %>" method="post">
-	<aui:input name="<%=StatisticsUtil.STATISTICS_BY %>" value="<%=StatisticsUtil.MONTH %>" type="hidden"/>
-	<aui:input name="month" value="<%=currentMonth %>" type="hidden"/>
-	<aui:input name="year" value="<%=currentYear %>" type="hidden"/>
 	<aui:input name="groupId" value="<%=scopeGroupId %>" type="hidden"/>
-	
-	<aui:fieldset label="statistics-dossiers">
-		<aui:button name="statsInCurrentMonth" value="stats-in-current-month" type="button" />
-		<aui:button name="statsInCurrentYear" value="stats-in-current-year" type="button"/>
+	<aui:fieldset>
+		<aui:col width="30">
+			<aui:select name="month">
+				<aui:option value="0"><liferay-ui:message key="all"/></aui:option>
+				<%
+					for(int m = 1 ; m <= 12; m ++){
+						%>
+							<aui:option value="<%=m %>"><%=m %></aui:option>
+						<%
+					}
+				%>
+			</aui:select>
+		</aui:col>
+		
+		<aui:col width="30">
+			<aui:select name="year">
+				<%
+					for(int y = 2016 ; y <= 2030; y ++){
+						%>
+							<aui:option value="<%=y %>"><%=y %></aui:option>
+						<%
+					}
+				%>
+			</aui:select>
+		</aui:col>
+		<aui:col width="30">
+			<aui:button name="stats" value="statatistics" type="button" />
+		</aui:col>
 	</aui:fieldset>
+
 </aui:form>
 
 
@@ -21,20 +43,10 @@
 <aui:script>
 	AUI().ready(function(A){
 		
-		var statsInCurrentMonth = A.one('#<portlet:namespace/>statsInCurrentMonth');
-		var statsInCurrentYear = A.one('#<portlet:namespace/>statsInCurrentYear');
-		var statisticBy = A.one('#<portlet:namespace/>statisticsBy');
+		var stats = A.one('#<portlet:namespace/>stats');
 		
-		if(statsInCurrentMonth){
-			statsInCurrentMonth.on('click', function(){
-				statisticBy.val('month'); 
-				submitForm(document.<portlet:namespace />fm);
-			});
-		}
-		
-		if(statsInCurrentYear){
-			statsInCurrentYear.on('click', function(){
-				statisticBy.val('year'); 
+		if(stats){
+			stats.on('click', function(){
 				submitForm(document.<portlet:namespace />fm);
 			});
 		}

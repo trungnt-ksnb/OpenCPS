@@ -121,7 +121,8 @@
 					PortletConstants.TREE_VIEW_LEVER_2, 
 					"radio",
 					false,
-					renderRequest);
+					renderRequest,
+					new String[]{});
 			%>
 		</div>
 	</c:if>
@@ -138,7 +139,8 @@
 				PortletConstants.TREE_VIEW_LEVER_0, 
 				"radio",
 				true,
-				renderRequest);
+				renderRequest,
+				dossierStatusCodes);
 		%>
 	</div>
 	
@@ -271,11 +273,11 @@
 									<div class='<%= "text-align-right span1 " + cssStatusColor%>'>
 										<i class='<%="fa fa-circle sx10 " + dossier.getDossierStatus()%>'></i>
 									</div>
-									<div class="span2 bold-label">
+									<div class="span4 bold-label">
 										<liferay-ui:message key="reception-no"/>
 									</div>
 									
-									<div class="span9"><%=dossier.getReceptionNo() %></div>
+									<div class="span7"><%=dossier.getReceptionNo() %></div>
 								</div>
 							</c:when>
 							
@@ -284,10 +286,10 @@
 									<div class='<%= "text-align-right span1 " + cssStatusColor%>'>
 										<i class='<%="fa fa-circle sx10 " + dossier.getDossierStatus()%>'></i>
 									</div>
-									<div class="span2 bold-label">
+									<div class="span4 bold-label">
 										<liferay-ui:message key="reception-no"/>
 									</div>
-									<div class="span9"><%=dossier.getReceptionNo() %></div>
+									<div class="span7"><%=dossier.getReceptionNo() %></div>
 								</div>
 							</c:otherwise>
 						</c:choose>

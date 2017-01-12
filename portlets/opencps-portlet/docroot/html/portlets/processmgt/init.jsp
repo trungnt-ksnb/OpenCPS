@@ -1,4 +1,3 @@
-<%@page import="java.text.DecimalFormat"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -18,6 +17,7 @@
  */
 %>
 
+<%@page import="java.text.DecimalFormat"%>
 <%@page import="org.opencps.util.ActionKeys"%>
 <%@page import="javax.portlet.PortletURL"%>
 <%@page import="com.liferay.portal.service.permission.PortletPermissionUtil"%>

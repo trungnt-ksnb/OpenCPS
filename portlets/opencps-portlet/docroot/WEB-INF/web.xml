@@ -38,6 +38,14 @@
 		<servlet-name>PreviewReportServlet</servlet-name>
 		<servlet-class>org.opencps.servlet.PreviewReportServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>ExportFileServlet</servlet-name>
+		<servlet-class>org.opencps.servlet.ExportFileServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ExportFileServlet</servlet-name>
+		<url-pattern>/export/file/*</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>PreviewReportServlet</servlet-name>
 		<url-pattern>/preview/report/*</url-pattern>

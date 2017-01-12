@@ -716,10 +716,14 @@
 		<field name="ownerUserId" type="long" />
 		<field name="ownerOrganizationId" type="long" />
 		<field name="govAgencyOrganizationId" type="long" />
-		<field name="paymentName" type="String" />
+		<field name="paymentName" type="String">
+			<hint name="max-length">1000</hint>
+		</field>
 		<field name="requestDatetime" type="Date" />
 		<field name="amount" type="double" />
-		<field name="requestNote" type="String" />
+		<field name="requestNote" type="String">
+			<hint name="max-length">1000</hint>
+		</field>
 		<field name="paymentOptions" type="String" />
 		<field name="keypayUrl" type="String" />
 		<field name="keypayTransactionId" type="long">

@@ -986,5 +986,20 @@ Include-Resource: WEB-INF/=server-config.wsdd,classes;filter:=*.wsdd
 
 		<delete dir="${service.base.dir}/taglib-classes" />
 	</target>
+	<target name="build-to-jar">
+		<if>
+			<available file="docroot" />
+			<then>
+				<var name="service.base.dir" value="docroot/WEB-INF" />
+			</then>
+			<else>
+				<var name="service.base.dir" value="." />
+			</else>
+		</if>
+		<jar
+			basedir="${service.base.dir}/classes"
+			destfile="${service.base.dir}/lib/${plugin.name}.jar"
+		/>
+	</target>
 </project>
 
