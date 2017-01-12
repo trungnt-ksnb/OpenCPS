@@ -142,7 +142,15 @@
 	List<String> listDossierFileToSigner = new ArrayList<String>();
 	
 	for (WorkflowOutput workflowOutput : workflowOutputs) {
-		DossierFile dossierFileSign = DossierFileLocalServiceUtil.getDossierFileInUse(dossierId, workflowOutput.getDossierPartId());
+		DossierFile dossierFileSign = null;
+		
+		try {
+			dossierFileSign = DossierFileLocalServiceUtil.getDossierFileInUse(dossierId, workflowOutput.getDossierPartId());
+
+		} catch (Exception e) {
+			
+		}
+				
 		
 		if(Validator.isNotNull(dossierFileSign)){
 			listFileToSigner.add(String.valueOf(dossierFileSign.getFileEntryId()));

@@ -240,6 +240,7 @@
 		 				</liferay-ui:input-date> 
 					</aui:col>
 				</aui:row> --%>
+
 			</aui:form>
 		</div>
 	</aui:nav-bar-search>

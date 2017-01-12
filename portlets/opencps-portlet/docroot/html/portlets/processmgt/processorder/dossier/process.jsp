@@ -978,6 +978,7 @@
 		}
 	});
 
+
 </aui:script>
 <c:if test='<%=assignFormDisplayStyle.equals("form") %>'>
 <portlet:resourceURL var="getDataAjax"></portlet:resourceURL>
