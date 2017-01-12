@@ -326,6 +326,7 @@
 		
 		var fileUploadSizeInByte = 0;
 		var totalUploadFileSizeInByte = '<%=totalUploadFileSizeInByte%>';
+		totalUploadFileSizeInByte = parseFloat(totalUploadFileSizeInByte);
 		
 		$('#<portlet:namespace />dossierFileUpload').on('change', function() {
 			fileUploadSizeInByte = this.files[0].size;
@@ -338,9 +339,11 @@
 				if (fileUploadSizeInByte == 0){
 					alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "please-upload-dossier-part-required-before-send") %>');
 				} else
+				
 				if (fileUploadSizeInByte > maxUploadFileSizeInByte && maxUploadFileSizeInByte > 0) {
 					alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "please-upload-dossier-part-size-smaller-than") %>' + ' ' + '<%=maxUploadFileSize%>' + ' ' + '<%=maxUploadFileSizeUnit%>');
 				}else 
+				
 				if (totalUploadFileSizeInByte > maxTotalUploadFileSizeInByte && maxTotalUploadFileSizeInByte > 0) {
 					alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "overload-total-file-upload-size") %>' + ' ' + '<%=maxTotalUploadFileSize%>' + ' ' + '<%=maxTotalUploadFileSizeUnit%>');
 				}else 

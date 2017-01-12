@@ -172,11 +172,11 @@
 										<div class='<%= "text-align-right span1 " + cssStatusColor%>'>
 											<i class='<%="fa fa-circle sx10 " + dossier.getDossierStatus()%>'></i>
 										</div>
-										<div class="span2 bold-label">
+										<div class="span3 bold-label">
 											<liferay-ui:message key="reception-no"/>
 										</div>
 										
-										<div class="span9"><%=dossier.getReceptionNo() %></div>
+										<div class="span3"><%=dossier.getReceptionNo() %></div>
 									</div>
 								</c:when>
 								

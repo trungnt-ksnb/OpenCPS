@@ -464,6 +464,7 @@ for (String analyticsType : analyticsTypes) {
 <script type="text/javascript" src="<%= themeDisplay.getCDNHost() %>/html/extensions/jquery.min.js"></script>
 <script type="text/javascript" src="<%= themeDisplay.getCDNHost() %>/html/extensions/moment-with-locales.min.js"></script>
 <script type="text/javascript" src="<%= themeDisplay.getCDNHost() %>/html/extensions/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="<%= themeDisplay.getCDNHost() %>/html/extensions/plotly-latest.min.js"></script>
 <script type="text/javascript" src='<%= PortalUtil.getStaticResourceURL(request, themeDisplay.getCDNHost() + "/html/extensions/opencps-tree-view.js", extensionLastModified) %>'></script>
 <script type="text/javascript" src='<%= PortalUtil.getStaticResourceURL(request, themeDisplay.getCDNHost() + "/html/extensions/bootstrap-multiselect.js", extensionLastModified) %>'></script>
 <!-- bootstrap -->
@@ -473,6 +474,11 @@ for (String analyticsType : analyticsTypes) {
 <!-- handlebars -->
 <!-- <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.js"></script> -->
 <script type="text/javascript" src="<%= themeDisplay.getCDNHost() %>/html/extensions/handlebars-v4.0.5.js"></script>
+
+<!-- KY SO FPT -->
+<script type="text/javascript" src="<%= themeDisplay.getCDNHost() %>/html/extensions/PDFSigning.min.js"></script>
+
+
 <!-- alpaca -->
 <!-- <link type="text/css" href="//code.cloudcms.com/alpaca/1.5.17/bootstrap/alpaca.min.css" rel="stylesheet" /> -->
 

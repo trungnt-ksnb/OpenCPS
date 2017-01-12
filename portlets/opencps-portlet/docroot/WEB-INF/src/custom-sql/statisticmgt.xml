@@ -88,6 +88,10 @@
 				(opencps_dossier.delayStatus = ?)
 			AND
 				(opencps_dossier.finishDatetime IS NULL)
+			AND 
+				(month(opencps_dossier.receiveDatetime) <= ?)
+			AND
+				(year(opencps_dossier.receiveDatetime) = ?)
 		]]>
 	</sql>
 	
@@ -161,7 +165,7 @@
 				$FILTER$
 				
 			GROUP BY 
-				opencps_processorder.govAgencyCode;
+				d.itemCode, opencps_processorder.govAgencyCode;
 			
 		]]>
 	</sql>
@@ -237,6 +241,27 @@
 		]]>
 	</sql>
 	
+	<sql id="org.opencps.statisticsmgt.service.persistence.DossiersStatisticsFinder.getStatistics">	
+		<![CDATA[
+	    	SELECT 
+				opencps_dossierstatistics.*
+			FROM 
+				opencps_dossierstatistics
+			WHERE
+				(groupId = ?)
+			AND 
+				(opencps_dossierstatistics.domainCode = ?)
+			AND 
+				(opencps_dossierstatistics.govAgencyCode = ?)
+			AND 
+				(opencps_dossierstatistics.administrationLevel = ?)
+			AND 
+				$FILTER$
+			ORDER BY
+				opencps_dossierstatistics.year ASC, opencps_dossierstatistics.month ASC;
+		]]>
+	</sql>
+	
 	<sql id="org.opencps.statisticsmgt.service.persistence.DossiersStatisticsFinder.getStatsByGovAndDomain">	
 		<![CDATA[
 	    	SELECT 
@@ -252,11 +277,9 @@
 			AND 
 				(opencps_dossierstatistics.administrationLevel = ?)
 			AND 
-				(opencps_dossierstatistics.month = ?)
-			AND 
-				(opencps_dossierstatistics.year = ?)
+				$FILTER$
 			ORDER BY
-				opencps_dossierstatistics.month;
+				opencps_dossierstatistics.year ASC, opencps_dossierstatistics.month ASC;
 		]]>
 	</sql>
 </custom-sql>

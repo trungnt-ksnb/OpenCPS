@@ -17,6 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 %>
+
 <%@page import="org.opencps.processmgt.model.ProcessWorkflow"%>
 <%@page import="org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil"%>
 <%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
@@ -31,6 +32,13 @@
 <%@page import="org.opencps.processmgt.service.ProcessOrderLocalServiceUtil"%>
 <%@page import="org.opencps.processmgt.search.ProcessOrderDisplayTerms"%>
 <%@page import="org.opencps.holidayconfig.util.HolidayCheckUtils"%>
+<%@page import="org.opencps.util.DateTimeUtil"%>
+<%@page import="org.opencps.dossiermgt.service.DossierLocalServiceUtil"%>
+<%@page import="org.opencps.dossiermgt.model.Dossier"%>
+<%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
+<%@page import="java.util.LinkedHashMap"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.Set"%>
 
 <%@ include file="../../init.jsp"%>
 
@@ -81,12 +89,13 @@
 	
 	iteratorURL.setParameter("dossierSubStatus", dossierSubStatus);
 	iteratorURL.setParameter("processOrderStage", processOrderStage);
-	
+	boolean isShowRowChecker = false;
 	if(ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
 			serviceInfoId > 0 && processStepId > 0){
 		
 		rowChecker = new RowChecker(liferayPortletResponse);
+		isShowRowChecker = true;
 		
 	}
 %>
@@ -173,8 +182,9 @@
 								new Date(), processOrder.getDaysDuration(),themeDisplay.getLocale());
 						
 						//String deadLine = Validator.isNotNull(processOrder.getDealine()) ? processOrder.getDealine() : StringPool.DASH;
-						
-						String href = "location.href='" + processURL.toString()+"'";
+						String redirectURL = processURL.toString() + "#" +renderResponse.getNamespace() +"tab="+ renderResponse.getNamespace() + redirectToPageProcessCfg ;
+								
+						String href = "location.href='" + redirectURL+"'";
 						
 						String cssStatusColor = "status-color-" + processOrder.getDossierStatus();
 					%>
@@ -190,6 +200,24 @@
 								</div>
 								<div class="span7">
 									<%=processOrder.getReceptionNo() %>
+								</div>
+							</div>
+							
+							<%
+								Dossier dossier = DossierLocalServiceUtil.getDossierByReceptionNo(processOrder.getReceptionNo());
+							%>
+							
+							<div class="row-fluid">
+								<div class="span1"></div>
+								<div class="span4 bold-label">
+									<liferay-ui:message key="submit-date-time"/>
+								</div>
+								<div class="span7">
+									<%=
+										Validator.isNotNull(dossier.getReceiveDatetime()) ? 
+										DateTimeUtil.convertDateToString(dossier.getSubmitDatetime(), DateTimeUtil._VN_DATE_TIME_FORMAT): 
+										DateTimeUtil._EMPTY_DATE_TIME  
+									%>
 								</div>
 							</div>
 							
@@ -288,10 +316,10 @@ AUI().ready(function(A){
 	
 	var processDossier = A.one("#<portlet:namespace />processDossier");
 	var isMultiAssignvar = '<%= isMultiAssign %>';
-	
+	var isShowRowChecker = '<%= isShowRowChecker%>';
 	console.log(isMultiAssignvar);
 	console.log(processDossier);
-	if(isMultiAssignvar == 'false' && processDossier) {
+	if(isMultiAssignvar == 'false' && processDossier && isShowRowChecker == 'false') {
 		processDossier.hide();
 	}
 	
