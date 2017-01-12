@@ -199,36 +199,33 @@
 						</c:when>
 						<c:when test="<%= ( isDynamicForm && fileEntryId > 0 ) || isOnlineData > 0  %>">
 							<c:if test="<%=!isReadOnly %>">
-							<aui:a 
-								id="<%=String.valueOf(dossierPartId) %>"
-								dossier="<%=String.valueOf(dossierId) %>"
-								dossier-part="<%=String.valueOf(isChildDossierPart ? childDossierPartId : dossierPartId) %>"
-								dossier-file="<%=String.valueOf(dossierFileId) %>"
-								file-group="<%=String.valueOf(fileGroupId) %>"
-								group-dossier-part="<%=String.valueOf(groupDossierPartId) %>"
-								group-name="<%=groupName %>"
-								href="javascript:void(0);" 
-								label="view-form" 
-								cssClass="label opencps dossiermgt part-file-ctr view-form"
-								title="view-form"
-							>
-							<i class="fa fa-search"></i>
-							</aui:a>
-							</c:if>
-							<c:if test="<%=!showVersionItemReference %>">
 								<aui:a 
 									id="<%=String.valueOf(dossierPartId) %>"
+									dossier="<%=String.valueOf(dossierId) %>"
 									dossier-part="<%=String.valueOf(isChildDossierPart ? childDossierPartId : dossierPartId) %>"
 									dossier-file="<%=String.valueOf(dossierFileId) %>"
+									file-group="<%=String.valueOf(fileGroupId) %>"
 									group-dossier-part="<%=String.valueOf(groupDossierPartId) %>"
 									group-name="<%=groupName %>"
 									href="javascript:void(0);" 
-									label="view-content" 
-									cssClass="label opencps dossiermgt part-file-ctr view-attachment"
-									title="view-attachment"
-								/>
+									label="view-form" 
+									cssClass="label opencps dossiermgt part-file-ctr view-form"
+									title="view-form"
+								>
+								<i class="fa fa-search"></i>
+								</aui:a>
 							</c:if>
-							
+							<aui:a 
+								id="<%=String.valueOf(dossierPartId) %>"
+								dossier-part="<%=String.valueOf(isChildDossierPart ? childDossierPartId : dossierPartId) %>"
+								dossier-file="<%=String.valueOf(dossierFileId) %>"
+								group-dossier-part="<%=String.valueOf(groupDossierPartId) %>"
+								group-name="<%=groupName %>"
+								href="javascript:void(0);" 
+								label="view-content" 
+								cssClass="label opencps dossiermgt part-file-ctr view-attachment"
+								title="view-attachment"
+							/>
 						</c:when>
 						<c:otherwise>
 							<c:choose>
