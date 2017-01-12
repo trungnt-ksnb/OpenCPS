@@ -17,6 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
+
 <%@page import="org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil"%>
 <%@page import="org.opencps.processmgt.model.ProcessWorkflow"%>
 <%@page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil"%>
@@ -45,6 +46,14 @@
 <%@page import="org.opencps.util.MessageKeys"%>
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="org.opencps.holidayconfig.util.HolidayCheckUtils"%>
+<%@page import="org.opencps.dossiermgt.service.DossierLocalServiceUtil"%>
+<%@page import="org.opencps.dossiermgt.service.impl.DossierLocalServiceImpl"%>
+<%@page import="org.opencps.dossiermgt.model.Dossier"%>
+<%@page import="org.opencps.util.DateTimeUtil"%>
+<%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="org.opencps.util.PortletConstants"%>
 
 <%@ include file="../../init.jsp"%>
 
@@ -93,11 +102,14 @@
 	iteratorURL.setParameter("dossierSubStatus", dossierSubStatus);
 	iteratorURL.setParameter("processOrderStage", processOrderStage);
 	
+	boolean isShowRowChecker = false;
+	
 	if(ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
 			serviceInfoId > 0 && processStepId > 0){
 		
 		rowChecker = new RowChecker(liferayPortletResponse);
+		isShowRowChecker = true;
 		
 	}
 %>
@@ -115,7 +127,8 @@
 					PortletConstants.TREE_VIEW_LEVER_0, 
 					"radio",
 					true,
-					renderRequest);
+					renderRequest,
+					new String[]{});
 			%>
 		</div>
 	
@@ -140,7 +153,7 @@
 					'<%=menuCounterSubStatusUrl.toString() %>',
 					dossierSubStatus,
 					'<%=renderResponse.getNamespace() %>',
-					'<%=hiddenTreeNodeEqualNone%>');
+					'<%=hiddenToDoListTreeMenuEmptyNode%>');
 			
 		});
 			
@@ -160,10 +173,10 @@
 				           <p class="count"></p>
 				    </div>
 				</div>
-				<c:if test="<%=ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
+				<%-- <c:if test="<%=ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
 				serviceInfoId > 0 && processStepId > 0 %>">
 					<aui:button name="multiAssignToUserBtn" value="multiAssignToUserBtn"/>
-				</c:if>
+				</c:if> --%>
 				<liferay-ui:search-container 
 					searchContainer="<%= new ProcessOrderSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>"
 					
@@ -233,10 +246,12 @@
 										processOrder.getActionDatetime() : null,
 										new Date(), processOrder.getDaysDuration(),themeDisplay.getLocale());
 								
+								String redirectURL = processURL.toString() + "#" +renderResponse.getNamespace() +"tab="+ renderResponse.getNamespace() + redirectToPageProcessCfg ;
 								
-						
-								String hrefFix = "location.href='" + processURL.toString()+"'";
+								String hrefFix = "location.href='" + redirectURL+"'";
 								String cssStatusColor = "status-color-" + processOrder.getDossierStatus();
+								
+								// System.out.println("processOrder.getDaysDuration()  " + processOrder.getDaysDuration() + "   ------  " + processOrder.getReceptionNo());
 							%>
 							
 							<liferay-util:buffer var="boundcol1">
@@ -250,6 +265,24 @@
 										</div>
 										<div class="span7">
 											<%=processOrder.getReceptionNo() %>
+										</div>
+									</div>
+									
+									<%
+										Dossier dossier = DossierLocalServiceUtil.getDossierByReceptionNo(processOrder.getReceptionNo());
+									%>
+									
+									<div class="row-fluid">
+										<div class="span1"></div>
+										<div class="span4 bold-label">
+											<liferay-ui:message key="submit-date-time"/>
+										</div>
+										<div class="span7">
+											<%=
+												Validator.isNotNull(dossier.getReceiveDatetime()) ? 
+												DateTimeUtil.convertDateToString(dossier.getSubmitDatetime(), DateTimeUtil._VN_DATE_TIME_FORMAT): 
+												DateTimeUtil._EMPTY_DATE_TIME  
+											%>
 										</div>
 									</div>
 									
@@ -334,7 +367,16 @@
 
 AUI().ready(function(A){
 	
-	var processDossier = A.one("#<portlet:namespace />multiAssignToUserBtn");
+	var processDossier = A.one("#<portlet:namespace />processDossier");
+	var isMultiAssignvar = '<%= isMultiAssign %>';
+	var isShowRowChecker = '<%= isShowRowChecker%>';
+	console.log(isMultiAssignvar);
+	console.log(processDossier);
+	if(isMultiAssignvar == 'false' && processDossier && isShowRowChecker == 'false') {
+		processDossier.hide();
+	}
+	
+	/* var processDossier = A.one("#<portlet:namespace />multiAssignToUserBtn");
 	var isMultiAssignvar = '<%= isMultiAssign %>';
 	
 	console.log(isMultiAssignvar);
@@ -380,7 +422,7 @@ AUI().ready(function(A){
 				return;
 			}
 		});
-	}
+	} */
 	
 });
 

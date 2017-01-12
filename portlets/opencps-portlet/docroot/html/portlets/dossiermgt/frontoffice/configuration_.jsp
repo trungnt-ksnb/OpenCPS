@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.jasperreport.util.JRReportUtil.DocType"%>
 <%@page import="org.opencps.util.PortletUtil"%>
 <%
 /**
@@ -182,6 +183,20 @@
 						/>
 					</aui:fieldset>
 					
+					<aui:fieldset>
+						<aui:select name="reportType" id="reportType" multiple="true">		
+							<%
+								for(DocType docType : DocType.values()){
+									%>
+										<aui:option value="<%=docType.getValue() %>" selected="<%=ArrayUtil.contains(reportTypes, docType.getValue()) %>">
+											<%=docType.getValue() %>
+										</aui:option>
+									<%
+								}
+							%>
+						</aui:select>
+					</aui:fieldset>
+					
 				</liferay-ui:panel>
 				
 				<liferay-ui:panel 
@@ -291,6 +306,14 @@
 							type="checkbox"
 							name="showBackToListButton" 
 							value="<%= showBackToListButton %>"
+						/>
+					</aui:fieldset>
+					
+					<aui:fieldset>
+						<aui:input 
+							type="checkbox"
+							name="showDossierSuggestionButton" 
+							value="<%= showDossierSuggestionButton %>"
 						/>
 					</aui:fieldset>
 					

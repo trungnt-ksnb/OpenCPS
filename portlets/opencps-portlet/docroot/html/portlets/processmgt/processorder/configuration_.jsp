@@ -241,6 +241,37 @@
 							><%=LanguageUtil.get(pageContext, "process_order_detail") %></aui:option>
 						</aui:select>
 					</aui:row>
+					
+					<aui:row>
+						<aui:col>
+							<aui:select name="redirectToPageProcessCfg">
+								<aui:option 
+									value="dossier_content"
+									selected='<%=redirectToPageProcessCfg.equals("dossier_content") %>'
+								>
+									dossier_content
+								</aui:option>
+								<aui:option 
+									value="dossier_info"
+									selected='<%=redirectToPageProcessCfg.equals("dossier_info") %>'
+								>
+									dossier_info
+								</aui:option>
+								<aui:option 
+									value="history"
+									selected='<%=redirectToPageProcessCfg.equals("history") %>'
+								>
+									history
+								</aui:option>
+								<aui:option 
+									value="process"
+									selected='<%=redirectToPageProcessCfg.equals("process") %>'
+								>
+									process
+								</aui:option>
+							</aui:select>
+						</aui:col>
+					</aui:row>
 				</liferay-ui:panel>
 			</liferay-ui:panel-container>
 		</c:when>
@@ -249,7 +280,7 @@
 			<aui:fieldset>
 				<aui:input 
 					type="checkbox"
-					name="assign-task-after-sign" 
+					name="assignTaskAfterSign" 
 					value="<%=assignTaskAfterSign %>"
 				/>
 			</aui:fieldset>
@@ -266,6 +297,14 @@
 						<aui:input name="offsetY" value="<%=offsetY %>"/>
 					</aui:col>
 				</aui:row>
+			</aui:fieldset>
+			
+			<aui:fieldset>
+				<aui:input 
+					type="checkbox"
+					name="showSignatureInfo" 
+					value="<%= showSignatureInfo %>"
+				/>
 			</aui:fieldset>
 		</c:when>
 		

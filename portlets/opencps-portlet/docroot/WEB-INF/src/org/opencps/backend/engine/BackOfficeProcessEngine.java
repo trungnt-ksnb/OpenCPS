@@ -73,7 +73,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.RoleLocalServiceUtil;
-import com.liferay.portal.service.UserLocalServiceUtil;
 
 /**
  * @author khoavd
@@ -167,7 +166,7 @@ public class BackOfficeProcessEngine implements MessageListener {
 							govAgencyCode, govAgencyName, govAgencyOrganizationId,
 							serviceProcessId, toEngineMsg.getDossierId(),
 							toEngineMsg.getFileGroupId(), toEngineMsg.getProcessWorkflowId(),
-							toEngineMsg.getActionDatetime(), StringPool.BLANK, StringPool.BLANK,
+							new Date(), StringPool.BLANK, StringPool.BLANK,
 							StringPool.BLANK, 0, 0, 0, PortletConstants.DOSSIER_STATUS_SYSTEM);
 
 					// Add DossierLog for create ProcessOrder
@@ -379,6 +378,14 @@ public class BackOfficeProcessEngine implements MessageListener {
 
 						toBackOffice.setReceptionNo(DossierNoGenerator.genaratorNoReception(
 							pattern, toEngineMsg.getDossierId()));
+						/*
+						if (currStep.getDossierStatus().contains(
+								PortletConstants.DOSSIER_STATUS_RECEIVING) &&
+								changeStep.getDossierStatus().contains("processing")) {
+								toBackOffice.setReceiveDatetime(new Date());
+							}*/
+						
+						toBackOffice.setReceiveDatetime(new Date());
 						// Add log create dossier
 
 					}
@@ -479,7 +486,38 @@ public class BackOfficeProcessEngine implements MessageListener {
 
 				toBackOffice.setPayment(isPayment);
 				toBackOffice.setResubmit(isResubmit);
-				toBackOffice.setEstimateDatetime(toEngineMsg.getEstimateDatetime());
+				
+				_log.info("======toEngineMsg.getEstimateDatetime():"+toEngineMsg.getEstimateDatetime());
+				if(Validator.isNotNull(toEngineMsg.getEstimateDatetime())){
+					
+					toBackOffice.setEstimateDatetime(toEngineMsg.getEstimateDatetime());
+					
+				}else{
+					
+					Date estimateDate = null;
+					
+					Date receiveDate =null;
+					
+					receiveDate = toBackOffice.getReceiveDatetime();
+					
+					_log.info("======receiveDate:"+receiveDate);
+					
+					String deadlinePattern = processWorkflow.getDeadlinePattern();
+					
+					_log.info("======processWorkflow.getGenerateDeadline():"+processWorkflow.getGenerateDeadline());
+					
+					if(processWorkflow != null && processWorkflow.getGenerateDeadline() && Validator.isNotNull(receiveDate) && Validator.isNotNull(deadlinePattern)){
+						
+						estimateDate = HolidayUtils.getEndDate(receiveDate, deadlinePattern);
+						
+						_log.info("======estimateDate:"+estimateDate);
+						
+						toBackOffice.setEstimateDatetime(estimateDate);
+					}
+					
+				}
+				
+			//	toBackOffice.setEstimateDatetime(toEngineMsg.getEstimateDatetime());
 				//TODO 
 				//receiveDateTime alway set???
 //				toBackOffice.setReceiveDatetime(toEngineMsg.getReceiveDate());

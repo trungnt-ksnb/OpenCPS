@@ -24,32 +24,27 @@ import org.opencps.statisticsmgt.service.base.DossiersStatisticsLocalServiceBase
 import com.liferay.counter.service.CounterLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.OrderByComparator;
 
 /**
- * The implementation of the dossiers statistics local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are
- * added, rerun ServiceBuilder to copy their definitions into the
+ * The implementation of the dossiers statistics local service. <p> All custom
+ * service methods should be put in this class. Whenever methods are added,
+ * rerun ServiceBuilder to copy their definitions into the
  * {@link org.opencps.statisticsmgt.service.DossiersStatisticsLocalService}
- * interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security
- * checks based on the propagated JAAS credentials because this service can only
- * be accessed from within the same VM.
- * </p>
+ * interface. <p> This is a local service. Methods of this service will not have
+ * security checks based on the propagated JAAS credentials because this service
+ * can only be accessed from within the same VM. </p>
  *
  * @author trungnt
  * @see org.opencps.statisticsmgt.service.base.DossiersStatisticsLocalServiceBaseImpl
  * @see org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil
  */
-public class DossiersStatisticsLocalServiceImpl extends
-		DossiersStatisticsLocalServiceBaseImpl {
+public class DossiersStatisticsLocalServiceImpl
+	extends DossiersStatisticsLocalServiceBaseImpl {
+
 	/*
-	 * NOTE FOR DEVELOPERS:
-	 * 
-	 * Never reference this interface directly. Always use {@link
+	 * NOTE FOR DEVELOPERS: Never reference this interface directly. Always use
+	 * {@link
 	 * org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil} to
 	 * access the dossiers statistics local service.
 	 */
@@ -71,18 +66,18 @@ public class DossiersStatisticsLocalServiceImpl extends
 	 * @return
 	 * @throws SystemException
 	 */
-	public DossiersStatistics addDossiersStatistics(long groupId,
-			long companyId, long userId, int remainingNumber,
-			int receivedNumber, int ontimeNumber, int overtimeNumber,
-			int processingNumber, int delayingNumber, int month, int year,
-			String govAgencyCode, String domainCode, int administrationLevel)
-			throws SystemException {
+	public DossiersStatistics addDossiersStatistics(
+		long groupId, long companyId, long userId, int remainingNumber,
+		int receivedNumber, int ontimeNumber, int overtimeNumber,
+		int processingNumber, int delayingNumber, int month, int year,
+		String govAgencyCode, String domainCode, int administrationLevel)
+		throws SystemException {
 
-		long dossierStatisticId = CounterLocalServiceUtil
-				.increment(DossiersStatistics.class.getName());
+		long dossierStatisticId =
+			CounterLocalServiceUtil.increment(DossiersStatistics.class.getName());
 
-		DossiersStatistics dossiersStatistics = dossiersStatisticsPersistence
-				.create(dossierStatisticId);
+		DossiersStatistics dossiersStatistics =
+			dossiersStatisticsPersistence.create(dossierStatisticId);
 
 		Date now = new Date();
 		dossiersStatistics.setAdministrationLevel(administrationLevel);
@@ -111,6 +106,7 @@ public class DossiersStatisticsLocalServiceImpl extends
 	 * @return
 	 */
 	public List<Integer> getMonths(long groupId, int year) {
+
 		return dossiersStatisticsFinder.getStatisticsMonths(groupId, year);
 	}
 
@@ -123,10 +119,12 @@ public class DossiersStatisticsLocalServiceImpl extends
 	 * @return
 	 * @throws SystemException
 	 */
-	public List generalStatistics(long groupId, int month, int year,
-			String field, int delayStatus) throws SystemException {
-		return dossiersStatisticsFinder.generalStatistics(groupId, month, year,
-				field, delayStatus);
+	public List generalStatistics(
+		long groupId, int month, int year, String field, int delayStatus)
+		throws SystemException {
+
+		return dossiersStatisticsFinder.generalStatistics(
+			groupId, month, year, field, delayStatus);
 	}
 
 	/**
@@ -136,10 +134,12 @@ public class DossiersStatisticsLocalServiceImpl extends
 	 * @return
 	 * @throws SystemException
 	 */
-	public List statisticsByDomain(long groupId, int month, int year,
-			String field, int delayStatus) throws SystemException {
-		return dossiersStatisticsFinder.statisticsByDomain(groupId, month,
-				year, field, delayStatus);
+	public List statisticsByDomain(
+		long groupId, int month, int year, String field, int delayStatus)
+		throws SystemException {
+
+		return dossiersStatisticsFinder.statisticsByDomain(
+			groupId, month, year, field, delayStatus);
 	}
 
 	/**
@@ -149,10 +149,12 @@ public class DossiersStatisticsLocalServiceImpl extends
 	 * @return
 	 * @throws SystemException
 	 */
-	public List statisticsByGovAgency(long groupId, int month, int year,
-			String field, int delayStatus) throws SystemException {
-		return dossiersStatisticsFinder.statisticsByGovAgency(groupId, month,
-				year, field, delayStatus);
+	public List statisticsByGovAgency(
+		long groupId, int month, int year, String field, int delayStatus)
+		throws SystemException {
+
+		return dossiersStatisticsFinder.statisticsByGovAgency(
+			groupId, month, year, field, delayStatus);
 	}
 
 	/**
@@ -163,11 +165,12 @@ public class DossiersStatisticsLocalServiceImpl extends
 	 * @throws SystemException
 	 * @throws NoSuchDossiersStatisticsException
 	 */
-	public DossiersStatistics getDossiersStatisticsByDC_M_Y(long groupId,
-			String domainCode, int month, int year) throws SystemException,
-			NoSuchDossiersStatisticsException {
-		return dossiersStatisticsPersistence.findByG_DC_M_Y(groupId,
-				domainCode, month, year);
+	public DossiersStatistics getDossiersStatisticsByDC_M_Y(
+		long groupId, String domainCode, int month, int year)
+		throws SystemException, NoSuchDossiersStatisticsException {
+
+		return dossiersStatisticsPersistence.findByG_DC_M_Y(
+			groupId, domainCode, month, year);
 	}
 
 	/**
@@ -179,9 +182,10 @@ public class DossiersStatisticsLocalServiceImpl extends
 	 * @throws SystemException
 	 * @throws NoSuchDossiersStatisticsException
 	 */
-	public DossiersStatistics getDossiersStatisticsByG_M_Y(long groupId,
-			int month, int year) throws SystemException,
-			NoSuchDossiersStatisticsException {
+	public DossiersStatistics getDossiersStatisticsByG_M_Y(
+		long groupId, int month, int year)
+		throws SystemException, NoSuchDossiersStatisticsException {
+
 		return dossiersStatisticsPersistence.findByG_M_Y(groupId, month, year);
 	}
 
@@ -195,11 +199,13 @@ public class DossiersStatisticsLocalServiceImpl extends
 	 * @throws NoSuchDossiersStatisticsException
 	 */
 	public DossiersStatistics getDossiersStatisticsByG_GC_DC_M_Y_L(
-			long groupId, String govAgencyCode, String domainCode, int month,
-			int year, int administrationLevel) throws SystemException,
-			NoSuchDossiersStatisticsException {
-		return dossiersStatisticsPersistence.findByG_GC_DC_M_Y_L(groupId,
-				govAgencyCode, domainCode, month, year, administrationLevel);
+		long groupId, String govAgencyCode, String domainCode, int month,
+		int year, int administrationLevel)
+		throws SystemException, NoSuchDossiersStatisticsException {
+
+		return dossiersStatisticsPersistence.findByG_GC_DC_M_Y_L(
+			groupId, govAgencyCode, domainCode, month, year,
+			administrationLevel);
 	}
 
 	/**
@@ -210,10 +216,51 @@ public class DossiersStatisticsLocalServiceImpl extends
 	 * @throws SystemException
 	 */
 	public List<DossiersStatistics> getDossiersStatisticsByG_GC_DC_Y(
-			long groupId, String govAgencyCode, String domainCode, int year)
-			throws SystemException {
-		return dossiersStatisticsPersistence.findByG_GC_DC_Y(groupId,
-				govAgencyCode, domainCode, year);
+		long groupId, String govAgencyCode, String domainCode, int year)
+		throws SystemException {
+
+		return dossiersStatisticsPersistence.findByG_GC_DC_Y(
+			groupId, govAgencyCode, domainCode, year);
+	}
+
+	/**
+	 * @param groupId
+	 * @param govAgencyCode
+	 * @param domainCode
+	 * @param year
+	 * @param level
+	 * @return
+	 * @throws SystemException
+	 */
+	public List<DossiersStatistics> getDossiersStatisticsByG_GC_DC_Y_L(
+		long groupId, String govAgencyCode, String domainCode, int year,
+		int level)
+		throws SystemException {
+
+		return dossiersStatisticsPersistence.findByG_GC_DC_Y_L(
+			groupId, govAgencyCode, domainCode, year, level);
+	}
+
+	/**
+	 * @param groupId
+	 * @param govAgencyCode
+	 * @param domainCode
+	 * @param year
+	 * @param level
+	 * @param start
+	 * @param end
+	 * @param orderByComparator
+	 * @return
+	 * @throws SystemException
+	 */
+	public List<DossiersStatistics> getDossiersStatisticsByG_GC_DC_Y_L(
+		long groupId, String govAgencyCode, String domainCode, int year,
+		int level, int start, int end, OrderByComparator orderByComparator)
+		throws SystemException {
+
+		return dossiersStatisticsPersistence.findByG_GC_DC_Y_L(
+			groupId, govAgencyCode, domainCode, year, level, start, end,
+			orderByComparator);
 	}
 
 	/**
@@ -228,13 +275,14 @@ public class DossiersStatisticsLocalServiceImpl extends
 	 * @throws SystemException
 	 * @throws PortalException
 	 */
-	public DossiersStatistics updateDossiersStatistics(long dossierStatisticId,
-			int remainingNumber, int receivedNumber, int ontimeNumber,
-			int overtimeNumber, int processingNumber, int delayingNumber)
-			throws SystemException, PortalException {
+	public DossiersStatistics updateDossiersStatistics(
+		long dossierStatisticId, int remainingNumber, int receivedNumber,
+		int ontimeNumber, int overtimeNumber, int processingNumber,
+		int delayingNumber)
+		throws SystemException, PortalException {
 
-		DossiersStatistics dossiersStatistics = dossiersStatisticsLocalService
-				.getDossiersStatistics(dossierStatisticId);
+		DossiersStatistics dossiersStatistics =
+			dossiersStatisticsLocalService.getDossiersStatistics(dossierStatisticId);
 
 		Date now = new Date();
 
@@ -248,4 +296,61 @@ public class DossiersStatisticsLocalServiceImpl extends
 
 		return dossiersStatisticsPersistence.update(dossiersStatistics);
 	}
+
+	/**
+	 * @param groupId
+	 * @param govCoce
+	 * @param domainCode
+	 * @param year
+	 * @param level
+	 * @return
+	 * @throws SystemException
+	 */
+	public List<DossiersStatistics> getDossiersStatisticsG_GC_DC_Y_L(
+		long groupId, String govCoce, String domainCode, int year, int level)
+		throws SystemException {
+
+		return dossiersStatisticsPersistence.findByG_GC_DC_Y_L(
+			groupId, govCoce, domainCode, year, level);
+	}
+
+	/**
+	 * @param groupId
+	 * @param month
+	 * @param year
+	 * @param govCode
+	 * @param domainCode
+	 * @param level
+	 * @param notNullGov
+	 * @param notNullDomain
+	 * @return
+	 */
+	public List<DossiersStatistics> getStatsByGovAndDomain(
+		long groupId, int startMonth, int startYear, int period,
+		String govCode, String domainCode, int level, boolean notNullGov,
+		boolean notNullDomain) {
+
+		return dossiersStatisticsFinder.getStatsByGovAndDomain(
+			groupId, startMonth, startYear, period, govCode, domainCode, level,
+			notNullGov, notNullDomain);
+	}
+
+	/**
+	 * @param groupId
+	 * @param startMonth
+	 * @param startYear
+	 * @param period
+	 * @param govCode
+	 * @param domainCode
+	 * @param level
+	 * @return
+	 */
+	public List<DossiersStatistics> getStatatistic(
+		long groupId, int startMonth, int startYear, int period,
+		String govCode, String domainCode, int level) {
+
+		return dossiersStatisticsFinder.getStattistics(
+			groupId, startMonth, startYear, period, govCode, domainCode, level);
+	}
+
 }

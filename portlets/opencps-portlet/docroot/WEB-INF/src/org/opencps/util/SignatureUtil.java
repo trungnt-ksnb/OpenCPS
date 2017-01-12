@@ -33,7 +33,6 @@ import org.opencps.dossiermgt.service.DossierFileLocalServiceUtil;
 import org.opencps.pki.PdfPkcs7Signer;
 import org.opencps.pki.PdfSigner;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -252,28 +251,32 @@ public class SignatureUtil {
 	 * @throws Exception
 	 */
 	private static List<SignerInfo> getSignerInfoAcrossExtension(String path,
-			String extension) throws Exception {
+			String extension) {
 		PdfContent pdfcontent = null;
 		DocContent doccontent = null;
 		Signer signer = new Signer();
 		List<SignerInfo> signerInfos = new ArrayList<SignerInfo>();
+		
+		try {
+			if (extension.equalsIgnoreCase("doc")
+					|| extension.equalsIgnoreCase("docx")) {
+				doccontent = new DocContent(path);
+				if (signer.verify(doccontent)) {
+					signerInfos = signer.getSignatureInfos(doccontent);
+				}
 
-		if (extension.equalsIgnoreCase("doc")
-				|| extension.equalsIgnoreCase("docx")) {
-			doccontent = new DocContent(path);
-			if (signer.verify(doccontent)) {
-				signerInfos = signer.getSignatureInfos(doccontent);
+			} else if (extension.equalsIgnoreCase("pdf")) {
+				pdfcontent = new PdfContent(path);
+
+				if (signer.verify(pdfcontent)) {
+					signerInfos = signer.getSignatureInfos(pdfcontent);
+				}
+
 			}
-
-		} else if (extension.equalsIgnoreCase("pdf")) {
-			pdfcontent = new PdfContent(path);
-
-			if (signer.verify(pdfcontent)) {
-				signerInfos = signer.getSignatureInfos(pdfcontent);
-			}
-
+		} catch (Exception e) {
+			_log.error(e);
 		}
-
+		
 		return signerInfos;
 	}
 

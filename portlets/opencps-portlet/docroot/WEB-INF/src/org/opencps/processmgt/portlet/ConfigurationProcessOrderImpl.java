@@ -70,9 +70,6 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 		} else if (tabs2.equals("digital-signature")) {
 			updateDigitalSignature(preferences, actionRequest, actionResponse);
 		}
-
-		boolean hiddenTreeNodeEqualNone = ParamUtil.getBoolean(actionRequest, "hiddenTreeNodeEqualNone");
-		preferences.setValue("hiddenTreeNodeEqualNone", String.valueOf(hiddenTreeNodeEqualNone));
 		
 		preferences.store();
 
@@ -88,7 +85,13 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 		
 		String processOrderViewer = ParamUtil.getString(actionRequest,
 				"processOrderViewer", "default");
-
+		
+		String redirectToPageProcessCfg = 
+				ParamUtil.getString(actionRequest, 
+						"redirectToPageProcessCfg", "dossier_info");
+		
+		preferences.setValue("redirectToPageProcessCfg", 
+				String.valueOf(redirectToPageProcessCfg));
 		preferences.setValue("reportTypes",
 				String.valueOf(StringUtil.merge(reportTypes)));
 		
@@ -158,6 +161,9 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 		double offsetY = ParamUtil.getDouble(actionRequest, "offsetY", 0.0);
 
 		double imageZoom = ParamUtil.getDouble(actionRequest, "imageZoom", 1.0);
+		
+		boolean showSignatureInfo = ParamUtil.getBoolean(actionRequest,
+				"showSignatureInfo", false);
 
 		preferences.setValue("assignTaskAfterSign",
 				String.valueOf(assignTaskAfterSign));
@@ -168,6 +174,8 @@ public class ConfigurationProcessOrderImpl implements ConfigurationAction {
 
 		preferences.setValue("imageZoom", String.valueOf(imageZoom));
 
+		preferences.setValue("showSignatureInfo",
+				String.valueOf(showSignatureInfo));
 	}
 
 	/*

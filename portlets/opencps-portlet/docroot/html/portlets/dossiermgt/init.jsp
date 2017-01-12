@@ -58,7 +58,7 @@
 	String war_opencpsportlet_26_cfg = GetterUtil.getString(portletPreferences.getValue("war_opencpsportlet_26_cfg", ""));
 	
 	String itemCode_cfg = GetterUtil.getString(portletPreferences.getValue("itemCode_cfg", ""));
-	
+	String[] reportTypes = StringUtil.split(preferences.getValue("reportTypes", ".pdf"));
 	/* dossier  */
 	String dossierDisplayStyle = preferences.getValue("dossierDisplayStyle", "default");
 	
@@ -74,6 +74,8 @@
 	boolean showDossierFileVersion = GetterUtil.getBoolean(preferences.getValue("showDossierFileVersion", "true"), true);
 	
 	boolean showBackToListButton = GetterUtil.getBoolean(preferences.getValue("showBackToListButton", "true"), true);
+	
+	boolean showDossierSuggestionButton = GetterUtil.getBoolean(preferences.getValue("showDossierSuggestionButton", "true"), true);
 	
 	String uploadFileTypes = preferences.getValue("uploadFileTypes", "pdf,doc,docx,xls,png");
 
@@ -103,6 +105,6 @@
 	long plidRes = GetterUtil.getLong(preferences.getValue("plid", "0"), 0);
 	
 	boolean displayRecentlyResultWhenSearch = GetterUtil.getBoolean(preferences.getValue("displayRecentlyResultWhenSearch", "false"), false);
-
+	
 %>
 

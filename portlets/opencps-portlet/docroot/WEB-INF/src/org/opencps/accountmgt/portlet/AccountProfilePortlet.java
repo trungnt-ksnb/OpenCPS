@@ -61,10 +61,14 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.Company;
+import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.UserGroup;
+import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
@@ -173,7 +177,7 @@ public class AccountProfilePortlet extends MVCPortlet {
 			Validator.isNotNull(rePass)) {
 			isChangePassword = true;
 		}
-
+		
 		boolean updated = false;
 
 		try {
@@ -181,8 +185,11 @@ public class AccountProfilePortlet extends MVCPortlet {
 				citizenId, StringPool.BLANK, StringPool.BLANK, address,
 				StringPool.BLANK, telNo, 1, StringPool.BLANK, cityId,
 				districtId, wardId, StringPool.BLANK);
+			
 			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
+			
+			AccountRegPortlet.validatePassword(curPass, newPass, rePass, serviceContext);
 
 			city = DictItemLocalServiceUtil.getDictItem(cityId);
 
@@ -333,8 +340,8 @@ public class AccountProfilePortlet extends MVCPortlet {
 		if (Validator.isNotNull(curPass) && Validator.isNotNull(newPass) &&
 			Validator.isNotNull(rePass)) {
 			isChangePassword = true;
-		}
-
+		} 
+		
 		boolean updated = false;
 
 		DictItem city = null;
@@ -357,10 +364,13 @@ public class AccountProfilePortlet extends MVCPortlet {
 			ward = DictItemLocalServiceUtil.getDictItem(wardId);
 
 			busType = DictItemLocalServiceUtil.getDictItem(type);
+			
 			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
+			
+			AccountRegPortlet.validatePassword(curPass, newPass, rePass, serviceContext);
+			
 			if (businessId > 0) {
-
 				district.getItemName(serviceContext.getLocale(), true);
 				BusinessLocalServiceUtil.updateBusiness(
 					businessId, name, enName, shortName, busType.getItemCode(),
