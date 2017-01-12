@@ -302,6 +302,10 @@
 		<finder return-type="Collection" name="actionUserId">
 			<finder-column name="actionUserId" />
 		</finder>
+		
+		<finder name="_Dossier" return-type="ProcessOrder">
+            <finder-column name="dossierId"></finder-column>
+        </finder>
 	</entity>
 
 	<entity name="ActionHistory" local-service="true" remote-service="true"
