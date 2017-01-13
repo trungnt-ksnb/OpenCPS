@@ -246,7 +246,7 @@
 						<c:if test="<%=showBackToListButton %>">
 							<liferay-ui:icon 
 								image="back"
-								cssClass="search-container-action fa undo input100"
+								cssClass="search-container-action fa forward"
 								message="back-dossier-list"
 								url="<%= backDossierList.toString() %>"
 							/>
