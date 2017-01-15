@@ -47,6 +47,14 @@
 			<aui:fieldset>
 				<aui:input name="chartTitle" type="text" value="<%=chartTitle %>"/>
 			</aui:fieldset>
+			
+			<aui:fieldset>
+				<aui:select name="chartType">
+					<aui:option value="pie" selected='<%=chartType.equals("pie") %>'><liferay-ui:message key="pie"/></aui:option>
+					<aui:option value="bar" selected='<%=chartType.equals("bar") %>'><liferay-ui:message key="bar"/></aui:option>
+					<aui:option value="table" selected='<%=chartType.equals("table") %>'><liferay-ui:message key="table"/></aui:option>
+				</aui:select>
+			</aui:fieldset>
 		</liferay-ui:panel>
 		
 		<liferay-ui:panel 
@@ -120,6 +128,12 @@
 						optionValueType="code"
 					/>
 				</aui:col>
+			</aui:fieldset>
+			<aui:fieldset>
+				<aui:select name="level">
+					<aui:option value="0" selected="<%=level == 0 %>">0</aui:option>
+					<aui:option value="-1" selected="<%=level== -1 %>">-1</aui:option>
+				</aui:select>
 			</aui:fieldset>
 		</liferay-ui:panel>
 		

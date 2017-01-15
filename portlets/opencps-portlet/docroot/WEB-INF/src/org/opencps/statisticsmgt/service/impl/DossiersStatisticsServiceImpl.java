@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
+import org.opencps.statisticsmgt.service.DossiersStatisticsService;
 import org.opencps.statisticsmgt.service.base.DossiersStatisticsServiceBaseImpl;
 
 import com.liferay.portal.kernel.exception.SystemException;
@@ -151,6 +152,10 @@ public class DossiersStatisticsServiceImpl
 		array.put(obj6);
 		return array;
 	}
+	
+	public String getClassName(){
+		return DossiersStatisticsService.class.getName();
+	}
 
 	/**
 	 * @param dossiersStatistics
@@ -240,7 +245,7 @@ public class DossiersStatisticsServiceImpl
 					"overtime-number", "processing-number", "delaying-number"
 				};
 		}
-
+		System.out.println("################################# " + dossiersStatistics.size());
 		if (dossiersStatistics != null) {
 
 			for (DossiersStatistics dossiersStatistic : dossiersStatistics) {
@@ -248,7 +253,7 @@ public class DossiersStatisticsServiceImpl
 				if (codeType.equals("domain")) {
 					code = dossiersStatistic.getDomainCode();
 				}
-
+				System.out.println("################################# " + code);
 				List<DossiersStatistics> dossiersStatisticsTemp =
 					new ArrayList<DossiersStatistics>();
 				if (statisticLinkedHashMap.containsKey(code)) {

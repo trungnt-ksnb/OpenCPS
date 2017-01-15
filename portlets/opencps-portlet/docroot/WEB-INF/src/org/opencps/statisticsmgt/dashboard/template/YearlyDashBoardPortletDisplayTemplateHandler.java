@@ -68,8 +68,6 @@ public class YearlyDashBoardPortletDisplayTemplateHandler extends
 		templateVariableGroup
 				.addServiceLocatorVariables(DossiersStatisticsService.class);
 
-		templateVariableGroup.addServiceLocatorVariables(StatisticsUtil.class);
-
 		return templateVariableGroups;
 	}
 }

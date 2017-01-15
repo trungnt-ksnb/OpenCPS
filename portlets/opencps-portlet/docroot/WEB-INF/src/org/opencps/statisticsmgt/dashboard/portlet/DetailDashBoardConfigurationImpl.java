@@ -39,12 +39,16 @@ public class DetailDashBoardConfigurationImpl
 		String domainCode = ParamUtil.getString(actionRequest, "domainCode");
 		
 		String filterKey = ParamUtil.getString(actionRequest, "filterKey");
+		
+		String chartType = ParamUtil.getString(actionRequest, "chartType");
 
 		int startMonth = ParamUtil.getInteger(actionRequest, "startMonth");
 
 		int startYear = ParamUtil.getInteger(actionRequest, "startYear");
 
 		int period = ParamUtil.getInteger(actionRequest, "period");
+		
+		int level = ParamUtil.getInteger(actionRequest, "level");
 
 		boolean notNullGov = ParamUtil.getBoolean(actionRequest, "notNullGov");
 
@@ -62,7 +66,8 @@ public class DetailDashBoardConfigurationImpl
 		preferences.setValue("period", String.valueOf(period));
 		preferences.setValue("displayStyle", displayStyle);
 		preferences.setValue("filterKey", filterKey);
-
+		preferences.setValue("level", String.valueOf(level));
+		preferences.setValue("chartType", String.valueOf(chartType));
 		preferences.store();
 		
 		super.processAction(portletConfig, actionRequest, actionResponse);

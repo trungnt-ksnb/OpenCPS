@@ -38,9 +38,6 @@
 		GetterUtil.getInteger(portletPreferences.getValue(
 			"startMonth", String.valueOf(1)));
 
-	System.out.println("############################################# DETAIL" +
-		startMonth);
-
 	int startYear =
 		GetterUtil.getInteger(portletPreferences.getValue(
 			"startYear", String.valueOf(1)));
@@ -64,5 +61,8 @@
 	String filterKey =
 		GetterUtil.getString(portletPreferences.getValue(
 			"filterKey", "gov"));
+	
+	String chartType = GetterUtil.getString(portletPreferences.getValue(
+			"chartType", "pie"));
 %>
 

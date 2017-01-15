@@ -213,6 +213,8 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 
 		if (total != null && !total.isEmpty()) {
 			StatisticsUtil.getDossiersStatistics(total);
+			//List fakeData = StatisticsUtil.fakeData();
+			//StatisticsUtil.getDossiersStatistics(fakeData);
 		}
 	}
 

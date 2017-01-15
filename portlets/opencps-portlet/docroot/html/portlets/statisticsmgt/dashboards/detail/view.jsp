@@ -1,4 +1,6 @@
 
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -33,58 +35,91 @@
 		DossiersStatisticsLocalServiceUtil.getStatsByGovAndDomain(scopeGroupId, startMonth, startYear, period, 
 			govCode, domainCode, level, notNullGov, notNullDomain);
 
-	JSONArray jsonArray =
-		DossiersStatisticsServiceUtil.statisticsDossierByCode(
-			dossiersStatistics, null, filterKey, currentMonth, currentYear,
-			locale);
-
-	String strJSON = jsonArray.toString();
-
 	System.out.println("###########################################################" +
-		jsonArray);
+		govCode);
+	
+	System.out.println("###########################################################" +
+			level);
+
+	
+	
 %>
-<div class="widget-wrapper">
-	<div id="<portlet:namespace/>statistics"></div>
-</div>
-<script>
-	var strJSON = '<%=strJSON%>';
+<c:choose>
+	<c:when test="<%=portletDisplayDDMTemplateId > 0 %>">
+		<%
+			Map<String, Object> contextObjects = new HashMap<String, Object>();
 	
-	var objects = JSON.parse(strJSON);
+			contextObjects.put("scopeGroupId", new Long(scopeGroupId));
+		%>
+		<%= PortletDisplayTemplateUtil.renderDDMTemplate(pageContext, portletDisplayDDMTemplateId, dossiersStatistics, contextObjects) %>
+	</c:when>
+	<c:otherwise>
+		<%
+			JSONArray jsonArray =
+			DossiersStatisticsServiceUtil.statisticsDossierByCode(
+				dossiersStatistics, null, filterKey, currentMonth, currentYear,
+				locale);
 	
-	var data = [];
-	
-	var ultimateColors = [['rgb(244, 98, 66)', 'rgb(8, 142, 62)', 'rgb(3, 51, 122)', 'rgb(247, 4, 4)', 'rgb(239, 247, 4)', 'rgb(247, 146, 4)']];
-	
-	var delta  = 1/objects.length;
-	
-	for(var i = 0; i < objects.length; i++){
+			String strJSON = jsonArray.toString();
 		
-		var json = objects[i];
-		var lOffsetX = (i)*delta;
-		var uOffsetX = lOffsetX + delta * 0.9;
-		
-		var item = {
-			  title: json.code,
-			  values: json.values,
-			  labels: json.labels,
-			  type: 'pie',
-			  name: json.code,
-			  marker: {
-			    colors: ultimateColors[0]
-			  },
-			  domain: {
-			    x: [lOffsetX, uOffsetX],
-			    y: [0, 1]
-			  },
-			  hoverinfo: 'label+percent+name'
-		}
-		data.push(item);
-	}
+			System.out.println("###########################################################" +
+				jsonArray);
 	
-	var layout = {
-		title: '<%=chartTitle%>',
-		height: 400
-	};
-	
-	Plotly.newPlot('<portlet:namespace/>statistics', data, layout);
-</script>
+		%>
+		<div class="widget-wrapper">
+			<div id="<portlet:namespace/>statistics"></div>
+		</div>
+		<c:choose>
+			<c:when test='<%=chartType.equals("table") %>'>
+				<script>
+					var strJSON = '<%=strJSON%>';
+				</script>
+			</c:when>
+			<c:otherwise>
+				<script>
+					var strJSON = '<%=strJSON%>';
+					
+					var objects = JSON.parse(strJSON);
+					
+					var data = [];
+					
+					var ultimateColors = [['rgb(244, 98, 66)', 'rgb(8, 142, 62)', 'rgb(3, 51, 122)', 'rgb(247, 4, 4)', 'rgb(239, 247, 4)', 'rgb(247, 146, 4)']];
+					
+					var delta  = 1/objects.length;
+					
+					for(var i = 0; i < objects.length; i++){
+						
+						var json = objects[i];
+						var lOffsetX = (i)*delta;
+						var uOffsetX = lOffsetX + delta * 0.9;
+						
+						var item = {
+							  title: json.code,
+							  values: json.values,
+							  labels: json.labels,
+							  type: 'pie',
+							  name: json.code,
+							  marker: {
+							    colors: ultimateColors[0]
+							  },
+							  domain: {
+							    x: [lOffsetX, uOffsetX],
+							    y: [0, 1]
+							  },
+							  hoverinfo: 'label+percent+name'
+						}
+						data.push(item);
+					}
+					
+					var layout = {
+						title: '<%=chartTitle%>',
+						height: 400
+					};
+					
+					Plotly.newPlot('<portlet:namespace/>statistics', data, layout);
+				</script>
+			</c:otherwise>
+		</c:choose>
+	</c:otherwise>
+</c:choose>
+
