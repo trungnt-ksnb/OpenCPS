@@ -238,8 +238,9 @@
 									String cssClass = "dossier-file-status-" + lf.getActionCode();
 									String actionCode = LanguageUtil.get(locale, cssClass);
 							%>
-								<div style="padding: 3px; ">
+								<div style="padding: 3px; display: block;">
 									<%= StringPool.GREATER_THAN %> 
+									<%= LanguageUtil.get(pageContext, "history-file-action-"+lf.getActionCode()) %> :
 										 <aui:a href="#" >
 										 	<%= lf.getFileName() %> 
 										 	<span style="font: smaller; color: #cbcbcb;">(<%= sdf.format(lf.getModifiedDate()) %> )</span>
