@@ -17,7 +17,7 @@
 	</div>
 	<div class="span3 service-config-count">
 		<span>
-			<liferay-ui:message key="service-config-level"/> :
+			<liferay-ui:message key="service-config-level-4"/> :
 		</span>
 		<span class="total-count">
 			 <%=totalServiceConfigLevel4 %>
@@ -25,7 +25,7 @@
 	</div>
 	<div class="span3 service-config-count">
 		<span>
-			<liferay-ui:message key="service-config-level"/> :
+			<liferay-ui:message key="service-config-level-3"/> :
 		</span>
 		<span class="total-count">
 			 <%=totalServiceConfigLevel3 %>
@@ -35,7 +35,7 @@
 	</div>
 	<div class="span3 service-config-count">
 		<span>
-			<liferay-ui:message key="service-config-level"/> :
+			<liferay-ui:message key="service-config-level-2"/> :
 		</span>
 		<span class="total-count">
 			 <%=totalServiceConfigLevel2 %>

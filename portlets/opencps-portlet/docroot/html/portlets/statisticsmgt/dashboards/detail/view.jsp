@@ -100,7 +100,7 @@
 						var labels = json.labels;
 						var values = json.values;
 						var columnNames = [];
-						if(codeType === 'gov'){
+						if(codeType<%=portletName %> === 'gov'){
 							columnNames.push(Liferay.Language.get("gov-name"))
 						}else{
 							columnNames.push(Liferay.Language.get("domain-name"));
@@ -233,7 +233,7 @@
 				<script type="text/javascript">
 					var strJSON<%=portletName %> = '<%=strJSON%>';
 					
-					var objects<%=portletName %> = JSON.parse(strJSON);
+					var objects<%=portletName %> = JSON.parse(strJSON<%=portletName %>);
 					
 					var data<%=portletName %> = [];
 					
