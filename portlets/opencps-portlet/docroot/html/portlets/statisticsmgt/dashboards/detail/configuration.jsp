@@ -1,4 +1,5 @@
 
+<%@page import="com.liferay.portal.kernel.util.ArrayUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -49,6 +50,14 @@
 			</aui:fieldset>
 			
 			<aui:fieldset>
+				<aui:input name="xaxisUnit" type="text" value="<%=xaxisUnit %>"/>
+			</aui:fieldset>
+			
+			<aui:fieldset>
+				<aui:input name="yaxisUnit" type="text" value="<%=yaxisUnit %>"/>
+			</aui:fieldset>
+			
+			<aui:fieldset>
 				<aui:select name="chartType">
 					<aui:option value="pie" selected='<%=chartType.equals("pie") %>'><liferay-ui:message key="pie"/></aui:option>
 					<aui:option value="bar" selected='<%=chartType.equals("bar") %>'><liferay-ui:message key="bar"/></aui:option>
@@ -64,6 +73,28 @@
 			persistState="<%= true %>" 
 			title="chart-filter"
 		>
+			<aui:fieldset>
+				<aui:select name="" multiple="<%=true %>">
+					<aui:option value="remaining-number" selected="<%=ArrayUtil.contains(fields, \"remaining-number\")%>">
+						<liferay-ui:message key="remaining-number"/>
+					</aui:option>
+					<aui:option value="received-number" selected="<%=ArrayUtil.contains(fields, \"received-number\")%>">
+						<liferay-ui:message key="received-number"/>
+					</aui:option>
+					<aui:option value="ontime-number" selected="<%=ArrayUtil.contains(fields, \"ontime-number\")%>">
+						<liferay-ui:message key="ontime-number"/>
+					</aui:option>
+					<aui:option value="overtime-number" selected="<%=ArrayUtil.contains(fields, \"overtime-number\")%>">
+						<liferay-ui:message key="overtime-number"/>
+					</aui:option>
+					<aui:option value="processing-number" selected="<%=ArrayUtil.contains(fields, \"processing-number\")%>">
+						<liferay-ui:message key="processing-number"/>
+					</aui:option>
+					<aui:option value="delaying-number" selected="<%=ArrayUtil.contains(fields, \"delaying-number\")%>">
+						<liferay-ui:message key="delaying-number"/>
+					</aui:option>
+				</aui:select>
+			</aui:fieldset>
 			<aui:fieldset>
 				<aui:col width="30">
 					<aui:select name="startMonth">

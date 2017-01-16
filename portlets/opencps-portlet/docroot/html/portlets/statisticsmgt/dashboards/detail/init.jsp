@@ -22,47 +22,45 @@
 <%@ include file="../../init.jsp"%>
 
 <%
-	String chartTitle =
-		GetterUtil.getString(portletPreferences.getValue(
-			"chartTitle", StringPool.BLANK));
+	String chartTitle = GetterUtil.getString(portletPreferences
+			.getValue("chartTitle", StringPool.BLANK));
 
-	String govCode =
-		GetterUtil.getString(portletPreferences.getValue(
+	String govCode = GetterUtil.getString(portletPreferences.getValue(
 			"govCode", StringPool.BLANK));
 
-	String domainCode =
-		GetterUtil.getString(portletPreferences.getValue(
-			"domainCode", StringPool.BLANK));
+	String domainCode = GetterUtil.getString(portletPreferences
+			.getValue("domainCode", StringPool.BLANK));
 
-	int startMonth =
-		GetterUtil.getInteger(portletPreferences.getValue(
+	int startMonth = GetterUtil.getInteger(portletPreferences.getValue(
 			"startMonth", String.valueOf(1)));
 
-	int startYear =
-		GetterUtil.getInteger(portletPreferences.getValue(
+	int startYear = GetterUtil.getInteger(portletPreferences.getValue(
 			"startYear", String.valueOf(1)));
 
-	int period =
-		GetterUtil.getInteger(portletPreferences.getValue(
+	int period = GetterUtil.getInteger(portletPreferences.getValue(
 			"period", String.valueOf(1)));
 
-	boolean notNullGov =
-		GetterUtil.getBoolean(portletPreferences.getValue(
-			"notNullGov", String.valueOf(true)));
+	boolean notNullGov = GetterUtil.getBoolean(portletPreferences
+			.getValue("notNullGov", String.valueOf(true)));
 
-	boolean notNullDomain =
-		GetterUtil.getBoolean(portletPreferences.getValue(
-			"notNullDomain", String.valueOf(false)));
+	boolean notNullDomain = GetterUtil.getBoolean(portletPreferences
+			.getValue("notNullDomain", String.valueOf(false)));
 
-	int level =
-		GetterUtil.getInteger(portletPreferences.getValue(
+	int level = GetterUtil.getInteger(portletPreferences.getValue(
 			"level", String.valueOf(0)));
 
-	String filterKey =
-		GetterUtil.getString(portletPreferences.getValue(
-			"filterKey", "gov"));
+	String filterKey = GetterUtil.getString(portletPreferences
+			.getValue("filterKey", "gov"));
+
+	String chartType = GetterUtil.getString(portletPreferences
+			.getValue("chartType", "pie"));
+
+	String xaxisUnit = GetterUtil.getString(portletPreferences
+			.getValue("xaxisUnit", StringPool.BLANK));
+
+	String yaxisUnit = GetterUtil.getString(portletPreferences
+			.getValue("yaxisUnit", StringPool.BLANK));
 	
-	String chartType = GetterUtil.getString(portletPreferences.getValue(
-			"chartType", "pie"));
+	String[] fields = StringUtil.split(preferences.getValue("fields", "received-number"));
 %>
 

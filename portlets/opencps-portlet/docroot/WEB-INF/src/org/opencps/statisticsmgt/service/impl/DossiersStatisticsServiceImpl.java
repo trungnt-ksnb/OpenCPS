@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.opencps.datamgt.model.DictCollection;
+import org.opencps.datamgt.model.DictItem;
+import org.opencps.datamgt.service.DictCollectionLocalServiceUtil;
+import org.opencps.datamgt.service.DictItemLocalServiceUtil;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
 import org.opencps.statisticsmgt.service.DossiersStatisticsService;
@@ -34,20 +38,24 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.StringPool;
 
 /**
- * The implementation of the dossiers statistics remote service. <p> All custom
- * service methods should be put in this class. Whenever methods are added,
- * rerun ServiceBuilder to copy their definitions into the
+ * The implementation of the dossiers statistics remote service.
+ * <p>
+ * All custom service methods should be put in this class. Whenever methods are
+ * added, rerun ServiceBuilder to copy their definitions into the
  * {@link org.opencps.statisticsmgt.service.DossiersStatisticsService}
- * interface. <p> This is a remote service. Methods of this service are expected
- * to have security checks based on the propagated JAAS credentials because this
- * service can be accessed remotely. </p>
+ * interface.
+ * <p>
+ * This is a remote service. Methods of this service are expected to have
+ * security checks based on the propagated JAAS credentials because this service
+ * can be accessed remotely.
+ * </p>
  *
  * @author trungnt
  * @see org.opencps.statisticsmgt.service.base.DossiersStatisticsServiceBaseImpl
  * @see org.opencps.statisticsmgt.service.DossiersStatisticsServiceUtil
  */
-public class DossiersStatisticsServiceImpl
-	extends DossiersStatisticsServiceBaseImpl {
+public class DossiersStatisticsServiceImpl extends
+		DossiersStatisticsServiceBaseImpl {
 
 	/*
 	 * NOTE FOR DEVELOPERS: Never reference this interface directly. Always use
@@ -64,11 +72,11 @@ public class DossiersStatisticsServiceImpl
 	 */
 	@JSONWebService(value = "get-dossierstatistic-by-gc-dc-y", method = "POST")
 	public List<DossiersStatistics> getDossiersStatisticsByGC_DC_Y(
-		long groupId, String govAgencyCode, String domainCode, int year)
-		throws SystemException {
+			long groupId, String govAgencyCode, String domainCode, int year)
+			throws SystemException {
 
 		return dossiersStatisticsLocalService.getDossiersStatisticsByG_GC_DC_Y(
-			groupId, govAgencyCode, domainCode, year);
+				groupId, govAgencyCode, domainCode, year);
 	}
 
 	/**
@@ -77,14 +85,12 @@ public class DossiersStatisticsServiceImpl
 	 * @throws SystemException
 	 */
 	@JSONWebService(value = "statistics-dossier-of-year", method = "POST")
-	public JSONArray statisticsDossierOfYear(
-		long groupId, int year, String language)
-		throws SystemException {
+	public JSONArray statisticsDossierOfYear(long groupId, int year,
+			String language) throws SystemException {
 
 		JSONArray array = JSONFactoryUtil.createJSONArray();
 
-		List<DossiersStatistics> dossiersStatistics =
-			new ArrayList<DossiersStatistics>();
+		List<DossiersStatistics> dossiersStatistics = new ArrayList<DossiersStatistics>();
 
 		Locale locale = new Locale(language);
 
@@ -97,13 +103,12 @@ public class DossiersStatisticsServiceImpl
 
 		for (int i = 1; i <= 12; i++) {
 			try {
-				DossiersStatistics statistics =
-					DossiersStatisticsLocalServiceUtil.getDossiersStatisticsByG_GC_DC_M_Y_L(
-						groupId, StringPool.BLANK, StringPool.BLANK, i, year, 0);
+				DossiersStatistics statistics = DossiersStatisticsLocalServiceUtil
+						.getDossiersStatisticsByG_GC_DC_M_Y_L(groupId,
+								StringPool.BLANK, StringPool.BLANK, i, year, 0);
 				dossiersStatistics.add(statistics);
 
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				continue;
 			}
 		}
@@ -114,10 +119,10 @@ public class DossiersStatisticsServiceImpl
 				overtimeNumber += statistics.getOvertimeNumber();
 			}
 
-			processingNumber +=
-				dossiersStatistics.get(dossiersStatistics.size() - 1).getProcessingNumber();
-			delayingNumber +=
-				dossiersStatistics.get(dossiersStatistics.size() - 1).getDelayingNumber();
+			processingNumber += dossiersStatistics.get(
+					dossiersStatistics.size() - 1).getProcessingNumber();
+			delayingNumber += dossiersStatistics.get(
+					dossiersStatistics.size() - 1).getDelayingNumber();
 		}
 
 		JSONObject obj1 = JSONFactoryUtil.createJSONObject();
@@ -152,8 +157,8 @@ public class DossiersStatisticsServiceImpl
 		array.put(obj6);
 		return array;
 	}
-	
-	public String getClassName(){
+
+	public String getClassName() {
 		return DossiersStatisticsService.class.getName();
 	}
 
@@ -165,17 +170,15 @@ public class DossiersStatisticsServiceImpl
 	 */
 	@JSONWebService(value = "statistics-dossier-monthly", method = "POST")
 	public JSONArray statisticsDossierMonthly(
-		List<DossiersStatistics> dossiersStatistics, String[] names,
-		Locale locale) {
+			List<DossiersStatistics> dossiersStatistics, String[] names,
+			Locale locale) {
 
 		JSONArray datas = JSONFactoryUtil.createJSONArray();
 
 		if (names == null || names.length == 0) {
-			names =
-				new String[] {
-					"remaining-number", "received-number", "ontime-number",
-					"overtime-number", "processing-number", "delaying-number"
-				};
+			names = new String[] { "remaining-number", "received-number",
+					"ontime-number", "overtime-number", "processing-number",
+					"delaying-number" };
 		}
 
 		if (dossiersStatistics != null) {
@@ -188,22 +191,22 @@ public class DossiersStatisticsServiceImpl
 					months.put(String.valueOf(statistics.getMonth()));
 
 					if (names[n].equals("remaining-number")) {
-						values.put(String.valueOf(statistics.getRemainingNumber()));
-					}
-					else if (names[n].equals("received-number")) {
-						values.put(String.valueOf(statistics.getReceivedNumber()));
-					}
-					else if (names[n].equals("ontime-number")) {
+						values.put(String.valueOf(statistics
+								.getRemainingNumber()));
+					} else if (names[n].equals("received-number")) {
+						values.put(String.valueOf(statistics
+								.getReceivedNumber()));
+					} else if (names[n].equals("ontime-number")) {
 						values.put(String.valueOf(statistics.getOntimeNumber()));
-					}
-					else if (names[n].equals("overtime-number")) {
-						values.put(String.valueOf(statistics.getOvertimeNumber()));
-					}
-					else if (names[n].equals("processing-number")) {
-						values.put(String.valueOf(statistics.getProcessingNumber()));
-					}
-					else if (names[n].equals("delaying-number")) {
-						values.put(String.valueOf(statistics.getDelayingNumber()));
+					} else if (names[n].equals("overtime-number")) {
+						values.put(String.valueOf(statistics
+								.getOvertimeNumber()));
+					} else if (names[n].equals("processing-number")) {
+						values.put(String.valueOf(statistics
+								.getProcessingNumber()));
+					} else if (names[n].equals("delaying-number")) {
+						values.put(String.valueOf(statistics
+								.getDelayingNumber()));
 					}
 
 				}
@@ -229,23 +232,21 @@ public class DossiersStatisticsServiceImpl
 	 * @return
 	 */
 	@JSONWebService(value = "statistics-dossier-by-code", method = "POST")
-	public JSONArray statisticsDossierByCode(
-		List<DossiersStatistics> dossiersStatistics, String[] labels,
-		String codeType, int currentMonth, int currentYear, Locale locale) {
+	public JSONArray statisticsDossierByCode(long dictCollectionId,
+			List<DossiersStatistics> dossiersStatistics, String[] labels,
+			String codeType, int currentMonth, int currentYear, Locale locale) {
 
 		JSONArray datas = JSONFactoryUtil.createJSONArray();
 
-		LinkedHashMap<String, List<DossiersStatistics>> statisticLinkedHashMap =
-			new LinkedHashMap<String, List<DossiersStatistics>>();
+		LinkedHashMap<String, List<DossiersStatistics>> statisticLinkedHashMap = new LinkedHashMap<String, List<DossiersStatistics>>();
 
 		if (labels == null || labels.length == 0) {
-			labels =
-				new String[] {
-					"remaining-number", "received-number", "ontime-number",
-					"overtime-number", "processing-number", "delaying-number"
-				};
+			labels = new String[] { "remaining-number", "received-number",
+					"ontime-number", "overtime-number", "processing-number",
+					"delaying-number" };
 		}
-		System.out.println("################################# " + dossiersStatistics.size());
+		System.out.println("################################# "
+				+ dossiersStatistics.size());
 		if (dossiersStatistics != null) {
 
 			for (DossiersStatistics dossiersStatistic : dossiersStatistics) {
@@ -254,8 +255,7 @@ public class DossiersStatisticsServiceImpl
 					code = dossiersStatistic.getDomainCode();
 				}
 				System.out.println("################################# " + code);
-				List<DossiersStatistics> dossiersStatisticsTemp =
-					new ArrayList<DossiersStatistics>();
+				List<DossiersStatistics> dossiersStatisticsTemp = new ArrayList<DossiersStatistics>();
 				if (statisticLinkedHashMap.containsKey(code)) {
 					dossiersStatisticsTemp = statisticLinkedHashMap.get(code);
 				}
@@ -265,7 +265,8 @@ public class DossiersStatisticsServiceImpl
 
 			}
 
-			for (Map.Entry<String, List<DossiersStatistics>> entry : statisticLinkedHashMap.entrySet()) {
+			for (Map.Entry<String, List<DossiersStatistics>> entry : statisticLinkedHashMap
+					.entrySet()) {
 
 				JSONObject itemObject = JSONFactoryUtil.createJSONObject();
 
@@ -277,13 +278,21 @@ public class DossiersStatisticsServiceImpl
 
 				String name = StringPool.BLANK;
 
+				try {
+					DictItem dictItem = DictItemLocalServiceUtil
+							.getDictItemInuseByItemCode(dictCollectionId, code);
+					name = dictItem.getItemName(locale);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+
 				// TODO get dictItem by code
 
-				List<DossiersStatistics> dossiersStatisticsTemp =
-					entry.getValue();
+				List<DossiersStatistics> dossiersStatisticsTemp = entry
+						.getValue();
 
-				if (dossiersStatisticsTemp != null &&
-					!dossiersStatisticsTemp.isEmpty()) {
+				if (dossiersStatisticsTemp != null
+						&& !dossiersStatisticsTemp.isEmpty()) {
 
 					int month = dossiersStatisticsTemp.get(0).getMonth();
 
@@ -295,8 +304,7 @@ public class DossiersStatisticsServiceImpl
 
 					for (int l = 0; l < labels.length; l++) {
 
-						columnLabels.put(LanguageUtil.get(
-							locale, labels[l]));
+						columnLabels.put(LanguageUtil.get(locale, labels[l]));
 
 						int value = 0;
 
@@ -307,24 +315,19 @@ public class DossiersStatisticsServiceImpl
 								if (statistics.getMonth() <= month) {
 									value = statistics.getRemainingNumber();
 								}
-							}
-							else if (labels[l].equals("received-number")) {
+							} else if (labels[l].equals("received-number")) {
 								value += statistics.getReceivedNumber();
-							}
-							else if (labels[l].equals("ontime-number")) {
+							} else if (labels[l].equals("ontime-number")) {
 								value += statistics.getOntimeNumber();
-							}
-							else if (labels[l].equals("overtime-number")) {
+							} else if (labels[l].equals("overtime-number")) {
 								value += statistics.getOvertimeNumber();
-							}
-							else if (labels[l].equals("processing-number") &&
-								statistics.getMonth() == currentMonth &&
-								statistics.getYear() == currentYear) {
+							} else if (labels[l].equals("processing-number")
+									&& statistics.getMonth() == currentMonth
+									&& statistics.getYear() == currentYear) {
 								value = statistics.getProcessingNumber();
-							}
-							else if (labels[l].equals("delaying-number") &&
-								statistics.getMonth() == currentMonth &&
-								statistics.getYear() == currentYear) {
+							} else if (labels[l].equals("delaying-number")
+									&& statistics.getMonth() == currentMonth
+									&& statistics.getYear() == currentYear) {
 								value = statistics.getDelayingNumber();
 							}
 
@@ -335,9 +338,9 @@ public class DossiersStatisticsServiceImpl
 
 					itemObject.put("labels", columnLabels);
 					itemObject.put("values", values);
-					
-					datas.put(itemObject);	
-					
+
+					datas.put(itemObject);
+
 				}
 			}
 		}
