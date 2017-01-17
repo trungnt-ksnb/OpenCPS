@@ -882,6 +882,7 @@ public class StatisticsUtil {
 				startYear, period);
 		if (map != null) {
 			int count = 1;
+			conditions.append(StringPool.OPEN_PARENTHESIS);
 			for (Map.Entry<Integer, List<Integer>> entry : map.entrySet()) {
 
 				List<Integer> months = entry.getValue();
@@ -902,6 +903,7 @@ public class StatisticsUtil {
 
 				count++;
 			}
+			conditions.append(StringPool.CLOSE_PARENTHESIS);
 		}
 
 		return conditions.toString();

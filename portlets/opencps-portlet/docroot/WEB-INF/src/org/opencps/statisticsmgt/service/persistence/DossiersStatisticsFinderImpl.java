@@ -125,14 +125,14 @@ public class DossiersStatisticsFinderImpl
 
 			sql = StringUtil.replace(sql, "$FILTER$", definedCondition);
 
-			// _log.info(sql);
-
 			String definedColumnDataTypes =
 				CustomSQLUtil.get(SQL_STATISTICS_DATA_TYPES_0);
 
 			String[] columnNames = StringUtil.split(definedColumnNames);
 
 			String[] columnDataTypes = StringUtil.split(definedColumnDataTypes);
+			
+			_log.info(sql);
 
 			SQLQuery q = session.createSQLQuery(sql);
 

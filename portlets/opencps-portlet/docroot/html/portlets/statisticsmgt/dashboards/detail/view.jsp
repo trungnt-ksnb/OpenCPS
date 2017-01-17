@@ -84,6 +84,9 @@
 	
 		%>
 		<div class="widget-wrapper">
+			<c:if test='<%=chartType.equals("table") %>'>
+				<div class="widget-title"><%=chartTitle %></div>
+			</c:if>
 			<div id="<portlet:namespace/>statistics" class="dashboard-statistics"></div>
 		</div>
 		<c:choose>
@@ -260,14 +263,31 @@
 							    x: [lOffsetX, uOffsetX],
 							    y: [0, 1]
 							  },
-							  hoverinfo: 'label+percent+name'
+							  text: json.name,
+							  textposition: "inside",
+							  textinfo: "percent",layout : {
+								  title: json.name
+							  }
+							 /*  hoverinfo: 'name+label',
+							  hovermode:"closest" */
 						}
 						data<%=portletName %>.push(item);
 					}
 					
 					var layout<%=portletName %> = {
 						title: '<%=chartTitle%>',
-						height: 400
+						height: 400,
+						showlegend: true,
+						/* legend: {"orientation": "h"} */
+						/* legend: {x: 0, y :0}, */
+						
+						/* margin: {
+						    l: 5,
+						    r: 5,
+						    b: 5,
+						    t: 5,
+						    pad: 5
+						}, */
 					};
 					
 					Plotly.newPlot('<portlet:namespace/>statistics', data<%=portletName %>, layout<%=portletName %>);
