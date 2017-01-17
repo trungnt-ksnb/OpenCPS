@@ -23,15 +23,15 @@
 <%@page import="org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil"%>
 <%@page import="org.opencps.statisticsmgt.model.DossiersStatistics"%>
 
-<%@ include file="../../init.jsp" %>
+<%@ include file="init.jsp" %>
 
 <%
 	List<DossiersStatistics> dossiersStatistics = new ArrayList<DossiersStatistics>();
 	try {
-		for(int i = 1; i <= currentMonth; i++){
+		for(int i = startMonth; i <= period; i++){
 			DossiersStatistics statistics = DossiersStatisticsLocalServiceUtil
 					.getDossiersStatisticsByG_GC_DC_M_Y_L(scopeGroupId, StringPool.BLANK,
-							StringPool.BLANK, i, currentYear, 0);
+							StringPool.BLANK, i, startYear, 0);
 			dossiersStatistics.add(statistics);
 		}
 	} catch (Exception e) {
@@ -67,54 +67,54 @@
 			<c:otherwise>
 			
 				<div class="widget-wrapper">
-					<div class="widget-header">
-						<span class="span8">
+					<%-- <div class="widget-header">
+						<span class="span8 key">
 							<liferay-ui:message key="stats-in-year"/>
 						</span>
-						<span class="span4"><%=currentYear %></span>
-					</div>
+						<span class="span4 number"><%=currentYear %></span>
+					</div> --%>
 					
 					<ul class="widget-content">
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="remaining-number"/>
 							</span>
-							<span class="span4"><%=remainingNumber %></span>
+							<span class="span4 number"><%=remainingNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="received-number"/>
 							</span>
-							<span class="span4"><%=receivedNumber %></span>
+							<span class="span4 number"><%=receivedNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="ontime-number"/>
 							</span>
-							<span class="span4"><%=ontimeNumber %></span>
+							<span class="span4 number"><%=ontimeNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="overtime-number"/>
 							</span>
-							<span class="span4"><%=overtimeNumber %></span>
+							<span class="span4 number"><%=overtimeNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="processing-number"/>
 							</span>
-							<span class="span4"><%=processingNumber %></span>
+							<span class="span4 number"><%=processingNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8">
+							<span class="span8 key">
 								<liferay-ui:message key="delaying-number"/>
 							</span>
-							<span class="span4"><%=delayingNumber %></span>
+							<span class="span4 number"><%=delayingNumber %></span>
 						</li>
 					</ul>
 				</div>

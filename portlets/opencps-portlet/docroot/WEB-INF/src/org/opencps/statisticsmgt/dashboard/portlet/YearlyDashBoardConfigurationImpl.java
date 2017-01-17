@@ -28,9 +28,35 @@ public class YearlyDashBoardConfigurationImpl extends
 				.getPortletSetup(actionRequest, portletResource);
 		String displayStyle = ParamUtil
 				.getString(actionRequest, "displayStyle");
+
+		String chartTitle = ParamUtil.getString(actionRequest, "chartTitle");
+
+		String xaxisUnit = ParamUtil.getString(actionRequest, "xaxisUnit");
+
+		String yaxisUnit = ParamUtil.getString(actionRequest, "yaxisUnit");
+
+		String govCode = ParamUtil.getString(actionRequest, "govCode");
+
+		String domainCode = ParamUtil.getString(actionRequest, "domainCode");
+
+		int startMonth = ParamUtil.getInteger(actionRequest, "startMonth");
+
+		int startYear = ParamUtil.getInteger(actionRequest, "startYear");
+
+		int period = ParamUtil.getInteger(actionRequest, "period");
+
+		preferences.setValue("chartTitle", chartTitle);
+
+		preferences.setValue("xaxisUnit", xaxisUnit);
+		preferences.setValue("yaxisUnit", yaxisUnit);
+		preferences.setValue("govCode", govCode);
+		preferences.setValue("domainCode", domainCode);
+		preferences.setValue("startMonth", String.valueOf(startMonth));
+		preferences.setValue("startYear", String.valueOf(startYear));
+		preferences.setValue("period", String.valueOf(period));
 		preferences.setValue("displayStyle", displayStyle);
 		preferences.store();
-		
+
 		super.processAction(portletConfig, actionRequest, actionResponse);
 	}
 }

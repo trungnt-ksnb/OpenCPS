@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.util.DateTimeUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -77,6 +78,7 @@
 	
 	headerNames.add("#");
 	headerNames.add("dossier-file-no");
+	headerNames.add("dossier-file-createdate");
 	headerNames.add("display-name");
 	headerNames.add("select");
 	
@@ -242,7 +244,10 @@
 					
 					// dossier file no column
 					row.addText(dossierFile.getDossierFileNo());
-									
+							
+					// dossier file no column
+					row.addText(DateTimeUtil.convertDateToString(dossierFile.getModifiedDate(), DateTimeUtil._VN_DATE_TIME_FORMAT));
+					
 					// dossier display name column
 					row.addText(dossierFile.getDisplayName());
 					

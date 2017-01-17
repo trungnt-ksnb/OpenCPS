@@ -5,6 +5,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.opencps.statisticsmgt.model.DossiersStatistics;
+import org.opencps.statisticsmgt.service.DossiersStatisticsLocalService;
+import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
+import org.opencps.statisticsmgt.service.DossiersStatisticsService;
+import org.opencps.statisticsmgt.service.DossiersStatisticsServiceUtil;
+import org.opencps.statisticsmgt.util.StatisticsUtil;
 import org.opencps.util.WebKeys;
 
 import com.liferay.portal.kernel.portletdisplaytemplate.BasePortletDisplayTemplateHandler;
@@ -53,10 +58,17 @@ public class YearlyDashBoardPortletDisplayTemplateHandler extends
 				"dossierStatistics", DossiersStatistics.class,
 				"curDossierStatistics", "year");
 
-		templateVariableGroup.addVariable("dossierStatistics", List.class,
-				PortletDisplayTemplateConstants.ENTRIES, "curDossierStatistics");
-		
-		
+		templateVariableGroup
+				.addVariable("dossierStatistics", List.class,
+						PortletDisplayTemplateConstants.ENTRIES,
+						"curDossierStatistics");
+
+		templateVariableGroup
+				.addServiceLocatorVariables(DossiersStatisticsLocalService.class);
+		templateVariableGroup
+				.addServiceLocatorVariables(DossiersStatisticsService.class);
+
+		templateVariableGroup.addServiceLocatorVariables(StatisticsUtil.class);
 
 		return templateVariableGroups;
 	}

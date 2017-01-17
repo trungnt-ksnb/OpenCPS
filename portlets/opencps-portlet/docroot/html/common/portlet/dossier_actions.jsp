@@ -16,8 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
+<%@page import="com.liferay.portal.kernel.util.FileUtil"%>
+<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%@page import="org.opencps.util.SignatureUtil"%>
-<%@page import="java.util.List"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="org.opencps.dossiermgt.service.DossierFileLocalServiceUtil"%>
 <%@page import="org.opencps.processmgt.search.ProcessOrderDisplayTerms"%>
@@ -72,11 +73,21 @@
 	int version  = 0;
 	
 	StringBuilder sbMessage = new StringBuilder();
+	String extension = StringPool.BLANK;
+	String fileName = StringPool.BLANK;
+	boolean isExtensionSignature = false;
+	if(dossierFileId > 0) {
+		fileName = DossierMgtUtil.getFileName(dossierFileId);
+		extension = FileUtil.getExtension(fileName);
+	}
+	if(extension.equals("pdf")) {
+		isExtensionSignature = true;
+	}
+	
 	
 	try {
 		
 		DossierFile dossierFile = DossierFileLocalServiceUtil.getDossierFile(dossierFileId);
-		
 		int signCheck = dossierFile.getSignCheck();
 		
 		if(signCheck == 0) {
@@ -233,8 +244,16 @@
 										cssClass="label opencps dossiermgt part-file-ctr view-attachment"
 										title="view-attachment"
 									/>
-									
-									<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+									<c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+										<%-- <aui:button value="Sign" /> --%>
+										<aui:a href="javascript:void(0);" 
+											   label="Sign" 
+											   cssClass="signatureCls"
+											   dossier-file="<%=String.valueOf(dossierFileId) %>"
+										/>
+									</c:if>
+									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
+									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 								</c:when>
 								<c:otherwise>
 									<c:if test="<%=isEditDossier %>">
@@ -283,16 +302,16 @@
 				<td width="10%" align="right">
 					<c:if test="<%=isEditDossier%>">
 						<aui:a
-							cssClass="opencps dossiermgt part-file-ctr remove-dossier-file"
+							cssClass='<%="opencps dossiermgt part-file-ctr remove-dossier-file " + (version == 0 ? StringPool.BLANK : "remove-dossier-file-has-file")%>'
 							dossier-part="<%=String.valueOf(isChildDossierPart ? childDossierPartId : dossierPartId) %>"
 							dossier-file="<%=String.valueOf(dossierFileId) %>"
 							group-dossier-part="<%=String.valueOf(groupDossierPartId) %>"
 							group-name="<%=groupName %>"
-							href="javascript:void(0);" 
+							href='<%=version == 0 ? StringPool.BLANK : "javascript:void(0);" %>'
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
-							<i class="fa fa-certificate" aria-hidden="true" ></i>
+							<i class="" aria-hidden="true" ></i>
 							
 						</aui:a>
 					</c:if>
@@ -342,8 +361,14 @@
 								cssClass="label opencps dossiermgt part-file-ctr view-attachment"
 								title="view-attachment"
 							/>
-							
-							<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+							<c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+								<%-- <aui:button value="Sign" /> --%>
+								<aui:a href="javascript:void(0);" 
+									label="Sign" 
+									cssClass="signatureCls" />
+							</c:if>
+							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
+							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 						</c:when>
 						<c:otherwise>
 							<c:if test="<%=isEditDossier %>">
@@ -390,17 +415,17 @@
 				<td width="10%" align="right">
 					<c:if test="<%=isEditDossier %>">
 						<aui:a 
-							cssClass="opencps dossiermgt part-file-ctr remove-dossier-file"
+							cssClass='<%="opencps dossiermgt part-file-ctr remove-dossier-file " + (version == 0 ? StringPool.BLANK : "remove-dossier-file-has-file")%>'
 							dossier-part="<%=String.valueOf(isChildDossierPart ? childDossierPartId : dossierPartId) %>"
 							dossier-file="<%=String.valueOf(dossierFileId) %>"
 							group-dossier-part="<%=String.valueOf(groupDossierPartId) %>"
 							group-name="<%=groupName %>"
 							level = "<%=level %>"
-							href="javascript:void(0);" 
+							href='<%=version == 0 ? StringPool.BLANK : "javascript:void(0);" %>'
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
-							<i class="fa fa-certificate" aria-hidden="true"></i>
+							<i class="" aria-hidden="true"></i>
 							
 						</aui:a>
 					</c:if>
@@ -467,7 +492,13 @@
 								title="view-attachment"
 							/>
 							
-							<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+							<c:if test="<%= isExtensionSignature &&  renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+								<%-- <aui:button value="Sign" /> --%>
+								<aui:a href="javascript:void(0);" label="Sign" cssClass="signatureCls"/>
+							</c:if>
+							
+							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
+							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 						</c:when>
 						<c:otherwise>
 							<c:if test="<%=isEditDossier %>">
@@ -514,17 +545,17 @@
 				<td width="10%" align="right">
 					<c:if test="<%=isEditDossier%>">
 						<aui:a 
-							cssClass="opencps dossiermgt part-file-ctr remove-dossier-file"
+							cssClass='<%="opencps dossiermgt part-file-ctr remove-dossier-file " + (version == 0 ? StringPool.BLANK : "remove-dossier-file-has-file")%>'
 							dossier-file="<%=String.valueOf(dossierFileId) %>"
 							dossier-part="<%=String.valueOf(isChildDossierPart ? childDossierPartId : dossierPartId) %>"
 							group-dossier-part="<%=String.valueOf(groupDossierPartId) %>"
 							group-name="<%=groupName %>"
 							level = "<%=level %>"
-							href="javascript:void(0);" 
+							href='<%=version == 0 ? StringPool.BLANK : "javascript:void(0);" %>'
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
-							<i class="fa fa-certificate" aria-hidden="true" ></i>
+							<i class="" aria-hidden="true" ></i>
 							
 						</aui:a>
 					</c:if>
@@ -610,8 +641,13 @@
 										
 										title="view-attachment"
 									/>
-									
-									<i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" />
+									<c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+										<%-- <aui:button value="Sign" /> --%>
+										
+										<aui:a href="javascript:void(0);" label="Sign" cssClass="signatureCls"/>
+									</c:if>
+									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
+									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 								</c:when>
 								<c:otherwise>
 									<c:if test="<%=isEditDossier %>">
@@ -660,15 +696,15 @@
 				<td width="10%" align="right">
 					<c:if test="<%=isEditDossier %>">
 						<aui:a
-							cssClass="opencps dossiermgt part-file-ctr remove-dossier-file"
+							cssClass='<%="opencps dossiermgt part-file-ctr remove-dossier-file " + (version == 0 ? StringPool.BLANK : "remove-dossier-file-has-file")%>'
 							process-order="<%=String.valueOf(processOrderId) %>"
 							dossier-file="<%=String.valueOf(dossierFileId) %>"
 							level = "<%=level %>"
-							href="javascript:void(0);" 
+							href='<%=version == 0 ? StringPool.BLANK : "javascript:void(0);" %>'
 							id="<%=String.valueOf(dossierPartId) %>"
 							title="remove"
 						>
-							<i class="fa fa-certificate" aria-hidden="true"  ></i>
+							<i class="" aria-hidden="true"  ></i>
 							
 						</aui:a>
 					</c:if>
@@ -681,25 +717,28 @@
 </table>
 
 <aui:script>
-	AUI().ready('aui-tooltip', 'aui-base', function(A){
-		
-		var items = A.all('#<portlet:namespace />signInfoMsg');
-		
-		items.each(function(item) {
-			console.log("aaaaaaa");
-			item.on('mouseover',function(){
-				new A.Tooltip(
-			      {
-			        trigger: item,
-			        position: 'right'
-			      }
-			    ).render();
-			})
-		});
 
-	}); 
+	/* 
+	 
+	AUI().ready('aui-tooltip', 'aui-io-request' ,'aui-base', function(A){
+		 
+		
+		
+			
+			  
+			 var items = A.all('#<portlet:namespace />signInfoMsg');
+			
+			items.each(function(item) {
+				console.log("aaaaaaa");
+				item.on('mouseover',function(){
+					new A.Tooltip(
+				      {
+				        trigger: item,
+				        position: 'right'
+				      }
+				    ).render();
+				})
+			}); 
 	
-	
-	
-	
+		}); */
 </aui:script>

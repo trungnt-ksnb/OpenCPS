@@ -28,16 +28,14 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 		int month = ParamUtil.getInteger(actionRequest, "month");
 		int year = ParamUtil.getInteger(actionRequest, "year");
 
-		String statisticsBy = ParamUtil.getString(actionRequest,
-				StatisticsUtil.STATISTICS_BY);
-
-		int firstMonth = 1;
+		int firstMonth = month;
 		int lastMonth = month;
-		if (statisticsBy.equals(StatisticsUtil.MONTH)) {
-			firstMonth = month;
+		if (month == 0) {
+			firstMonth = 1;
+			lastMonth = 12;
 		}
 
-		 _log.info("firstMonth " + firstMonth + "|" + "lastMonth " + lastMonth + "|" + statisticsBy);
+		 _log.info("firstMonth " + firstMonth + "|" + "lastMonth " + lastMonth + "|");
 
 		List<Integer> months = DossiersStatisticsLocalServiceUtil.getMonths(
 				groupId, year);

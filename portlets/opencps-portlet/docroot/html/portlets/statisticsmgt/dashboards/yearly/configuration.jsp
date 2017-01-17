@@ -22,14 +22,107 @@
 <%@page import="com.liferay.portal.kernel.template.TemplateHandlerRegistryUtil"%>
 <%@page import="com.liferay.portal.kernel.util.Constants"%>
 <%@page import="com.liferay.portal.kernel.template.TemplateHandler"%>
+<%@page import="org.opencps.util.PortletPropsValues"%>
 
-<%@ include file="../../init.jsp" %>
-
+<%@ include file="init.jsp" %>
 
 <liferay-portlet:actionURL var="configurationActionURL" portletConfiguration="true"/>
 
 <aui:form action="<%= configurationActionURL %>" method="post" name="fm">
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
+	
+	<liferay-ui:panel-container 
+		extended="<%= true %>" 
+		id="chartConfigPanelContainer" 
+		persistState="<%= true %>"
+	>
+		<liferay-ui:panel 
+			collapsible="<%= true %>" 
+			extended="<%= true %>" 
+			id="chartConfigPanel" 
+			persistState="<%= true %>" 
+			title="chart-configuration"
+		>
+			<aui:fieldset>
+				<aui:input name="chartTitle" type="text" value="<%=chartTitle %>"/>
+			</aui:fieldset>
+			
+			<aui:fieldset>
+				<aui:input name="xaxisUnit" type="text" value="<%=xaxisUnit %>"/>
+			</aui:fieldset>
+			
+			<aui:fieldset>
+				<aui:input name="yaxisUnit" type="text" value="<%=yaxisUnit %>"/>
+			</aui:fieldset>
+		</liferay-ui:panel>
+		
+		<liferay-ui:panel 
+			collapsible="<%= true %>" 
+			extended="<%= true %>" 
+			id="chartFilterPanel" 
+			persistState="<%= true %>" 
+			title="chart-filter"
+		>
+			<aui:fieldset>
+				<aui:col width="30">
+					<aui:select name="startMonth">
+						<%
+							for(int m = 1; m <=12; m++){
+								%>
+									<aui:option value="<%=m %>" selected="<%=m == startMonth %>"><liferay-ui:message key="month"/> <%=m %></aui:option>
+								<%
+							}
+						%>
+					</aui:select>
+				</aui:col>
+				
+				<aui:col width="30">
+					<aui:select name="startYear">
+						<%
+							for(int y = 2016; y <=2030; y++){
+								%>
+									<aui:option value="<%=y %>" selected="<%=y == startYear %>"><liferay-ui:message key="year"/> <%=y %></aui:option>
+								<%
+							}
+						%>
+					</aui:select>
+				</aui:col>
+				
+				<aui:col width="30">
+					<aui:input name="period" value="<%=period %>">
+						 <aui:validator name="digits"/>
+					</aui:input>
+				</aui:col>
+			</aui:fieldset>
+			
+			<aui:fieldset>
+				<aui:col width="50">
+					<datamgt:ddr
+						cssClass="input100"
+						depthLevel="1" 
+						dictCollectionCode="<%=PortletPropsValues.DATAMGT_MASTERDATA_GOVERNMENT_AGENCY %>"
+						itemNames="govCode"
+						itemsEmptyOption="true"
+						selectedItems="<%=govCode%>"
+						optionValueType="code"
+					/>
+				</aui:col>
+				
+				<aui:col width="50">
+					<datamgt:ddr
+						cssClass="input100"
+						depthLevel="1" 
+						dictCollectionCode="<%=PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN %>"
+						itemNames="domainCode"
+						itemsEmptyOption="true"
+						selectedItems="<%=domainCode%>"
+						optionValueType="code"
+					/>
+				</aui:col>
+			</aui:fieldset>
+		</liferay-ui:panel>
+	</liferay-ui:panel-container>
+
 	<aui:fieldset>
 		<div class="display-template">
 			<%

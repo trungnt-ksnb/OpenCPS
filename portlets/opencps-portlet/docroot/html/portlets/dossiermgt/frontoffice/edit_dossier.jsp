@@ -67,7 +67,7 @@
 		ParamUtil.getString(request, Constants.CMD, Constants.UPDATE);
 
 	String[] dossierSections = dossier != null ? new String[] {
-		"dossier_part", "dossier_info", "result", "history"
+		"dossier_part", "result", "history", "dossier_info"
 	} : new String[] {
 		"dossier_info"
 	};
@@ -209,13 +209,14 @@
 							<c:if test="<%=dossier.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_NEW) %>">
 							
 								<c:choose>
-									<c:when test="<%= dossierFiles.size() == 0 %>">
+									<c:when test="<%= dossierFiles.size() == 0 && showDossierSuggestionButton%>">
 										<aui:button 
 											cssClass="btn des-sub-button radius20"
 											name="submitDossierSuggestion" 
 											value="dossier-suggestion">
 										</aui:button>
 									</c:when>
+									<c:when test="<%=dossierFiles.size() == 0 %>"></c:when>
 									<c:otherwise>
 										<liferay-ui:icon-delete 
 											image="undo"

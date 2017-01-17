@@ -20,6 +20,7 @@ package org.opencps.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -1242,10 +1243,10 @@ public class PortletUtil {
 	 * @param contentType
 	 * @throws IOException
 	 */
+
 	public static void sendFile(ActionRequest actionRequest,
 			ActionResponse actionResponse, String fileName, InputStream is,
 			long contentLength, String contentType) throws IOException {
-
 		HttpServletResponse response = PortalUtil
 				.getHttpServletResponse(actionResponse);
 
@@ -1253,6 +1254,8 @@ public class PortletUtil {
 				.getHttpServletRequest(actionRequest);
 		ServletResponseUtil.sendFile(request, response, fileName, is,
 				contentLength, contentType);
+		
+		/*ServletResponseUtil.sendFile(response, fileName, is);*/
 	}
 
 	/**
@@ -1323,6 +1326,148 @@ public class PortletUtil {
 		
 		return DateTimeUtil.convertStringToDate(strDate);
 		
+	}
+	
+	public static String convertAmountToWriting(double amount, Locale locale) {
+		
+		String sNumber = formatNumberForRead(amount);
+		
+		String sReturn = StringPool.BLANK;
+		
+		int iLen = sNumber.length();
+
+		String sNumber1 = StringPool.BLANK;
+		for (int i = iLen - 1; i >= 0; i--) {
+			sNumber1 += sNumber.charAt(i);
+		}
+
+		int iRe = 0;
+		do {
+			String sCut = StringPool.BLANK;
+			if (iLen > 3) {
+				sCut = sNumber1.substring((iRe * 3), (iRe * 3) + 3);
+				sReturn = Read(sCut, iRe, locale) + sReturn;
+				iRe++;
+				iLen -= 3;
+			} else {
+				sCut = sNumber1.substring((iRe * 3), (iRe * 3) + iLen);
+				sReturn = Read(sCut, iRe, locale) + sReturn;
+				break;
+			}
+		} while (true);
+		if (sReturn.length() > 1) {
+			sReturn = sReturn.substring(0, 1).toUpperCase()
+					+ sReturn.substring(1);
+		}
+		sReturn = sReturn + LanguageUtil.get(locale, "dong");
+		return sReturn;
+	}
+	
+	private static String formatNumberForRead(double number) {
+		NumberFormat nf = NumberFormat.getInstance();
+		String temp = nf.format(number);
+		String strReturn = StringPool.BLANK;
+		int slen = temp.length();
+		for (int i = 0; i < slen; i++) {
+			if (String.valueOf(temp.charAt(i)).equals(StringPool.PERIOD))
+				break;
+			else if (Character.isDigit(temp.charAt(i))) {
+				strReturn += String.valueOf(temp.charAt(i));
+			}
+		}
+		return strReturn;
+	}
+	
+	private static String Read(String sNumber, int iPo, Locale locale) {
+		
+		String sReturn = StringPool.BLANK;
+		
+		String sPo[] = { 
+				StringPool.BLANK,
+				LanguageUtil.get(locale, "ngan") + StringPool.SPACE,
+				LanguageUtil.get(locale, "trieu") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "ty") + StringPool.SPACE };
+		
+		String sSo[] = { 
+				LanguageUtil.get(locale, "khong") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "mot") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "hai") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "ba") + StringPool.SPACE,
+				LanguageUtil.get(locale, "bon") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "nam") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "sau") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "bay") + StringPool.SPACE,
+				LanguageUtil.get(locale, "tam") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "chin") + StringPool.SPACE };
+		
+		String sDonvi[] = { 
+				StringPool.BLANK, 
+				LanguageUtil.get(locale, "muoi") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "tram") + StringPool.SPACE };
+		
+		int iLen = sNumber.length();
+		
+		int iRe = 0;
+		
+		for (int i = 0; i < iLen; i++) {
+			String sTemp = StringPool.BLANK + sNumber.charAt(i);
+			int iTemp = Integer.parseInt(sTemp);
+			
+			String sRead = StringPool.BLANK;
+			
+			if (iTemp == 0) {
+				switch (iRe) {
+				case 0:
+					break;
+				case 1: {
+					if (Integer.parseInt(StringPool.BLANK + sNumber.charAt(0)) != 0) {
+						sRead = LanguageUtil.get(locale, "le") + StringPool.SPACE;
+					}
+					break;
+				}
+				case 2: {
+					if (Integer.parseInt(StringPool.BLANK + sNumber.charAt(0)) != 0
+							&& Integer.parseInt(StringPool.BLANK + sNumber.charAt(1)) != 0) {
+						sRead = LanguageUtil.get(locale, "khong-tram", "khong tram") + StringPool.SPACE;
+					}
+					break;
+				}
+				}
+			} else if (iTemp == 1) {
+				switch (iRe) {
+				case 1:
+					sRead = LanguageUtil.get(locale, "muoif", "muoi") + StringPool.SPACE;
+					break;
+				default:
+					sRead = LanguageUtil.get(locale, "mot") + StringPool.SPACE + sDonvi[iRe];
+					break;
+				}
+			} else if (iTemp == 5) {
+				switch (iRe) {
+				case 0: {
+					if (sNumber.length() <= 1) {
+						sRead = LanguageUtil.get(locale, "nam") + StringPool.SPACE;
+					} else if (Integer.parseInt(StringPool.BLANK + sNumber.charAt(1)) != 0) {
+						sRead = LanguageUtil.get(locale, "lam") + StringPool.SPACE;
+					} else
+						sRead = LanguageUtil.get(locale, "nam") + StringPool.SPACE;
+					break;
+				}
+				default:
+					sRead = sSo[iTemp] + sDonvi[iRe];
+				}
+			} else {
+				sRead = sSo[iTemp] + sDonvi[iRe];
+			}
+
+			sReturn = sRead + sReturn;
+			iRe++;
+		}
+		if (sReturn.length() > 0) {
+			sReturn += sPo[iPo];
+		}
+
+		return sReturn;
 	}
 
 	private static Log _log = LogFactoryUtil

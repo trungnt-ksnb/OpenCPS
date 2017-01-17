@@ -68,12 +68,26 @@
 </div>
 
 <aui:row>
-	<aui:col width="20" cssClass="bold">
-		<liferay-ui:message key="dossier-reception-no"/> 
-	</aui:col>
-	<aui:col width="80">
-		<%=receptionNo %>
-	</aui:col>
+			<aui:col width="30">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
+			<aui:col width="70">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-reception-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
 </aui:row>
 
 <aui:row cssClass="pd_b20">

@@ -252,19 +252,33 @@
 				</aui:row>
 				
 				<aui:row>
-					<label class="control-label custom-lebel" for='<portlet:namespace/><%=CitizenDisplayTerms.CITIZEN_BIRTHDATE %>'>
+					<label class="control-label custom-lebel" for='<portlet:namespace/><%=CitizenDisplayTerms.CITIZEN_BIRTHDATE + "_REG" %>'>
 	 					<liferay-ui:message key="birth-date-full"/> <span style="color:red">*</span>
 	 				</label>
-	 				<aui:input name="<%=CitizenDisplayTerms.CITIZEN_BIRTHDATE %>" type="text" label=" " cssClass="input100" placeholder="<%=LanguageUtil.get(pageContext, \"ngay-sinh-placehoder\") %>" >
+					<aui:input name="<%=CitizenDisplayTerms.BIRTH_DATE_DAY %>" type="hidden" />
+					<aui:input name="<%=CitizenDisplayTerms.BIRTH_DATE_MONTH %>" type="hidden" />
+					<aui:input name="<%=CitizenDisplayTerms.BIRTH_DATE_YEAR %>" type="hidden" />
+	 				<aui:input name="<%=CitizenDisplayTerms.CITIZEN_BIRTHDATE + \"_REG\" %>" type="text" label=" " cssClass="input100" placeholder="<%=LanguageUtil.get(pageContext, \"ngay-sinh-placehoder\") %>" >
 	 					<aui:validator name="required" />
 	 					<aui:validator name="custom" errorMessage="<%=LanguageUtil.get(pageContext, \"ngay-sinh-pattern\") %>">
 							function (val, fieldNode, ruleValue) {
 								var result = false;
-								if (new Date(val) == 'Invalid Date') {
-									result = false;
+
+								var dateParts = val.split("/");
+                
+								if(dateParts.length == 1 && new Date(val) != 'Invalid Date'){
+								    result = true;
 								}else{
-									result = true;
+								  val = dateParts[1] + '/' + dateParts[0] + '/' + dateParts[2];
+				
+								  if (new Date(val) == 'Invalid Date') {
+								    result = false;
+								  }else{
+								    result = true;
+								  }
+
 								}
+				
 								return result;
 							}
 						</aui:validator>
@@ -363,7 +377,7 @@
 						<%
 							String chiTiet = StringPool.BLANK;
 							String popupURL = renderResponse.getNamespace() +  "openDialogTermOfUse();";
-							chiTiet =  "<a onclick=\""+popupURL+"\" class=\"detail-terms-links\">"+LanguageUtil.get(pageContext, "term-detail")+"</a>";
+							chiTiet =  "<a href=\"http://dichvucong.mt.gov.vn/-ieu-khoan-su-dung\" target=\"_blank\" class=\"detail-terms-links\">"+LanguageUtil.get(pageContext, "term-detail")+"</a>";
 						%>
 						<aui:input 
 							name="termsOfUse"
@@ -425,7 +439,7 @@
 		var termsOfUse = A.one('#<portlet:namespace />termsOfUse');
 		var checkTel = telephoneCheck();
 		var checkDate = checkBirthDate();
-		if(termsOfUse.val() == 'true' && checkTel == true && checkDate == true 	){
+		if(termsOfUse.val() == 'true' && checkTel == true && checkDate == true){
 			submitForm(document.<portlet:namespace />fm);
 		}else{
 			return;
@@ -440,17 +454,36 @@
 	},['aui-io','liferay-portlet-url']);
 	
 	function checkBirthDate() {
-			
-		var birthDate = A.one('#<portlet:namespace />birthDate');
-		if(birthDate.val() === "") {
-			birthDate.addClass('changeDefErr');
-			A.one("#<portlet:namespace/>defErrBirthDate").addClass('displayDefErr');
-			return false;
-		} else {
-			birthDate.removeClass('changeDefErr');
-			A.one("#<portlet:namespace/>defErrBirthDate").removeClass('displayDefErr');
-			return true;
+		var A = AUI();
+		var birthDateDay = A.one('#<portlet:namespace /><%=CitizenDisplayTerms.BIRTH_DATE_DAY %>');
+		var birthDateMonth = A.one('#<portlet:namespace /><%=CitizenDisplayTerms.BIRTH_DATE_MONTH %>');
+		var birthDateYear = A.one('#<portlet:namespace /><%=CitizenDisplayTerms.BIRTH_DATE_YEAR %>');
+
+		var birthDateReg = A.one('#<portlet:namespace /><%=CitizenDisplayTerms.CITIZEN_BIRTHDATE + "_REG" %>');
+
+		var dateParts = birthDateReg.val().split("/");
+
+		var result = false;
+                if(dateParts.length == 1 && new Date(birthDateReg.val()) != 'Invalid Date'){
+			result = true;
+			birthDateDay.val(1);
+			birthDateMonth.val(0)
+			birthDateYear.val(birthDateReg.val());
+		} else if(dateParts.length == 3){
+			result = true;
+			birthDateDay.val(parseInt(dateParts[0]));
+			//birthDateDay.attr("value", dateParts[0]);
+                        birthDateMonth.val(parseInt(dateParts[1]) - 1);
+			//birthDateMonth.attr("value", dateParts[1]);
+                        birthDateYear.val(parseInt(dateParts[2]));
+			//birthDateYear.attr("value", dateParts[2]);
+			//console.log(birthDateDay);
+			//console.log(birthDateMonth);
+			//console.log(birthDateYear);
+			//birthDate.val(dateParts[1] + '/' + dateParts[0] + '/' + dateParts[2]);
 		}
+
+		return result;
 	}
 	
 	function telephoneCheck() {

@@ -110,6 +110,9 @@ public class ConfigurationImpl implements ConfigurationAction {
 
 		boolean showBackToListButton = ParamUtil.getBoolean(actionRequest,
 				"showBackToListButton");
+		
+		boolean showDossierSuggestionButton = ParamUtil.getBoolean(actionRequest,
+				"showDossierSuggestionButton");
 
 		boolean showDossierFileVersion = ParamUtil.getBoolean(actionRequest,
 				"showDossierFileVersion", true);
@@ -139,6 +142,8 @@ public class ConfigurationImpl implements ConfigurationAction {
 				String.valueOf(allowQuickCreateDossier));
 		preferences.setValue("showBackToListButton",
 				String.valueOf(showBackToListButton));
+		preferences.setValue("showDossierSuggestionButton",
+				String.valueOf(showDossierSuggestionButton));
 		preferences.setValue("showDossierFileVersion",
 				String.valueOf(showDossierFileVersion));
 		preferences.setValue("allowQuickViewResult",
@@ -182,10 +187,13 @@ public class ConfigurationImpl implements ConfigurationAction {
 
 		int dossierRecentItemDisplay = ParamUtil.getInteger(actionRequest,
 				"dossierRecentItemDisplay", 2);
+		
+		String[] reportTypes = ParamUtil.getParameterValues(actionRequest,
+				"reportType", new String[] { ".pdf" });
 
 		String[] dossierStatusCodes = ParamUtil.getParameterValues(
 				actionRequest, "dossierStatusCodes");
-
+		
 		preferences.setValue("showServiceDomainTree",
 				String.valueOf(showServiceDomainTree));
 		preferences
@@ -205,6 +213,9 @@ public class ConfigurationImpl implements ConfigurationAction {
 				war_opencpsportlet_26_cfg);
 
 		preferences.setValue("itemCode_cfg", itemCode_cfg);
+		
+		preferences.setValue("reportTypes",
+				String.valueOf(StringUtil.merge(reportTypes)));
 
 	}
 
