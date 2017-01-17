@@ -248,7 +248,7 @@
 	var alpacaSchema = <%=Validator.isNotNull(alpacaSchema) ? alpacaSchema : PortletConstants.UNKNOW_ALPACA_SCHEMA%>;
 	var formData = '<%=formData%>';
 	var dossierFileId = '<%=dossierFileId%>';
-	function pluginload(loaded)
+	/* function pluginload(loaded)
 	{
 		if(!loaded) {
 			alert('Loading plugin is failed!');
@@ -272,7 +272,7 @@
 		{
 			alert('error with code:' + jsondata.errormsg);
 		}
-	}
+	} */
 	
 	function signatureFrontOffice(){
 		
@@ -359,7 +359,7 @@
 	}
 	
 	AUI().ready(function(A){
-		PDFSigningHelper.init(pluginload);
+		/* PDFSigningHelper.init(pluginload); */
 		
 		if(alpacaSchema.options != 'undefined' && alpacaSchema.schema != 'undefined'){
 			
