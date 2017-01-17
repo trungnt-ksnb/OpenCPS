@@ -1,4 +1,7 @@
 
+<%@page import="com.liferay.portal.kernel.dao.orm.QueryUtil"%>
+<%@page import="org.opencps.dossiermgt.service.DossierLogLocalServiceUtil"%>
+<%@page import="org.opencps.dossiermgt.model.DossierLog"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -241,6 +244,18 @@
 					<%
 						Dossier dossier = dossierBean.getDossier();
 						String cssStatusColor = "status-color-" + dossier.getDossierStatus();
+						
+
+						List<DossierLog> dossierLogs = new ArrayList<DossierLog>();
+						String noteContent = StringPool.BLANK;
+						try {
+							dossierLogs = DossierLogLocalServiceUtil.findDossierLog(1, dossier.getDossierId(), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+							if(dossierLogs.size() > 0) {
+								noteContent = DossierMgtUtil.getDossierLogs(StringPool.BLANK, dossierLogs.get(0).getMessageInfo()).replaceAll("update-version-file", LanguageUtil.get(pageContext, "update-version-file"));
+							}
+						} catch(Exception e) {
+							e.printStackTrace();
+						}
 					%>
 					
 					<liferay-util:buffer var="info">
@@ -368,6 +383,16 @@
 										<%= PortletUtil.getDossierStatusLabel(dossier.getDossierStatus(), locale) %>
 									</c:otherwise>
 								</c:choose>
+							</div>
+						</div>
+						<div class="row-fluid">
+							
+							<div class="span5 bold-label">
+								<liferay-ui:message key="note"/>
+							</div>
+							
+							<div class='<%="span7 " + cssStatusColor %>'>
+								<liferay-ui:message key="<%= noteContent  %>"/>
 							</div>
 						</div>
 					</liferay-util:buffer>
