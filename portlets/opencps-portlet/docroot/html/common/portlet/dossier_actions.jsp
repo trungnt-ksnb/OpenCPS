@@ -241,14 +241,14 @@
 										cssClass="label opencps dossiermgt part-file-ctr view-attachment"
 										title="view-attachment"
 									/>
-									<c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
-										<%-- <aui:button value="Sign" /> --%>
+									<!-- comment kyso -->
+									<%-- <c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
 										<aui:a href="javascript:void(0);" 
 											   label="Sign" 
 											   cssClass="signatureCls"
 											   dossier-file="<%=String.valueOf(dossierFileId) %>"
 										/>
-									</c:if>
+									</c:if> --%>
 									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
 									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 								</c:when>
@@ -358,12 +358,12 @@
 								cssClass="label opencps dossiermgt part-file-ctr view-attachment"
 								title="view-attachment"
 							/>
-							<c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
-								<%-- <aui:button value="Sign" /> --%>
+							<!-- comment kyso -->
+							<%-- <c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
 								<aui:a href="javascript:void(0);" 
 									label="Sign" 
 									cssClass="signatureCls" />
-							</c:if>
+							</c:if> --%>
 							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
 							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 						</c:when>
@@ -488,11 +488,14 @@
 								cssClass="label opencps dossiermgt part-file-ctr view-attachment"
 								title="view-attachment"
 							/>
-							
-							<c:if test="<%= isExtensionSignature &&  renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
-								<%-- <aui:button value="Sign" /> --%>
-								<aui:a href="javascript:void(0);" label="Sign" cssClass="signatureCls"/>
-							</c:if>
+							<!-- comment kyso -->
+							<%-- <c:if test="<%= isExtensionSignature &&  renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+								<aui:a 
+									href="javascript:void(0);" 
+									label="Sign" 
+									cssClass="signatureCls"
+								/>
+							</c:if> --%>
 							
 							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
 							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
@@ -638,11 +641,13 @@
 										
 										title="view-attachment"
 									/>
-									<c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
-										<%-- <aui:button value="Sign" /> --%>
-										
-										<aui:a href="javascript:void(0);" label="Sign" cssClass="signatureCls"/>
-									</c:if>
+									<!-- comment kyso -->
+									<%-- <c:if test="<%= isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+										<aui:a 	href="javascript:void(0);" 
+												label="Sign" 
+												cssClass="signatureCls"
+										/>
+									</c:if> --%>
 									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
 									<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-certificate" id = "<portlet:namespace />signInfoMsg" /> --%>
 								</c:when>
