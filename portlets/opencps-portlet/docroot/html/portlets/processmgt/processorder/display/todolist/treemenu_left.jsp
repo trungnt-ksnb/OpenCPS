@@ -1,4 +1,6 @@
 
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.text.DateFormat"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -87,6 +89,9 @@
 	String dossierSubStatus = ParamUtil.getString(request, "dossierSubStatus");
 
 	String processOrderStage = ParamUtil.getString(request, "processOrderStage", "false");
+	
+	Date fromDate = ParamUtil.getDate(request, "fromDate", new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
+	Date toDate = ParamUtil.getDate(request, "toDate", new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
 	
 	JSONObject arrayParam = JSONFactoryUtil
 		    .createJSONObject();

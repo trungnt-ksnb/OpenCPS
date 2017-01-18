@@ -204,21 +204,20 @@
 						/>
 					</aui:col>
 				</aui:row>
-				<%-- <aui:row>
+				<aui:row>
 					<aui:col width="30">
 						<liferay-ui:input-date 
 		 					nullable="true"
-		 					dayParam="estimateDatetimeDayFrom"
+		 					dayParam="fromDateDay"
 		 					dayValue="<%= 0 %>"
-		 					monthParam="estimateDatetimeDayMonthFrom"
+		 					monthParam="fromDateMonth"
 		 					monthValue="<%= 0 %>"
-		 					name="estimateDatetimeFrom"
-		 					yearParam="estimateDatetimeYearFrom"
+		 					name="fromDate"
+		 					yearParam="fromDateYear"
 		 					yearValue="<%= 0 %>"
 		 					formName="fmSearch"
 		 					autoFocus="<%=true %>"
 		 					cssClass="input100"
-		 					
 		 				>
 		 				</liferay-ui:input-date>
 					</aui:col>
@@ -226,20 +225,20 @@
 					<aui:col width="30">
 						<liferay-ui:input-date 
 		 					nullable="true"
-		 					dayParam="estimateDatetimeDayTo"
+		 					dayParam="toDateDay"
 		 					dayValue="<%= 0 %>"
-		 					monthParam="estimateDatetimeDayMonthTo"
+		 					monthParam="toDateMonth"
 		 					monthValue="<%= 0 %>"
-		 					name="estimateDatetimeTo"
-		 					yearParam="estimateDatetimeYearTo"
-		 					yearValue="<%=0 %>"
+		 					name="toDate"
+		 					yearParam="toDateYear"
+		 					yearValue="<%= 0 %>"
 		 					formName="fmSearch"
 		 					autoFocus="<%=true %>"
 		 					cssClass="input100"
 		 				>
 		 				</liferay-ui:input-date> 
 					</aui:col>
-				</aui:row> --%>
+				</aui:row>
 
 			</aui:form>
 		</div>

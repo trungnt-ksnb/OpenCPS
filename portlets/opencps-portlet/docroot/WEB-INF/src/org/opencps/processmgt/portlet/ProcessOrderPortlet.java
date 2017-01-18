@@ -2653,7 +2653,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 						.countProcessOrderKeyWords(serviceInfoId,
 								processStepId, themeDisplay.getUserId(),
 								themeDisplay.getUserId(), keywords,
-								item.getItemCode(), processOrderStage);
+								item.getItemCode(), processOrderStage, null, null);
 
 			}
 			obj.put("code", item.getItemCode());
