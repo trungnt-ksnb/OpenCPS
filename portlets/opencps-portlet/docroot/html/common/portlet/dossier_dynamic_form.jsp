@@ -266,7 +266,7 @@
 		if(jsondata.code == 0)
 		{
 			alert('suc:' + jsondata.data.path);
-			PDFSigningHelper.openFile(jsondata.data.path);
+			window.parent.PDFSigningHelper.openFile(jsondata.data.path);
 		}
 		else
 		{
@@ -297,21 +297,21 @@
 				
 				if(imgContentBase64Str != '' && condauImageSrc != '') {
 					
-					PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
+					window.parent.PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
 						
 						if(base64String != '' && fileName != '') {
 							
-							PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
+							window.parent.PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
 								
-								PDFSigningHelper.getCertIndex( function(dataJSON) {
+								window.parent.PDFSigningHelper.getCertIndex( function(dataJSON) {
 									
 									if(dataJSON.data != '-1') {
 										
-										PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
+										window.parent.PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
 												author, "", dataJSON.data , "", function(jsondataSigned) {
 											if(jsondataSigned.code == 0)
 											{
-												PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+												window.parent.PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
 													
 													
 													AUI().use('aui-io-request', function(A){
@@ -330,7 +330,7 @@
 																	
 																	if(jsonDataResponse.msg == 'success') {
 																		// open file on client after signed success
-																		PDFSigningHelper.openFile(jsondataSigned.data.path);
+																		window.parent.PDFSigningHelper.openFile(jsondataSigned.data.path);
 																		
 																		// close dialog when signed success
 																		var ns = '<portlet:namespace/>';
@@ -359,7 +359,7 @@
 	}
 	
 	AUI().ready(function(A){
-		PDFSigningHelper.init(pluginload);
+	//	window.parent.PDFSigningHelper.init(pluginload);
 		
 		if(alpacaSchema.options != 'undefined' && alpacaSchema.schema != 'undefined'){
 			

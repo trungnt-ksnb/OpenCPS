@@ -483,17 +483,28 @@
 <portlet:resourceURL var="signatureFrontOffice" />
 
 <aui:script>
+
+	function pluginload(loaded)
+	{
+		if(!loaded) {
+			alert('Loading plugin is failed!');
+		}
+	}
+	$(window).load(function() {
+		 PDFSigningHelper.init(pluginload);
+	});
+	
 	
 	AUI().ready('aui-base','liferay-portlet-url','aui-io', function(A){
 		
-		PDFSigningHelper.init(pluginload);
+		/* PDFSigningHelper.init(pluginload);
 		
 		function pluginload(loaded)
 		{
 			if(!loaded) {
 				alert('Loading plugin is failed!');
 			}
-		}
+		} */
 		
 		function SigningCallback(jsondata)
 		{			
@@ -540,11 +551,12 @@
 									PDFSigningHelper.writeBase64ToFile(nameOfFile, base64String, function(jsondata) {
 										
 										PDFSigningHelper.getCertIndex( function(dataJSON) {
-											
 											if(dataJSON.data != '-1') {
 												
 												PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
 														author, "", dataJSON.data , "", function(jsondataSigned) {
+													
+													alert("jsondataSigned   " + jsondataSigned.errormsg);
 													if(jsondataSigned.code == 0)
 													{
 														PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
