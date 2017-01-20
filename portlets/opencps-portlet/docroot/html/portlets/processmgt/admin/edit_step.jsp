@@ -172,7 +172,7 @@
 
 <portlet:actionURL name="updateProcessStep" var="updateProcessStepURL" windowState="<%= LiferayWindowState.EXCLUSIVE.toString()%>"/>
 
-<aui:form name="processStepFm" method="POST" action="<%= updateProcessStepURL %>">
+<aui:form name="processStepFm" method="POST" action="<%= updateProcessStepURL %>" cssClass="bg-white">
 
 	<aui:model-context bean="<%= step %>" model="<%= ProcessStep.class %>" />
 	
