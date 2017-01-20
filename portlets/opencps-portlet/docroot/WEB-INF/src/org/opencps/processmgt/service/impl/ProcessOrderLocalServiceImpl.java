@@ -687,4 +687,10 @@ public class ProcessOrderLocalServiceImpl extends
 						.searchProcessOrderKeyWords(serviceInfoId, processStepId, loginUserId,
 							actionUserId, keyWords, dossierSubStatus, processOrderStage, start, end, orderByComparator);
 	}
+	
+	public ProcessOrder findBy_Dossier(long dossierId)
+			throws NoSuchProcessOrderException, SystemException {
+
+		return processOrderPersistence.findBy_Dossier(dossierId);
+	}
 }
