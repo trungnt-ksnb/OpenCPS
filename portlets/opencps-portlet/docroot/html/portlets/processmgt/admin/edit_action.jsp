@@ -122,7 +122,7 @@
 	<portlet:param name="mvcPath" value='<%=templatePath + "assign_users.jsp" %>'/>
 </portlet:renderURL>
 
-<aui:form name="actionFm" method="POST" action="<%= updateActionURL %>">
+<aui:form name="actionFm" method="POST" action="<%= updateActionURL %>" cssClass="bg-white">
 
 	<aui:model-context bean="<%= workflow %>" model="<%= ProcessWorkflow.class %>" />
 	
