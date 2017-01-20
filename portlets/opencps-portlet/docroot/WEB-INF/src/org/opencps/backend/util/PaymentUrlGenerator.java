@@ -25,8 +25,8 @@ import java.util.Random;
 
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
-import org.opencps.keypay.model.KeyPay;
 import org.opencps.paymentmgt.NoSuchPaymentFileException;
+import org.opencps.paymentmgt.keypay.model.KeyPay;
 import org.opencps.paymentmgt.model.PaymentConfig;
 import org.opencps.paymentmgt.model.PaymentFile;
 import org.opencps.paymentmgt.model.PaymentGateConfig;
@@ -111,7 +111,7 @@ public class PaymentUrlGenerator {
 					String data = StringPool.BLANK;
 					String signature = StringPool.BLANK;
 
-					request_url = paymentConfig.getKeypayDomain();
+					request_url = paymentConfig.getKeypayDomain() + StringPool.QUESTION;
 					website_id = paymentConfig.getKeypayMerchantCode();
 					receiver_account = paymentConfig.getBankInfo();
 					secret_key = paymentConfig.getKeypaySecureKey();
@@ -135,14 +135,13 @@ public class PaymentUrlGenerator {
 							data, paymentConfig.getKeypaySecureKey());
 
 					StringBuffer param = new StringBuffer();
-					param.append("?");
-					param.append("amount=").append(vtcPay.getAmount());
-					param.append("&currency=").append(vtcPay.getCurrency());
-					param.append("&receiver_account=").append(vtcPay.getReceiver_account());
-					param.append("&reference_number=").append(vtcPay.getReference_number());
-					param.append("&url_return=").append(url_return);
-					param.append("&website_id=").append(vtcPay.getWebsite_id());
-					param.append("&signature=").append(
+					param.append("amount=").append(URLEncoder.encode(vtcPay.getAmount(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("currency=").append(URLEncoder.encode(vtcPay.getCurrency(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("receiver_account=").append(URLEncoder.encode(vtcPay.getReceiver_account(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("reference_number=").append(URLEncoder.encode(vtcPay.getReference_number(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("url_return=").append(URLEncoder.encode(url_return, "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("website_id=").append(URLEncoder.encode(vtcPay.getWebsite_id(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("signature=").append(
 						VTCPay.getSecureHashCodeRequest(vtcPay));
 
 					url_redirect = vtcPay.getRequest_url() + param.toString();
@@ -190,6 +189,7 @@ public class PaymentUrlGenerator {
 					String desc_3 = StringPool.BLANK;
 					String desc_4 = StringPool.BLANK;
 					String desc_5 = StringPool.BLANK;
+					
 
 					if (lsMessages.size() > 0) {
 						desc_1 = lsMessages.get(0);
@@ -197,6 +197,26 @@ public class PaymentUrlGenerator {
 						desc_3 = lsMessages.get(2);
 						desc_4 = lsMessages.get(3);
 						desc_5 = lsMessages.get(4);
+						
+						if(desc_1.length() >= 20){
+							desc_1 = desc_1.substring(0, 19);
+						}
+						if(desc_2.length() >= 30){
+							desc_2 = desc_2.substring(0, 29);
+						}
+						if(desc_3.length() >= 40){
+							desc_3 = desc_3.substring(0, 39);
+						}
+						if(desc_4.length() >= 100){
+							desc_4 = desc_4.substring(0, 89);
+						}
+						if(desc_5.length() > 15){
+							desc_5 = desc_5.substring(0, 15);
+							
+							if(!Validator.isDigit(desc_5)){
+								desc_5 = StringPool.BLANK;	
+							}
+						}
 					}
 
 					String xml_description = StringPool.BLANK;
@@ -206,14 +226,14 @@ public class PaymentUrlGenerator {
 
 					String merchant_secure_key = paymentConfig.getKeypaySecureKey();
 
-					dossier = _getDossier(dossierId);
+					//dossier = _getDossier(dossierId);
 
 					// TODO : update returnURL keyPay
 
 					String return_url = StringPool.BLANK;
 					return_url = paymentConfig.getReturnUrl();
 
-					url_redirect = paymentConfig.getKeypayDomain() + StringPool.QUESTION;
+					
 
 					KeyPay keypay =
 						new KeyPay(
@@ -222,52 +242,35 @@ public class PaymentUrlGenerator {
 							currency_code, desc_1, desc_2, desc_3, desc_4, desc_5, xml_description,
 							current_locale, country_code, return_url, internal_bank,
 							merchant_secure_key);
-					keypay.setKeypay_url(paymentConfig.getKeypayDomain());
+					//keypay.setKeypay_url(paymentConfig.getKeypayDomain());
 
-					String param = StringPool.BLANK;
-					param +=
-						"merchant_code=" + URLEncoder.encode(keypay.getMerchant_code(), "UTF-8") +
-							"&";
-					param +=
-						"merchant_secure_key=" +
-							URLEncoder.encode(keypay.getMerchant_secure_key(), "UTF-8") + "&";
-					param += "bank_code=" + URLEncoder.encode(keypay.getBank_code(), "UTF-8") + "&";
-					param +=
-						"internal_bank=" + URLEncoder.encode(keypay.getInternal_bank(), "UTF-8") +
-							"&";
-					param +=
-						"merchant_trans_id=" +
-							URLEncoder.encode(keypay.getMerchant_trans_id(), "UTF-8") + "&";
-					param += "good_code=" + URLEncoder.encode(keypay.getGood_code(), "UTF-8") + "&";
-					param += "net_cost=" + URLEncoder.encode(keypay.getNet_cost(), "UTF-8") + "&";
-					param += "ship_fee=" + URLEncoder.encode(keypay.getShip_fee(), "UTF-8") + "&";
-					param += "tax=" + URLEncoder.encode(keypay.getTax(), "UTF-8") + "&";
-					param +=
-						"return_url=" + URLEncoder.encode(keypay.getReturn_url(), "UTF-8") + "&";
-					param += "version=" + URLEncoder.encode(keypay.getVersion(), "UTF-8") + "&";
-					param += "command=" + URLEncoder.encode(keypay.getCommand(), "UTF-8") + "&";
-					param +=
-						"current_locale=" + URLEncoder.encode(keypay.getCurrent_locale(), "UTF-8") +
-							"&";
-					param +=
-						"currency_code=" + URLEncoder.encode(keypay.getCurrency_code(), "UTF-8") +
-							"&";
-					param +=
-						"service_code=" + URLEncoder.encode(keypay.getService_code(), "UTF-8") +
-							"&";
-					param +=
-						"country_code=" + URLEncoder.encode(keypay.getCountry_code(), "UTF-8") +
-							"&";
-					param += "desc_1=" + URLEncoder.encode(keypay.getDesc_1(), "UTF-8") + "&";
-					param += "desc_2=" + URLEncoder.encode(keypay.getDesc_2(), "UTF-8") + "&";
-					param += "desc_3=" + URLEncoder.encode(keypay.getDesc_3(), "UTF-8") + "&";
-					param += "desc_4=" + URLEncoder.encode(keypay.getDesc_4(), "UTF-8") + "&";
-					param += "desc_5=" + URLEncoder.encode(keypay.getDesc_5(), "UTF-8") + "&";
-					param +=
-						"xml_description=" +
-							URLEncoder.encode(keypay.getXml_description(), "UTF-8") + "&";
-
-					url_redirect += param + "secure_hash=" + keypay.getSecure_hash();
+					StringBuffer param = new StringBuffer();
+					param.append("merchant_code=").append(URLEncoder.encode(keypay.getMerchant_code(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("merchant_secure_key=").append(URLEncoder.encode(keypay.getMerchant_secure_key(),"UTF-8")).append(StringPool.AMPERSAND);
+					param.append("bank_code=").append(URLEncoder.encode(keypay.getBank_code(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("internal_bank=").append(URLEncoder.encode(keypay.getInternal_bank(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("merchant_trans_id=").append(URLEncoder.encode(keypay.getMerchant_trans_id(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("good_code=").append(URLEncoder.encode(keypay.getGood_code(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("net_cost=").append(URLEncoder.encode(keypay.getNet_cost(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("ship_fee=").append(URLEncoder.encode(keypay.getShip_fee(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("tax=").append(URLEncoder.encode(keypay.getTax(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("return_url=").append(URLEncoder.encode(keypay.getReturn_url(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("version=").append(URLEncoder.encode(keypay.getVersion(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("command=").append(URLEncoder.encode(keypay.getCommand(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("current_locale=").append(URLEncoder.encode(keypay.getCurrent_locale(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("currency_code=").append(URLEncoder.encode(keypay.getCurrency_code(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("service_code=").append(URLEncoder.encode(keypay.getService_code(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("country_code=").append(URLEncoder.encode(keypay.getCountry_code(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("desc_1=").append(URLEncoder.encode(keypay.getDesc_1(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("desc_2=").append(URLEncoder.encode(keypay.getDesc_2(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("desc_3=").append(URLEncoder.encode(keypay.getDesc_3(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("desc_4=").append(URLEncoder.encode(keypay.getDesc_4(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("desc_5=").append(URLEncoder.encode(keypay.getDesc_5(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("xml_description=").append(URLEncoder.encode(keypay.getXml_description(), "UTF-8")).append(StringPool.AMPERSAND);
+					param.append("secure_hash=").append(keypay.getSecure_hash());
+					
+						 
+					url_redirect = paymentConfig.getKeypayDomain() + StringPool.QUESTION + param.toString();
 
 					try {
 						paymentFile =
