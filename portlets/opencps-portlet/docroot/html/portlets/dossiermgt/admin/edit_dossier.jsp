@@ -113,6 +113,7 @@
 	name="fm" 
 	method="post" 
 	action="<%=updateDossierURL.toString() %>"
+	cssClass="bg-white"
 >
 	<div class="opencps-form-navigator-container">
 		<liferay-ui:form-navigator 
