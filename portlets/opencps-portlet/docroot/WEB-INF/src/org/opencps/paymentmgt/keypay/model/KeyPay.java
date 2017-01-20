@@ -1,26 +1,29 @@
 
-package org.opencps.keypay.model;
+package org.opencps.paymentmgt.keypay.model;
 
 import java.net.URLEncoder;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opencps.keypay.security.HashFunction;
-import org.opencps.keypay.security.MD5;
-import org.opencps.keypay.service.restful.KPJsonRest;
-import org.opencps.keypay.service.restful.KPRest;
+import org.opencps.paymentmgt.keypay.restful.KPJsonRest;
+import org.opencps.paymentmgt.keypay.restful.KPRest;
 import org.opencps.paymentmgt.model.PaymentConfig;
 import org.opencps.paymentmgt.model.PaymentFile;
+import org.opencps.paymentmgt.security.HashFunction;
+import org.opencps.paymentmgt.security.MD5;
 import org.opencps.paymentmgt.service.PaymentConfigLocalServiceUtil;
 import org.opencps.paymentmgt.service.PaymentFileLocalServiceUtil;
+import org.opencps.paymentmgt.vtcpay.model.VTCPay;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
 public class KeyPay {
@@ -118,33 +121,22 @@ public class KeyPay {
 		// get merchant key
 		this.merchant_secure_key = merchant_secure_key;
 		// tính secure hash khi gửi đi
-		this.secure_hash = getSecureHash();
+		//this.secure_hash = getSecureHashRequest();
+		this.secure_hash = getSecureHashRequest();
+	}
+	
+	public KeyPay(String merchant_trans_id,String good_code,String trans_id,String merchant_code,String merchant_secure_key){
+		
+		this.merchant_trans_id = merchant_trans_id;
+		this.good_code = good_code;
+		this.trans_id = trans_id;
+		this.merchant_code = merchant_code;
+		this.merchant_secure_key = merchant_secure_key;
+		
 	}
 
-	/**
-	 * Tinh secure hash khi gui di
-	 *
-	 * @return
-	 */
-	private String getSecureHash() {
+	
 
-		Map<String, String> fields = new HashMap<String, String>();
-		fields.put("version", version);
-		fields.put("current_locale", current_locale);
-		fields.put("command", command);
-		fields.put("merchant_trans_id", merchant_trans_id);
-		fields.put("merchant_code", merchant_code);
-		fields.put("country_code", country_code);
-		fields.put("good_code", good_code);
-		fields.put("net_cost", net_cost);
-		fields.put("ship_fee", ship_fee);
-		fields.put("tax", tax);
-		fields.put("service_code", service_code);
-		fields.put("currency_code", currency_code);
-		fields.put("return_url", return_url);
-		HashFunction hf = new HashFunction();
-		return hf.hashAllFields(fields, merchant_secure_key);
-	}
 
 	/**
 	 * Buid URL to send redirect to KeyPay
@@ -212,55 +204,99 @@ public class KeyPay {
 	 *
 	 * @return
 	 */
-	public static String getSecureHashMerchant(KeyPay keyPay) {
-
-		Map<String, String> fields = new HashMap<String, String>();
+	public static String getSecureHashResponse(KeyPay keyPay) {
 
 		PaymentFile paymentFile = null;
 		PaymentConfig paymentConfig = null;
 
-		_log.info("=====keyPay.getMerchant_trans_id():" + keyPay.getMerchant_trans_id());
+		_log.info("=====keyPay.getMerchant_trans_id():"
+				+ keyPay.getMerchant_trans_id());
 
 		try {
 
 			if (keyPay.getMerchant_trans_id().trim().length() > 0) {
-				paymentFile =
-					PaymentFileLocalServiceUtil.getByTransactionId(Long.parseLong(keyPay.getMerchant_trans_id()));
+				paymentFile = PaymentFileLocalServiceUtil
+						.getByTransactionId(Long.parseLong(keyPay
+								.getMerchant_trans_id()));
 
-				_log.info("=====paymentFile.getPaymentConfig():" + paymentFile.getPaymentConfig());
+				_log.info("=====paymentFile.getPaymentConfig():"
+						+ paymentFile.getPaymentConfig());
 			}
 
 			if (Validator.isNotNull(paymentFile)) {
 
-				paymentConfig =
-					PaymentConfigLocalServiceUtil.getPaymentConfig(paymentFile.getPaymentConfig());
+				paymentConfig = PaymentConfigLocalServiceUtil
+						.getPaymentConfig(paymentFile.getPaymentConfig());
+
+				Map<String, String> fields = new HashMap<String, String>();
+
+				fields.put("command", keyPay.getCommand());
+				fields.put("merchant_trans_id", keyPay.getMerchant_trans_id());
+				fields.put("merchant_code", keyPay.getMerchant_code());
+				fields.put("response_code", keyPay.getResponse_code());
+				fields.put("trans_id", keyPay.getTrans_id());
+				fields.put("good_code", keyPay.getGood_code());
+				fields.put("net_cost", keyPay.getNet_cost());
+				fields.put("ship_fee", keyPay.getShip_fee());
+				fields.put("tax", keyPay.getTax());
+				fields.put("service_code", keyPay.getService_code());
+				fields.put("currency_code", keyPay.getCurrency_code());
+				fields.put("bank_code", keyPay.getBank_code());
+
+				HashFunction hash = new HashFunction();
+				return hash.hashAllFields(fields,
+						paymentConfig.getKeypaySecureKey());
+
 			}
 
-		}
-		catch (NumberFormatException | PortalException | SystemException e1) {
+		} catch (NumberFormatException | PortalException | SystemException e1) {
 			// TODO Auto-generated catch block
 			_log.error(e1);
 		}
 
-		fields.put("merchant_secure_key", paymentConfig.getKeypaySecureKey());
-		fields.put("command", keyPay.getCommand());
+		return StringPool.BLANK;
+
+	}
+	
+	/**
+	 * Tinh secure hash khi gui di
+	 *
+	 * @return
+	 */
+	private String getSecureHashRequest() {
+
+		Map<String, String> fields = new HashMap<String, String>();
+		
+		fields.put("version", version);
+		fields.put("current_locale", current_locale);
+		fields.put("command", command);
+		fields.put("merchant_trans_id", merchant_trans_id);
+		fields.put("merchant_code", merchant_code);
+		fields.put("country_code", country_code);
+		fields.put("good_code", good_code);
+		fields.put("net_cost", net_cost);
+		fields.put("ship_fee", ship_fee);
+		fields.put("tax", tax);
+		fields.put("service_code", service_code);
+		fields.put("currency_code", currency_code);
+		fields.put("return_url", return_url);
+		
+		HashFunction hf = new HashFunction();
+		return hf.hashAllFields(fields, merchant_secure_key);
+	}
+	
+	public static String getSecureHashCodeCheckRequest(KeyPay keyPay) {
+
+		Map<String, String> fields = new HashMap<String, String>();
+
+		fields.put("trans_id", keyPay.getTrans_id());
 		fields.put("merchant_trans_id", keyPay.getMerchant_trans_id());
 		fields.put("merchant_code", keyPay.getMerchant_code());
-		fields.put("response_code", keyPay.getResponse_code());
-		fields.put("trans_id", keyPay.getTrans_id());
 		fields.put("good_code", keyPay.getGood_code());
-		fields.put("net_cost", keyPay.getNet_cost());
-		fields.put("ship_fee", keyPay.getShip_fee());
-		fields.put("tax", keyPay.getTax());
-		fields.put("service_code", keyPay.getService_code());
-		fields.put("currency_code", keyPay.getCurrency_code());
-		fields.put("bank_code", keyPay.getBank_code());
-
-		_log.info("keyPay.getMerchant_secure_key():" + keyPay.getMerchant_secure_key());
-		_log.info("keyPay.getGood_code():" + keyPay.getGood_code());
 
 		HashFunction hf = new HashFunction();
-		return hf.hashAllFields(fields, "");
+		return hf.hashAllFields(fields, keyPay.getMerchant_secure_key());
+
 	}
 
 	/**
@@ -271,7 +307,7 @@ public class KeyPay {
 	 */
 	public static boolean checkSecureHash(KeyPay keyPay) {
 
-		String merchantSig = KeyPay.getSecureHashMerchant(keyPay);
+		String merchantSig = KeyPay.getSecureHashResponse(keyPay);
 
 		_log.info("merchantSig:" + merchantSig);
 		_log.info("keyPay.getSecure_hash():" + keyPay.getSecure_hash());
