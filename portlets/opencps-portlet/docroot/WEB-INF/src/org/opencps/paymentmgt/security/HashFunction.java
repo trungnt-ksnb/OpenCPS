@@ -11,7 +11,7 @@
  * not, see <http://www.gnu.org/licenses/>
  */
 
-package org.opencps.keypay.security;
+package org.opencps.paymentmgt.security;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -19,13 +19,16 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.StringPool;
 
 /**
  * @author trungdk
  */
 public class HashFunction {
-    private Logger logInfo = Logger.getLogger(HashFunction.class.getName());
+    private Log _log  = LogFactoryUtil.getLog(HashFunction.class.getName());
 
     static final char[] HEX_TABLE = new char[]{'0', '1', '2', '3', '4', '5',
         '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -46,10 +49,11 @@ public class HashFunction {
             String fieldName = (String) itr.next();
             String fieldValue = (String) fields.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
+            	
                 buf.append(fieldValue);
             }
         }
-        logInfo.info("String jion : " + buf);
+        
         MessageDigest md5 = null;
         byte[] ba = null;
         // create the md5 hash and UTF-8 encode it
@@ -78,4 +82,5 @@ public class HashFunction {
         }
         return sb.toString();
     }
+	
 }

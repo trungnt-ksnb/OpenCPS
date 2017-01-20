@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>
 */
-package org.opencps.keypay.service.restful;
+package org.opencps.paymentmgt.keypay.restful;
 
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
