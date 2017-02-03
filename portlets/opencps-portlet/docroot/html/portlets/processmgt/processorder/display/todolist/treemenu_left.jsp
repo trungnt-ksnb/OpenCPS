@@ -92,6 +92,7 @@
 	
 	Date fromDate = null;
 	Date toDate = null;
+	
 	int fromDateDay = ParamUtil.getInteger(request, "fromDateDay");
 	int fromDateMonth = ParamUtil.getInteger(request, "fromDateMonth");
 	int fromDateYear = ParamUtil.getInteger(request, "fromDateYear");
@@ -107,12 +108,14 @@
 	}
 	if(toDateDay > 0
 			&& toDateMonth >= 0
-			&& toDateYear > 0){
+			&& toDateYear > 0
+			&& fromDate != null){
 		toDate = 
 			DateTimeUtil.getDateEndOfDay(toDateDay, toDateMonth, toDateYear);
 	} else if (fromDateDay > 0
 			&& fromDateMonth >= 0
-			&& fromDateYear > 0){
+			&& fromDateYear > 0
+			&& fromDate != null){
 		toDate = 
 			DateTimeUtil.getDateEndOfDay(fromDateDay, fromDateMonth, fromDateYear);
 	}

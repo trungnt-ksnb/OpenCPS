@@ -1,3 +1,5 @@
+<%@page import="org.opencps.util.DateTimeUtil"%>
+<%@page import="java.util.Date"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -68,6 +70,9 @@
 		colWidth = 20;
 	}
 	
+	Date fromDate = null;
+	Date toDate = null;
+	
 	int fromDateDay = ParamUtil.getInteger(request, "fromDateDay");
 	int fromDateMonth = ParamUtil.getInteger(request, "fromDateMonth");
 	int fromDateYear = ParamUtil.getInteger(request, "fromDateYear");
@@ -75,17 +80,31 @@
 	int toDateMonth = ParamUtil.getInteger(request, "toDateMonth");
 	int toDateYear = ParamUtil.getInteger(request, "toDateYear");
 	
-	boolean nullableFromDate = true;
-	boolean nullableToDate = true;
-	
 	if(fromDateDay > 0
 			&& fromDateMonth >= 0
 			&& fromDateYear > 0){
-		nullableFromDate = false;
+		fromDate = 
+			DateTimeUtil.getDateBeginOfDay(fromDateDay, fromDateMonth, fromDateYear);
 	}
 	if(toDateDay > 0
 			&& toDateMonth >= 0
 			&& toDateYear > 0){
+		toDate = 
+			DateTimeUtil.getDateEndOfDay(toDateDay, toDateMonth, toDateYear);
+	} else if (fromDateDay > 0
+			&& fromDateMonth >= 0
+			&& fromDateYear > 0){
+		toDate = 
+			DateTimeUtil.getDateEndOfDay(fromDateDay, fromDateMonth, fromDateYear);
+	}
+	
+	boolean nullableFromDate = true;
+	boolean nullableToDate = true;
+	
+	if(fromDate != null){
+		nullableFromDate = false;
+	}
+	if(toDate != null){
 		nullableToDate = false;
 	}
 %>
