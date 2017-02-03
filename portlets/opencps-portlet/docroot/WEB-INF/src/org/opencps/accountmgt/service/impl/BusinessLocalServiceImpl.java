@@ -90,6 +90,214 @@ import com.liferay.util.PwdGenerator;
  */
 public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 
+	// SSO
+	public Business addBusiness(String fullName, String enName,
+			String shortName, String businessType, String idNumber,
+			String address, String cityCode, String districtCode,
+			String wardCode, String cityName, String districtName,
+			String wardName, String telNo, String email,
+			String representativeName, String representativeRole,
+			String[] businessDomainCodes, int birthDateDay, int birthDateMonth,
+			int birthDateYear, long repositoryId, String sourceFileName,
+			String contentType, String title, InputStream inputStream,
+			long size, String password, Date dateOfIdNumber,
+			ServiceContext serviceContext) 
+					throws SystemException,	PortalException {
+
+		Role roleDefault = RoleLocalServiceUtil.getRole(
+				serviceContext.getCompanyId(),
+				WebKeys.CITIZEN_BUSINESS_ROLE_NAME);
+
+		long businessId = counterLocalService.increment(Business.class
+				.getName());
+
+		Business business = businessPersistence.create(businessId);
+
+		Date now = new Date();
+
+		PortletUtil.SplitName spn = PortletUtil.splitName(fullName);
+
+		boolean autoPassword = false;
+		boolean autoScreenName = true;
+		boolean sendEmail = false;
+
+		long[] groupIds = null;
+		long[] organizationIds = null;
+		long[] roleIds = null;
+		long[] userGroupIds = null;
+
+		String password1 = password;
+		String password2 = password;
+		String screenName = null;
+
+		// add default role
+		if (Validator.isNotNull(roleDefault)) {
+
+			roleIds = new long[] { roleDefault.getRoleId() };
+		}
+
+		UserGroup userGroup = null;
+		try {
+			userGroup = UserGroupLocalServiceUtil.getUserGroup(
+					serviceContext.getCompanyId(),
+					PortletPropsValues.USERMGT_USERGROUP_NAME_BUSINESS);
+		} catch (Exception e) {
+			_log.error(e);
+		}
+
+		if (userGroup == null) {
+			userGroup = UserGroupLocalServiceUtil.addUserGroup(
+					serviceContext.getUserId(), serviceContext.getCompanyId(),
+					PortletPropsValues.USERMGT_USERGROUP_NAME_BUSINESS,
+					StringPool.BLANK, serviceContext);
+
+		}
+
+		if (userGroup != null) {
+			userGroupIds = new long[] { userGroup.getUserGroupId() };
+		}
+
+		/*password1 = PwdGenerator.getPassword();
+		password2 = password1;*/
+
+		Role adminRole = RoleLocalServiceUtil.getRole(
+				serviceContext.getCompanyId(), "Administrator");
+		List<User> adminUsers = UserLocalServiceUtil.getRoleUsers(adminRole
+				.getRoleId());
+
+		PrincipalThreadLocal.setName(adminUsers.get(0).getUserId());
+		PermissionChecker permissionChecker;
+		try {
+			permissionChecker = PermissionCheckerFactoryUtil.create(adminUsers
+					.get(0));
+			PermissionThreadLocal.setPermissionChecker(permissionChecker);
+
+			serviceContext.setUserId(adminUsers.get(0).getUserId());
+		} catch (Exception e) {
+			_log.error(e);
+		}
+
+		User mappingUser = userService.addUserWithWorkflow(
+				serviceContext.getCompanyId(), autoPassword, password1,
+				password2, autoScreenName, screenName, email, 0L,
+				StringPool.BLANK, LocaleUtil.getDefault(), spn.getFirstName(),
+				spn.getMidName(), spn.getLastName(), 0, 0, true,
+				birthDateMonth, birthDateDay, birthDateYear, "Business",
+				groupIds, organizationIds, roleIds, userGroupIds,
+				new ArrayList<Address>(), new ArrayList<EmailAddress>(),
+				new ArrayList<Phone>(), new ArrayList<Website>(),
+				new ArrayList<AnnouncementsDelivery>(), sendEmail,
+				serviceContext);
+		
+		mappingUser.setPasswordReset(false);
+
+		mappingUser = UserLocalServiceUtil.updateUser(mappingUser);
+		
+		_log.info("^^^^^^^^^^^^^^   mappingUser.getPasswordReset()   " + mappingUser.getPasswordReset());
+		_log.info("^^^^^^^^^^^^^^   appingUser.isNew()   " + mappingUser.isNew());
+
+		int status = WorkflowConstants.STATUS_INACTIVE;
+
+		Organization groupOrgBusiness = null;
+
+		try {
+			groupOrgBusiness = organizationPersistence.findByC_N(
+					serviceContext.getCompanyId(),
+					PortletPropsValues.USERMGT_USERGROUP_NAME_BUSINESS);
+		} catch (Exception e) {
+			_log.error(e);
+		}
+
+		if (groupOrgBusiness == null) {
+			groupOrgBusiness = OrganizationLocalServiceUtil.addOrganization(
+					mappingUser.getUserId(),
+					OrganizationConstants.DEFAULT_PARENT_ORGANIZATION_ID,
+					PortletPropsValues.USERMGT_USERGROUP_NAME_BUSINESS,
+					OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0,
+					ListTypeConstants.ORGANIZATION_STATUS_DEFAULT,
+					PortletPropsValues.USERMGT_USERGROUP_NAME_BUSINESS, true,
+					serviceContext);
+		}
+
+		Organization org = OrganizationLocalServiceUtil.addOrganization(
+				mappingUser.getUserId(), groupOrgBusiness.getOrganizationId(),
+				fullName +
+
+				StringPool.OPEN_PARENTHESIS + idNumber
+						+ StringPool.CLOSE_PARENTHESIS,
+				OrganizationConstants.TYPE_REGULAR_ORGANIZATION, 0, 0,
+				ListTypeConstants.ORGANIZATION_STATUS_DEFAULT, enName, true,
+				serviceContext);
+		userService.addOrganizationUsers(org.getOrganizationId(),
+				new long[] { mappingUser.getUserId() });
+
+		mappingUser = userService.updateStatus(mappingUser.getUserId(), 0);
+
+		String[] folderNames = new String[] {
+				PortletConstants.DestinationRoot.BUSINESS.toString(), cityName,
+				districtName, wardName, String.valueOf(mappingUser.getUserId()) };
+
+		String destination = PortletUtil.getDestinationFolder(folderNames);
+
+		serviceContext.setAddGroupPermissions(true);
+		serviceContext.setAddGuestPermissions(true);
+
+		FileEntry fileEntry = null;
+
+		if (size > 0 && inputStream != null) {
+
+			DLFolder dlFolder = DLFolderUtil.getTargetFolder(
+					mappingUser.getUserId(), serviceContext.getScopeGroupId(),
+					repositoryId, false, 0, destination, StringPool.BLANK,
+					false, serviceContext);
+			fileEntry = DLAppServiceUtil.addFileEntry(repositoryId,
+					dlFolder.getFolderId(), sourceFileName, contentType, title,
+					StringPool.BLANK, StringPool.BLANK, inputStream, size,
+					serviceContext);
+		}
+
+		business.setAccountStatus(PortletConstants.ACCOUNT_STATUS_REGISTERED);
+		business.setAddress(address);
+
+		business.setAttachFile(fileEntry != null ? fileEntry.getFileEntryId()
+				: 0);
+		business.setBusinessType(businessType);
+		business.setCityCode(cityCode);
+		business.setCompanyId(serviceContext.getCompanyId());
+		business.setCreateDate(now);
+		business.setDistrictCode(districtCode);
+		business.setEmail(email);
+		business.setEnName(enName);
+		business.setGroupId(serviceContext.getScopeGroupId());
+		business.setIdNumber(idNumber);
+
+		business.setMappingOrganizationId(org != null ? org.getOrganizationId()
+				: 0L);
+
+		business.setMappingUserId(mappingUser.getUserId());
+		business.setModifiedDate(now);
+		business.setName(fullName);
+		business.setRepresentativeName(representativeName);
+		business.setRepresentativeRole(representativeRole);
+		business.setShortName(shortName);
+		business.setTelNo(telNo);
+		business.setUserId(mappingUser.getUserId());
+
+		business.setUuid(PortalUUIDUtil.generate());
+		business.setWardCode(wardCode);
+		
+		business.setDateOfIdNumber(dateOfIdNumber);
+
+		business = businessPersistence.update(business);
+
+		if (businessDomainCodes != null && businessDomainCodes.length > 0) {
+			businessDomainLocalService.addBusinessDomains(businessId,
+					businessDomainCodes);
+		}
+
+		return business;
+	}
+	
 	public Business addBusiness(String fullName, String enName,
 			String shortName, String businessType, String idNumber,
 			String address, String cityCode, String districtCode,
