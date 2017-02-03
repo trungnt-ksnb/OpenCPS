@@ -1,20 +1,30 @@
 package org.opencps.statisticsmgt.portlet;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
+import org.opencps.statisticsmgt.model.GovagencyLevel;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
+import org.opencps.statisticsmgt.service.GovagencyLevelLocalServiceUtil;
 import org.opencps.statisticsmgt.util.StatisticsUtil;
 import org.opencps.statisticsmgt.util.StatisticsUtil.StatisticsFieldNumber;
 import org.opencps.util.PortletConstants;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 /**
@@ -35,14 +45,15 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 			lastMonth = 12;
 		}
 
-		 _log.info("firstMonth " + firstMonth + "|" + "lastMonth " + lastMonth + "|");
+		_log.info("firstMonth " + firstMonth + "|" + "lastMonth " + lastMonth
+				+ "|");
 
 		List<Integer> months = DossiersStatisticsLocalServiceUtil.getMonths(
 				groupId, year);
-		
-		 _log.info("########################## " + months.size());
-		 
-		 _log.info("########################## " + StringUtil.merge(months));
+
+		_log.info("########################## " + months.size());
+
+		_log.info("########################## " + StringUtil.merge(months));
 
 		List total = new ArrayList<Object>();
 
@@ -213,8 +224,43 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 
 		if (total != null && !total.isEmpty()) {
 			StatisticsUtil.getDossiersStatistics(total);
-			//List fakeData = StatisticsUtil.fakeData();
-			//StatisticsUtil.getDossiersStatistics(fakeData);
+			// List fakeData = StatisticsUtil.fakeData();
+			// StatisticsUtil.getDossiersStatistics(fakeData);
+		}
+	}
+
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 * @throws IOException
+	 */
+	public void updateAdministrationLevel(ActionRequest actionRequest,
+			ActionResponse actionResponse) throws IOException {
+		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
+		String[] govCodes = ParamUtil.getParameterValues(actionRequest,
+				"govCode");
+
+		String[] levels = ParamUtil.getParameterValues(actionRequest, "level");
+		if (govCodes != null && levels != null
+				&& levels.length == govCodes.length && govCodes.length > 0) {
+			try {
+				ServiceContext serviceContext = ServiceContextFactory
+						.getInstance(actionRequest);
+				for (int i = 0; i < govCodes.length; i++) {
+					GovagencyLevelLocalServiceUtil.updateGovagencyLevel(
+							serviceContext.getCompanyId(),
+							serviceContext.getScopeGroupId(),
+							serviceContext.getUserId(), govCodes[i],
+							GetterUtil.getInteger(levels[i]));
+				}
+			} catch (Exception e) {
+				_log.error(e);
+			} finally {
+				if (Validator.isNotNull(redirectURL)) {
+					actionResponse.sendRedirect(redirectURL);
+				}
+			}
+
 		}
 	}
 

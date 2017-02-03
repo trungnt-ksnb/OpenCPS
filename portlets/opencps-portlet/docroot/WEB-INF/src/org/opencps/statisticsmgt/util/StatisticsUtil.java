@@ -14,6 +14,7 @@ import java.util.Map;
 import org.opencps.statisticsmgt.bean.DossierStatisticsBean;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
+import org.opencps.statisticsmgt.service.GovagencyLevelLocalServiceUtil;
 import org.opencps.statisticsmgt.service.persistence.DossiersStatisticsFinder;
 
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
@@ -246,9 +247,9 @@ public class StatisticsUtil {
 		String[] govTreeIndexs = new String[] { "1", "2", "3", "1.1", "1.1.1",
 				"2.1", "2.2", "3.1", "3.2" };
 
-		String[] domains = new String[] { "LV1", "LV2", "LV3", "LV1.1"};
+		String[] domains = new String[] { "LV1", "LV2", "LV3", "LV1.1" };
 
-		String[] domainTreeIndexs = new String[] { "1", "2", "3", "1.1"};
+		String[] domainTreeIndexs = new String[] { "1", "2", "3", "1.1" };
 
 		for (int g = 0; g < govs.length; g++) {
 			for (int d = 0; d < domains.length; d++) {
@@ -614,6 +615,7 @@ public class StatisticsUtil {
 								+ dossierStatisticsBean
 										.getAdministrationLevel();
 						statisticGroupByGovMap.put(key, dossierStatisticsBeans);
+
 					}
 				}
 

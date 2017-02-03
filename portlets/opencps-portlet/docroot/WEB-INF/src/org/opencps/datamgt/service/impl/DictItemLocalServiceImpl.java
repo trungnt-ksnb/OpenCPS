@@ -36,6 +36,7 @@ import org.opencps.util.PortletConstants;
 
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.liferay.counter.service.CounterLocalServiceUtil;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -44,13 +45,16 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceContext;
 
 /**
- * The implementation of the dict item local service. <p> All custom service
- * methods should be put in this class. Whenever methods are added, rerun
- * ServiceBuilder to copy their definitions into the
- * {@link org.opencps.datamgt.service.DictItemLocalService} interface. <p> This
- * is a local service. Methods of this service will not have security checks
- * based on the propagated JAAS credentials because this service can only be
- * accessed from within the same VM. </p>
+ * The implementation of the dict item local service.
+ * <p>
+ * All custom service methods should be put in this class. Whenever methods are
+ * added, rerun ServiceBuilder to copy their definitions into the
+ * {@link org.opencps.datamgt.service.DictItemLocalService} interface.
+ * <p>
+ * This is a local service. Methods of this service will not have security
+ * checks based on the propagated JAAS credentials because this service can only
+ * be accessed from within the same VM.
+ * </p>
  *
  * @author khoavd
  * @author trungnt
@@ -65,8 +69,10 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 */
 
 	/**
-	 * <p> Phuong thuc them moi mot DictItem co version va mac dinh trang thai
-	 * drafting </p>
+	 * <p>
+	 * Phuong thuc them moi mot DictItem co version va mac dinh trang thai
+	 * drafting
+	 * </p>
 	 * 
 	 * @param userId
 	 *            - Data type<code>[long]</code> - Id tai khoan nguoi cap nhat
@@ -81,8 +87,11 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 *            - Data type<code>[long]</code> - Id DictItem cha
 	 * @param treeIndex
 	 *            - Data type<code>[String]</code> - Phan cap du lieu dang cay.
-	 *            <ul> <li>Cap cha: 1</li> <li>Cap con: 1.1</li> <li>Cap chau:
-	 *            1.1.1</li> </ul>
+	 *            <ul>
+	 *            <li>Cap cha: 1</li>
+	 *            <li>Cap con: 1.1</li>
+	 *            <li>Cap chau: 1.1.1</li>
+	 *            </ul>
 	 * @param serviceContext
 	 *            - Data type<code>[ServiceContext]</code>
 	 * @return DictItem
@@ -93,59 +102,42 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws NoSuchDictItemException
 	 *             Ngoai le khong tim duoc treeIndex cap cha
 	 */
-	public DictItem addDictItem(
-		long userId, long dictCollectionId, long dictVersionId, String itemCode,
-		Map<Locale, String> itemNameMap, long parentId,
-		ServiceContext serviceContext)
-		throws NoSuchDictVersionException, SystemException,
-		NoSuchDictItemException {
+	public DictItem addDictItem(long userId, long dictCollectionId,
+			long dictVersionId, String itemCode,
+			Map<Locale, String> itemNameMap, long parentId,
+			ServiceContext serviceContext) throws NoSuchDictVersionException,
+			SystemException, NoSuchDictItemException {
 
-		long dictItemId = CounterLocalServiceUtil
-			.increment(DictItem.class
+		long dictItemId = CounterLocalServiceUtil.increment(DictItem.class
 				.getName());
 
-		DictItem dictItem = dictItemPersistence
-			.create(dictItemId);
+		DictItem dictItem = dictItemPersistence.create(dictItemId);
 
 		DictVersion dictVersion = dictVersionPersistence
-			.findByPrimaryKey(dictVersionId);
+				.findByPrimaryKey(dictVersionId);
 		Date now = new Date();
 		String treeIndex = getTreeIndex(dictItemId, parentId);
 
-		dictItem
-			.setCompanyId(serviceContext
-				.getCompanyId());
-		dictItem
-			.setCreateDate(now);
-		dictItem
-			.setDictCollectionId(dictCollectionId);
-		dictItem
-			.setGroupId(serviceContext
-				.getScopeGroupId());
-		dictItem
-			.setIssueStatus(PortletConstants.DRAFTING);
-		dictItem
-			.setItemCode(itemCode);
-		dictItem
-			.setItemNameMap(itemNameMap);
-		dictItem
-			.setModifiedDate(now);
-		dictItem
-			.setParentItemId(parentId);
-		dictItem
-			.setTreeIndex(treeIndex);
-		dictItem
-			.setUserId(userId);
-		dictItem
-			.setDictVersionId(dictVersion
-				.getDictVersionId());
-		return dictItemPersistence
-			.update(dictItem);
+		dictItem.setCompanyId(serviceContext.getCompanyId());
+		dictItem.setCreateDate(now);
+		dictItem.setDictCollectionId(dictCollectionId);
+		dictItem.setGroupId(serviceContext.getScopeGroupId());
+		dictItem.setIssueStatus(PortletConstants.DRAFTING);
+		dictItem.setItemCode(itemCode);
+		dictItem.setItemNameMap(itemNameMap);
+		dictItem.setModifiedDate(now);
+		dictItem.setParentItemId(parentId);
+		dictItem.setTreeIndex(treeIndex);
+		dictItem.setUserId(userId);
+		dictItem.setDictVersionId(dictVersion.getDictVersionId());
+		return dictItemPersistence.update(dictItem);
 	}
 
 	/**
-	 * <p> Phuong thuc them moi mot DictItem khong co version va mac dinh trang
-	 * thai inuse </p>
+	 * <p>
+	 * Phuong thuc them moi mot DictItem khong co version va mac dinh trang thai
+	 * inuse
+	 * </p>
 	 * 
 	 * @param userId
 	 *            - Data type<code>[long]</code> - Id tai khoan nguoi cap nhat
@@ -160,8 +152,11 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 *            - Data type<code>[long]</code> - Id DictItem cha
 	 * @param treeIndex
 	 *            - Data type<code>[String]</code> - Phan cap du lieu dang cay.
-	 *            <ul> <li>Cap cha: 1</li> <li>Cap con: 1.1</li> <li>Cap chau:
-	 *            1.1.1</li> </ul>
+	 *            <ul>
+	 *            <li>Cap cha: 1</li>
+	 *            <li>Cap con: 1.1</li>
+	 *            <li>Cap chau: 1.1.1</li>
+	 *            </ul>
 	 * @param serviceContext
 	 *            - Data type<code>[ServiceContext]</code>
 	 * @return DictItem
@@ -170,20 +165,20 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws NoSuchDictItemException
 	 *             Ngoai le khong tim duoc treeIndex cap cha
 	 */
-	public DictItem addDictItem(
-		long userId, long dictCollectionId, String itemCode,
-		Map<Locale, String> itemNameMap, long parentId,
-		ServiceContext serviceContext)
-		throws SystemException, NoSuchDictItemException {
+	public DictItem addDictItem(long userId, long dictCollectionId,
+			String itemCode, Map<Locale, String> itemNameMap, long parentId,
+			ServiceContext serviceContext) throws SystemException,
+			NoSuchDictItemException {
 
-		return dictItemLocalService.addDictItem(userId, 
-			dictCollectionId, itemCode, itemNameMap, null, 
-			parentId, serviceContext);
+		return dictItemLocalService.addDictItem(userId, dictCollectionId,
+				itemCode, itemNameMap, null, parentId, serviceContext);
 	}
-	
+
 	/**
-	 * <p> Phuong thuc them moi mot DictItem khong co version va mac dinh trang
-	 * thai inuse </p>
+	 * <p>
+	 * Phuong thuc them moi mot DictItem khong co version va mac dinh trang thai
+	 * inuse
+	 * </p>
 	 * 
 	 * @param userId
 	 *            - Data type<code>[long]</code> - Id tai khoan nguoi cap nhat
@@ -200,8 +195,11 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 *            - Data type<code>[long]</code> - Id DictItem cha
 	 * @param treeIndex
 	 *            - Data type<code>[String]</code> - Phan cap du lieu dang cay.
-	 *            <ul> <li>Cap cha: 1</li> <li>Cap con: 1.1</li> <li>Cap chau:
-	 *            1.1.1</li> </ul>
+	 *            <ul>
+	 *            <li>Cap cha: 1</li>
+	 *            <li>Cap con: 1.1</li>
+	 *            <li>Cap chau: 1.1.1</li>
+	 *            </ul>
 	 * @param serviceContext
 	 *            - Data type<code>[ServiceContext]</code>
 	 * @return DictItem
@@ -210,70 +208,51 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws NoSuchDictItemException
 	 *             Ngoai le khong tim duoc treeIndex cap cha
 	 */
-	public DictItem addDictItem(
-		long userId, long dictCollectionId, String itemCode,
-		Map<Locale, String> itemNameMap, Map<Locale, String> itemDescriptionMap, 
-		long parentId, ServiceContext serviceContext)
-		throws SystemException, NoSuchDictItemException {
+	public DictItem addDictItem(long userId, long dictCollectionId,
+			String itemCode, Map<Locale, String> itemNameMap,
+			Map<Locale, String> itemDescriptionMap, long parentId,
+			ServiceContext serviceContext) throws SystemException,
+			NoSuchDictItemException {
 
-		long dictItemId = CounterLocalServiceUtil
-			.increment(DictItem.class
+		long dictItemId = CounterLocalServiceUtil.increment(DictItem.class
 				.getName());
 
-		DictItem dictItem = dictItemPersistence
-			.create(dictItemId);
+		DictItem dictItem = dictItemPersistence.create(dictItemId);
 
 		Date now = new Date();
 		String treeIndex = getTreeIndex(dictItemId, parentId);
 
-		dictItem
-			.setCompanyId(serviceContext
-				.getCompanyId());
-		dictItem
-			.setCreateDate(now);
-		dictItem
-			.setDictCollectionId(dictCollectionId);
-		dictItem
-			.setGroupId(serviceContext
-				.getScopeGroupId());
-		dictItem
-			.setIssueStatus(PortletConstants.INUSE);
-		dictItem
-			.setItemCode(itemCode);
-		dictItem
-			.setItemNameMap(itemNameMap);
-		dictItem
-			.setItemDescriptionMap(itemDescriptionMap);
-		dictItem
-			.setModifiedDate(now);
-		dictItem
-			.setParentItemId(parentId);
-		dictItem
-			.setTreeIndex(treeIndex);
-		dictItem
-			.setUserId(userId);
+		dictItem.setCompanyId(serviceContext.getCompanyId());
+		dictItem.setCreateDate(now);
+		dictItem.setDictCollectionId(dictCollectionId);
+		dictItem.setGroupId(serviceContext.getScopeGroupId());
+		dictItem.setIssueStatus(PortletConstants.INUSE);
+		dictItem.setItemCode(itemCode);
+		dictItem.setItemNameMap(itemNameMap);
+		dictItem.setItemDescriptionMap(itemDescriptionMap);
+		dictItem.setModifiedDate(now);
+		dictItem.setParentItemId(parentId);
+		dictItem.setTreeIndex(treeIndex);
+		dictItem.setUserId(userId);
 
-		return dictItemPersistence
-			.update(dictItem);
+		return dictItemPersistence.update(dictItem);
 	}
 
 	public int countByDictCollectionId(long dictCollectionId)
-		throws SystemException {
+			throws SystemException {
 
-		return dictItemPersistence
-			.countByDictCollectionId(dictCollectionId);
+		return dictItemPersistence.countByDictCollectionId(dictCollectionId);
 	}
 
-	public int countByDictCollectionId(
-		long dictCollectionId, String[] itemNames)
-		throws SystemException {
+	public int countByDictCollectionId(long dictCollectionId, String[] itemNames)
+			throws SystemException {
 
-		return dictItemPersistence
-			.countByC_N(dictCollectionId, itemNames);
+		return dictItemPersistence.countByC_N(dictCollectionId, itemNames);
 	}
 
 	/**
-	 * <p> Phuong thu xoa DictItem theo dictItemId. Neu DictItem co cap con thi
+	 * <p>
+	 * Phuong thu xoa DictItem theo dictItemId. Neu DictItem co cap con thi
 	 * khong xoa
 	 * 
 	 * @param dictItemId
@@ -284,27 +263,26 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws NoSuchDictItemException
 	 *             - Loi khong tim thay DictItem voi dictItemId tuong ung
 	 */
-	public void deleteDictItemById(long dictItemId)
-		throws SystemException, NoSuchDictItemException {
+	public void deleteDictItemById(long dictItemId) throws SystemException,
+			NoSuchDictItemException {
 
 		List<DictItem> dictItems = dictItemPersistence
-			.findByTreeIndex(dictItemId + StringPool.PERIOD);
-		if (dictItems == null || dictItems
-			.isEmpty()) {
-			dictItemPersistence
-				.remove(dictItemId);
+				.findByTreeIndex(dictItemId + StringPool.PERIOD);
+		if (dictItems == null || dictItems.isEmpty()) {
+			dictItemPersistence.remove(dictItemId);
 		}
 	}
 
 	public DictItem getDicItemByTreeIndex(String treeIndex)
-		throws NoSuchDictItemException, SystemException {
+			throws NoSuchDictItemException, SystemException {
 
-		return dictItemPersistence
-			.findByTreeInDexOne(treeIndex);
+		return dictItemPersistence.findByTreeInDexOne(treeIndex);
 	}
 
 	/**
-	 * <p> Phuong thu tim DictItem theo dictItemId </p>
+	 * <p>
+	 * Phuong thu tim DictItem theo dictItemId
+	 * </p>
 	 * 
 	 * @param dictItemId
 	 *            - Data type<code>[long]</code> - Khoa chinh DictItem
@@ -315,14 +293,15 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 *             - Loi khong tim thay DictItem voi dictItemId tuong ung
 	 */
 	public DictItem getDictItem(long dictItemId)
-		throws NoSuchDictItemException, SystemException {
+			throws NoSuchDictItemException, SystemException {
 
-		return dictItemPersistence
-			.findByPrimaryKey(dictItemId);
+		return dictItemPersistence.findByPrimaryKey(dictItemId);
 	}
 
 	/**
-	 * <p> Phuong thu tim DictItem dang co trang thai Inuse </p>
+	 * <p>
+	 * Phuong thu tim DictItem dang co trang thai Inuse
+	 * </p>
 	 * 
 	 * @param dictCollectionId
 	 *            - Data type<code>[long]</code> - Khoa chinh DictCollection
@@ -334,14 +313,11 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws NoSuchDictItemException
 	 *             - Loi khong tim thay DictItem tuong ung
 	 */
-	public DictItem getDictItemInuseByItemCode(
-		long dictCollectionId, String itemCode)
-		throws NoSuchDictItemException, SystemException {
+	public DictItem getDictItemInuseByItemCode(long dictCollectionId,
+			String itemCode) throws NoSuchDictItemException, SystemException {
 
-		return dictItemPersistence
-			.findByC_C_I(dictCollectionId, itemCode);
+		return dictItemPersistence.findByC_C_I(dictCollectionId, itemCode);
 	}
-
 
 	/**
 	 * @param dictCollectionId
@@ -349,12 +325,13 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @return
 	 * @throws SystemException
 	 */
-	public List<DictItem> findDictItemsByG_DC_S(long groupId, String dictCollectionCode)
-		throws SystemException {
-		
-		return dictItemFinder.findDictItemsByG_DC_S(groupId, dictCollectionCode, DataMgtUtil.ISSUE_STATUS_INUSE);
+	public List<DictItem> findDictItemsByG_DC_S(long groupId,
+			String dictCollectionCode) throws SystemException {
+
+		return dictItemFinder.findDictItemsByG_DC_S(groupId,
+				dictCollectionCode, DataMgtUtil.ISSUE_STATUS_INUSE);
 	}
-	
+
 	/**
 	 * @param groupId
 	 * @param dictCollectionCode
@@ -364,20 +341,18 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws SystemException
 	 * @throws NoSuchDictCollectionException
 	 */
-	public DictItem getDictItemInuseByItemCode(
-		long groupId, String dictCollectionCode, String itemCode)
-		throws NoSuchDictItemException, SystemException,
-		NoSuchDictCollectionException {
+	public DictItem getDictItemInuseByItemCode(long groupId,
+			String dictCollectionCode, String itemCode)
+			throws NoSuchDictItemException, SystemException,
+			NoSuchDictCollectionException {
 
 		DictCollection dictCollection = dictCollectionLocalService
-			.getDictCollection(groupId, dictCollectionCode);
+				.getDictCollection(groupId, dictCollectionCode);
 
 		if (dictCollection != null) {
-			return dictItemPersistence
-				.findByC_C_I(dictCollection
-					.getDictCollectionId(), itemCode);
-		}
-		else {
+			return dictItemPersistence.findByC_C_I(
+					dictCollection.getDictCollectionId(), itemCode);
+		} else {
 			return null;
 		}
 
@@ -390,10 +365,9 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws SystemException
 	 */
 	public List<DictItem> getDictItems(long dictCollectionId, String itemName)
-		throws SystemException {
+			throws SystemException {
 
-		return dictItemPersistence
-			.findByC_N(dictCollectionId, itemName);
+		return dictItemPersistence.findByC_N(dictCollectionId, itemName);
 	}
 
 	/**
@@ -405,13 +379,12 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @return
 	 * @throws SystemException
 	 */
-	public List<DictItem> getDictItems(
-		long dictCollectionId, String[] itemNames, int start, int end,
-		OrderByComparator obc)
-		throws SystemException {
+	public List<DictItem> getDictItems(long dictCollectionId,
+			String[] itemNames, int start, int end, OrderByComparator obc)
+			throws SystemException {
 
-		return dictItemPersistence
-			.findByC_N(dictCollectionId, itemNames, start, end, obc);
+		return dictItemPersistence.findByC_N(dictCollectionId, itemNames,
+				start, end, obc);
 	}
 
 	/**
@@ -420,10 +393,22 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws SystemException
 	 */
 	public List<DictItem> getDictItemsByDictCollectionId(long dictCollectionId)
-		throws SystemException {
+			throws SystemException {
 
-		return dictItemPersistence
-			.findByDictCollectionId(dictCollectionId);
+		return dictItemPersistence.findByDictCollectionId(dictCollectionId);
+	}
+
+	/**
+	 * @param dictCollectionId
+	 * @param orderByComparator
+	 * @return
+	 * @throws SystemException
+	 */
+	public List<DictItem> getDictItemsByDictCollectionId(long dictCollectionId,
+			OrderByComparator orderByComparator) throws SystemException {
+
+		return dictItemPersistence.findByDictCollectionId(dictCollectionId,
+				QueryUtil.ALL_POS, QueryUtil.ALL_POS, orderByComparator);
 	}
 
 	/**
@@ -434,12 +419,11 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @return
 	 * @throws SystemException
 	 */
-	public List<DictItem> getDictItemsByDictCollectionId(
-		long dictCollectionId, int start, int end, OrderByComparator obc)
-		throws SystemException {
+	public List<DictItem> getDictItemsByDictCollectionId(long dictCollectionId,
+			int start, int end, OrderByComparator obc) throws SystemException {
 
-		return dictItemPersistence
-			.findByDictCollectionId(dictCollectionId, start, end, obc);
+		return dictItemPersistence.findByDictCollectionId(dictCollectionId,
+				start, end, obc);
 	}
 
 	/**
@@ -448,10 +432,9 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws SystemException
 	 */
 	public List<DictItem> getDictItemsByDictVersionId(long dictVersionId)
-		throws SystemException {
+			throws SystemException {
 
-		return dictItemPersistence
-			.findByDictVersionId(dictVersionId);
+		return dictItemPersistence.findByDictVersionId(dictVersionId);
 	}
 
 	/**
@@ -460,10 +443,9 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws SystemException
 	 */
 	public List<DictItem> getDictItemsByParentItemId(long parentItemId)
-		throws SystemException {
+			throws SystemException {
 
-		return dictItemPersistence
-			.findByParentItemId(parentItemId);
+		return dictItemPersistence.findByParentItemId(parentItemId);
 	}
 
 	/**
@@ -474,12 +456,11 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @return
 	 * @throws SystemException
 	 */
-	public List<DictItem> getDictItemsByParentItemId(
-		long parentItemId, int start, int end, OrderByComparator obc)
-		throws SystemException {
+	public List<DictItem> getDictItemsByParentItemId(long parentItemId,
+			int start, int end, OrderByComparator obc) throws SystemException {
 
-		return dictItemPersistence
-			.findByParentItemId(parentItemId, start, end, obc);
+		return dictItemPersistence.findByParentItemId(parentItemId, start, end,
+				obc);
 	}
 
 	/**
@@ -488,11 +469,9 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws SystemException
 	 */
 	public List<DictItem> getDictItemsInUseByDictCollectionId(
-		long dictCollectionId)
-		throws SystemException {
+			long dictCollectionId) throws SystemException {
 
-		return dictItemPersistence
-			.findByD_I(dictCollectionId);
+		return dictItemPersistence.findByD_I(dictCollectionId);
 	}
 
 	/**
@@ -502,12 +481,10 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws SystemException
 	 */
 	public List<DictItem> getDictItemsInUseByDictCollectionIdAndParentItemId(
-		long dictCollectionId, long parentItemId)
-		throws SystemException {
+			long dictCollectionId, long parentItemId) throws SystemException {
 
-		return dictItemPersistence
-			.findByDictCollectionId_ParentItemId_Inuse(dictCollectionId,
-				parentItemId);
+		return dictItemPersistence.findByDictCollectionId_ParentItemId_Inuse(
+				dictCollectionId, parentItemId);
 	}
 
 	/**
@@ -518,26 +495,24 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws SystemException
 	 */
 	protected String getTreeIndex(long dictItemId, long dictParentItemId)
-		throws NoSuchDictItemException, SystemException {
+			throws NoSuchDictItemException, SystemException {
 
 		if (dictParentItemId == 0) {
-			return String
-				.valueOf(dictItemId);
-		}
-		else if (dictParentItemId > 0) {
+			return String.valueOf(dictItemId);
+		} else if (dictParentItemId > 0) {
 			DictItem parentItem = dictItemPersistence
-				.findByPrimaryKey(dictParentItemId);
-			return parentItem
-				.getTreeIndex() + StringPool.PERIOD + dictItemId;
-		}
-		else {
+					.findByPrimaryKey(dictParentItemId);
+			return parentItem.getTreeIndex() + StringPool.PERIOD + dictItemId;
+		} else {
 			throw new NoSuchDictItemException();
 		}
 	}
 
 	/**
-	 * <p> Phuong thuc update DictItem. Neu co version thi trang thai la draf,
-	 * neu khong co version thi trang thai la inuse </p>
+	 * <p>
+	 * Phuong thuc update DictItem. Neu co version thi trang thai la draf, neu
+	 * khong co version thi trang thai la inuse
+	 * </p>
 	 * 
 	 * @param dictItemId
 	 *            - Data type<code>[long]</code> - Id dictItem
@@ -561,21 +536,22 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws NoSuchDictVersionException
 	 *             Ngoai le khong tim thay DictItem voi dictItemId tuong ung
 	 */
-	public DictItem updateDictItem(
-		long dictItemId, long dictCollectionId, long dictVersionId,
-		String itemCode, Map<Locale, String> itemNameMap, long parentItemId,
-		ServiceContext serviceContext)
-		throws NoSuchDictItemException, SystemException,
-		NoSuchDictVersionException {
+	public DictItem updateDictItem(long dictItemId, long dictCollectionId,
+			long dictVersionId, String itemCode,
+			Map<Locale, String> itemNameMap, long parentItemId,
+			ServiceContext serviceContext) throws NoSuchDictItemException,
+			SystemException, NoSuchDictVersionException {
 
 		return dictItemLocalService.updateDictItem(dictItemId,
 				dictCollectionId, dictVersionId, itemCode, itemNameMap, null,
 				parentItemId, serviceContext);
 	}
-	
+
 	/**
-	 * <p> Phuong thuc update DictItem. Neu co version thi trang thai la draf,
-	 * neu khong co version thi trang thai la inuse </p>
+	 * <p>
+	 * Phuong thuc update DictItem. Neu co version thi trang thai la draf, neu
+	 * khong co version thi trang thai la inuse
+	 * </p>
 	 * 
 	 * @param dictItemId
 	 *            - Data type<code>[long]</code> - Id dictItem
@@ -601,76 +577,61 @@ public class DictItemLocalServiceImpl extends DictItemLocalServiceBaseImpl {
 	 * @throws NoSuchDictVersionException
 	 *             Ngoai le khong tim thay DictItem voi dictItemId tuong ung
 	 */
-	public DictItem updateDictItem(
-		long dictItemId, long dictCollectionId, long dictVersionId,
-		String itemCode, Map<Locale, String> itemNameMap, 
-		Map<Locale, String> itemDescriptionMap, long parentItemId,
-		ServiceContext serviceContext)
-		throws NoSuchDictItemException, SystemException,
-		NoSuchDictVersionException {
+	public DictItem updateDictItem(long dictItemId, long dictCollectionId,
+			long dictVersionId, String itemCode,
+			Map<Locale, String> itemNameMap,
+			Map<Locale, String> itemDescriptionMap, long parentItemId,
+			ServiceContext serviceContext) throws NoSuchDictItemException,
+			SystemException, NoSuchDictVersionException {
 
-		DictItem dictItem = dictItemPersistence
-			.findByPrimaryKey(dictItemId);
+		DictItem dictItem = dictItemPersistence.findByPrimaryKey(dictItemId);
 
 		Date now = new Date();
 
 		String treeIndex = getTreeIndex(dictItemId, parentItemId);
 
-		dictItem
-			.setCompanyId(serviceContext
-				.getCompanyId());
-		dictItem
-			.setCreateDate(now);
-		dictItem
-			.setDictCollectionId(dictCollectionId);
-		dictItem
-			.setGroupId(serviceContext
-				.getScopeGroupId());
-		dictItem
-			.setIssueStatus(dictVersionId > 0
-				? PortletConstants.DRAFTING : PortletConstants.INUSE);
-		dictItem
-			.setItemCode(itemCode);
-		dictItem
-			.setItemNameMap(itemNameMap);
-		dictItem
-			.setItemDescriptionMap(itemDescriptionMap);
-		dictItem
-			.setModifiedDate(now);
-		dictItem
-			.setParentItemId(parentItemId);
-		dictItem
-			.setTreeIndex(treeIndex);
-		dictItem
-			.setUserId(serviceContext
-				.getUserId());
-		dictItem
-			.setDictVersionId(dictVersionId);
-		return dictItemPersistence
-			.update(dictItem);
+		dictItem.setCompanyId(serviceContext.getCompanyId());
+		dictItem.setCreateDate(now);
+		dictItem.setDictCollectionId(dictCollectionId);
+		dictItem.setGroupId(serviceContext.getScopeGroupId());
+		dictItem.setIssueStatus(dictVersionId > 0 ? PortletConstants.DRAFTING
+				: PortletConstants.INUSE);
+		dictItem.setItemCode(itemCode);
+		dictItem.setItemNameMap(itemNameMap);
+		dictItem.setItemDescriptionMap(itemDescriptionMap);
+		dictItem.setModifiedDate(now);
+		dictItem.setParentItemId(parentItemId);
+		dictItem.setTreeIndex(treeIndex);
+		dictItem.setUserId(serviceContext.getUserId());
+		dictItem.setDictVersionId(dictVersionId);
+		return dictItemPersistence.update(dictItem);
 	}
-	
-	public DictItem getDictItemByCode(String itemCode)
-	    throws PortalException, SystemException {
+
+	public DictItem getDictItemByCode(String itemCode) throws PortalException,
+			SystemException {
 		return dictItemPersistence.findByC_I(itemCode);
 	}
-	
-	//alpacajs only
-	public List<DictItem> searchDictItemByName_like(String collectionCode, String itemCode, String keyword, long groupId, 
-			int start, int end, OrderByComparator obc) throws SystemException {
-		
-		return dictItemFinder.searchDictItemByName_like(collectionCode, itemCode, keyword, groupId, start, end, obc);
-		
+
+	// alpacajs only
+	public List<DictItem> searchDictItemByName_like(String collectionCode,
+			String itemCode, String keyword, long groupId, int start, int end,
+			OrderByComparator obc) throws SystemException {
+
+		return dictItemFinder.searchDictItemByName_like(collectionCode,
+				itemCode, keyword, groupId, start, end, obc);
+
 	}
 
-	public List<DictItem> getDictItemsByTreeIndex(long dictItemId, long dictParentItemId, int status, int start, int end, OrderByComparator orderByComparator)
-			throws SystemException, NoSuchDictItemException{
+	public List<DictItem> getDictItemsByTreeIndex(long dictItemId,
+			long dictParentItemId, int status, int start, int end,
+			OrderByComparator orderByComparator) throws SystemException,
+			NoSuchDictItemException {
 
-		//TODO
-		//--> search: treeIndex + StringPool.PERIOD + StringPool.PERCENT
+		// TODO
+		// --> search: treeIndex + StringPool.PERIOD + StringPool.PERCENT
 		String treeIndex = getTreeIndex(dictItemId, dictParentItemId);
-		return dictItemPersistence
-				.findByF_TreeIndex_Status(treeIndex + StringPool.PERCENT, status, start, end, orderByComparator);
+		return dictItemPersistence.findByF_TreeIndex_Status(treeIndex
+				+ StringPool.PERCENT, status, start, end, orderByComparator);
 	}
-	
+
 }

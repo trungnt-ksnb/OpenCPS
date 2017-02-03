@@ -2,12 +2,14 @@
 
 <%@ include file="../init.jsp" %>
 
+<liferay-util:include page='<%=templatePath + "toptabs.jsp" %>' servletContext="<%=application %>" />
+
 <liferay-portlet:actionURL var="doStatisticsURL" name="doStatistics"/>
 
 <aui:form name="fm" action="<%=doStatisticsURL %>" method="post">
 	<aui:input name="groupId" value="<%=scopeGroupId %>" type="hidden"/>
 	<aui:fieldset>
-		<aui:col width="30">
+		<aui:col width="50">
 			<aui:select name="month">
 				<aui:option value="0"><liferay-ui:message key="all"/></aui:option>
 				<%
@@ -20,7 +22,7 @@
 			</aui:select>
 		</aui:col>
 		
-		<aui:col width="30">
+		<aui:col width="50">
 			<aui:select name="year">
 				<%
 					for(int y = 2016 ; y <= 2030; y ++){
@@ -31,16 +33,15 @@
 				%>
 			</aui:select>
 		</aui:col>
-		<aui:col width="30">
-			<aui:button name="stats" value="statatistics" type="button" />
-		</aui:col>
 	</aui:fieldset>
-
+	<aui:row>
+		<aui:col width="100">
+			<aui:button name="stats" value="statatistics" type="submit" />
+		</aui:col>
+	</aui:row>
 </aui:form>
 
-
-
-<aui:script>
+<%-- <aui:script>
 	AUI().ready(function(A){
 		
 		var stats = A.one('#<portlet:namespace/>stats');
@@ -52,3 +53,4 @@
 		}
 	});
 </aui:script>
+ --%>

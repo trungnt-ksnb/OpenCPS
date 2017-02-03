@@ -843,7 +843,7 @@
 		<field name="administrationLevel" type="int" />
 	</model>
 	<model name="org.opencps.statisticsmgt.model.GovagencyLevel">
-		<field name="govagencylevel" type="long" />
+		<field name="govagencyId" type="long" />
 		<field name="companyId" type="long" />
 		<field name="groupId" type="long" />
 		<field name="userId" type="long" />

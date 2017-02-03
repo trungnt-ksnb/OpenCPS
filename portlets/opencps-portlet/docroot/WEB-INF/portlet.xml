@@ -1127,7 +1127,11 @@
 		</portlet-class>
 		<init-param>
 			<name>view-template</name>
-			<value>/html/portlets/statisticsmgt/admin/view.jsp</value>
+			<value>/html/portlets/statisticsmgt/admin/statistics.jsp</value>
+		</init-param>
+		<init-param>
+			<name>template-path</name>
+			<value>/html/portlets/statisticsmgt/admin/</value>
 		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>
