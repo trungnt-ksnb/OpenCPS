@@ -928,7 +928,7 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 			
 			if (Validator.isNull(fromDate_TS) && Validator.isNull(toDate_TS)) {
 				sql = StringUtil
-						.replace(sql, "AND (opencps_dossier.submitDatetime BETWEEN ? AND ?)",
+						.replace(sql, "AND (opencps_dossier.receiveDatetime BETWEEN ? AND ?)",
 							StringPool.BLANK);
 			}
 			
@@ -1076,7 +1076,7 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 			
 			if (Validator.isNull(fromDate_TS) && Validator.isNull(toDate_TS)) {
 				sql = StringUtil
-						.replace(sql, "AND (opencps_dossier.submitDatetime BETWEEN ? AND ?)",
+						.replace(sql, "AND (opencps_dossier.receiveDatetime BETWEEN ? AND ?)",
 							StringPool.BLANK);
 			}
 			
