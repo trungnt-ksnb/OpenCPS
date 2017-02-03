@@ -1037,16 +1037,6 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 			toDate_TS = CalendarUtil.getTimestamp(toDate);
 		}
 		
-		System.out.println("================ serviceInfoId sql: "+serviceInfoId);
-		System.out.println("================ processStepId sql: "+processStepId);
-		System.out.println("================ loginUserId sql: "+loginUserId);
-		System.out.println("================ assignToUserId sql: "+assignToUserId);
-		System.out.println("================ keyWords sql: "+keyWords);
-		System.out.println("================ dossierSubStatus sql: "+dossierSubStatus);
-		System.out.println("================ processOrderStage sql: "+processOrderStage);
-		System.out.println("================ fromDate_TS sql: "+fromDate_TS);
-		System.out.println("================ toDate_TS sql: "+toDate_TS);
-		
 		Session session = null;
 		try {
 			session = openSession();
@@ -1168,8 +1158,6 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 				qPos.add(toDate_TS);
 			}
 			
-			System.out.println("================ searchProcessOrderKeyWords sql: "+sql);
-
 			Iterator<Object[]> itr = (Iterator<Object[]>) QueryUtil
 				.list(q, getDialect(), start, end).iterator();
 
