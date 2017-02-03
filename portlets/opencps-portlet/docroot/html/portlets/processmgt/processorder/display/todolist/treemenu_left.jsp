@@ -1,6 +1,4 @@
 
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="java.text.DateFormat"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -56,6 +54,8 @@
 <%@page import="java.util.Set"%>
 <%@page import="java.util.HashSet"%>
 <%@page import="org.opencps.util.PortletConstants"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.text.DateFormat"%>
 
 <%@ include file="../../init.jsp"%>
 
@@ -90,8 +90,32 @@
 
 	String processOrderStage = ParamUtil.getString(request, "processOrderStage", "false");
 	
-	Date fromDate = ParamUtil.getDate(request, "fromDate", new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
-	Date toDate = ParamUtil.getDate(request, "toDate", new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
+	Date fromDate = null;
+	Date toDate = null;
+	int fromDateDay = ParamUtil.getInteger(request, "fromDateDay");
+	int fromDateMonth = ParamUtil.getInteger(request, "fromDateMonth");
+	int fromDateYear = ParamUtil.getInteger(request, "fromDateYear");
+	int toDateDay = ParamUtil.getInteger(request, "toDateDay");
+	int toDateMonth = ParamUtil.getInteger(request, "toDateMonth");
+	int toDateYear = ParamUtil.getInteger(request, "toDateYear");
+	
+	if(fromDateDay > 0
+			&& fromDateMonth >= 0
+			&& fromDateYear > 0){
+		fromDate = 
+			DateTimeUtil.getDateBeginOfDay(fromDateDay, fromDateMonth, fromDateYear);
+	}
+	if(toDateDay > 0
+			&& toDateMonth >= 0
+			&& toDateYear > 0){
+		toDate = 
+			DateTimeUtil.getDateEndOfDay(toDateDay, toDateMonth, toDateYear);
+	} else if (fromDateDay > 0
+			&& fromDateMonth >= 0
+			&& fromDateYear > 0){
+		toDate = 
+			DateTimeUtil.getDateEndOfDay(fromDateDay, fromDateMonth, fromDateYear);
+	}
 	
 	JSONObject arrayParam = JSONFactoryUtil
 		    .createJSONObject();

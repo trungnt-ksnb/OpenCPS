@@ -61,14 +61,32 @@
 				processOrderSteps = (List<ProcessOrderBean>) ProcessOrderLocalServiceUtil.getUserProcessStepJustFinished(themeDisplay.getUserId(), serviceInfoId);
 			}
 		}
-		
-		
-		
 	}catch(Exception e){}
 	
 	int colWidth = 25;
 	if(!todolistDisplayStyle.equals("treemenu_left")){
 		colWidth = 20;
+	}
+	
+	int fromDateDay = ParamUtil.getInteger(request, "fromDateDay");
+	int fromDateMonth = ParamUtil.getInteger(request, "fromDateMonth");
+	int fromDateYear = ParamUtil.getInteger(request, "fromDateYear");
+	int toDateDay = ParamUtil.getInteger(request, "toDateDay");
+	int toDateMonth = ParamUtil.getInteger(request, "toDateMonth");
+	int toDateYear = ParamUtil.getInteger(request, "toDateYear");
+	
+	boolean nullableFromDate = true;
+	boolean nullableToDate = true;
+	
+	if(fromDateDay > 0
+			&& fromDateMonth >= 0
+			&& fromDateYear > 0){
+		nullableFromDate = false;
+	}
+	if(toDateDay > 0
+			&& toDateMonth >= 0
+			&& toDateYear > 0){
+		nullableToDate = false;
 	}
 %>
 <liferay-portlet:renderURL varImpl="searchURL" portletName="<%=WebKeys.PROCESS_ORDER_PORTLET %>">
@@ -205,33 +223,34 @@
 					</aui:col>
 				</aui:row>
 				<aui:row>
+				
 					<aui:col width="30">
 						<liferay-ui:input-date 
-		 					nullable="true"
-		 					dayParam="fromDateDay"
-		 					dayValue="<%= 0 %>"
-		 					monthParam="fromDateMonth"
-		 					monthValue="<%= 0 %>"
 		 					name="fromDate"
+		 					nullable="<%= nullableFromDate %>"
+		 					dayParam="fromDateDay"
+		 					dayValue="<%= fromDateDay %>"
+		 					monthParam="fromDateMonth"
+		 					monthValue="<%= fromDateMonth %>"
 		 					yearParam="fromDateYear"
-		 					yearValue="<%= 0 %>"
+		 					yearValue="<%= fromDateYear %>"
 		 					formName="fmSearch"
 		 					autoFocus="<%=true %>"
-		 					cssClass="input100"
+		 					cssClass="input100" 
 		 				>
 		 				</liferay-ui:input-date>
 					</aui:col>
 					
 					<aui:col width="30">
 						<liferay-ui:input-date 
-		 					nullable="true"
-		 					dayParam="toDateDay"
-		 					dayValue="<%= 0 %>"
-		 					monthParam="toDateMonth"
-		 					monthValue="<%= 0 %>"
 		 					name="toDate"
+		 					nullable="<%= nullableToDate %>"
+		 					dayParam="toDateDay"
+		 					dayValue="<%= toDateDay %>"
+		 					monthParam="toDateMonth"
+		 					monthValue="<%= toDateMonth %>"
 		 					yearParam="toDateYear"
-		 					yearValue="<%= 0 %>"
+		 					yearValue="<%= toDateYear %>"
 		 					formName="fmSearch"
 		 					autoFocus="<%=true %>"
 		 					cssClass="input100"
@@ -247,7 +266,7 @@
 
 <aui:script use="liferay-util-list-fields,liferay-portlet-url">
 	Liferay.provide(window, '<portlet:namespace/>processMultipleDossier', function() {
-	
+		
 		var A = AUI();
 		
 		var currentURL = '<%=currentURL.toString()%>';

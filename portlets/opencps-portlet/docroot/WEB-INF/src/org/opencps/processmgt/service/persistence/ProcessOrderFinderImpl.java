@@ -880,8 +880,14 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 		long assignToUserId, String keyWords, String dossierSubStatus, 
 		String processOrderStage, Date fromDate, Date toDate) {
 		
-		Timestamp fromUpdateTime_TS = CalendarUtil.getTimestamp(fromDate);
-		Timestamp toUpdateTime_TS = CalendarUtil.getTimestamp(toDate);
+		Timestamp fromDate_TS = null;
+		Timestamp toDate_TS = null;
+		if (Validator.isNotNull(fromDate)){
+			fromDate_TS = CalendarUtil.getTimestamp(fromDate);
+		}
+		if (Validator.isNotNull(toDate)){
+			toDate_TS = CalendarUtil.getTimestamp(toDate);
+		}
 
 		Session session = null;
 		try {
@@ -920,14 +926,10 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 							"OR opencps_processorder.assignToUserId = ? OR 1=1");
 			}
 			
-			if (Validator.isNull(fromDate) && Validator.isNull(toDate)) {
+			if (Validator.isNull(fromDate_TS) && Validator.isNull(toDate_TS)) {
 				sql = StringUtil
-						.replace(sql, "AND opencps_processorder.modifiedDate BETWEEN ? AND ?",
+						.replace(sql, "AND (opencps_dossier.submitDatetime BETWEEN ? AND ?)",
 							StringPool.BLANK);
-			} else if (Validator.isNull(fromDate) || Validator.isNull(toDate)){
-				sql = StringUtil
-						.replace(sql, "AND opencps_processorder.modifiedDate BETWEEN ? AND ?",
-								"AND opencps_processorder.modifiedDate = ?");
 			}
 			
 			SQLQuery q = session
@@ -976,13 +978,9 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 					.add(keyWords);
 			}
 			
-			if (Validator.isNotNull(fromDate) && Validator.isNotNull(toDate)) {
-				qPos.add(fromDate);
-				qPos.add(toDate);
-			} else if (Validator.isNotNull(fromDate)) {
-				qPos.add(fromDate);
-			} else if (Validator.isNotNull(toDate)) {
-				qPos.add(toDate);
+			if (Validator.isNotNull(fromDate_TS) && Validator.isNotNull(toDate_TS)) {
+				qPos.add(fromDate_TS);
+				qPos.add(toDate_TS);
 			}
 			
 			Iterator<Integer> itr = q
@@ -1030,17 +1028,24 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 			String processOrderStage, Date fromDate, Date toDate, 
 			int start, int end, OrderByComparator orderByComparator) {
 
-		_log.info("================serviceInfoId sql: "+serviceInfoId);
-		_log.info("================processStepId sql: "+processStepId);
-		_log.info("================assignToUserId sql: "+assignToUserId);
-		_log.info("================keyWords sql: "+keyWords);
-		_log.info("================dossierSubStatus sql: "+dossierSubStatus);
-		_log.info("================processOrderStage sql: "+processOrderStage);
-		_log.info("================fromDate sql: "+fromDate);
-		_log.info("================toDate sql: "+toDate);
+		Timestamp fromDate_TS = null;
+		Timestamp toDate_TS = null;
+		if (Validator.isNotNull(fromDate)){
+			fromDate_TS = CalendarUtil.getTimestamp(fromDate);
+		}
+		if (Validator.isNotNull(toDate)){
+			toDate_TS = CalendarUtil.getTimestamp(toDate);
+		}
 		
-		Timestamp fromUpdateTime_TS = CalendarUtil.getTimestamp(fromDate);
-		Timestamp toUpdateTime_TS = CalendarUtil.getTimestamp(toDate);
+		System.out.println("================ serviceInfoId sql: "+serviceInfoId);
+		System.out.println("================ processStepId sql: "+processStepId);
+		System.out.println("================ loginUserId sql: "+loginUserId);
+		System.out.println("================ assignToUserId sql: "+assignToUserId);
+		System.out.println("================ keyWords sql: "+keyWords);
+		System.out.println("================ dossierSubStatus sql: "+dossierSubStatus);
+		System.out.println("================ processOrderStage sql: "+processOrderStage);
+		System.out.println("================ fromDate_TS sql: "+fromDate_TS);
+		System.out.println("================ toDate_TS sql: "+toDate_TS);
 		
 		Session session = null;
 		try {
@@ -1079,14 +1084,10 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 							"OR opencps_processorder.assignToUserId = ? OR 1=1");
 			}
 			
-			if (Validator.isNull(fromDate) && Validator.isNull(toDate)) {
+			if (Validator.isNull(fromDate_TS) && Validator.isNull(toDate_TS)) {
 				sql = StringUtil
-						.replace(sql, "AND opencps_processorder.modifiedDate BETWEEN ? AND ?",
+						.replace(sql, "AND (opencps_dossier.submitDatetime BETWEEN ? AND ?)",
 							StringPool.BLANK);
-			} else if (Validator.isNull(fromDate) || Validator.isNull(toDate)){
-				sql = StringUtil
-						.replace(sql, "AND opencps_processorder.modifiedDate BETWEEN ? AND ?",
-								"AND opencps_processorder.modifiedDate = ?");
 			}
 			
 			sql = CustomSQLUtil.replaceOrderBy(sql, orderByComparator);
@@ -1162,16 +1163,12 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 					.add(keyWords);
 			}
 			
-			if (Validator.isNotNull(fromDate) && Validator.isNotNull(toDate)) {
-				qPos.add(fromDate);
-				qPos.add(toDate);
-			} else if (Validator.isNotNull(fromDate)) {
-				qPos.add(fromDate);
-			} else if (Validator.isNotNull(toDate)) {
-				qPos.add(toDate);
+			if (Validator.isNotNull(fromDate_TS) && Validator.isNotNull(toDate_TS)) {
+				qPos.add(fromDate_TS);
+				qPos.add(toDate_TS);
 			}
 			
-			_log.info("================searchProcessOrderKeyWords sql: "+sql);
+			System.out.println("================ searchProcessOrderKeyWords sql: "+sql);
 
 			Iterator<Object[]> itr = (Iterator<Object[]>) QueryUtil
 				.list(q, getDialect(), start, end).iterator();
