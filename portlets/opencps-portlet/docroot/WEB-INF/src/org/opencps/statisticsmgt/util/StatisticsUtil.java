@@ -14,7 +14,6 @@ import java.util.Map;
 import org.opencps.statisticsmgt.bean.DossierStatisticsBean;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
-import org.opencps.statisticsmgt.service.GovagencyLevelLocalServiceUtil;
 import org.opencps.statisticsmgt.service.persistence.DossiersStatisticsFinder;
 
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
@@ -247,9 +246,14 @@ public class StatisticsUtil {
 		String[] govTreeIndexs = new String[] { "1", "2", "3", "1.1", "1.1.1",
 				"2.1", "2.2", "3.1", "3.2" };
 
-		String[] domains = new String[] { "LV1", "LV2", "LV3", "LV1.1" };
+		String[] domains = new String[] { "LV1", "LV2", "LV3", "LV1.1",
+				"LV4.1", "LV4.2", "LV4.1.1" };
 
-		String[] domainTreeIndexs = new String[] { "1", "2", "3", "1.1" };
+		String[] domainTreeIndexs = new String[] { "1", "2", "3", "1.1", "4.1",
+				"4.2", "4.1.1" };
+
+		String[] domainParentTreeIndexs = new String[] { "1", "2", "3", "1",
+				"4", "4", "4.1" };
 
 		for (int g = 0; g < govs.length; g++) {
 			for (int d = 0; d < domains.length; d++) {
@@ -305,6 +309,7 @@ public class StatisticsUtil {
 		HashMap<String, List<DossierStatisticsBean>> statisticGroupByGovMap = new HashMap<String, List<DossierStatisticsBean>>();
 		HashMap<String, DossierStatisticsBean> statisticGovTreeIndexMap = new HashMap<String, DossierStatisticsBean>();
 		HashMap<String, DossierStatisticsBean> beanMap = new HashMap<String, DossierStatisticsBean>();
+		HashMap<String, DossierStatisticsBean> statisticGroupByDomainMapParent = new HashMap<String, DossierStatisticsBean>();
 
 		if (data != null) {
 			_log.info("################################## data.size"
@@ -315,7 +320,8 @@ public class StatisticsUtil {
 							.get(i);
 
 					DossierStatisticsBean statisticsBeanTemp = new DossierStatisticsBean();
-
+					
+					// Create key
 					String key = statisticsBean.getMonth()
 							+ StringPool.DASH
 							+ statisticsBean.getYear()
@@ -330,18 +336,16 @@ public class StatisticsUtil {
 							+ StringPool.DASH
 							+ statisticsBean.getAdministrationLevel();
 
-					System.out
-							.println("########################################################### key"
-									+ i
-									+ "--"
-									+ key
-									+ "{"
-									+ statisticsBean.getAdministrationLevel()
-									+ "}"
-									+ "{"
-									+ statisticsBean.getGroupId()
-									+ "}");
+					/*_log.info("########################################################### key"
+							+ i
+							+ "--"
+							+ key
+							+ "{"
+							+ statisticsBean.getAdministrationLevel()
+							+ "}"
+							+ "{" + statisticsBean.getGroupId() + "}");*/
 
+					// Get beanMap by key
 					if (beanMap != null && beanMap.containsKey(key)) {
 						statisticsBeanTemp = beanMap.get(key);
 					}
@@ -909,10 +913,6 @@ public class StatisticsUtil {
 		}
 
 		return conditions.toString();
-	}
-
-	public static String test() {
-		return "AAAAAAAA";
 	}
 
 	/*
