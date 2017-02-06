@@ -91,7 +91,7 @@ import com.liferay.util.PwdGenerator;
 public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 
 	// SSO
-	public Business addBusiness(String fullName, String enName,
+	public Business addBusinessSSO(String fullName, String enName,
 			String shortName, String businessType, String idNumber,
 			String address, String cityCode, String districtCode,
 			String wardCode, String cityName, String districtName,
@@ -117,7 +117,7 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 
 		PortletUtil.SplitName spn = PortletUtil.splitName(fullName);
 
-		boolean autoPassword = false;
+		boolean autoPassword = true;
 		boolean autoScreenName = true;
 		boolean sendEmail = false;
 
@@ -132,7 +132,6 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 
 		// add default role
 		if (Validator.isNotNull(roleDefault)) {
-
 			roleIds = new long[] { roleDefault.getRoleId() };
 		}
 
@@ -156,9 +155,6 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 		if (userGroup != null) {
 			userGroupIds = new long[] { userGroup.getUserGroupId() };
 		}
-
-		/*password1 = PwdGenerator.getPassword();
-		password2 = password1;*/
 
 		Role adminRole = RoleLocalServiceUtil.getRole(
 				serviceContext.getCompanyId(), "Administrator");
@@ -189,13 +185,6 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 				new ArrayList<AnnouncementsDelivery>(), sendEmail,
 				serviceContext);
 		
-		mappingUser.setPasswordReset(false);
-
-		mappingUser = UserLocalServiceUtil.updateUser(mappingUser);
-		
-		_log.info("^^^^^^^^^^^^^^   mappingUser.getPasswordReset()   " + mappingUser.getPasswordReset());
-		_log.info("^^^^^^^^^^^^^^   appingUser.isNew()   " + mappingUser.isNew());
-
 		int status = WorkflowConstants.STATUS_INACTIVE;
 
 		Organization groupOrgBusiness = null;
