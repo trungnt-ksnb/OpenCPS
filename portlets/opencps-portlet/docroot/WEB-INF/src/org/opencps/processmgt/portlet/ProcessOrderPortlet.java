@@ -482,7 +482,9 @@ public class ProcessOrderPortlet extends MVCPortlet {
 
 		String paymentValue = ParamUtil.getString(actionRequest,
 				ProcessOrderDisplayTerms.PAYMENTVALUE);
-
+		
+		paymentValue = paymentValue.replaceAll("\\D+", StringPool.BLANK);
+		
 		String estimateDate = ParamUtil.getString(actionRequest,
 				ProcessOrderDisplayTerms.ESTIMATE_DATE);
 
@@ -540,6 +542,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 			sendToEngineMsg.setDossierId(dossierId);
 			sendToEngineMsg.setEstimateDatetime(deadline);
 			sendToEngineMsg.setFileGroupId(fileGroupId);
+			System.out.println("============= GetterUtil.getDouble(paymentValue): "+GetterUtil.getDouble(paymentValue));
 			sendToEngineMsg.setPaymentValue(GetterUtil.getDouble(paymentValue));
 			sendToEngineMsg.setProcessOrderId(processOrderId);
 			sendToEngineMsg.setProcessWorkflowId(processWorkflowId);
