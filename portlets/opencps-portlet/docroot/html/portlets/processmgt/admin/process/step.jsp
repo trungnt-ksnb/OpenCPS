@@ -97,7 +97,7 @@
 			row.addText(PortletUtil.getDossierStatusLabel(step.getDossierStatus(), locale));
 			
 			// step duration
-			row.addText(Integer.toString(step.getDaysDuration()));
+			row.addText(step.getDaysDuration());
 
 			if(isPermission) {
 				//action column
