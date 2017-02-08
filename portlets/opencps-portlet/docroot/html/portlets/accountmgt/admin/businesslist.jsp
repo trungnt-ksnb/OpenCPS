@@ -157,7 +157,7 @@
 				row.setClassName("opencps-searchcontainer-row");
 				row.addText(businesS.getIdNumber());
 				row.addText(businesS.getName());
-				row.addText(businesS.getBusinessType());
+				row.addText(businessTypeName);
 				row.addText(businesS.getEmail());
 				row.addText(accoutStatus);
 				row.addJSP("center", SearchEntry.DEFAULT_VALIGN,  "/html/portlets/accountmgt/admin/business_actions.jsp", config.getServletContext(), request, response);
