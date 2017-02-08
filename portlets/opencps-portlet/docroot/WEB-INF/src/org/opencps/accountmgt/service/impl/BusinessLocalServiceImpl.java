@@ -185,7 +185,8 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 				new ArrayList<AnnouncementsDelivery>(), sendEmail,
 				serviceContext);
 		
-		userService.updatePassword(mappingUser.getUserId(), password1, password2, false);
+		userService.updatePassword(mappingUser.getUserId(), password1, 
+				password2, false);
 		
 		int status = WorkflowConstants.STATUS_INACTIVE;
 

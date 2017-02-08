@@ -49,9 +49,14 @@ import com.liferay.portal.model.Phone;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.Website;
+import com.liferay.portal.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.security.permission.PermissionChecker;
+import com.liferay.portal.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.service.ContactLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portlet.announcements.model.AnnouncementsDelivery;
 
 /**
@@ -79,6 +84,163 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
 	 * the employee local service.
 	 */
 
+	public Employee addEmployeeSSO(long userId, String employeeNo, String fullName,
+			int gender, String telNo, String mobile, String email,
+			long workingUnitId, int workingStatus, long mainJobPosId,
+			long[] jobPosIds, boolean isAddUser, String accountEmail,
+			String screenName, int birthDateDay, int birthDateMonth,
+			int birthDateYear, String password, String reTypePassword,
+			long[] groupIds, long[] userGroupIds, ServiceContext serviceContext)
+			throws SystemException, PortalException {
+
+		long employeeId = CounterLocalServiceUtil
+				.increment(Employee.class.getName());
+		
+		Employee employee = employeePersistence.create(employeeId);
+
+		// Get main JobPos
+		JobPos jobPos = null;
+
+		if (mainJobPosId > 0) {
+			jobPos = jobPosPersistence.findByPrimaryKey(mainJobPosId);
+		}
+
+		// Get Working Unit
+		WorkingUnit workingUnit = null;
+
+		if (workingUnitId > 0) {
+			workingUnit = workingUnitPersistence
+					.findByPrimaryKey(workingUnitId);
+		}
+
+		// Get OrganizationId
+		long[] organizationIds = null;
+
+		if (workingUnit != null) {
+			organizationIds = new long[]{
+					workingUnit.getMappingOrganisationId()};
+		}
+
+		List<Long> roleIds = new ArrayList<Long>();
+
+		List<Long> distinctJobPosIds = new ArrayList<Long>();
+
+		if (jobPosIds != null && jobPosIds.length > 0) {
+
+			for (int job = 0; job < jobPosIds.length; job++) {
+				if (jobPosIds[job] > 0) {
+					JobPos jobPosTemp = jobPosPersistence
+							.findByPrimaryKey(jobPosIds[job]);
+					if (jobPosTemp != null) {
+						if (!roleIds.contains(jobPosTemp.getMappingRoleId())) {
+							roleIds.add(jobPosTemp.getMappingRoleId());
+
+						}
+
+						if (!distinctJobPosIds
+								.contains(jobPosTemp.getJobPosId())) {
+							distinctJobPosIds.add(jobPosTemp.getJobPosId());
+						}
+					}
+				}
+			}
+		}
+
+		Date now = new Date();
+
+		PortletUtil.SplitName spn = PortletUtil.splitName(fullName);
+
+		Date birthDate = DateTimeUtil.getDate(birthDateDay, birthDateMonth,
+				birthDateYear);
+
+		User user = null;
+		if (Validator.isNotNull(jobPos)){
+			roleIds.add(jobPos.getMappingRoleId());
+		}
+		long [] listRoles = null;	
+		Role defaultRole = null;
+		try {
+			 defaultRole = RoleLocalServiceUtil
+							.getRole(serviceContext.getCompanyId(),WebKeys.EMPLOYEE_ROLE_NAME );
+		}
+		catch (Exception e) {
+			_log.info("role OPCS_EMPLOYEE null");
+		}
+		if(!roleIds.isEmpty()) {
+			listRoles = new long[roleIds.size() + 1];
+			
+			if(Validator.isNotNull(defaultRole)) {
+				listRoles[roleIds.size()] = defaultRole.getRoleId();
+			}
+			
+			for(int i = 0; i < roleIds.size(); i++) {
+				listRoles[i] = roleIds.get(i);
+			}
+		} else {
+			if(Validator.isNotNull(defaultRole)) {
+				listRoles= new long[]{defaultRole.getRoleId()};
+			}
+		}
+		
+		if (isAddUser) {
+			
+			Role adminRole = RoleLocalServiceUtil.getRole(
+					serviceContext.getCompanyId(), "Administrator");
+			List<User> adminUsers = UserLocalServiceUtil.getRoleUsers(adminRole
+					.getRoleId());
+
+			PrincipalThreadLocal.setName(adminUsers.get(0).getUserId());
+			PermissionChecker permissionChecker;
+			try {
+				permissionChecker = PermissionCheckerFactoryUtil.create(adminUsers
+						.get(0));
+				PermissionThreadLocal.setPermissionChecker(permissionChecker);
+
+				serviceContext.setUserId(adminUsers.get(0).getUserId());
+			} catch (Exception e) {
+				_log.error(e);
+			}
+			
+			user = userService.addUserWithWorkflow(
+					serviceContext.getCompanyId(), true, "password",
+					"password", true, screenName, accountEmail, 0L,
+					StringPool.BLANK, LocaleUtil.getDefault(),
+					spn.getFirstName(), spn.getMidName(), spn.getLastName(), 0,
+					0, (gender == 1), birthDateMonth, birthDateDay,
+					birthDateYear,
+					jobPos != null ? jobPos.getTitle() : StringPool.BLANK,
+					groupIds, organizationIds, listRoles,
+					userGroupIds, new ArrayList<Address>(),
+					new ArrayList<EmailAddress>(), new ArrayList<Phone>(),
+					new ArrayList<Website>(),
+					new ArrayList<AnnouncementsDelivery>(), false,
+					serviceContext);
+			userService.updatePassword(user.getUserId(), password, 
+					reTypePassword, false);
+		}
+
+		employee.setUserId(userId);
+		employee.setGroupId(serviceContext.getScopeGroupId());
+		employee.setCompanyId(serviceContext.getCompanyId());
+		employee.setCreateDate(now);
+		employee.setModifiedDate(now);
+		employee.setWorkingUnitId(workingUnitId);
+		employee.setEmployeeNo(employeeNo);
+		employee.setFullName(fullName);
+		employee.setGender(gender);
+		employee.setBirthdate(birthDate);
+		employee.setTelNo(telNo);
+		employee.setMobile(mobile);
+		employee.setEmail(email);
+		employee.setWorkingStatus(workingStatus);
+		employee.setMainJobPosId(mainJobPosId);
+		employee.setMappingUserId(user != null ? user.getUserId() : 0);
+		employeePersistence.addJobPoses(employeeId,
+				ArrayUtil.toLongArray(distinctJobPosIds));
+
+		return employeePersistence.update(employee);
+	}
+	
 	@SuppressWarnings("null")
     public Employee addEmployee(long userId, String employeeNo, String fullName,
 			int gender, String telNo, String mobile, String email,
