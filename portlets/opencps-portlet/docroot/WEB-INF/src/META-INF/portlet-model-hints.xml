@@ -291,7 +291,7 @@
 		<field name="actionNote" type="String" />
 		<field name="actionUserId" type="long" />
 		<field name="daysDoing" type="int" />
-		<field name="daysDelay" type="int" />
+		<field name="daysDelay" type="long" />
 		<field name="oId" type="String" />
 		<field name="logId" type="long" />
 	</model>
@@ -331,7 +331,7 @@
 		<field name="sequenceNo" type="int" />
 		<field name="dossierStatus" type="String" />
 		<field name="dossierSubStatus" type="String" />
-		<field name="daysDuration" type="int" />
+		<field name="daysDuration" type="String" />
 		<field name="referenceDossierPartId" type="long" />
 		<field name="externalAppUrl" type="String" />
 		<field name="processStepNo" type="int" />

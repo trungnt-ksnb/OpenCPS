@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
@@ -232,28 +233,113 @@ public class DateTimeUtil {
 	public static String convertTimemilisecondsToFormat(long time, Locale locale) {
 
 		String format = new String(DATE_TIME_FORMAT);
-		String day = LanguageUtil.get(locale, "day");
+		String day = LanguageUtil.get(locale, DAY_PROPERTIES);
 		
-		format = format.replace("{D}", day);
+		format = format.replace(DAY_LANG, day);
 		
-		long diffSeconds = 0;
+		//long diffSeconds = 0;
 		long diffMinutes = 0;
 		long diffHours = 0;
 		long diffDays = 0;
 		
-		diffSeconds = time / 1000 % 60;
+		//diffSeconds = time / 1000 % 60;
 		diffMinutes = time / (60 * 1000) % 60;
 		diffHours = time / (60 * 60 * 1000) % 24;
 		diffDays = time / (24 * 60 * 60 * 1000);
 
-		format = StringUtil.replace(format, "{d}", String.valueOf(diffDays));
-		format = StringUtil.replace(format, "{HH}", String.valueOf(diffHours));
-		format = StringUtil.replace(format, "{mm}", String.valueOf(diffMinutes));
-		format = StringUtil.replace(format, "{ss}", String.valueOf(diffSeconds));
+		format = StringUtil.replace(format, DAY, String.valueOf(diffDays));
+		format = StringUtil.replace(format, HOUR, String.valueOf(diffHours));
+		format = StringUtil.replace(format, SECOND, String.valueOf(diffMinutes));
+		//format = StringUtil.replace(format, "{ss}", String.valueOf(diffSeconds));
 
 		return format;
 	}
-	private static final String DATE_TIME_FORMAT = "{d} {D} {HH}:{mm}:{ss}";
+	
+	public DateTimeBean getDateTimeFromPattern(String pattern) {
+		
+		DateTimeBean dateTimeBean = new DateTimeBean();
+
+		int Days = 0;
+		int Hours = 0;
+		int Minutes = 0;
+		
+		/* Pattern Format Example : "3 10:30" */
+		
+		if(pattern.trim().length() > 0){
+		
+			String[] splitPattern = StringUtil.split(pattern, StringPool.SPACE);
+
+			if (splitPattern.length == 2) {
+
+				Days = GetterUtil.getInteger(splitPattern[0], 0);
+
+				String[] splitHour = StringUtil.split(splitPattern[1],
+						StringPool.COLON);
+
+				if (splitHour.length == 2) {
+					Hours = GetterUtil.getInteger(splitHour[0]);
+					Minutes = GetterUtil.getInteger(splitHour[1]);
+				}
+			}
+		}
+		dateTimeBean.setDays(Days);
+		dateTimeBean.setHours(Hours);
+		dateTimeBean.setMinutes(Minutes);
+		
+		
+		return dateTimeBean;
+
+	}
+	
+	public class DateTimeBean {
+
+		public DateTimeBean() {
+
+			this.Days = 0;
+			this.Hours = 0;
+			this.Minutes = 0;
+		}
+
+		protected int Days;
+		protected int Hours;
+		protected int Minutes;
+
+		public int getDays() {
+			return Days;
+		}
+
+		public void setDays(int days2) {
+			Days = days2;
+		}
+
+		public int getHours() {
+			return Hours;
+		}
+
+		public void setHours(int hours2) {
+			Hours = hours2;
+		}
+
+		public int getMinutes() {
+			return Minutes;
+		}
+
+		public void setMinutes(int minutes2) {
+			Minutes = minutes2;
+		}
+	}
+	
+	private static final String DAY = "{d}";
+	
+	private static final String DAY_LANG = "{d}";
+	
+	private static final String DAY_PROPERTIES = "day";
+	
+	private static final String HOUR = "{d}";
+	
+	private static final String SECOND = "{d}";
+	
+	private static final String DATE_TIME_FORMAT = "{d} {D} {HH}:{mm}";
 
 	public static final String _TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -266,4 +352,15 @@ public class DateTimeUtil {
 	public static final String _DATE_TIME_TO_NAME = "yyyyMMdd";
 
 	private static Log _log = LogFactoryUtil.getLog(DateTimeUtil.class);
+
+	public static DateTimeBean DateTimeBean;
+
+	public static DateTimeBean getDateTimeBean() {
+		return DateTimeBean;
+	}
+
+	public static void setDateTimeBean(DateTimeBean dateTimeBean) {
+		DateTimeBean = dateTimeBean;
+	}
+
 }

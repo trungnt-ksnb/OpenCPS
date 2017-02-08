@@ -36,6 +36,7 @@ import org.opencps.jms.SyncServiceContext;
 import org.opencps.notificationmgt.message.SendNotificationMessage;
 import org.opencps.processmgt.model.WorkflowOutput;
 import org.opencps.processmgt.service.WorkflowOutputLocalServiceUtil;
+import org.opencps.processmgt.util.OutDateStatus;
 import org.opencps.util.MessageBusKeys;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.PortletPropsValues;
@@ -50,6 +51,7 @@ import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.MessageListenerException;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.SubscriptionSender;
 import com.liferay.util.PwdGenerator;
@@ -184,8 +186,13 @@ public class SyncFromBackOffice implements MessageListener {
 				    toBackOffice.getProcessWorkflowId(), true);
 
 				SendToCallbackMsg toCallBack = new SendToCallbackMsg();
+				
+				HolidayCheckUtils holidayCheckUtils = new HolidayCheckUtils();
 
-				int dayDelay = HolidayCheckUtils.getDayDelay(toBackOffice.getProcessOrderId(), toBackOffice.getProcessWorkflowId());
+				OutDateStatus outDate = holidayCheckUtils.getOutDateStatus(toBackOffice.getProcessOrderId(), toBackOffice.getProcessWorkflowId());
+				
+				long delayTimes = 0;
+				delayTimes = outDate.getTimeOutDate();
 				int daysDoing = 0;
 				
 				toCallBack.setProcessOrderId(toBackOffice.getProcessOrderId());
@@ -200,7 +207,7 @@ public class SyncFromBackOffice implements MessageListener {
 				toCallBack.setActionNote(toBackOffice.getMessageInfo());
 				toCallBack.setActionUserId(actorBean.getActorId());
 				toCallBack.setDaysDoing(daysDoing);
-				toCallBack.setDaysDelay(dayDelay);
+				toCallBack.setDaysDelay(delayTimes);
 				toCallBack.setSyncStatus(statusUpdate ? "ok" : "error");
 				toCallBack.setLogId(dossierLog.getDossierLogId());
 				

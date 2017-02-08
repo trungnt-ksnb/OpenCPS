@@ -25,7 +25,7 @@ import org.opencps.dossiermgt.model.ServiceConfig;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
 import org.opencps.dossiermgt.service.DossierLogLocalServiceUtil;
 import org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil;
-import org.opencps.holidayconfig.util.HolidayUtils;
+import org.opencps.holidayconfig.util.HolidayCheckUtils;
 import org.opencps.paymentmgt.service.PaymentFileLocalServiceUtil;
 import org.opencps.processmgt.model.ProcessOrder;
 import org.opencps.processmgt.model.ProcessStep;
@@ -198,7 +198,7 @@ public class BackendUtils {
 
 			if (dossierStatus.contains(PortletConstants.DOSSIER_STATUS_WAITING)) {
 
-				Date endDate = HolidayUtils.getEndDate(processOrder.getActionDatetime(),
+				Date endDate = HolidayCheckUtils.getEndDate(processOrder.getActionDatetime(),
 						pattern);
 				
 				Date now = new Date();
