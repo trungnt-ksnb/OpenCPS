@@ -1,3 +1,4 @@
+<%@page import="org.opencps.datamgt.model.DictItem"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -36,6 +37,7 @@
 <%@page import="org.opencps.accountmgt.search.BusinessSearch"%>
 <%@page import="com.liferay.portal.kernel.upgrade.RenameUpgradePortletPreferences"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
+<%@page import="org.opencps.util.PortletPropsValues"%>
 
 <%@ include file="../init.jsp" %>
 
@@ -133,6 +135,21 @@
 			keyProperty="businessId"
 		>
 			<%
+				String businessTypeName = StringPool.BLANK;
+				DictItem dictBusinessType = null;
+				if (businesS != null) {
+				dictBusinessType =
+					PortletUtil.getDictItem(
+						PortletPropsValues.DATAMGT_MASTERDATA_BUSINESS_TYPE,
+						businesS.getBusinessType(), scopeGroupId);
+
+				}
+				businessTypeName =
+						dictBusinessType != null
+							? (Validator.isNotNull(dictBusinessType.getItemName(locale))
+								? dictBusinessType.getItemName(locale)
+								: dictBusinessType.getItemName())
+							: StringPool.BLANK;
 				String accoutStatus = StringPool.BLANK;
 				
 				accoutStatus = LanguageUtil.get(portletConfig, themeDisplay.getLocale(), PortletUtil.getAccountStatus(businesS.getAccountStatus(), themeDisplay.getLocale()));
