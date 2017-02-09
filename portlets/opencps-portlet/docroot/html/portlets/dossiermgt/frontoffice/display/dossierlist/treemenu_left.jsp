@@ -244,8 +244,6 @@
 					<%
 						Dossier dossier = dossierBean.getDossier();
 						String cssStatusColor = "status-color-" + dossier.getDossierStatus();
-						
-
 						List<DossierLog> dossierLogs = new ArrayList<DossierLog>();
 						String noteContent = StringPool.BLANK;
 						try {
@@ -386,11 +384,9 @@
 							</div>
 						</div>
 						<div class="row-fluid">
-							
 							<div class="span5 bold-label">
 								<liferay-ui:message key="note"/>
 							</div>
-							
 							<div class='<%="span7 " + cssStatusColor %>'>
 								<liferay-ui:message key="<%= noteContent  %>"/>
 							</div>
