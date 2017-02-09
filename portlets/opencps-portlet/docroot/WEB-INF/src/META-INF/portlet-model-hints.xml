@@ -862,5 +862,8 @@
 		<field name="dossierCurrentStatus" type="String" />
 		<field name="dossierNextStatus" type="String" />
 		<field name="isSendNotification" type="boolean" />
+		<field name="notificationName" type="String" />
+		<field name="moreContent" type="String" />
+		<field name="plId" type="long" />
 	</model>
 </model-hints>
