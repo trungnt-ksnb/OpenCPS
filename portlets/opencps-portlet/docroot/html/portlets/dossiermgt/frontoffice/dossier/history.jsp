@@ -238,7 +238,7 @@
 									String cssClass = "dossier-file-status-" + lf.getActionCode();
 									String actionCode = LanguageUtil.get(locale, cssClass);
 							%>
-								<div style="padding: 3px; display: block;">
+								<div style="padding: 3px; ">
 									<%= StringPool.GREATER_THAN %> 
 									<%= LanguageUtil.get(pageContext, "history-file-action-"+lf.getActionCode()) %> :
 										 <aui:a href="#" >
