@@ -234,23 +234,41 @@ public class DateTimeUtil {
 
 		String format = new String(DATE_TIME_FORMAT);
 		String day = LanguageUtil.get(locale, DAY_PROPERTIES);
-		
-		format = format.replace(DAY_LANG, day);
-		
-		//long diffSeconds = 0;
+
 		long diffMinutes = 0;
 		long diffHours = 0;
 		long diffDays = 0;
-		
-		//diffSeconds = time / 1000 % 60;
+
 		diffMinutes = time / (60 * 1000) % 60;
 		diffHours = time / (60 * 60 * 1000) % 24;
 		diffDays = time / (24 * 60 * 60 * 1000);
 
-		format = StringUtil.replace(format, DAY, String.valueOf(diffDays));
-		format = StringUtil.replace(format, HOUR, String.valueOf(diffHours));
-		format = StringUtil.replace(format, SECOND, String.valueOf(diffMinutes));
-		//format = StringUtil.replace(format, "{ss}", String.valueOf(diffSeconds));
+		if (diffDays > 0) {
+			format = format.replace(DAY, String.valueOf(diffDays));
+			format = format.replace(DAY_LANG, day);
+		} else if (diffDays < 0) {
+			format = format.replace(DAY, String.valueOf(Math.abs(diffDays)));
+			format = format.replace(DAY_LANG, day);
+		} else {
+			format = format.replace(DAY, StringPool.BLANK.trim());
+			format = format.replace(DAY_LANG, StringPool.BLANK.trim());
+		}
+
+		if (diffHours == 0 && diffMinutes == 0) {
+			format = format.replace(SUB_DATE_TIME_FORMAT, StringPool.BLANK);
+		} else {
+			format = format.replace(HOUR, String.valueOf(Math.abs(diffHours)));
+			format = format.replace(MINUTE,
+					String.valueOf(Math.abs(diffMinutes)));
+		}
+
+		if (time > 0) {
+			format = LanguageUtil.get(locale, LATE) + format.trim();
+		} else if (time < 0) {
+			format = LanguageUtil.get(locale, EARLY) + format.trim();
+		} else {
+			format = LanguageUtil.get(locale, ONTIME) + format.trim();
+		}
 
 		return format;
 	}
@@ -331,15 +349,23 @@ public class DateTimeUtil {
 	
 	private static final String DAY = "{d}";
 	
-	private static final String DAY_LANG = "{d}";
+	private static final String DAY_LANG = "{D}";
 	
 	private static final String DAY_PROPERTIES = "day";
 	
-	private static final String HOUR = "{d}";
+	private static final String HOUR = "{HH}";
 	
-	private static final String SECOND = "{d}";
+	private static final String MINUTE = "{MM}";
 	
-	private static final String DATE_TIME_FORMAT = "{d} {D} {HH}:{mm}";
+	private static final String EARLY = "status-soon";
+	
+	private static final String LATE = "status-late";
+	
+	private static final String ONTIME = "status-ontime";
+	
+	private static final String DATE_TIME_FORMAT = "{d} {D} {HH}:{MM}";
+	
+	private static final String SUB_DATE_TIME_FORMAT = "{HH}:{MM}";
 
 	public static final String _TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
