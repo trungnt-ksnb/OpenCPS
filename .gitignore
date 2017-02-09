@@ -317,3 +317,7 @@ portlets/opencps-portlet/docroot/WEB-INF/.DS_Store
 portlets/opencps-portlet/docroot/WEB-INF/src/.DS_Store
 portlets/opencps-portlet/docroot/WEB-INF/src/org/.DS_Store
 portlets/opencps-portlet/docroot/WEB-INF/util-taglib/.DS_Store
+
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/notificationmgt/model/impl/*
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/notificationmgt/service/base/*
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/notificationmgt/service/persistence/NotificationConfigPersistenceImpl.java

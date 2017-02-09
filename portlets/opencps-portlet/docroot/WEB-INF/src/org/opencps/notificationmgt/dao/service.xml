@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+<service-builder package-path="org.opencps.notificationmgt" auto-namespace-tables="false">
+	<author>nhanhoang</author>
+	<namespace>notificationmgt</namespace>
+
+	<entity name="NotificationConfig" local-service="true" remote-service="false"
+		table="opencps_config_notification">
+
+		<!-- PK fields -->
+
+		<column name="notificationConfigId" type="long" primary="true" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="groupId" type="long" />
+		<column name="userId" type="long" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="dossierCurrentStatus" type="String" />
+		<column name="dossierNextStatus" type="String" />
+		<column name="isSendNotification" type="boolean"></column>
+		
+		<!-- Finder methods -->
+		<finder return-type="NotificationConfig" name="C_N_S" >
+			<finder-column name="dossierCurrentStatus" />
+			<finder-column name="dossierNextStatus" />
+			<finder-column name="isSendNotification" />
+		</finder>
+		
+		<finder return-type="Collection" name="C_S" >
+			<finder-column name="dossierCurrentStatus" />
+			<finder-column name="isSendNotification" />
+		</finder>
+		
+		<finder return-type="Collection" name="N_S" >
+			<finder-column name="dossierNextStatus" />
+			<finder-column name="isSendNotification" />
+		</finder>		
+	</entity>
+
+</service-builder>
