@@ -54,7 +54,7 @@ public class MsgInFrontOffice implements MessageListener {
 
 	private void _doReceive(Message message) {
 
-		_log.info("####################MsgInFrontOffice: Started receive jms message");
+		/*_log.info("####################MsgInFrontOffice: Started receive jms message");
 
 		long[] companyIds = PortalUtil.getCompanyIds();
 
@@ -70,13 +70,13 @@ public class MsgInFrontOffice implements MessageListener {
 		}
 
 		if (companyId > 0) {
-			/*
+			
 			 * JMSContext context = JMSMessageUtil.createConsumer( companyId,
 			 * StringPool.BLANK, true,
 			 * WebKeys.JMS_QUEUE_OPENCPS_FRONTOFFICE.toLowerCase(),
 			 * WebKeys.JMS_QUEUE_OPENCPS_FRONTOFFICE.toLowerCase(), "local",
 			 * "jmscore");
-			 */
+			 
 
 			JMSHornetqContext context =
 				JMSMessageUtil.createHornetqConsumer(
@@ -123,7 +123,7 @@ public class MsgInFrontOffice implements MessageListener {
 		}
 		else {
 			_log.info("Cannot create connection to JMS Queue..................");
-		}
+		}*/
 
 	}
 	private Log _log = LogFactoryUtil.getLog(MsgInFrontOffice.class);

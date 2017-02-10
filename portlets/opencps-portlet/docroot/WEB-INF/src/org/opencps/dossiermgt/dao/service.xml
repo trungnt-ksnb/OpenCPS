@@ -66,7 +66,7 @@
 		<column name="sampleData" type="String" />
 		<column name="required" type="boolean" />
 		<column name="templateFileNo" type="String" />
-
+		<column name="hasSign" type="boolean" />
 		<!-- order -->
 		<order by="asc">
 			<order-column name="sibling" />

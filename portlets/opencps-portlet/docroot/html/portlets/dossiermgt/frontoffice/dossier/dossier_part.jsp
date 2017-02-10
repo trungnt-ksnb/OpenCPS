@@ -1,4 +1,4 @@
-<%@page import="org.opencps.processmgt.util.ReportUtils"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -79,7 +79,6 @@
 	List<DossierPart> dossierPartsLevel1 = new ArrayList<DossierPart>();
 	
 	boolean isEditDossier = ParamUtil.getBoolean(request, "isEditDossier");
-	
 	String cssRequired = StringPool.BLANK;
 	String cssDossierPartRequired = StringPool.BLANK;
 	
@@ -483,8 +482,31 @@
 <portlet:resourceURL var="signatureFrontOffice" />
 
 <aui:script>
+
+	function pluginload(loaded)
+	{
+		if(!loaded) {
+			alert('Loading plugin is failed!');
+		}
+	}
+	// load plugin
+	$(window).load(function() {
+		 PDFSigningHelper.init(pluginload);
+	});
 	
-	AUI().ready('aui-base','liferay-portlet-url','aui-io', function(A){
+	
+	AUI().ready('aui-base','liferay-portlet-url','aui-io', 'aui-tooltip', function(A){
+		
+		var items = A.all('#<portlet:namespace />signInfoMsg');
+		items.each(function(item) {
+				new A.Tooltip(
+			      {
+			        trigger: item,
+			        cssClass: 'tooltip-help',
+			        opacity: 1
+			      }
+			    ).render();
+		}); 
 		
 		/* PDFSigningHelper.init(pluginload);
 		
@@ -493,7 +515,7 @@
 			if(!loaded) {
 				alert('Loading plugin is failed!');
 			}
-		}
+		} */
 		
 		function SigningCallback(jsondata)
 		{			
@@ -508,15 +530,22 @@
 			}
 		}
 		
-		var url = '<%= signatureFrontOffice %>';
+		/* var url = '<%= signatureFrontOffice %>';
 		var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
 		var imgSrcName = '<%= Validator.isNotNull(user) ? user.getScreenName() : StringPool.BLANK %>';
-		var signatureItems = A.all('.signatureCls');
+		var signatureItems = A.all('tr td a.signatureCls');
 		signatureItems.each( function(signatureItem) {
 			// console.log('start sign at here : ' + signatureItem);
 			var dossierFileId = signatureItem.attr("dossier-file");
-			signatureItem.on('click', function() {
-				
+				new A.Tooltip(
+			      {
+			        trigger: signatureItem,
+			        cssClass: 'tooltip-help',
+			        opacity: 1
+			      }
+			    ).render();
+			signatureItem.on('click', function(e) {
+				// hide button here
 				$.ajax({
 		    		type : 'POST',
 					url : url,
@@ -530,6 +559,7 @@
 						
 						var nameOfFile = jsonDataResponse.fileName;
 						var base64String = jsonDataResponse.base64ContentString;
+						
 						var condauImageSrc = imgSrcName + "_condau.png";
 						var imgContentBase64Str = jsonDataResponse.imgContentBase64Str;
 						
@@ -540,14 +570,16 @@
 									PDFSigningHelper.writeBase64ToFile(nameOfFile, base64String, function(jsondata) {
 										
 										PDFSigningHelper.getCertIndex( function(dataJSON) {
-											
 											if(dataJSON.data != '-1') {
 												
 												PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
 														author, "", dataJSON.data , "", function(jsondataSigned) {
+													alert("dataJSON.data   " + dataJSON.data);
 													if(jsondataSigned.code == 0)
 													{
 														PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+															
+															// console.log("base64 file   "+jsondataBase64.data)
 															
 															AUI().use('aui-io-request', function(A){
 														    	$.ajax({
@@ -566,8 +598,10 @@
 																			if(jsonDataResponse.msg == 'success') {
 																				
 																				PDFSigningHelper.openFile(jsondataSigned.data.path);
-									
-																				Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id_<%= WebKeys.DOSSIER_MGT_PORTLET %>_', data);
+																				var dataRefresh = {
+																						'conserveHash': true
+																				};
+																				Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id_<%= WebKeys.DOSSIER_MGT_PORTLET %>_', dataRefresh);
 																			}
 																		}
 																	}
@@ -577,9 +611,12 @@
 													}
 													else
 													{
-														alert('error with code:' + jsondataSigned.errormsg);
+														// show button
+														alert('error with code:' + jsondataSigned.code + " " + jsondataSigned.errormsg);
 													}
 												});
+											} else {
+												// show button
 											}
 										});
 									});
@@ -602,6 +639,10 @@
 					portletURL.setWindowState("<%=LiferayWindowState.POP_UP.toString()%>"); 
 					portletURL.setPortletMode("normal");
 					portletURL.setParameter("content", "upload-file");
+					portletURL.setParameter("signatureType", signatureType);
+					portletURL.setParameter("signatureType", signatureType);
+					portletURL.setParameter("signatureType", signatureType);
+					
 					uploadDossierFile(this, portletURL.toString(), '<portlet:namespace/>');
 				});
 			});

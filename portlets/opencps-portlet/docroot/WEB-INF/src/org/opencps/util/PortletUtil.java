@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.naming.Context;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -54,7 +55,6 @@ import org.opencps.processmgt.service.WorkflowOutputLocalServiceUtil;
 import org.opencps.processmgt.util.ProcessUtils;
 import org.opencps.util.PortletConstants.FileSizeUnit;
 
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONException;
@@ -78,6 +78,8 @@ import com.liferay.portal.util.PortalUtil;
  *
  */
 public class PortletUtil {
+	
+	
 
 	public static class SplitName {
 
@@ -1152,6 +1154,15 @@ public class PortletUtil {
 		}
 
 		return size;
+	}
+	
+	public static String getContentTypeFromFile(File file) {
+		String fileName = file.getPath();
+		MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
+		String contentType = mimeTypesMap.getContentType(fileName);
+		contentType = mimeTypesMap.getContentType(file);
+		
+		return contentType;
 	}
 
 	public static List<Long> getDossierPartResultRequired(

@@ -1,6 +1,4 @@
 
-<%@page import="org.opencps.processmgt.util.ReportUtils"%>
-<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -151,12 +149,15 @@
 	String alpacaSchema = dossierPart != null && Validator.isNotNull(dossierPart.getFormScript()) ? 
 	      dossierPart.getFormScript().replaceAll("\\?p_auth=REPLACEKEY", "/group-id/"+ themeDisplay.getScopeGroupId()+"?p_auth="+auTock) : StringPool.BLANK;
 
-
+	int signCheck = 0;
+	
 	DossierFile dossierFile = null;
 	
 	if(dossierFileId > 0){
 		try{
 			dossierFile = DossierFileLocalServiceUtil.getDossierFile(dossierFileId);
+			
+			signCheck = dossierFile.getSignCheck();
 		}catch(Exception e){
 			
 		}
@@ -239,9 +240,9 @@
 </aui:form>
 <portlet:resourceURL var="getDataAjax"></portlet:resourceURL>
 
-<%-- <c:if test="<%= portleName.equals(WebKeys.DOSSIER_MGT_PORTLET) && dossierFileId > 0 %>">
+<c:if test="<%= portleName.equals(WebKeys.DOSSIER_MGT_PORTLET) && dossierFileId > 0 && signCheck != 1 %>">
 	<aui:button value="sign" onclick="signatureFrontOffice()" />
-</c:if> --%>
+</c:if>
 
 <aui:script>
 	var url = '<%= getDataAjax %>';
@@ -252,12 +253,12 @@
 	{
 		if(!loaded) {
 			alert('Loading plugin is failed!');
-		} 
+		}
 	}
 	
 	function callbackPathFile(jsondata) {
 		alert("data    " + jsondata.data);
-	}
+	} */
 	
 	
 	//function to test
@@ -266,17 +267,17 @@
 		if(jsondata.code == 0)
 		{
 			alert('suc:' + jsondata.data.path);
-			PDFSigningHelper.openFile(jsondata.data.path);
+			window.parent.PDFSigningHelper.openFile(jsondata.data.path);
 		}
 		else
 		{
 			alert('error with code:' + jsondata.errormsg);
 		}
-	} */
+	}
 	
 	function signatureFrontOffice(){
 		
-		/* var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
+		var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
 		var imgSrcName = '<%= Validator.isNotNull(user) ? user.getScreenName() : StringPool.BLANK %>';
 		$.ajax({
 			
@@ -297,21 +298,21 @@
 				
 				if(imgContentBase64Str != '' && condauImageSrc != '') {
 					
-					PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
+					window.parent.PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
 						
 						if(base64String != '' && fileName != '') {
 							
-							PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
+							window.parent.PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
 								
-								PDFSigningHelper.getCertIndex( function(dataJSON) {
+								window.parent.PDFSigningHelper.getCertIndex( function(dataJSON) {
 									
 									if(dataJSON.data != '-1') {
 										
-										PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
+										window.parent.PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
 												author, "", dataJSON.data , "", function(jsondataSigned) {
 											if(jsondataSigned.code == 0)
 											{
-												PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+												window.parent.PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
 													
 													
 													AUI().use('aui-io-request', function(A){
@@ -330,7 +331,7 @@
 																	
 																	if(jsonDataResponse.msg == 'success') {
 																		// open file on client after signed success
-																		PDFSigningHelper.openFile(jsondataSigned.data.path);
+																		window.parent.PDFSigningHelper.openFile(jsondataSigned.data.path);
 																		
 																		// close dialog when signed success
 																		var ns = '<portlet:namespace/>';
@@ -355,11 +356,11 @@
 					});
 				}
 			}
-		}); */
+		});
 	}
 	
 	AUI().ready(function(A){
-		/* PDFSigningHelper.init(pluginload); */
+	//	window.parent.PDFSigningHelper.init(pluginload);
 		
 		if(alpacaSchema.options != 'undefined' && alpacaSchema.schema != 'undefined'){
 			

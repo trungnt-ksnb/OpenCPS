@@ -314,7 +314,10 @@ public class DossierMgtAdminPortlet extends MVCPortlet {
 		String backURL = ParamUtil.getString(actionRequest, "backURL");
 
 		String isAddChilds = ParamUtil.getString(actionRequest, "isAddChilds");
-
+		
+		boolean hasSign = ParamUtil.getBoolean(actionRequest, 
+				DossierPartDisplayTerms.DOSSIERPART_HASSING);
+		
 		int partType = ParamUtil.getInteger(actionRequest,
 				DossierPartDisplayTerms.DOSSIERPART_PARTTYPE);
 		double sibling = ParamUtil.getDouble(actionRequest,
@@ -332,7 +335,7 @@ public class DossierMgtAdminPortlet extends MVCPortlet {
 				DossierPartLocalServiceUtil.addDossierPart(dossierTemplateId,
 						partNo, partName, partTip, partType, parentId, sibling,
 						formScript, formReport, sampleData, required,
-						templateFileNo, serviceContext.getUserId(),
+						templateFileNo, serviceContext.getUserId(), hasSign,
 						serviceContext);
 			} else {
 
@@ -341,13 +344,13 @@ public class DossierMgtAdminPortlet extends MVCPortlet {
 							dossierTemplateId, partNo, partName, partTip,
 							partType, parentId, sibling, formScript,
 							formReport, sampleData, required, templateFileNo,
-							serviceContext.getUserId(), serviceContext);
+							serviceContext.getUserId(), hasSign, serviceContext);
 				} else {
 					DossierPartLocalServiceUtil.updateDossierPart(
 							dossierPartId, dossierTemplateId, partNo, partName,
 							partTip, partType, parentId, sibling, formScript,
 							formReport, sampleData, required, templateFileNo,
-							serviceContext.getUserId(), serviceContext);
+							serviceContext.getUserId(), hasSign, serviceContext);
 				}
 
 			}
