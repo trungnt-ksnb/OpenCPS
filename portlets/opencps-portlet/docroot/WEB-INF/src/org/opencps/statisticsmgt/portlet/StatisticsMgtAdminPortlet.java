@@ -1,15 +1,16 @@
+
 package org.opencps.statisticsmgt.portlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 
-import org.opencps.statisticsmgt.model.GovagencyLevel;
+import org.opencps.statisticsmgt.bean.DossierStatisticsBean;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
 import org.opencps.statisticsmgt.service.GovagencyLevelLocalServiceUtil;
 import org.opencps.statisticsmgt.util.StatisticsUtil;
@@ -24,7 +25,6 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
-import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 /**
@@ -32,8 +32,9 @@ import com.liferay.util.bridges.mvc.MVCPortlet;
  */
 public class StatisticsMgtAdminPortlet extends MVCPortlet {
 
-	public void doStatistics(ActionRequest actionRequest,
-			ActionResponse actionResponse) {
+	public void doStatistics(
+		ActionRequest actionRequest, ActionResponse actionResponse) {
+
 		long groupId = ParamUtil.getLong(actionRequest, "groupId");
 		int month = ParamUtil.getInteger(actionRequest, "month");
 		int year = ParamUtil.getInteger(actionRequest, "year");
@@ -45,11 +46,11 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 			lastMonth = 12;
 		}
 
-		_log.info("firstMonth " + firstMonth + "|" + "lastMonth " + lastMonth
-				+ "|");
+		_log.info("firstMonth " + firstMonth + "|" + "lastMonth " + lastMonth +
+			"|");
 
-		List<Integer> months = DossiersStatisticsLocalServiceUtil.getMonths(
-				groupId, year);
+		List<Integer> months =
+			DossiersStatisticsLocalServiceUtil.getMonths(groupId, year);
 
 		_log.info("########################## " + months.size());
 
@@ -64,36 +65,30 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 					continue;
 				}
 
-				List receiveds1 = DossiersStatisticsLocalServiceUtil
-						.generalStatistics(
-								groupId,
-								m,
-								year,
-								StatisticsFieldNumber.ReceivedNumber.toString(),
-								-1);
-				List ontimes1 = DossiersStatisticsLocalServiceUtil
-						.generalStatistics(groupId, m, year,
-								StatisticsFieldNumber.OntimeNumber.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_ONTIME);
-				List overtimes1 = DossiersStatisticsLocalServiceUtil
-						.generalStatistics(
-								groupId,
-								m,
-								year,
-								StatisticsFieldNumber.OvertimeNumber.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_LATE);
-				List processings1 = DossiersStatisticsLocalServiceUtil
-						.generalStatistics(groupId, m, year,
-								StatisticsFieldNumber.ProcessingNumber
-										.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_UNEXPIRED);
-				List delayings1 = DossiersStatisticsLocalServiceUtil
-						.generalStatistics(
-								groupId,
-								m,
-								year,
-								StatisticsFieldNumber.DelayingNumber.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_EXPIRED);
+				List receiveds1 =
+					DossiersStatisticsLocalServiceUtil.generalStatistics(
+						groupId, m, year,
+						StatisticsFieldNumber.ReceivedNumber.toString(), -1);
+				List ontimes1 =
+					DossiersStatisticsLocalServiceUtil.generalStatistics(
+						groupId, m, year,
+						StatisticsFieldNumber.OntimeNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_ONTIME);
+				List overtimes1 =
+					DossiersStatisticsLocalServiceUtil.generalStatistics(
+						groupId, m, year,
+						StatisticsFieldNumber.OvertimeNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_LATE);
+				List processings1 =
+					DossiersStatisticsLocalServiceUtil.generalStatistics(
+						groupId, m, year,
+						StatisticsFieldNumber.ProcessingNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_UNEXPIRED);
+				List delayings1 =
+					DossiersStatisticsLocalServiceUtil.generalStatistics(
+						groupId, m, year,
+						StatisticsFieldNumber.DelayingNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_EXPIRED);
 
 				if (receiveds1 != null) {
 					total.addAll(receiveds1);
@@ -115,87 +110,180 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 					total.addAll(delayings1);
 				}
 
-				List receiveds2 = DossiersStatisticsLocalServiceUtil
-						.statisticsByDomain(
-								groupId,
-								m,
-								year,
-								StatisticsFieldNumber.ReceivedNumber.toString(),
-								-1);
-				List ontimes2 = DossiersStatisticsLocalServiceUtil
-						.statisticsByDomain(groupId, m, year,
-								StatisticsFieldNumber.OntimeNumber.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_ONTIME);
-				List overtimes2 = DossiersStatisticsLocalServiceUtil
-						.statisticsByDomain(
-								groupId,
-								m,
-								year,
-								StatisticsFieldNumber.OvertimeNumber.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_LATE);
-				List processings2 = DossiersStatisticsLocalServiceUtil
-						.statisticsByDomain(groupId, m, year,
-								StatisticsFieldNumber.ProcessingNumber
-										.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_UNEXPIRED);
-				List delayings2 = DossiersStatisticsLocalServiceUtil
-						.statisticsByDomain(
-								groupId,
-								m,
-								year,
-								StatisticsFieldNumber.DelayingNumber.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_EXPIRED);
+				List receiveds2 =
+					DossiersStatisticsLocalServiceUtil.statisticsByDomain(
+						groupId, m, year,
+						StatisticsFieldNumber.ReceivedNumber.toString(), -1);
+				List ontimes2 =
+					DossiersStatisticsLocalServiceUtil.statisticsByDomain(
+						groupId, m, year,
+						StatisticsFieldNumber.OntimeNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_ONTIME);
+				List overtimes2 =
+					DossiersStatisticsLocalServiceUtil.statisticsByDomain(
+						groupId, m, year,
+						StatisticsFieldNumber.OvertimeNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_LATE);
+				List processings2 =
+					DossiersStatisticsLocalServiceUtil.statisticsByDomain(
+						groupId, m, year,
+						StatisticsFieldNumber.ProcessingNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_UNEXPIRED);
+				List delayings2 =
+					DossiersStatisticsLocalServiceUtil.statisticsByDomain(
+						groupId, m, year,
+						StatisticsFieldNumber.DelayingNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_EXPIRED);
 
 				if (receiveds2 != null) {
-					total.addAll(receiveds2);
+					LinkedHashMap<String, DossierStatisticsBean> beanMap =
+						new LinkedHashMap<String, DossierStatisticsBean>();
+
+					for (int i = 0; i < receiveds2.size(); i++) {
+						DossierStatisticsBean statisticsBean =
+							(DossierStatisticsBean) receiveds2.get(i);
+						beanMap.put(
+							statisticsBean.getDomainTreeIndex(), statisticsBean);
+
+						StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
+							beanMap, statisticsBean);
+					}
+
+					if (beanMap.size() == receiveds2.size()) {
+
+						total.addAll(receiveds2);
+					}
+					else {
+						for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
+							total.add(entry.getValue());
+						}
+					}
 				}
 
 				if (ontimes2 != null) {
-					total.addAll(ontimes2);
+					LinkedHashMap<String, DossierStatisticsBean> beanMap =
+						new LinkedHashMap<String, DossierStatisticsBean>();
+
+					for (int i = 0; i < receiveds2.size(); i++) {
+						DossierStatisticsBean statisticsBean =
+							(DossierStatisticsBean) receiveds2.get(i);
+						beanMap.put(
+							statisticsBean.getDomainTreeIndex(), statisticsBean);
+
+						StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
+							beanMap, statisticsBean);
+					}
+
+					if (beanMap.size() == receiveds2.size()) {
+
+						total.addAll(receiveds2);
+					}
+					else {
+						for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
+							total.add(entry.getValue());
+						}
+					}
 				}
 
 				if (overtimes2 != null) {
-					total.addAll(overtimes2);
+					LinkedHashMap<String, DossierStatisticsBean> beanMap =
+						new LinkedHashMap<String, DossierStatisticsBean>();
+
+					for (int i = 0; i < receiveds2.size(); i++) {
+						DossierStatisticsBean statisticsBean =
+							(DossierStatisticsBean) receiveds2.get(i);
+						beanMap.put(
+							statisticsBean.getDomainTreeIndex(), statisticsBean);
+
+						StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
+							beanMap, statisticsBean);
+					}
+
+					if (beanMap.size() == receiveds2.size()) {
+
+						total.addAll(receiveds2);
+					}
+					else {
+						for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
+							total.add(entry.getValue());
+						}
+					}
 				}
 
 				if (processings2 != null) {
-					total.addAll(processings2);
+					LinkedHashMap<String, DossierStatisticsBean> beanMap =
+						new LinkedHashMap<String, DossierStatisticsBean>();
+
+					for (int i = 0; i < receiveds2.size(); i++) {
+						DossierStatisticsBean statisticsBean =
+							(DossierStatisticsBean) receiveds2.get(i);
+						beanMap.put(
+							statisticsBean.getDomainTreeIndex(), statisticsBean);
+
+						StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
+							beanMap, statisticsBean);
+					}
+
+					if (beanMap.size() == receiveds2.size()) {
+
+						total.addAll(receiveds2);
+					}
+					else {
+						for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
+							total.add(entry.getValue());
+						}
+					}
 				}
 
 				if (delayings2 != null) {
-					total.addAll(delayings2);
+					LinkedHashMap<String, DossierStatisticsBean> beanMap =
+						new LinkedHashMap<String, DossierStatisticsBean>();
+
+					for (int i = 0; i < receiveds2.size(); i++) {
+						DossierStatisticsBean statisticsBean =
+							(DossierStatisticsBean) receiveds2.get(i);
+						beanMap.put(
+							statisticsBean.getDomainTreeIndex(), statisticsBean);
+
+						StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
+							beanMap, statisticsBean);
+					}
+
+					if (beanMap.size() == receiveds2.size()) {
+
+						total.addAll(receiveds2);
+					}
+					else {
+						for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
+							total.add(entry.getValue());
+						}
+					}
 				}
 
-				List receiveds3 = DossiersStatisticsLocalServiceUtil
-						.statisticsByGovAgency(
-								groupId,
-								m,
-								year,
-								StatisticsFieldNumber.ReceivedNumber.toString(),
-								-1);
-				List ontimes3 = DossiersStatisticsLocalServiceUtil
-						.statisticsByGovAgency(groupId, m, year,
-								StatisticsFieldNumber.OntimeNumber.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_ONTIME);
-				List overtimes3 = DossiersStatisticsLocalServiceUtil
-						.statisticsByGovAgency(
-								groupId,
-								m,
-								year,
-								StatisticsFieldNumber.OvertimeNumber.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_LATE);
-				List processings3 = DossiersStatisticsLocalServiceUtil
-						.statisticsByGovAgency(groupId, m, year,
-								StatisticsFieldNumber.ProcessingNumber
-										.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_UNEXPIRED);
-				List delayings3 = DossiersStatisticsLocalServiceUtil
-						.statisticsByGovAgency(
-								groupId,
-								m,
-								year,
-								StatisticsFieldNumber.DelayingNumber.toString(),
-								PortletConstants.DOSSIER_DELAY_STATUS_EXPIRED);
+				List receiveds3 =
+					DossiersStatisticsLocalServiceUtil.statisticsByGovAgency(
+						groupId, m, year,
+						StatisticsFieldNumber.ReceivedNumber.toString(), -1);
+				List ontimes3 =
+					DossiersStatisticsLocalServiceUtil.statisticsByGovAgency(
+						groupId, m, year,
+						StatisticsFieldNumber.OntimeNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_ONTIME);
+				List overtimes3 =
+					DossiersStatisticsLocalServiceUtil.statisticsByGovAgency(
+						groupId, m, year,
+						StatisticsFieldNumber.OvertimeNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_LATE);
+				List processings3 =
+					DossiersStatisticsLocalServiceUtil.statisticsByGovAgency(
+						groupId, m, year,
+						StatisticsFieldNumber.ProcessingNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_UNEXPIRED);
+				List delayings3 =
+					DossiersStatisticsLocalServiceUtil.statisticsByGovAgency(
+						groupId, m, year,
+						StatisticsFieldNumber.DelayingNumber.toString(),
+						PortletConstants.DOSSIER_DELAY_STATUS_EXPIRED);
 
 				if (receiveds3 != null) {
 					total.addAll(receiveds3);
@@ -218,7 +306,8 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 				}
 
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			_log.error(e);
 		}
 
@@ -234,28 +323,32 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 	 * @param actionResponse
 	 * @throws IOException
 	 */
-	public void updateAdministrationLevel(ActionRequest actionRequest,
-			ActionResponse actionResponse) throws IOException {
+	public void updateAdministrationLevel(
+		ActionRequest actionRequest, ActionResponse actionResponse)
+		throws IOException {
+
 		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
-		String[] govCodes = ParamUtil.getParameterValues(actionRequest,
-				"govCode");
+		String[] govCodes =
+			ParamUtil.getParameterValues(actionRequest, "govCode");
 
 		String[] levels = ParamUtil.getParameterValues(actionRequest, "level");
-		if (govCodes != null && levels != null
-				&& levels.length == govCodes.length && govCodes.length > 0) {
+		if (govCodes != null && levels != null &&
+			levels.length == govCodes.length && govCodes.length > 0) {
 			try {
-				ServiceContext serviceContext = ServiceContextFactory
-						.getInstance(actionRequest);
+				ServiceContext serviceContext =
+					ServiceContextFactory.getInstance(actionRequest);
 				for (int i = 0; i < govCodes.length; i++) {
 					GovagencyLevelLocalServiceUtil.updateGovagencyLevel(
-							serviceContext.getCompanyId(),
-							serviceContext.getScopeGroupId(),
-							serviceContext.getUserId(), govCodes[i],
-							GetterUtil.getInteger(levels[i]));
+						serviceContext.getCompanyId(),
+						serviceContext.getScopeGroupId(),
+						serviceContext.getUserId(), govCodes[i],
+						GetterUtil.getInteger(levels[i]));
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				_log.error(e);
-			} finally {
+			}
+			finally {
 				if (Validator.isNotNull(redirectURL)) {
 					actionResponse.sendRedirect(redirectURL);
 				}
@@ -264,10 +357,22 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 		}
 	}
 
+	public static void main(String[] args) {
+
+		String treeIndex = "11.22.33.44.55.666.777.888.999";
+		List<String> treeIndexs = new ArrayList<String>();
+		treeIndexs = StatisticsUtil.getTreeIndexs(treeIndexs, treeIndex);
+		System.out.println(treeIndexs.size());
+		for (int i = 0; i < treeIndexs.size(); i++) {
+			System.out.println(treeIndexs.get(i));
+		}
+	}
+
 	private void validateStatistic(int month, int year, String statisticsBy) {
+
 		// TODO
 	}
 
-	private Log _log = LogFactoryUtil.getLog(StatisticsMgtAdminPortlet.class
-			.getName());
+	private Log _log =
+		LogFactoryUtil.getLog(StatisticsMgtAdminPortlet.class.getName());
 }
