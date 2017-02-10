@@ -44,6 +44,7 @@ import org.opencps.processmgt.model.StepAllowance;
 import org.opencps.processmgt.service.ProcessStepLocalServiceUtil;
 import org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil;
 import org.opencps.processmgt.service.StepAllowanceLocalServiceUtil;
+import org.opencps.processmgt.util.ProcessUtils;
 import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
 import org.opencps.util.AccountUtil;
@@ -420,9 +421,10 @@ public class NotificationUtils {
 		}
 	}
 	
-	private List<SendNotificationMessage> getListNoties(
-			long citizenUserId, long groupId,ProcessWorkflow processWorkflow, Dossier dossier, long paymentFileId,
-			long processOrderId,String eventName,String description, long plId ) {
+	private List<SendNotificationMessage> getListNoties(long citizenUserId,
+			long groupId, ProcessWorkflow processWorkflow, Dossier dossier,
+			long paymentFileId, long processOrderId, String eventName,
+			String description, long plId) {
 
 		List<SendNotificationMessage> listNotification = new ArrayList<SendNotificationMessage>();
 
@@ -434,20 +436,22 @@ public class NotificationUtils {
 
 		if (accountBean.isCitizen()) {
 			citizen = (Citizen) accountBean.getAccountInstance();
-		}else if (accountBean.isBusiness()) {
+		} else if (accountBean.isBusiness()) {
 			bussines = (Business) accountBean.getAccountInstance();
 		}
 
 		SendNotificationMessage notiMsgCitizen = new SendNotificationMessage();
 
 		notiMsgCitizen.setDossierId(dossier.getDossierId());
-		notiMsgCitizen.setNotificationEventName(processWorkflow.getActionName());
+		notiMsgCitizen
+				.setNotificationEventName(processWorkflow.getActionName());
 		notiMsgCitizen.setProcessOrderId(processOrderId);
 		notiMsgCitizen.setPaymentFileId(paymentFileId);
-		notiMsgCitizen.setType("SMS, INBOX, EMAIL");
+		notiMsgCitizen.setType("SMS,INBOX,EMAIL");
 		notiMsgCitizen.setNotificationContent(description);
 
 		SendNotificationMessage.InfoList citizenInfo = new SendNotificationMessage.InfoList();
+		List<SendNotificationMessage.InfoList> citizenInfoList = new ArrayList<SendNotificationMessage.InfoList>();
 
 		citizenInfo.setGroupId(groupId);
 		citizenInfo.setPlid(String.valueOf(plId));
@@ -457,21 +461,21 @@ public class NotificationUtils {
 			citizenInfo.setUserMail(citizen.getEmail());
 			citizenInfo.setUserPhone(citizen.getTelNo());
 			citizenInfo.setFullName(citizen.getFullName());
-			
-		}else if (Validator.isNotNull(bussines)) {
+
+		} else if (Validator.isNotNull(bussines)) {
 			citizenInfo.setUserId(bussines.getUserId());
 			citizenInfo.setUserMail(bussines.getEmail());
 			citizenInfo.setUserPhone(bussines.getTelNo());
 			citizenInfo.setFullName(bussines.getName());
 
 		}
-		notiMsgCitizen.setInfoList(citizenInfo);
+		citizenInfo.setPlid(String.valueOf(plId));
 
-		
-
+		citizenInfoList.add(citizenInfo);
+		notiMsgCitizen.setInfoList(citizenInfoList);
 		listNotification.add(notiMsgCitizen);
-		
-		///////////////////////////////////////////////////////////////////////
+
+		// /////////////////////////////////////////////////////////////////////
 
 		SendNotificationMessage notiMsgEmploy = new SendNotificationMessage();
 
@@ -479,13 +483,17 @@ public class NotificationUtils {
 		notiMsgEmploy.setNotificationEventName(processWorkflow.getActionName());
 		notiMsgEmploy.setProcessOrderId(processOrderId);
 		notiMsgEmploy.setPaymentFileId(paymentFileId);
-		notiMsgEmploy.setType("SMS, INBOX, EMAIL");
+		notiMsgEmploy.setType("SMS,INBOX,EMAIL");
+		notiMsgEmploy.setNotificationContent(description);
 
 		long assignToUserId = 0;
+		assignToUserId = dossier.getUserId();
 
-		if (assignToUserId != 0) {
-
-			SendNotificationMessage.InfoList infoEmploy = new SendNotificationMessage.InfoList();
+		SendNotificationMessage.InfoList assignInfoEmploy = new SendNotificationMessage.InfoList();
+		List<SendNotificationMessage.InfoList> infoEmployList = new ArrayList<SendNotificationMessage.InfoList>();
+		
+		//Lay thong tin cua nguoi xu ly chinh
+		if (assignToUserId > 0) {
 
 			AccountBean assignEmploy = AccountUtil.getAccountBean(
 					assignToUserId, groupId, null);
@@ -495,83 +503,95 @@ public class NotificationUtils {
 				Employee employee = (Employee) assignEmploy
 						.getAccountInstance();
 
-				infoEmploy.setUserId(employee.getMappingUserId());
-				infoEmploy.setUserMail(employee.getEmail());
-				infoEmploy.setUserPhone(employee.getTelNo());
-				infoEmploy.setGroupId(groupId);
-				infoEmploy.setFullName(employee.getFullName());
+				assignInfoEmploy.setUserId(employee.getMappingUserId());
+				assignInfoEmploy.setUserMail(employee.getEmail());
+				assignInfoEmploy.setUserPhone(employee.getTelNo());
+				assignInfoEmploy.setGroupId(groupId);
+				assignInfoEmploy.setFullName(employee.getFullName());
 			}
 
-			infoEmploy.setPlid(String.valueOf(plId));
-			notiMsgEmploy.setNotificationContent(processWorkflow
-					.getActionName());
+			assignInfoEmploy.setPlid(String.valueOf(plId));
+			infoEmployList.add(assignInfoEmploy);
 
-			listNotification.add(notiMsgEmploy);
-
-				}
-				else {
-//					List<SendNotificationMessage.InfoList> infoListEmploy =
-//						new ArrayList<SendNotificationMessage.InfoList>();
-//
-//					List<Employee> employees = getListEmploy(processWorkflow,groupId);
-//
-//					for (Employee employee : employees) {
-//
-//						SendNotificationMessage.InfoList infoEmploy =
-//							new SendNotificationMessage.InfoList();
-//
-//						infoEmploy.setUserId(employee.getMappingUserId());
-//						infoEmploy.setUserMail(employee.getEmail());
-//						infoEmploy.setUserPhone(employee.getTelNo());
-//						infoEmploy.setGroupId(groupId);
-//						infoEmploy.setFullName(employee.getFullName());
-//
-//						if (employEvent.contains(NotificationEventKeys.OFFICIALS.EVENT3)) {
-//							infoEmploy.setGroup(NotificationEventKeys.GROUP4);
-//						}
-//						else {
-//							infoEmploy.setGroup(NotificationEventKeys.GROUP1);
-//						}
-//						//processWorkflow --> processStepId
-//						// + roleId --> check readyOnly
-//						// --> add sendmail if readyOnly = 0
-//						boolean flag = false;
-//						try {
-//							List<Role> listRole = RoleLocalServiceUtil.getUserRoles(employee.getMappingUserId());
-//							for (Role role : listRole) {
-//								StepAllowance stepAllowance = StepAllowanceLocalServiceUtil.getStepAllowance(processWorkflow.getPostProcessStepId(), role.getRoleId());
-//								if(Validator.isNotNull(stepAllowance) && !stepAllowance.getReadOnly()){
-//									flag = true;
-//									break;
-//								}
-//							}
-//						} catch (SystemException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//						if(flag){
-//							infoListEmploy.add(infoEmploy);
-//						}
-//						
-//					}
-//
-//					if (employEvent.contains(NotificationEventKeys.OFFICIALS.EVENT3)) {
-//
-//						Locale vnLocale = new Locale("vi", "VN");
-//
-//						notiMsg.setNotificationContent(LanguageUtil.get(
-//							vnLocale, "phieu-yeu-cau-thanh-toan-moi-thuc-hien"));
-//					}
-//					else {
-//						notiMsg.setNotificationContent(processWorkflow.getActionName());
-//					}
-//
-//					notiMsg.setInfoList(infoListEmploy);
-//
-//					listNotification.add(notiMsg);
-
-				
-			}
-			return listNotification;
 		}
+		// /////////////////////////////////////////////
+
+		List<Employee> coordinateEmployeeList = getListEmploy(processWorkflow,
+				groupId);
+
+		for (Employee employee : coordinateEmployeeList) {
+
+			SendNotificationMessage.InfoList coordinateInfoEmploy = new SendNotificationMessage.InfoList();
+
+			coordinateInfoEmploy.setUserId(employee.getMappingUserId());
+			coordinateInfoEmploy.setUserMail(employee.getEmail());
+			coordinateInfoEmploy.setUserPhone(employee.getTelNo());
+			coordinateInfoEmploy.setGroupId(groupId);
+			coordinateInfoEmploy.setFullName(employee.getFullName());
+
+			boolean flag = false;
+			try {
+				List<Role> listRole = RoleLocalServiceUtil
+						.getUserRoles(employee.getMappingUserId());
+				for (Role role : listRole) {
+					StepAllowance stepAllowance = StepAllowanceLocalServiceUtil
+							.getStepAllowance(
+									processWorkflow.getPostProcessStepId(),
+									role.getRoleId());
+					if (Validator.isNotNull(stepAllowance)
+							&& !stepAllowance.getReadOnly()) {
+						flag = true;
+						break;
+					}
+				}
+			} catch (SystemException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (flag) {
+				infoEmployList.add(coordinateInfoEmploy);
+			}
+
+		}
+		// /////////////////////////////////////////////
+
+		notiMsgEmploy.setInfoList(infoEmployList);
+
+		listNotification.add(notiMsgEmploy);
+
+		return listNotification;
+	}
+	
+	/**
+	 * @param processWorkflow
+	 * @param assignToUserId
+	 * @return
+	 */
+	private List<Employee> getListEmploy(ProcessWorkflow processWorkflow,
+			long groupId) {
+
+		List<Employee> ls = new ArrayList<>();
+
+		try {
+			List<User> users = ProcessUtils.getAssignUsers(
+					processWorkflow.getPostProcessStepId(), 3);
+
+			for (User user : users) {
+				AccountBean accountEmploy = AccountUtil.getAccountBean(
+						user.getUserId(), groupId, null);
+
+				Employee employee = (Employee) accountEmploy
+						.getAccountInstance();
+
+				ls.add(employee);
+
+			}
+
+		} catch (Exception e) {
+
+		}
+
+		return ls;
+
+	}
 }
