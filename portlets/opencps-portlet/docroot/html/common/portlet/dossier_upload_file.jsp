@@ -468,7 +468,7 @@
 												author, "", certIndexJsonDataResutl.data, "", function(jsonDataSignedResult){
 												<portlet:namespace/>updateDataAfterSign(jsonDataSignedResult, fileName);
 										});
-									} else if(signatureType == 'fixAtPoint'){
+									} else if(signatureType == 'selectPoint'){
 										// sign with coordinate
 										var offsetX = '<%= offsetX %>';
 										var offsetY = '<%= offsetY %>';

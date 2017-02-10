@@ -23,15 +23,15 @@
 <%@page import="org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil"%>
 <%@page import="org.opencps.statisticsmgt.model.DossiersStatistics"%>
 
-<%@ include file="../../init.jsp" %>
+<%@ include file="init.jsp" %>
 
 <%
 	List<DossiersStatistics> dossiersStatistics = new ArrayList<DossiersStatistics>();
 	try {
-		for(int i = 1; i <= currentMonth; i++){
+		for(int i = startMonth; i <= period; i++){
 			DossiersStatistics statistics = DossiersStatisticsLocalServiceUtil
 					.getDossiersStatisticsByG_GC_DC_M_Y_L(scopeGroupId, StringPool.BLANK,
-							StringPool.BLANK, i, currentYear, 0);
+							StringPool.BLANK, i, startYear, 0);
 			dossiersStatistics.add(statistics);
 		}
 	} catch (Exception e) {
@@ -67,12 +67,12 @@
 			<c:otherwise>
 			
 				<div class="widget-wrapper">
-					<div class="widget-header">
+					<%-- <div class="widget-header">
 						<span class="span8 key">
 							<liferay-ui:message key="stats-in-year"/>
 						</span>
 						<span class="span4 number"><%=currentYear %></span>
-					</div>
+					</div> --%>
 					
 					<ul class="widget-content">
 						<li class="widget-row">

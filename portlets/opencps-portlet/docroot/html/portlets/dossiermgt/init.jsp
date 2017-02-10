@@ -26,6 +26,8 @@
 <%@ include file="/init.jsp" %>
 
 <%
+
+	
 	DecimalFormat doubleFomart=new DecimalFormat("#,###.##");
 
 	PortletPreferences preferences = renderRequest.getPreferences();

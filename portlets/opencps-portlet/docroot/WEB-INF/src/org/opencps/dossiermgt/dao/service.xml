@@ -247,6 +247,7 @@
         <column name="estimateDatetime" type="Date"/>
         <column name="finishDatetime" type="Date"/>
         <column name="dossierStatus" type="String"/>
+        <column name="dossierSubStatus" type="String"/>
         <column name="dossierSource" type="int"/>
         <column name="keypayRedirectUrl" type="String"/>
         <column name="delayStatus" type="int"></column>

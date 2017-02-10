@@ -150,7 +150,7 @@
 			
 			<%
 				row.setClassName("opencps-searchcontainer-row");
-				row.addText(String.valueOf(row.getPos() + 1));
+				row.addText(String.valueOf((searchContainer.getCur() - 1) * searchContainer.getDelta() + index + 1), iteratorURL);
 				row.addText(boundcol1);
 				row.addText(boundcol2);
 				row.addJSP("center", SearchEntry.DEFAULT_VALIGN,"/html/portlets/dossiermgt/submit/submit_action.jsp", config.getServletContext(), request, response);

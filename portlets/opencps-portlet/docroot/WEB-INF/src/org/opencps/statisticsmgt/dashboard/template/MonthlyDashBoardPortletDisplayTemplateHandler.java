@@ -17,7 +17,7 @@ public class MonthlyDashBoardPortletDisplayTemplateHandler extends
 	@Override
 	public String getClassName() {
 		// TODO Auto-generated method stub
-		return DossiersStatistics.class.getName();
+		return DossiersStatistics.class.getName() + "#MONTHLY";
 	}
 
 	@Override

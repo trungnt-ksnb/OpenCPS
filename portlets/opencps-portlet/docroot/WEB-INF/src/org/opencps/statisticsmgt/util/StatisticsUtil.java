@@ -380,6 +380,10 @@ public class StatisticsUtil {
 								dossierStatisticsBean.getOntimeNumber() +
 								dossierStatisticsBean.getOvertimeNumber() -
 								dossierStatisticsBean.getReceivedNumber();
+						
+						if(remainingNumber < 0){
+							remainingNumber = 0;
+						}
 
 						dossierStatisticsBean.setRemainingNumber(remainingNumber);
 
@@ -547,7 +551,7 @@ public class StatisticsUtil {
 									dossierStatisticsBean.getOntimeNumber());
 								dossierStatisticsBeanTemp.setOvertimeNumber(dossierStatisticsBeanTemp.getOvertimeNumber() +
 									dossierStatisticsBean.getOvertimeNumber());
-
+								
 								dossierStatisticsBeanTemp.setProcessingNumber(dossierStatisticsBeanTemp.getProcessingNumber() +
 									dossierStatisticsBean.getProcessingNumber());
 								dossierStatisticsBeanTemp.setReceivedNumber(dossierStatisticsBeanTemp.getReceivedNumber() +
@@ -557,6 +561,8 @@ public class StatisticsUtil {
 									dossierStatisticsBean.getRemainingNumber());
 								dossierStatisticsBeanTemp.setUserId(dossierStatisticsBean.getUserId());
 								dossierStatisticsBeanTemp.setYear(dossierStatisticsBean.getYear());
+								
+								dossierStatisticsBeanTemp.setDomainItemCode(StringPool.BLANK);
 							}
 
 							DossiersStatistics dossierStatistics =
@@ -778,6 +784,10 @@ public class StatisticsUtil {
 		}
 
 		return conditions.toString();
+	}
+	
+	public static String test(){
+		return "AAAAAAAA";
 	}
 
 	/*

@@ -367,12 +367,12 @@
 								cssClass="label opencps dossiermgt part-file-ctr view-attachment"
 								title="view-attachment"
 							/>
-							<%-- <c:if test="<%= signCheck != 1 && isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
-								<aui:button value="Sign" />
+							<c:if test="<%= signCheck != 1 && isExtensionSignature && renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) %>">
+								<%-- <aui:button value="Sign" /> --%>
 								<aui:a href="javascript:void(0);" 
 									title ="Sign" 
 									cssClass="signatureCls fa fa-pencil-square" />
-							</c:if> --%>
+							</c:if>
 							<%-- <i title="<%= sbMessage.toString() %>" class="fa fa-pencil-square" id = "<portlet:namespace />signInfoMsg" /> --%>
 							<i title="<%= sbMessage.toString() %>" class='<%=" signature-info fa fa-info-circle " + signInfoClass %>' id = "<portlet:namespace />signInfoMsg" />
 						</c:when>

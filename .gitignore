@@ -300,3 +300,12 @@ portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/service/b
 portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/service/http
 
 portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/model/impl/*
+
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/service/http/
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/service/persistence/DossiersStatisticsPersistenceImpl.java 
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/service/persistence/GovagencyLevelPersistenceImpl.java 
+
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/model/impl/DossiersStatisticsBaseImpl.java 
+portlets/opencps-portlet/docroot/WEB-INF/lib/opencps-portlet-service.jar
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/statisticsmgt/service/base/
+

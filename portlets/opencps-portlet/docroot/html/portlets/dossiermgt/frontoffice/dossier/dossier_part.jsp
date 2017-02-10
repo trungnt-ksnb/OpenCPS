@@ -639,6 +639,10 @@
 					portletURL.setWindowState("<%=LiferayWindowState.POP_UP.toString()%>"); 
 					portletURL.setPortletMode("normal");
 					portletURL.setParameter("content", "upload-file");
+					portletURL.setParameter("signatureType", signatureType);
+					portletURL.setParameter("signatureType", signatureType);
+					portletURL.setParameter("signatureType", signatureType);
+					
 					uploadDossierFile(this, portletURL.toString(), '<portlet:namespace/>');
 				});
 			});
