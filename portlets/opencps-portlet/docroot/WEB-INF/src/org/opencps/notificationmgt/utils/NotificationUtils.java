@@ -33,19 +33,26 @@ import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
 import org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil;
 import org.opencps.notificationmgt.engine.UserNotificationHandler;
 import org.opencps.notificationmgt.message.SendNotificationMessage;
+import org.opencps.notificationmgt.model.NotificationConfig;
+import org.opencps.notificationmgt.service.NotificationConfigLocalServiceUtil;
 import org.opencps.paymentmgt.model.PaymentFile;
-import org.opencps.processmgt.model.ProcessOrder;
+import org.opencps.processmgt.NoSuchProcessStepException;
+import org.opencps.processmgt.NoSuchProcessWorkflowException;
+import org.opencps.processmgt.model.ProcessStep;
 import org.opencps.processmgt.model.ProcessWorkflow;
+import org.opencps.processmgt.model.StepAllowance;
+import org.opencps.processmgt.service.ProcessStepLocalServiceUtil;
 import org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil;
+import org.opencps.processmgt.service.StepAllowanceLocalServiceUtil;
 import org.opencps.usermgt.model.Employee;
 import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
 import org.opencps.util.AccountUtil;
 import org.opencps.util.MessageBusKeys;
-import org.opencps.util.PortletPropsKeys;
 import org.opencps.util.PortletPropsValues;
 import org.opencps.util.SendMailUtils;
 
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -59,8 +66,10 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Layout;
+import com.liferay.portal.model.Role;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
+import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.service.UserNotificationEventLocalServiceUtil;
@@ -356,4 +365,213 @@ public class NotificationUtils {
 		return emailList;
 
 	}
+	
+	public void sendNotification(long processWorkflowId, long dossierId, long groupId) {
+
+		try {
+
+			if (processWorkflowId > 0) {
+				ProcessWorkflow processWorkflow = null;
+
+				try {
+					processWorkflow = ProcessWorkflowLocalServiceUtil
+							.fetchProcessWorkflow(processWorkflowId);
+				} catch (SystemException e) {
+
+				}
+
+				if (Validator.isNotNull(processWorkflow)) {
+
+					// long preProcessStepId = 0;
+					long postProcessStepId = 0;
+
+					// preProcessStepId = processWorkflow.getPreProcessStepId();
+					postProcessStepId = processWorkflow.getPostProcessStepId();
+
+					// ProcessStep preProcessStep = null;
+					ProcessStep postProcessStep = null;
+
+					if (postProcessStepId > 0) {
+						try {
+							postProcessStep = ProcessStepLocalServiceUtil
+									.fetchProcessStep(postProcessStepId);
+						} catch (SystemException e) {
+
+						}
+
+						if (Validator.isNotNull(postProcessStep)) {
+							
+							NotificationConfig nofificationConfig = null;
+							
+							nofificationConfig = NotificationConfigLocalServiceUtil.getByDossierNextStatus(postProcessStep.getDossierStatus(), true);
+							
+							if(Validator.isNotNull(nofificationConfig)){
+								
+								
+								Layout layOut = null;
+							}
+						}
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			_log.error(e);
+		}
+	}
+	
+	private List<SendNotificationMessage> getListNoties(
+			long citizenUserId, long groupId,ProcessWorkflow processWorkflow, Dossier dossier, long paymentFileId,
+			long processOrderId,String eventName,String description, long plId ) {
+
+		List<SendNotificationMessage> listNotification = new ArrayList<SendNotificationMessage>();
+
+		AccountBean accountBean = AccountUtil.getAccountBean(citizenUserId,
+				groupId, null);
+
+		Citizen citizen = null;
+		Business bussines = null;
+
+		if (accountBean.isCitizen()) {
+			citizen = (Citizen) accountBean.getAccountInstance();
+		}else if (accountBean.isBusiness()) {
+			bussines = (Business) accountBean.getAccountInstance();
+		}
+
+		SendNotificationMessage notiMsgCitizen = new SendNotificationMessage();
+
+		notiMsgCitizen.setDossierId(dossier.getDossierId());
+		notiMsgCitizen.setNotificationEventName(processWorkflow.getActionName());
+		notiMsgCitizen.setProcessOrderId(processOrderId);
+		notiMsgCitizen.setPaymentFileId(paymentFileId);
+		notiMsgCitizen.setType("SMS, INBOX, EMAIL");
+		notiMsgCitizen.setNotificationContent(description);
+
+		SendNotificationMessage.InfoList citizenInfo = new SendNotificationMessage.InfoList();
+
+		citizenInfo.setGroupId(groupId);
+		citizenInfo.setPlid(String.valueOf(plId));
+
+		if (Validator.isNotNull(citizen)) {
+			citizenInfo.setUserId(citizen.getUserId());
+			citizenInfo.setUserMail(citizen.getEmail());
+			citizenInfo.setUserPhone(citizen.getTelNo());
+			citizenInfo.setFullName(citizen.getFullName());
+			
+		}else if (Validator.isNotNull(bussines)) {
+			citizenInfo.setUserId(bussines.getUserId());
+			citizenInfo.setUserMail(bussines.getEmail());
+			citizenInfo.setUserPhone(bussines.getTelNo());
+			citizenInfo.setFullName(bussines.getName());
+
+		}
+		notiMsgCitizen.setInfoList(citizenInfo);
+
+		
+
+		listNotification.add(notiMsgCitizen);
+		
+		///////////////////////////////////////////////////////////////////////
+
+		SendNotificationMessage notiMsgEmploy = new SendNotificationMessage();
+
+		notiMsgEmploy.setDossierId(dossier.getDossierId());
+		notiMsgEmploy.setNotificationEventName(processWorkflow.getActionName());
+		notiMsgEmploy.setProcessOrderId(processOrderId);
+		notiMsgEmploy.setPaymentFileId(paymentFileId);
+		notiMsgEmploy.setType("SMS, INBOX, EMAIL");
+
+		long assignToUserId = 0;
+
+		if (assignToUserId != 0) {
+
+			SendNotificationMessage.InfoList infoEmploy = new SendNotificationMessage.InfoList();
+
+			AccountBean assignEmploy = AccountUtil.getAccountBean(
+					assignToUserId, groupId, null);
+
+			if (assignEmploy.isEmployee()) {
+
+				Employee employee = (Employee) assignEmploy
+						.getAccountInstance();
+
+				infoEmploy.setUserId(employee.getMappingUserId());
+				infoEmploy.setUserMail(employee.getEmail());
+				infoEmploy.setUserPhone(employee.getTelNo());
+				infoEmploy.setGroupId(groupId);
+				infoEmploy.setFullName(employee.getFullName());
+			}
+
+			infoEmploy.setPlid(String.valueOf(plId));
+			notiMsgEmploy.setNotificationContent(processWorkflow
+					.getActionName());
+
+			listNotification.add(notiMsgEmploy);
+
+				}
+				else {
+//					List<SendNotificationMessage.InfoList> infoListEmploy =
+//						new ArrayList<SendNotificationMessage.InfoList>();
+//
+//					List<Employee> employees = getListEmploy(processWorkflow,groupId);
+//
+//					for (Employee employee : employees) {
+//
+//						SendNotificationMessage.InfoList infoEmploy =
+//							new SendNotificationMessage.InfoList();
+//
+//						infoEmploy.setUserId(employee.getMappingUserId());
+//						infoEmploy.setUserMail(employee.getEmail());
+//						infoEmploy.setUserPhone(employee.getTelNo());
+//						infoEmploy.setGroupId(groupId);
+//						infoEmploy.setFullName(employee.getFullName());
+//
+//						if (employEvent.contains(NotificationEventKeys.OFFICIALS.EVENT3)) {
+//							infoEmploy.setGroup(NotificationEventKeys.GROUP4);
+//						}
+//						else {
+//							infoEmploy.setGroup(NotificationEventKeys.GROUP1);
+//						}
+//						//processWorkflow --> processStepId
+//						// + roleId --> check readyOnly
+//						// --> add sendmail if readyOnly = 0
+//						boolean flag = false;
+//						try {
+//							List<Role> listRole = RoleLocalServiceUtil.getUserRoles(employee.getMappingUserId());
+//							for (Role role : listRole) {
+//								StepAllowance stepAllowance = StepAllowanceLocalServiceUtil.getStepAllowance(processWorkflow.getPostProcessStepId(), role.getRoleId());
+//								if(Validator.isNotNull(stepAllowance) && !stepAllowance.getReadOnly()){
+//									flag = true;
+//									break;
+//								}
+//							}
+//						} catch (SystemException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//						if(flag){
+//							infoListEmploy.add(infoEmploy);
+//						}
+//						
+//					}
+//
+//					if (employEvent.contains(NotificationEventKeys.OFFICIALS.EVENT3)) {
+//
+//						Locale vnLocale = new Locale("vi", "VN");
+//
+//						notiMsg.setNotificationContent(LanguageUtil.get(
+//							vnLocale, "phieu-yeu-cau-thanh-toan-moi-thuc-hien"));
+//					}
+//					else {
+//						notiMsg.setNotificationContent(processWorkflow.getActionName());
+//					}
+//
+//					notiMsg.setInfoList(infoListEmploy);
+//
+//					listNotification.add(notiMsg);
+
+				
+			}
+			return listNotification;
+		}
 }
