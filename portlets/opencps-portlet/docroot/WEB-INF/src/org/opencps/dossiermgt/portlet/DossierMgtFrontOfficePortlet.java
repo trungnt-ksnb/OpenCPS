@@ -275,12 +275,6 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 			
 			String signInfo = SignatureUtil.getSignInfo(file.getPath(), FileUtil.getExtension(dlFileEntry.getTitle()));
 
-			System.out.println("#########################################"
-					+ signInfo);
-
-			System.out.println("#########################################  signCheck   "
-					+ signCheck);
-			
 			dossierFile.setSignCheck(signCheck);
 			
 			dossierFile.setSignInfo(signInfo);
@@ -317,7 +311,6 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 			ActionResponse actionResponse) throws IOException, Exception {
 		
 		int functionCase = ParamUtil.getInteger(actionRequest, "functionCase");
-		_log.info("functionCase ================   " + functionCase);
 		switch (functionCase) {
 		case PortletConstants.SIGNATURE_REQUEST_DATA:
 			requestDataSignature(actionRequest, actionResponse);
@@ -438,9 +431,6 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 			String extension = FileUtil.getExtension(sourceFileName);
 
 			String signInfo = SignatureUtil.getSignInfo(filePath, extension);
-
-			System.out.println("#########################################"
-					+ signInfo);
 
 			int signCheck = SignatureUtil.getSignCheck(filePath, extension);
 
