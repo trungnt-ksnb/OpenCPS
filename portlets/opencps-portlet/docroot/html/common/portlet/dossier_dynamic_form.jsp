@@ -1,6 +1,4 @@
 
-<%@page import="org.opencps.processmgt.util.ReportUtils"%>
-<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -151,12 +149,15 @@
 	String alpacaSchema = dossierPart != null && Validator.isNotNull(dossierPart.getFormScript()) ? 
 	      dossierPart.getFormScript().replaceAll("\\?p_auth=REPLACEKEY", "/group-id/"+ themeDisplay.getScopeGroupId()+"?p_auth="+auTock) : StringPool.BLANK;
 
-
+	int signCheck = 0;
+	
 	DossierFile dossierFile = null;
 	
 	if(dossierFileId > 0){
 		try{
 			dossierFile = DossierFileLocalServiceUtil.getDossierFile(dossierFileId);
+			
+			signCheck = dossierFile.getSignCheck();
 		}catch(Exception e){
 			
 		}
@@ -239,7 +240,7 @@
 </aui:form>
 <portlet:resourceURL var="getDataAjax"></portlet:resourceURL>
 
-<c:if test="<%= portleName.equals(WebKeys.DOSSIER_MGT_PORTLET) && dossierFileId > 0 %>">
+<c:if test="<%= portleName.equals(WebKeys.DOSSIER_MGT_PORTLET) && dossierFileId > 0 && signCheck != 1 %>">
 	<aui:button value="sign" onclick="signatureFrontOffice()" />
 </c:if>
 
@@ -248,16 +249,16 @@
 	var alpacaSchema = <%=Validator.isNotNull(alpacaSchema) ? alpacaSchema : PortletConstants.UNKNOW_ALPACA_SCHEMA%>;
 	var formData = '<%=formData%>';
 	var dossierFileId = '<%=dossierFileId%>';
-	function pluginload(loaded)
+	/* function pluginload(loaded)
 	{
 		if(!loaded) {
 			alert('Loading plugin is failed!');
-		} 
+		}
 	}
 	
 	function callbackPathFile(jsondata) {
 		alert("data    " + jsondata.data);
-	}
+	} */
 	
 	
 	//function to test

@@ -1,6 +1,3 @@
-
-<%@page import="org.opencps.jasperreport.util.JRReportUtil.DocType"%>
-<%@page import="org.opencps.util.PortletUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -19,7 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-
+<%@page import="org.opencps.jasperreport.util.JRReportUtil.DocType"%>
+<%@page import="org.opencps.util.PortletUtil"%>
 <%@page import="com.liferay.portal.kernel.util.ArrayUtil"%>
 <%@page import="com.liferay.portal.kernel.util.KeyValuePair"%>
 <%@page import="org.opencps.datamgt.model.DictItem"%>
@@ -37,7 +35,7 @@
 
 <%
 	String tabs2 = ParamUtil.getString(request, "tabs2", "dossier-list");
-	String tabs2Names = "dossier-list,dossier,dossier-file-list";
+	String tabs2Names = "dossier-list,dossier,dossier-file-list, digital-signature";
 	
 	List<Layout> privateLayouts = LayoutLocalServiceUtil.getLayouts(scopeGroupId, true);
 	List<Layout> publicLayouts = LayoutLocalServiceUtil.getLayouts(scopeGroupId, false);
@@ -519,7 +517,45 @@
 				</liferay-ui:panel>
 			</liferay-ui:panel-container>
 		</c:when>
-		
+		<c:when test='<%=tabs2.equalsIgnoreCase("digital-signature") %>'>
+			<aui:fieldset>
+				<aui:select name="signatureType">
+					<aui:option value="selectPoint" selected='<%= signatureType.equals("selectPoint") %>'>
+						<liferay-ui:message key="selected-point"/>
+					</aui:option>
+					
+					<aui:option value="fixAtPoint" selected='<%= signatureType.equals("fixAtPoint") %>'>
+						<liferay-ui:message key="fix-at-point"/>
+					</aui:option>
+				</aui:select>
+				
+			</aui:fieldset>
+			
+			<div id="<portlet:namespace />fixatpoint">
+				<aui:fieldset>
+					<aui:row>
+						<aui:col width="50">
+							<aui:input name="offsetX" value="<%=offsetX %>"/>
+						</aui:col>
+						<aui:col width="50">
+							<aui:input name="offsetY" value="<%=offsetY %>"/>
+						</aui:col>
+					</aui:row>
+				</aui:fieldset>
+			</div>
+			
+			<aui:fieldset>
+				<aui:select name="characterAttach" multiple="true">		
+					<aui:option value="image" selected='<%=ArrayUtil.contains(characterAttachs, "image") %>'>
+						<liferay-ui:message key="image"/>
+					</aui:option>
+					
+					<aui:option value="text" selected='<%= ArrayUtil.contains(characterAttachs, "text") %>'>
+						<liferay-ui:message key="text" />
+					</aui:option>
+				</aui:select>
+			</aui:fieldset>
+		</c:when>
 		<c:otherwise>
 		
 			
@@ -529,3 +565,23 @@
 	<aui:button type="submit" name="Save" value="save"/>
 
 </aui:form>
+
+<aui:script>
+	AUI().ready(function(A) {
+		var signatureType = A.one('#<portlet:namespace />signatureType');
+		var fixatpoint = A.one('#<portlet:namespace />fixatpoint');
+		<portlet:namespace />checkShowCoordinate(signatureType, fixatpoint);
+		signatureType.on('change', function() {
+			<portlet:namespace />checkShowCoordinate(signatureType, fixatpoint);
+		});
+		
+	});
+	
+	Liferay.provide(window, '<portlet:namespace />checkShowCoordinate', function(signatureType, fixatpoint) {
+		if(signatureType.val() == 'selectPoint') {
+			fixatpoint.hide();
+		} else {
+			fixatpoint.show();
+		}
+	})
+</aui:script>

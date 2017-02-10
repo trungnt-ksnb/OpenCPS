@@ -53,7 +53,7 @@ public class MsgOutFrontOffice implements MessageListener {
 
 	private void _doReceiveDossier(Message message) {
 
-		_log.info("####################MsgOutFrontOffice: Started receive message bus");
+		/*_log.info("####################MsgOutFrontOffice: Started receive message bus");
 
 		UserActionMsg userActionMgs =
 			(UserActionMsg) message.get("msgToEngine");
@@ -148,7 +148,7 @@ public class MsgOutFrontOffice implements MessageListener {
 					}
 				}
 			}
-		}
+		}*/
 
 	}
 

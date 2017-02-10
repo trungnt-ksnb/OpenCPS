@@ -37,6 +37,7 @@ public class DossierPartDisplayTerms extends DisplayTerms{
 	public static final String DOSSIERPART_REQUIRED = "required";
 	public static final String DOSSIERPART_PARTTYPE = "partType";
 	public static final String DOSSIERPART_SIBLING = "sibling";
+	public static final String DOSSIERPART_HASSING = "hasSign";
 	
     public DossierPartDisplayTerms(PortletRequest portletRequest) {
 
@@ -58,7 +59,18 @@ public class DossierPartDisplayTerms extends DisplayTerms{
 	    
 	    partType = ParamUtil.getInteger(portletRequest, DOSSIERPART_PARTTYPE);
 	    sibling = ParamUtil.getDouble(portletRequest, DOSSIERPART_SIBLING);
+	    hasSign = ParamUtil.getBoolean(portletRequest, DOSSIERPART_HASSING);
     }
+    
+    
+
+	public boolean isHasSign() {
+		return hasSign;
+	}
+
+	public void setHasSign(boolean hasSign) {
+		this.hasSign = hasSign;
+	}
 
 	public long getDossierpartId() {
     
@@ -218,4 +230,6 @@ public class DossierPartDisplayTerms extends DisplayTerms{
 	
 	protected int partType;  
 	protected double sibling;
+	
+	protected boolean hasSign; 
 }

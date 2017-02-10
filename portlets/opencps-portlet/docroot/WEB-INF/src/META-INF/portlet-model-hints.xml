@@ -598,6 +598,7 @@
 		</field>
 		<field name="required" type="boolean" />
 		<field name="templateFileNo" type="String" />
+		<field name="hasSign" type="boolean" />
 	</model>
 	<model name="org.opencps.dossiermgt.model.DossierStatus">
 		<field name="dossierStatusId" type="long" />
