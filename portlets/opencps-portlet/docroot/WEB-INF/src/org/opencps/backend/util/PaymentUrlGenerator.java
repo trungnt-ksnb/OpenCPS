@@ -258,11 +258,18 @@ public class PaymentUrlGenerator {
 					param +=
 						"country_code=" + URLEncoder.encode(keypay.getCountry_code(), "UTF-8") +
 							"&";
-					param += "desc_1=" + URLEncoder.encode(keypay.getDesc_1(), "UTF-8") + "&";
-					param += "desc_2=" + URLEncoder.encode(keypay.getDesc_2(), "UTF-8") + "&";
-					param += "desc_3=" + URLEncoder.encode(keypay.getDesc_3(), "UTF-8") + "&";
-					param += "desc_4=" + URLEncoder.encode(keypay.getDesc_4(), "UTF-8") + "&";
-					param += "desc_5=" + URLEncoder.encode(keypay.getDesc_5(), "UTF-8") + "&";
+//					param += "desc_1=" + URLEncoder.encode(keypay.getDesc_1(), "UTF-8") + "&";
+//					param += "desc_2=" + URLEncoder.encode(keypay.getDesc_2(), "UTF-8") + "&";
+//					param += "desc_3=" + URLEncoder.encode(keypay.getDesc_3(), "UTF-8") + "&";
+//					param += "desc_4=" + URLEncoder.encode(keypay.getDesc_4(), "UTF-8") + "&";
+//					param += "desc_5=" + URLEncoder.encode(keypay.getDesc_5(), "UTF-8") + "&";
+					
+					param += "desc_1=&";
+					param += "desc_2=&";
+					param += "desc_3=&";
+					param += "desc_4=&";
+					param += "desc_5=&";
+					
 					param +=
 						"xml_description=" +
 							URLEncoder.encode(keypay.getXml_description(), "UTF-8") + "&";
