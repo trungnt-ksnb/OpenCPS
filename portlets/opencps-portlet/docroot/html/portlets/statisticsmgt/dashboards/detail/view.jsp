@@ -38,12 +38,6 @@
 		DossiersStatisticsLocalServiceUtil.getStatsByGovAndDomain(scopeGroupId, startMonth, startYear, period, 
 			govCode, domainCode, level, notNullGov, notNullDomain);
 
-	System.out.println("###########################################################" +
-		govCode);
-	
-	System.out.println("###########################################################" +
-			level);
-
 	long collectionId = 0;
 	
 	try{

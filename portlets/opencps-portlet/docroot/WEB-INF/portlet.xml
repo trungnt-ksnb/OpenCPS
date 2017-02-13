@@ -1238,7 +1238,7 @@
 	
 	<portlet>
 		<portlet-name>35</portlet-name>
-		<display-name>Tree Dashboard</display-name>
+		<display-name>Detail Dashboard</display-name>
 		<portlet-class>
 			org.opencps.statisticsmgt.dashboard.portlet.DashBoardPortlet
 		</portlet-class>

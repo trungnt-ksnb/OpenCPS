@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceContext;
@@ -29,6 +30,9 @@ import com.liferay.util.bridges.mvc.MVCPortlet;
 
 /**
  * Portlet implementation class StatisticsPortlet
+ */
+/**
+ * @author trungnt
  */
 public class StatisticsMgtAdminPortlet extends MVCPortlet {
 
@@ -136,128 +140,23 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 						PortletConstants.DOSSIER_DELAY_STATUS_EXPIRED);
 
 				if (receiveds2 != null) {
-					LinkedHashMap<String, DossierStatisticsBean> beanMap =
-						new LinkedHashMap<String, DossierStatisticsBean>();
-
-					for (int i = 0; i < receiveds2.size(); i++) {
-						DossierStatisticsBean statisticsBean =
-							(DossierStatisticsBean) receiveds2.get(i);
-						beanMap.put(
-							statisticsBean.getDomainTreeIndex(), statisticsBean);
-
-						StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
-							beanMap, statisticsBean);
-					}
-
-					if (beanMap.size() == receiveds2.size()) {
-
-						total.addAll(receiveds2);
-					}
-					else {
-						for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
-							total.add(entry.getValue());
-						}
-					}
+					appendData(total, receiveds2);
 				}
 
 				if (ontimes2 != null) {
-					LinkedHashMap<String, DossierStatisticsBean> beanMap =
-						new LinkedHashMap<String, DossierStatisticsBean>();
-
-					for (int i = 0; i < receiveds2.size(); i++) {
-						DossierStatisticsBean statisticsBean =
-							(DossierStatisticsBean) receiveds2.get(i);
-						beanMap.put(
-							statisticsBean.getDomainTreeIndex(), statisticsBean);
-
-						StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
-							beanMap, statisticsBean);
-					}
-
-					if (beanMap.size() == receiveds2.size()) {
-
-						total.addAll(receiveds2);
-					}
-					else {
-						for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
-							total.add(entry.getValue());
-						}
-					}
+					appendData(total, ontimes2);
 				}
 
 				if (overtimes2 != null) {
-					LinkedHashMap<String, DossierStatisticsBean> beanMap =
-						new LinkedHashMap<String, DossierStatisticsBean>();
-
-					for (int i = 0; i < receiveds2.size(); i++) {
-						DossierStatisticsBean statisticsBean =
-							(DossierStatisticsBean) receiveds2.get(i);
-						beanMap.put(
-							statisticsBean.getDomainTreeIndex(), statisticsBean);
-
-						StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
-							beanMap, statisticsBean);
-					}
-
-					if (beanMap.size() == receiveds2.size()) {
-
-						total.addAll(receiveds2);
-					}
-					else {
-						for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
-							total.add(entry.getValue());
-						}
-					}
+					appendData(total, overtimes2);
 				}
 
 				if (processings2 != null) {
-					LinkedHashMap<String, DossierStatisticsBean> beanMap =
-						new LinkedHashMap<String, DossierStatisticsBean>();
-
-					for (int i = 0; i < receiveds2.size(); i++) {
-						DossierStatisticsBean statisticsBean =
-							(DossierStatisticsBean) receiveds2.get(i);
-						beanMap.put(
-							statisticsBean.getDomainTreeIndex(), statisticsBean);
-
-						StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
-							beanMap, statisticsBean);
-					}
-
-					if (beanMap.size() == receiveds2.size()) {
-
-						total.addAll(receiveds2);
-					}
-					else {
-						for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
-							total.add(entry.getValue());
-						}
-					}
+					appendData(total, processings2);
 				}
 
 				if (delayings2 != null) {
-					LinkedHashMap<String, DossierStatisticsBean> beanMap =
-						new LinkedHashMap<String, DossierStatisticsBean>();
-
-					for (int i = 0; i < receiveds2.size(); i++) {
-						DossierStatisticsBean statisticsBean =
-							(DossierStatisticsBean) receiveds2.get(i);
-						beanMap.put(
-							statisticsBean.getDomainTreeIndex(), statisticsBean);
-
-						StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
-							beanMap, statisticsBean);
-					}
-
-					if (beanMap.size() == receiveds2.size()) {
-
-						total.addAll(receiveds2);
-					}
-					else {
-						for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
-							total.add(entry.getValue());
-						}
-					}
+					appendData(total, delayings2);
 				}
 
 				List receiveds3 =
@@ -316,6 +215,45 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 			// List fakeData = StatisticsUtil.fakeData();
 			// StatisticsUtil.getDossiersStatistics(fakeData);
 		}
+	}
+
+	/**
+	 * @param total
+	 * @param dossierStatisticsBeans
+	 */
+	public static void appendData(
+		List total, List<DossierStatisticsBean> dossierStatisticsBeans) {
+
+		LinkedHashMap<String, DossierStatisticsBean> beanMap =
+			new LinkedHashMap<String, DossierStatisticsBean>();
+
+		for (int i = 0; i < dossierStatisticsBeans.size(); i++) {
+			DossierStatisticsBean statisticsBean =
+				(DossierStatisticsBean) dossierStatisticsBeans.get(i);
+
+			String key =
+				statisticsBean.getDomainTreeIndex() + StringPool.DASH +
+					statisticsBean.getGovItemCode() + StringPool.DASH +
+					statisticsBean.getMonth() + StringPool.DASH +
+					statisticsBean.getYear() + StringPool.DASH +
+					statisticsBean.getAdministrationLevel();
+			beanMap.put(key, statisticsBean);
+
+			StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
+				beanMap, statisticsBean);
+		}
+
+		if (beanMap.size() == dossierStatisticsBeans.size()) {
+
+			total.addAll(dossierStatisticsBeans);
+		}
+		else {
+			for (Map.Entry<String, DossierStatisticsBean> entry : beanMap.entrySet()) {
+				total.add(entry.getValue());
+			}
+		}
+		
+		//total.addAll(dossierStatisticsBeans);
 	}
 
 	/**

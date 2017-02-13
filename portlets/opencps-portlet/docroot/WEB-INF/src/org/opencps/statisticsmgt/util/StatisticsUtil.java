@@ -15,6 +15,7 @@ import java.util.Map;
 import org.opencps.datamgt.model.DictItem;
 import org.opencps.datamgt.service.DictItemLocalServiceUtil;
 import org.opencps.statisticsmgt.bean.DossierStatisticsBean;
+import org.opencps.statisticsmgt.bean.FieldDatasShema;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
 import org.opencps.statisticsmgt.service.persistence.DossiersStatisticsFinder;
@@ -945,7 +946,14 @@ public class StatisticsUtil {
 			try {
 				DictItem dictItem =
 					DictItemLocalServiceUtil.getDicItemByTreeIndex(parentTreeIndex);
-				if (linkedMap.containsKey(parentTreeIndex)) {
+
+				String key =
+					parentTreeIndex + StringPool.DASH +
+						currentBean.getGovItemCode() + StringPool.DASH +
+						currentBean.getMonth() + StringPool.DASH +
+						currentBean.getYear() + StringPool.DASH +
+						currentBean.getAdministrationLevel();
+				if (linkedMap.containsKey(key)) {
 					dossierStatisticsBean = linkedMap.get(parentTreeIndex);
 					dossierStatisticsBean.setReceivedNumber(currentBean.getReceivedNumber() +
 						dossierStatisticsBean.getReceivedNumber());
@@ -961,13 +969,19 @@ public class StatisticsUtil {
 						dossierStatisticsBean.getProcessingNumber());
 				}
 				else {
-					dossierStatisticsBean = currentBean;
+					dossierStatisticsBean =
+						new DossierStatisticsBean(currentBean);
 					dossierStatisticsBean.setDomainTreeIndex(parentTreeIndex);
 				}
 
 				dossierStatisticsBean.setDomainItemCode(dictItem.getItemCode());
 
-				linkedMap.put(parentTreeIndex, dossierStatisticsBean);
+				_log.info("############################# " + treeIndex + " - " +
+					currentBean.getDomainItemCode() + " ||| " +
+					parentTreeIndex + " - " +
+					dossierStatisticsBean.getDomainItemCode());
+
+				linkedMap.put(key, dossierStatisticsBean);
 
 				if (parentTreeIndex.contains(StringPool.PERIOD)) {
 					getDossierStatisticsBeanByDomainTreeIndex(
@@ -983,6 +997,33 @@ public class StatisticsUtil {
 		return linkedMap;
 	}
 
+	/**
+	 * @param fieldLabels
+	 * @param fieldKeys
+	 * @param fieldFomulas
+	 * @return
+	 */
+	public static List<FieldDatasShema> getFieldDatasShemas(
+		String[] fieldLabels, String[] fieldKeys, String[] fieldFormulas) {
+
+		List<FieldDatasShema> shemas = new ArrayList<FieldDatasShema>();
+
+		if (fieldFormulas != null && fieldKeys != null && fieldLabels != null &&
+			fieldLabels.length == fieldKeys.length &&
+			fieldKeys.length == fieldFormulas.length) {
+			for (int f = 0; f < fieldFormulas.length; f++) {
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>fieldLabels[f] " + fieldLabels[f] );
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>fieldKeys[f] " + fieldKeys[f] );
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>fieldFormulas[f] " + fieldFormulas[f] );
+				FieldDatasShema datasShema =
+					new FieldDatasShema(
+						fieldLabels[f], fieldKeys[f], fieldFormulas[f]);
+
+				shemas.add(datasShema);
+			}
+		}
+		return shemas;
+	}
 	/*
 	 * public static void main(String[] args) { LinkedHashMap<Integer,
 	 * List<Integer>> map = getPeriodMap(5, 2016, 37); for (Map.Entry<Integer,

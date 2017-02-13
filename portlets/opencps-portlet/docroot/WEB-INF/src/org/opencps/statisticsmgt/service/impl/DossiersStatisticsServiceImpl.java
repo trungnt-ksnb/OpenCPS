@@ -24,10 +24,12 @@ import org.opencps.datamgt.model.DictCollection;
 import org.opencps.datamgt.model.DictItem;
 import org.opencps.datamgt.service.DictCollectionLocalServiceUtil;
 import org.opencps.datamgt.service.DictItemLocalServiceUtil;
+import org.opencps.statisticsmgt.bean.FieldDatasShema;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
 import org.opencps.statisticsmgt.service.DossiersStatisticsService;
 import org.opencps.statisticsmgt.service.base.DossiersStatisticsServiceBaseImpl;
+import org.opencps.util.PortletPropsValues;
 
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -35,27 +37,25 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 
 /**
- * The implementation of the dossiers statistics remote service.
- * <p>
- * All custom service methods should be put in this class. Whenever methods are
- * added, rerun ServiceBuilder to copy their definitions into the
+ * The implementation of the dossiers statistics remote service. <p> All custom
+ * service methods should be put in this class. Whenever methods are added,
+ * rerun ServiceBuilder to copy their definitions into the
  * {@link org.opencps.statisticsmgt.service.DossiersStatisticsService}
- * interface.
- * <p>
- * This is a remote service. Methods of this service are expected to have
- * security checks based on the propagated JAAS credentials because this service
- * can be accessed remotely.
- * </p>
+ * interface. <p> This is a remote service. Methods of this service are expected
+ * to have security checks based on the propagated JAAS credentials because this
+ * service can be accessed remotely. </p>
  *
  * @author trungnt
  * @see org.opencps.statisticsmgt.service.base.DossiersStatisticsServiceBaseImpl
  * @see org.opencps.statisticsmgt.service.DossiersStatisticsServiceUtil
  */
-public class DossiersStatisticsServiceImpl extends
-		DossiersStatisticsServiceBaseImpl {
+public class DossiersStatisticsServiceImpl
+	extends DossiersStatisticsServiceBaseImpl {
 
 	/*
 	 * NOTE FOR DEVELOPERS: Never reference this interface directly. Always use
@@ -72,11 +72,11 @@ public class DossiersStatisticsServiceImpl extends
 	 */
 	@JSONWebService(value = "get-dossierstatistic-by-gc-dc-y", method = "POST")
 	public List<DossiersStatistics> getDossiersStatisticsByGC_DC_Y(
-			long groupId, String govAgencyCode, String domainCode, int year)
-			throws SystemException {
+		long groupId, String govAgencyCode, String domainCode, int year)
+		throws SystemException {
 
 		return dossiersStatisticsLocalService.getDossiersStatisticsByG_GC_DC_Y(
-				groupId, govAgencyCode, domainCode, year);
+			groupId, govAgencyCode, domainCode, year);
 	}
 
 	/**
@@ -85,12 +85,14 @@ public class DossiersStatisticsServiceImpl extends
 	 * @throws SystemException
 	 */
 	@JSONWebService(value = "statistics-dossier-of-year", method = "POST")
-	public JSONArray statisticsDossierOfYear(long groupId, int year,
-			String language) throws SystemException {
+	public JSONArray statisticsDossierOfYear(
+		long groupId, int year, String language)
+		throws SystemException {
 
 		JSONArray array = JSONFactoryUtil.createJSONArray();
 
-		List<DossiersStatistics> dossiersStatistics = new ArrayList<DossiersStatistics>();
+		List<DossiersStatistics> dossiersStatistics =
+			new ArrayList<DossiersStatistics>();
 
 		Locale locale = new Locale(language);
 
@@ -103,12 +105,13 @@ public class DossiersStatisticsServiceImpl extends
 
 		for (int i = 1; i <= 12; i++) {
 			try {
-				DossiersStatistics statistics = DossiersStatisticsLocalServiceUtil
-						.getDossiersStatisticsByG_GC_DC_M_Y_L(groupId,
-								StringPool.BLANK, StringPool.BLANK, i, year, 0);
+				DossiersStatistics statistics =
+					DossiersStatisticsLocalServiceUtil.getDossiersStatisticsByG_GC_DC_M_Y_L(
+						groupId, StringPool.BLANK, StringPool.BLANK, i, year, 0);
 				dossiersStatistics.add(statistics);
 
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				continue;
 			}
 		}
@@ -119,10 +122,10 @@ public class DossiersStatisticsServiceImpl extends
 				overtimeNumber += statistics.getOvertimeNumber();
 			}
 
-			processingNumber += dossiersStatistics.get(
-					dossiersStatistics.size() - 1).getProcessingNumber();
-			delayingNumber += dossiersStatistics.get(
-					dossiersStatistics.size() - 1).getDelayingNumber();
+			processingNumber +=
+				dossiersStatistics.get(dossiersStatistics.size() - 1).getProcessingNumber();
+			delayingNumber +=
+				dossiersStatistics.get(dossiersStatistics.size() - 1).getDelayingNumber();
 		}
 
 		JSONObject obj1 = JSONFactoryUtil.createJSONObject();
@@ -159,6 +162,7 @@ public class DossiersStatisticsServiceImpl extends
 	}
 
 	public String getClassName() {
+
 		return DossiersStatisticsService.class.getName();
 	}
 
@@ -170,15 +174,17 @@ public class DossiersStatisticsServiceImpl extends
 	 */
 	@JSONWebService(value = "statistics-dossier-monthly", method = "POST")
 	public JSONArray statisticsDossierMonthly(
-			List<DossiersStatistics> dossiersStatistics, String[] names,
-			Locale locale) {
+		List<DossiersStatistics> dossiersStatistics, String[] names,
+		Locale locale) {
 
 		JSONArray datas = JSONFactoryUtil.createJSONArray();
 
 		if (names == null || names.length == 0) {
-			names = new String[] { "remaining-number", "received-number",
-					"ontime-number", "overtime-number", "processing-number",
-					"delaying-number" };
+			names =
+				new String[] {
+					"remaining-number", "received-number", "ontime-number",
+					"overtime-number", "processing-number", "delaying-number"
+				};
 		}
 
 		if (dossiersStatistics != null) {
@@ -191,22 +197,22 @@ public class DossiersStatisticsServiceImpl extends
 					months.put(String.valueOf(statistics.getMonth()));
 
 					if (names[n].equals("remaining-number")) {
-						values.put(String.valueOf(statistics
-								.getRemainingNumber()));
-					} else if (names[n].equals("received-number")) {
-						values.put(String.valueOf(statistics
-								.getReceivedNumber()));
-					} else if (names[n].equals("ontime-number")) {
+						values.put(String.valueOf(statistics.getRemainingNumber()));
+					}
+					else if (names[n].equals("received-number")) {
+						values.put(String.valueOf(statistics.getReceivedNumber()));
+					}
+					else if (names[n].equals("ontime-number")) {
 						values.put(String.valueOf(statistics.getOntimeNumber()));
-					} else if (names[n].equals("overtime-number")) {
-						values.put(String.valueOf(statistics
-								.getOvertimeNumber()));
-					} else if (names[n].equals("processing-number")) {
-						values.put(String.valueOf(statistics
-								.getProcessingNumber()));
-					} else if (names[n].equals("delaying-number")) {
-						values.put(String.valueOf(statistics
-								.getDelayingNumber()));
+					}
+					else if (names[n].equals("overtime-number")) {
+						values.put(String.valueOf(statistics.getOvertimeNumber()));
+					}
+					else if (names[n].equals("processing-number")) {
+						values.put(String.valueOf(statistics.getProcessingNumber()));
+					}
+					else if (names[n].equals("delaying-number")) {
+						values.put(String.valueOf(statistics.getDelayingNumber()));
 					}
 
 				}
@@ -232,21 +238,25 @@ public class DossiersStatisticsServiceImpl extends
 	 * @return
 	 */
 	@JSONWebService(value = "statistics-dossier-by-code", method = "POST")
-	public JSONArray statisticsDossierByCode(long dictCollectionId,
-			List<DossiersStatistics> dossiersStatistics, String[] labels,
-			String codeType, int currentMonth, int currentYear, Locale locale) {
+	public JSONArray statisticsDossierByCode(
+		long dictCollectionId, List<DossiersStatistics> dossiersStatistics,
+		String[] labels, String codeType, int currentMonth, int currentYear,
+		Locale locale) {
 
 		JSONArray datas = JSONFactoryUtil.createJSONArray();
 
-		LinkedHashMap<String, List<DossiersStatistics>> statisticLinkedHashMap = new LinkedHashMap<String, List<DossiersStatistics>>();
+		LinkedHashMap<String, List<DossiersStatistics>> statisticLinkedHashMap =
+			new LinkedHashMap<String, List<DossiersStatistics>>();
 
 		if (labels == null || labels.length == 0) {
-			labels = new String[] { "remaining-number", "received-number",
-					"ontime-number", "overtime-number", "processing-number",
-					"delaying-number" };
+			labels =
+				new String[] {
+					"remaining-number", "received-number", "ontime-number",
+					"overtime-number", "processing-number", "delaying-number"
+				};
 		}
-		System.out.println("################################# "
-				+ dossiersStatistics.size());
+		System.out.println("################################# " +
+			dossiersStatistics.size());
 		if (dossiersStatistics != null) {
 
 			for (DossiersStatistics dossiersStatistic : dossiersStatistics) {
@@ -255,7 +265,8 @@ public class DossiersStatisticsServiceImpl extends
 					code = dossiersStatistic.getDomainCode();
 				}
 				System.out.println("################################# " + code);
-				List<DossiersStatistics> dossiersStatisticsTemp = new ArrayList<DossiersStatistics>();
+				List<DossiersStatistics> dossiersStatisticsTemp =
+					new ArrayList<DossiersStatistics>();
 				if (statisticLinkedHashMap.containsKey(code)) {
 					dossiersStatisticsTemp = statisticLinkedHashMap.get(code);
 				}
@@ -265,8 +276,7 @@ public class DossiersStatisticsServiceImpl extends
 
 			}
 
-			for (Map.Entry<String, List<DossiersStatistics>> entry : statisticLinkedHashMap
-					.entrySet()) {
+			for (Map.Entry<String, List<DossiersStatistics>> entry : statisticLinkedHashMap.entrySet()) {
 
 				JSONObject itemObject = JSONFactoryUtil.createJSONObject();
 
@@ -279,20 +289,22 @@ public class DossiersStatisticsServiceImpl extends
 				String name = StringPool.BLANK;
 
 				try {
-					DictItem dictItem = DictItemLocalServiceUtil
-							.getDictItemInuseByItemCode(dictCollectionId, code);
+					DictItem dictItem =
+						DictItemLocalServiceUtil.getDictItemInuseByItemCode(
+							dictCollectionId, code);
 					name = dictItem.getItemName(locale);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					// TODO: handle exception
 				}
 
 				// TODO get dictItem by code
 
-				List<DossiersStatistics> dossiersStatisticsTemp = entry
-						.getValue();
+				List<DossiersStatistics> dossiersStatisticsTemp =
+					entry.getValue();
 
-				if (dossiersStatisticsTemp != null
-						&& !dossiersStatisticsTemp.isEmpty()) {
+				if (dossiersStatisticsTemp != null &&
+					!dossiersStatisticsTemp.isEmpty()) {
 
 					int month = dossiersStatisticsTemp.get(0).getMonth();
 
@@ -315,19 +327,24 @@ public class DossiersStatisticsServiceImpl extends
 								if (statistics.getMonth() <= month) {
 									value = statistics.getRemainingNumber();
 								}
-							} else if (labels[l].equals("received-number")) {
+							}
+							else if (labels[l].equals("received-number")) {
 								value += statistics.getReceivedNumber();
-							} else if (labels[l].equals("ontime-number")) {
+							}
+							else if (labels[l].equals("ontime-number")) {
 								value += statistics.getOntimeNumber();
-							} else if (labels[l].equals("overtime-number")) {
+							}
+							else if (labels[l].equals("overtime-number")) {
 								value += statistics.getOvertimeNumber();
-							} else if (labels[l].equals("processing-number")
-									&& statistics.getMonth() == currentMonth
-									&& statistics.getYear() == currentYear) {
+							}
+							else if (labels[l].equals("processing-number") &&
+								statistics.getMonth() == currentMonth &&
+								statistics.getYear() == currentYear) {
 								value = statistics.getProcessingNumber();
-							} else if (labels[l].equals("delaying-number")
-									&& statistics.getMonth() == currentMonth
-									&& statistics.getYear() == currentYear) {
+							}
+							else if (labels[l].equals("delaying-number") &&
+								statistics.getMonth() == currentMonth &&
+								statistics.getYear() == currentYear) {
 								value = statistics.getDelayingNumber();
 							}
 
@@ -347,4 +364,143 @@ public class DossiersStatisticsServiceImpl extends
 		return datas;
 	}
 
+	@JSONWebService(value = "statistics-dossier-by-code", method = "POST")
+	public JSONArray statisticsDossierByCode(
+		long groupId, List<DossiersStatistics> dossiersStatistics,
+		List<FieldDatasShema> fieldDatasShemas, String codeType,
+		int currentMonth, int currentYear, Locale locale) {
+
+		JSONArray datas = JSONFactoryUtil.createJSONArray();
+
+		LinkedHashMap<String, List<DossiersStatistics>> statisticLinkedHashMap =
+			new LinkedHashMap<String, List<DossiersStatistics>>();
+
+		DictCollection dictCollection = null;
+
+		if (dossiersStatistics != null) {
+
+			try {
+
+				if (codeType.equals("gov")) {
+					dictCollection =
+						DictCollectionLocalServiceUtil.getDictCollection(
+							groupId,
+							PortletPropsValues.DATAMGT_MASTERDATA_GOVERNMENT_AGENCY);
+				}
+				else {
+					dictCollection =
+						DictCollectionLocalServiceUtil.getDictCollection(
+							groupId,
+							PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN);
+				}
+
+			}
+			catch (Exception e) {
+				_log.error(e);
+			}
+
+			//if()
+			for (DossiersStatistics dossiersStatistic : dossiersStatistics) {
+				String code = dossiersStatistic.getGovAgencyCode();
+				if (codeType.equals("domain")) {
+					code = dossiersStatistic.getDomainCode();
+				}
+
+				List<DossiersStatistics> dossiersStatisticsTemp =
+					new ArrayList<DossiersStatistics>();
+				if (statisticLinkedHashMap.containsKey(code)) {
+					dossiersStatisticsTemp = statisticLinkedHashMap.get(code);
+				}
+
+				dossiersStatisticsTemp.add(dossiersStatistic);
+				statisticLinkedHashMap.put(code, dossiersStatisticsTemp);
+
+			}
+
+			for (Map.Entry<String, List<DossiersStatistics>> entry : statisticLinkedHashMap.entrySet()) {
+
+				JSONObject itemObject = JSONFactoryUtil.createJSONObject();
+
+				JSONArray columnLabels = JSONFactoryUtil.createJSONArray();
+
+				JSONArray values = JSONFactoryUtil.createJSONArray();
+
+				String code = entry.getKey();
+
+				String name = StringPool.BLANK;
+
+				try {
+					DictItem dictItem =
+						DictItemLocalServiceUtil.getDictItemInuseByItemCode(
+							dictCollection.getDictCollectionId(), code);
+					name = dictItem.getItemName(locale);
+				}
+				catch (Exception e) {
+					_log.warn(e);
+				}
+
+				List<DossiersStatistics> dossiersStatisticsTemp =
+					entry.getValue();
+
+				if (dossiersStatisticsTemp != null &&
+					!dossiersStatisticsTemp.isEmpty()) {
+
+					int month = dossiersStatisticsTemp.get(0).getMonth();
+
+					itemObject.put("code", code);
+
+					itemObject.put("codeType", codeType);
+
+					itemObject.put("name", name);
+
+					for (int l = 0; l < labels.length; l++) {
+
+						columnLabels.put(LanguageUtil.get(locale, labels[l]));
+
+						int value = 0;
+
+						for (DossiersStatistics statistics : dossiersStatisticsTemp) {
+
+							if (labels[l].equals("remaining-number")) {
+
+								if (statistics.getMonth() <= month) {
+									value = statistics.getRemainingNumber();
+								}
+							}
+							else if (labels[l].equals("received-number")) {
+								value += statistics.getReceivedNumber();
+							}
+							else if (labels[l].equals("ontime-number")) {
+								value += statistics.getOntimeNumber();
+							}
+							else if (labels[l].equals("overtime-number")) {
+								value += statistics.getOvertimeNumber();
+							}
+							else if (labels[l].equals("processing-number") &&
+								statistics.getMonth() == currentMonth &&
+								statistics.getYear() == currentYear) {
+								value = statistics.getProcessingNumber();
+							}
+							else if (labels[l].equals("delaying-number") &&
+								statistics.getMonth() == currentMonth &&
+								statistics.getYear() == currentYear) {
+								value = statistics.getDelayingNumber();
+							}
+
+						}
+
+						values.put(String.valueOf(value));
+					}
+
+					itemObject.put("labels", columnLabels);
+					itemObject.put("values", values);
+
+					datas.put(itemObject);
+
+				}
+			}
+		}
+		return datas;
+	}
+	private Log _log =  LogFactoryUtil.getLog(DossiersStatisticsServiceImpl.class.getName());
 }
