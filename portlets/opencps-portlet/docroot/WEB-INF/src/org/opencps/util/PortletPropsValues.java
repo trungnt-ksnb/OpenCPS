@@ -71,6 +71,9 @@ public class PortletPropsValues {
 	public static final String DATAMGT_MASTERDATA_DOSSIER_STATUS = GetterUtil
 			.getString(PortletProps
 					.get(PortletPropsKeys.DATAMGT_MASTERDATA_DOSSIER_STATUS));
+	public static final String DATAMGT_MASTERDATA_USER_GROUP_NOTIFY = GetterUtil
+			.getString(PortletProps
+					.get(PortletPropsKeys.DATAMGT_MASTERDATA_USER_GROUP_NOTIFY));
 
 	// validate file
 
