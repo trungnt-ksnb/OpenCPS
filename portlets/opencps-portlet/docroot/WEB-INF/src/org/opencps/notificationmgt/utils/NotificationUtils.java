@@ -52,6 +52,7 @@ import org.opencps.util.MessageBusKeys;
 import org.opencps.util.PortletPropsValues;
 import org.opencps.util.SendMailUtils;
 
+import com.liferay.portal.NoSuchLayoutFriendlyURLException;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -118,8 +119,12 @@ public class NotificationUtils {
 				LanguageUtil.get(locale, event));
 
 			Layout layOut = null;
+			try {
+				layOut = LayoutLocalServiceUtil.getFriendlyURLLayout(groupId,
+						true, group);
+			} catch (NoSuchLayoutFriendlyURLException e) {
 
-			layOut = LayoutLocalServiceUtil.getFriendlyURLLayout(groupId, true, group);
+			}
 
 			if (Validator.isNotNull(layOut)) {
 				plId = layOut.getPlid();
@@ -195,13 +200,11 @@ public class NotificationUtils {
 				StringUtil.replace(
 					body, "{event}", PortletProps.get(message.getNotificationEventName()));
 			body = StringUtil.replace(body, "{message}", message.getNotificationContent());
-
+			
 			_log.info("fromAddress:" + fromAddress);
-			_log.info("fromName:" + fromName);
 			_log.info("subject:" + subject);
-			_log.info("body:" + body);
 			_log.info("to:" + to);
-
+			
 			SendMailUtils.sendEmail(
 				fromAddress, fromName, to, StringPool.BLANK, subject, body, htmlFormat);
 		}
@@ -424,7 +427,7 @@ public class NotificationUtils {
 	private List<SendNotificationMessage> getListNoties(long citizenUserId,
 			long groupId, ProcessWorkflow processWorkflow, Dossier dossier,
 			long paymentFileId, long processOrderId, String eventName,
-			String description, long plId) {
+			String description, long plId, boolean isPayment) {
 
 		List<SendNotificationMessage> listNotification = new ArrayList<SendNotificationMessage>();
 
@@ -545,10 +548,10 @@ public class NotificationUtils {
 					}
 				}
 			} catch (SystemException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				_log.error(e);
 			}
 			if (flag) {
+				coordinateInfoEmploy.setPlid(String.valueOf(plId));
 				infoEmployList.add(coordinateInfoEmploy);
 			}
 
