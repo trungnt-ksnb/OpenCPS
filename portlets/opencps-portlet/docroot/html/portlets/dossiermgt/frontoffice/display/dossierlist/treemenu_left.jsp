@@ -247,12 +247,12 @@
 						List<DossierLog> dossierLogs = new ArrayList<DossierLog>();
 						String noteContent = StringPool.BLANK;
 						try {
-							dossierLogs = DossierLogLocalServiceUtil.findDossierLog(1, dossier.getDossierId(), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+							dossierLogs = DossierLogLocalServiceUtil.findDossierLog(1, dossier.getDossierId(), 0, 1);
 							if(dossierLogs.size() > 0) {
 								noteContent = DossierMgtUtil.getDossierLogs(StringPool.BLANK, dossierLogs.get(0).getMessageInfo()).replaceAll("update-version-file", LanguageUtil.get(pageContext, "update-version-file"));
 							}
 						} catch(Exception e) {
-							e.printStackTrace();
+							_log.error(e);
 						}
 					%>
 					
