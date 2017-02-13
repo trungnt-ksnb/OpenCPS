@@ -363,7 +363,7 @@ public class DossiersStatisticsServiceImpl
 		}
 		return datas;
 	}
-
+/*
 	@JSONWebService(value = "statistics-dossier-by-code", method = "POST")
 	public JSONArray statisticsDossierByCode(
 		long groupId, List<DossiersStatistics> dossiersStatistics,
@@ -501,6 +501,7 @@ public class DossiersStatisticsServiceImpl
 			}
 		}
 		return datas;
-	}
+	}*/
+	
 	private Log _log =  LogFactoryUtil.getLog(DossiersStatisticsServiceImpl.class.getName());
 }
