@@ -1,3 +1,4 @@
+<%@page import="java.text.DecimalFormatSymbols"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -123,12 +124,6 @@
 	boolean esign = false;
 	
 	long assigerToUserId = ProcessMgtUtil.getAssignUser(processWorkflowId, processOrderId, workflow.getPostProcessStepId());
-	
-	System.out.print("=================  assigerToUserId  ^^^^^^^^^^^^^^^^^ " + assigerToUserId);
-	
-	/* long assigerToUserIdWasActioning = ProcessMgtUtil.getAssignUserWasActioning(processOrderId);
-	
-	System.out.print("=================  assigerToUserIdWasActioning   " + assigerToUserIdWasActioning); */
 	
 	PortletURL backTodoListURL =PortletURLFactoryUtil.create(request, WebKeys.PROCESS_ORDER_PORTLET, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
 
@@ -335,14 +330,19 @@
 		</c:choose>
 		
 		<c:if test="<%= processWorkflow.getRequestPayment() %>">
-		
+		<%
+			DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(locale);
+			otherSymbols.setDecimalSeparator(',');
+			otherSymbols.setGroupingSeparator('.'); 
+			DecimalFormat df = new DecimalFormat("###,###", otherSymbols);
+		%>
 			<div class="span12">
 				<aui:input 
 					cssClass="input100"
 					name="<%=ProcessOrderDisplayTerms.PAYMENTVALUE %>" 
 					label="requirement-to-pay-charges" 
 					type="text"
-					value="<%=Validator.isNotNull(processWorkflow.getPaymentFee()) ? PaymentRequestGenerator.getTotalPayment(processWorkflow.getPaymentFee(), dossierId) : StringPool.BLANK %>"
+					value='<%=Validator.isNotNull(processWorkflow.getPaymentFee()) ? df.format(PaymentRequestGenerator.getTotalPayment(processWorkflow.getPaymentFee(), dossierId)) + " VND" : StringPool.BLANK %>'
 				/>
 			</div>
 		</c:if>		
