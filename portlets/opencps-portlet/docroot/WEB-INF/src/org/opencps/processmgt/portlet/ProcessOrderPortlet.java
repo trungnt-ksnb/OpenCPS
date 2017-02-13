@@ -482,7 +482,9 @@ public class ProcessOrderPortlet extends MVCPortlet {
 
 		String paymentValue = ParamUtil.getString(actionRequest,
 				ProcessOrderDisplayTerms.PAYMENTVALUE);
-
+		
+		paymentValue = paymentValue.replaceAll("\\D+", StringPool.BLANK);
+		
 		String estimateDate = ParamUtil.getString(actionRequest,
 				ProcessOrderDisplayTerms.ESTIMATE_DATE);
 
