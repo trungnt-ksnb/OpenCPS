@@ -662,11 +662,13 @@ public class ProcessOrderLocalServiceImpl extends
 	 */
 	public int countProcessOrderKeyWords(
 		long serviceInfoId, long processStepId, long loginUserId,
-		long actionUserId, String keyWords, String dossierSubStatus, String processOrderStage) {
+		long actionUserId, String keyWords, String dossierSubStatus, 
+		String processOrderStage, Date fromDate, Date toDate) {
 
 		return processOrderFinder
 			.countProcessOrderKeyWords(serviceInfoId, processStepId, loginUserId,
-				actionUserId, keyWords, dossierSubStatus, processOrderStage);
+				actionUserId, keyWords, dossierSubStatus, processOrderStage,
+				fromDate, toDate);
 	}
 	/**
 	 * @param serviceInfoId
@@ -681,10 +683,15 @@ public class ProcessOrderLocalServiceImpl extends
 	 */
 	public List searchProcessOrderKeyWords(
 		long serviceInfoId, long processStepId, long loginUserId,
-		long actionUserId, String keyWords, String dossierSubStatus, String processOrderStage, int start, int end, OrderByComparator orderByComparator) {
+		long actionUserId, String keyWords, String dossierSubStatus, 
+		String processOrderStage, Date fromDate, Date toDate,
+		int start, int end, OrderByComparator orderByComparator) {
 		
 		return processOrderFinder
-						.searchProcessOrderKeyWords(serviceInfoId, processStepId, loginUserId,
-							actionUserId, keyWords, dossierSubStatus, processOrderStage, start, end, orderByComparator);
+						.searchProcessOrderKeyWords(
+							serviceInfoId, processStepId, loginUserId,
+							actionUserId, keyWords, dossierSubStatus, 
+							processOrderStage, fromDate, toDate, 
+							start, end, orderByComparator);
 	}
 }

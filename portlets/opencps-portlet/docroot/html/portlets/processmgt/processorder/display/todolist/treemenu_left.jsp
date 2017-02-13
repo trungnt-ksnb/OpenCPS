@@ -54,6 +54,8 @@
 <%@page import="java.util.Set"%>
 <%@page import="java.util.HashSet"%>
 <%@page import="org.opencps.util.PortletConstants"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.text.DateFormat"%>
 
 <%@ include file="../../init.jsp"%>
 
@@ -87,6 +89,36 @@
 	String dossierSubStatus = ParamUtil.getString(request, "dossierSubStatus");
 
 	String processOrderStage = ParamUtil.getString(request, "processOrderStage", "false");
+	
+	Date fromDate = null;
+	Date toDate = null;
+	
+	int fromDateDay = ParamUtil.getInteger(request, "fromDateDay");
+	int fromDateMonth = ParamUtil.getInteger(request, "fromDateMonth");
+	int fromDateYear = ParamUtil.getInteger(request, "fromDateYear");
+	int toDateDay = ParamUtil.getInteger(request, "toDateDay");
+	int toDateMonth = ParamUtil.getInteger(request, "toDateMonth");
+	int toDateYear = ParamUtil.getInteger(request, "toDateYear");
+	
+	if(fromDateDay > 0
+			&& fromDateMonth >= 0
+			&& fromDateYear > 0){
+		fromDate = 
+			DateTimeUtil.getDateBeginOfDay(fromDateDay, fromDateMonth, fromDateYear);
+	}
+	if(toDateDay > 0
+			&& toDateMonth >= 0
+			&& toDateYear > 0
+			&& fromDate != null){
+		toDate = 
+			DateTimeUtil.getDateEndOfDay(toDateDay, toDateMonth, toDateYear);
+	} else if (fromDateDay > 0
+			&& fromDateMonth >= 0
+			&& fromDateYear > 0
+			&& fromDate != null){
+		toDate = 
+			DateTimeUtil.getDateEndOfDay(fromDateDay, fromDateMonth, fromDateYear);
+	}
 	
 	JSONObject arrayParam = JSONFactoryUtil
 		    .createJSONObject();
