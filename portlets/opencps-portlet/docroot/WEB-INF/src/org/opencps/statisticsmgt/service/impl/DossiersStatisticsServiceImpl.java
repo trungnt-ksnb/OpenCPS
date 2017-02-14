@@ -20,19 +20,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.opencps.datamgt.model.DictCollection;
 import org.opencps.datamgt.model.DictItem;
-import org.opencps.datamgt.service.DictCollectionLocalServiceUtil;
 import org.opencps.datamgt.service.DictItemLocalServiceUtil;
-import org.opencps.statisticsmgt.bean.FieldDatasShema;
+import org.opencps.statisticsmgt.bean.DossierStatisticsBean;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
 import org.opencps.statisticsmgt.service.DossiersStatisticsService;
 import org.opencps.statisticsmgt.service.base.DossiersStatisticsServiceBaseImpl;
-import org.opencps.util.PortletPropsValues;
 
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
@@ -363,145 +361,16 @@ public class DossiersStatisticsServiceImpl
 		}
 		return datas;
 	}
-/*
-	@JSONWebService(value = "statistics-dossier-by-code", method = "POST")
-	public JSONArray statisticsDossierByCode(
-		long groupId, List<DossiersStatistics> dossiersStatistics,
-		List<FieldDatasShema> fieldDatasShemas, String codeType,
-		int currentMonth, int currentYear, Locale locale) {
 
-		JSONArray datas = JSONFactoryUtil.createJSONArray();
+	@JSONWebService(value = "update-dossier-statistics", method = "POST")
+	public JSONObject updateDossierStatistic(String json)
+		throws JSONException {
 
-		LinkedHashMap<String, List<DossiersStatistics>> statisticLinkedHashMap =
-			new LinkedHashMap<String, List<DossiersStatistics>>();
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(json);
 
-		DictCollection dictCollection = null;
+		return null;
+	}
 
-		if (dossiersStatistics != null) {
-
-			try {
-
-				if (codeType.equals("gov")) {
-					dictCollection =
-						DictCollectionLocalServiceUtil.getDictCollection(
-							groupId,
-							PortletPropsValues.DATAMGT_MASTERDATA_GOVERNMENT_AGENCY);
-				}
-				else {
-					dictCollection =
-						DictCollectionLocalServiceUtil.getDictCollection(
-							groupId,
-							PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN);
-				}
-
-			}
-			catch (Exception e) {
-				_log.error(e);
-			}
-
-			//if()
-			for (DossiersStatistics dossiersStatistic : dossiersStatistics) {
-				String code = dossiersStatistic.getGovAgencyCode();
-				if (codeType.equals("domain")) {
-					code = dossiersStatistic.getDomainCode();
-				}
-
-				List<DossiersStatistics> dossiersStatisticsTemp =
-					new ArrayList<DossiersStatistics>();
-				if (statisticLinkedHashMap.containsKey(code)) {
-					dossiersStatisticsTemp = statisticLinkedHashMap.get(code);
-				}
-
-				dossiersStatisticsTemp.add(dossiersStatistic);
-				statisticLinkedHashMap.put(code, dossiersStatisticsTemp);
-
-			}
-
-			for (Map.Entry<String, List<DossiersStatistics>> entry : statisticLinkedHashMap.entrySet()) {
-
-				JSONObject itemObject = JSONFactoryUtil.createJSONObject();
-
-				JSONArray columnLabels = JSONFactoryUtil.createJSONArray();
-
-				JSONArray values = JSONFactoryUtil.createJSONArray();
-
-				String code = entry.getKey();
-
-				String name = StringPool.BLANK;
-
-				try {
-					DictItem dictItem =
-						DictItemLocalServiceUtil.getDictItemInuseByItemCode(
-							dictCollection.getDictCollectionId(), code);
-					name = dictItem.getItemName(locale);
-				}
-				catch (Exception e) {
-					_log.warn(e);
-				}
-
-				List<DossiersStatistics> dossiersStatisticsTemp =
-					entry.getValue();
-
-				if (dossiersStatisticsTemp != null &&
-					!dossiersStatisticsTemp.isEmpty()) {
-
-					int month = dossiersStatisticsTemp.get(0).getMonth();
-
-					itemObject.put("code", code);
-
-					itemObject.put("codeType", codeType);
-
-					itemObject.put("name", name);
-
-					for (int l = 0; l < labels.length; l++) {
-
-						columnLabels.put(LanguageUtil.get(locale, labels[l]));
-
-						int value = 0;
-
-						for (DossiersStatistics statistics : dossiersStatisticsTemp) {
-
-							if (labels[l].equals("remaining-number")) {
-
-								if (statistics.getMonth() <= month) {
-									value = statistics.getRemainingNumber();
-								}
-							}
-							else if (labels[l].equals("received-number")) {
-								value += statistics.getReceivedNumber();
-							}
-							else if (labels[l].equals("ontime-number")) {
-								value += statistics.getOntimeNumber();
-							}
-							else if (labels[l].equals("overtime-number")) {
-								value += statistics.getOvertimeNumber();
-							}
-							else if (labels[l].equals("processing-number") &&
-								statistics.getMonth() == currentMonth &&
-								statistics.getYear() == currentYear) {
-								value = statistics.getProcessingNumber();
-							}
-							else if (labels[l].equals("delaying-number") &&
-								statistics.getMonth() == currentMonth &&
-								statistics.getYear() == currentYear) {
-								value = statistics.getDelayingNumber();
-							}
-
-						}
-
-						values.put(String.valueOf(value));
-					}
-
-					itemObject.put("labels", columnLabels);
-					itemObject.put("values", values);
-
-					datas.put(itemObject);
-
-				}
-			}
-		}
-		return datas;
-	}*/
-	
-	private Log _log =  LogFactoryUtil.getLog(DossiersStatisticsServiceImpl.class.getName());
+	private Log _log =
+		LogFactoryUtil.getLog(DossiersStatisticsServiceImpl.class.getName());
 }

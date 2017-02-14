@@ -37,76 +37,99 @@ import com.liferay.util.dao.orm.CustomSQLUtil;
 
 public class StatisticsUtil {
 
-	public static final String RECEIVED = "received";
+	public static enum StatisticsFieldNumber {
+		DelayingNumber, OntimeNumber, OvertimeNumber, ProcessingNumber,
+			ReceivedNumber, RemainingNumber
+	}
+	private static Log _log =
+		LogFactoryUtil.getLog(StatisticsUtil.class.getName());
 	public static final String FINISHED = "finished";
+
+	public static final String MONTH = "month";
 	public static final String PROCESSING = "processing";
+	public static final String RECEIVED = "received";
 
 	public static final String STATISTICS_BY = "statisticsBy";
-	public static final String MONTH = "month";
+
 	public static final String YEAR = "year";
 
-	public static enum StatisticsFieldNumber {
-		ReceivedNumber, OntimeNumber, OvertimeNumber, ProcessingNumber,
-			DelayingNumber, RemainingNumber
-	}
-
 	/**
-	 * @param field
-	 * @param delayStatus
+	 * @param dossierStatisticsBean
 	 * @return
+	 * @throws SystemException
+	 * @throws PortalException
 	 */
-	public static String getFilterCondition(String field, int... delayStatus) {
+	public static DossiersStatistics addDossiersStatistics(
+		DossierStatisticsBean dossierStatisticsBean)
+		throws SystemException, PortalException {
 
-		String filter = StringPool.BLANK;
-		StatisticsFieldNumber fieldNumber =
-			StatisticsFieldNumber.valueOf(field);
-		switch (fieldNumber) {
-		case ReceivedNumber:
-			filter =
-				CustomSQLUtil.get(DossiersStatisticsFinder.class.getName() +
-					StringPool.PERIOD + StringPool.OPEN_BRACKET + RECEIVED +
-					StringPool.CLOSE_BRACKET);
-			break;
-		case OntimeNumber:
-			filter =
-				CustomSQLUtil.get(DossiersStatisticsFinder.class.getName() +
-					StringPool.PERIOD + StringPool.OPEN_BRACKET + FINISHED +
-					StringPool.CLOSE_BRACKET);
-			break;
-		case OvertimeNumber:
-			filter =
-				CustomSQLUtil.get(DossiersStatisticsFinder.class.getName() +
-					StringPool.PERIOD + StringPool.OPEN_BRACKET + FINISHED +
-					StringPool.CLOSE_BRACKET);
-			break;
+		Date now = new Date();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(now);
 
-		case ProcessingNumber:
-			filter =
-				CustomSQLUtil.get(DossiersStatisticsFinder.class.getName() +
-					StringPool.PERIOD + StringPool.OPEN_BRACKET + PROCESSING +
-					StringPool.CLOSE_BRACKET);
-			break;
-		case DelayingNumber:
-			filter =
-				CustomSQLUtil.get(DossiersStatisticsFinder.class.getName() +
-					StringPool.PERIOD + StringPool.OPEN_BRACKET + PROCESSING +
-					StringPool.CLOSE_BRACKET);
-			break;
+		int currentYear = calendar.get(Calendar.YEAR);
 
-		default:
-			break;
+		int currentMonth = calendar.get(Calendar.MONTH) + 1;
+
+		_log.info("currentYear | currentMonth " + currentMonth + " | " +
+			currentYear);
+
+		DossiersStatistics dossierStatistics = null;
+
+		if (dossierStatisticsBean.getMonth() == currentMonth &&
+			dossierStatisticsBean.getYear() == currentYear) {
+			try {
+				dossierStatistics =
+					DossiersStatisticsLocalServiceUtil.getDossiersStatisticsByG_GC_DC_M_Y_L(
+						dossierStatisticsBean.getGroupId(),
+						Validator.isNotNull(dossierStatisticsBean.getGovItemCode())
+							? dossierStatisticsBean.getGovItemCode()
+							: StringPool.BLANK,
+						Validator.isNotNull(dossierStatisticsBean.getDomainItemCode())
+							? dossierStatisticsBean.getDomainItemCode()
+							: StringPool.BLANK,
+						dossierStatisticsBean.getMonth(),
+						dossierStatisticsBean.getYear(),
+						dossierStatisticsBean.getAdministrationLevel());
+			}
+			catch (Exception e) {
+				_log.info(e.getMessage());
+			}
 		}
-		return filter;
-	}
 
-	/**
-	 * @param fieldName
-	 * @return
-	 */
-	public static String getSetterMethodName(String fieldName) {
+		if (dossierStatistics == null) {
+			dossierStatistics =
+				DossiersStatisticsLocalServiceUtil.addDossiersStatistics(
+					dossierStatisticsBean.getGroupId(),
+					dossierStatisticsBean.getCompanyId(),
+					dossierStatisticsBean.getUserId(),
+					dossierStatisticsBean.getRemainingNumber(),
+					dossierStatisticsBean.getReceivedNumber(),
+					dossierStatisticsBean.getOntimeNumber(),
+					dossierStatisticsBean.getOvertimeNumber(),
+					dossierStatisticsBean.getProcessingNumber(),
+					dossierStatisticsBean.getDelayingNumber(),
+					dossierStatisticsBean.getMonth(),
+					dossierStatisticsBean.getYear(),
+					dossierStatisticsBean.getGovItemCode(),
+					dossierStatisticsBean.getDomainItemCode(),
+					dossierStatisticsBean.getAdministrationLevel());
+		}
+		else {
+			_log.info("Update statistic: " + dossierStatisticsBean.getMonth() +
+				"|" + dossierStatisticsBean.getYear());
+			dossierStatistics =
+				DossiersStatisticsLocalServiceUtil.updateDossiersStatistics(
+					dossierStatistics.getDossierStatisticId(),
+					dossierStatisticsBean.getRemainingNumber(),
+					dossierStatisticsBean.getReceivedNumber(),
+					dossierStatisticsBean.getOntimeNumber(),
+					dossierStatisticsBean.getOvertimeNumber(),
+					dossierStatisticsBean.getProcessingNumber(),
+					dossierStatisticsBean.getDelayingNumber());
+		}
 
-		String methodName = "set" + fieldName;
-		return methodName;
+		return dossierStatistics;
 	}
 
 	/**
@@ -129,127 +152,6 @@ public class StatisticsUtil {
 		}
 
 		return q;
-	}
-
-	/**
-	 * @param typeLabel
-	 * @return
-	 */
-	public static Type getDataType(String typeLabel) {
-
-		return Type.valueOf(typeLabel.trim());
-	}
-
-	/**
-	 * @param columnName
-	 * @param coulmnDataType
-	 * @param field
-	 * @param delayStatus
-	 * @return
-	 * @throws NoSuchMethodException
-	 * @throws SecurityException
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
-	 */
-	public static Method getMethod(
-		String columnName, String coulmnDataType, String field,
-		int... delayStatus)
-		throws NoSuchMethodException, SecurityException,
-		IllegalAccessException, IllegalArgumentException,
-		InvocationTargetException {
-
-		String methodName = "set";
-		columnName = columnName.trim();
-		coulmnDataType = coulmnDataType.trim();
-
-		columnName =
-			columnName.substring(0, columnName.indexOf(StringPool.SPACE));
-
-		if (columnName.contains("d.")) {
-			String temp =
-				columnName.substring(
-					columnName.lastIndexOf(StringPool.PERIOD) + 1,
-					columnName.length());
-			temp = StringUtil.upperCaseFirstLetter(temp);
-			methodName += "Domain" + temp;
-		}
-		else if (columnName.contains("g.")) {
-			String temp =
-				columnName.substring(
-					columnName.lastIndexOf(StringPool.PERIOD) + 1,
-					columnName.length());
-			temp = StringUtil.upperCaseFirstLetter(temp);
-			methodName += "Gov" + temp;
-
-		}
-		else if (columnName.contains("count(opencps_processorder.processOrderId)")) {
-			methodName = getSetterMethodName(field);
-		}
-		else {
-			String temp =
-				columnName.substring(
-					columnName.lastIndexOf(StringPool.PERIOD) + 1,
-					columnName.length());
-			temp = StringUtil.upperCaseFirstLetter(temp);
-			methodName += temp;
-		}
-
-		// System.out.println(methodName + "---" + columnName);
-
-		Class<?> clazz = getClazz(coulmnDataType);
-
-		Method method = null;
-		try {
-			if (clazz != null) {
-				method =
-					DossierStatisticsBean.class.getMethod(methodName, clazz);
-			}
-			else {
-				method = DossierStatisticsBean.class.getMethod(methodName);
-			}
-		}
-		catch (Exception e) {
-
-		}
-
-		return method;
-	}
-
-	/**
-	 * @param typeLabel
-	 * @return
-	 */
-	public static Class<?> getClazz(String typeLabel) {
-
-		Class<?> clazz = null;
-		Type type = Type.valueOf(typeLabel);
-		switch (type) {
-
-		case STRING:
-			clazz = String.class;
-			break;
-
-		case LONG:
-			clazz = long.class;
-			break;
-
-		case INTEGER:
-			clazz = int.class;
-			break;
-
-		case DATE:
-			clazz = Date.class;
-			break;
-
-		case SHORT:
-			clazz = short.class;
-			break;
-
-		default:
-			break;
-		}
-		return clazz;
 	}
 
 	/**
@@ -327,6 +229,51 @@ public class StatisticsUtil {
 		}
 
 		return data;
+	}
+
+	/**
+	 * @param typeLabel
+	 * @return
+	 */
+	public static Class<?> getClazz(String typeLabel) {
+
+		Class<?> clazz = null;
+		Type type = Type.valueOf(typeLabel);
+		switch (type) {
+
+		case STRING:
+			clazz = String.class;
+			break;
+
+		case LONG:
+			clazz = long.class;
+			break;
+
+		case INTEGER:
+			clazz = int.class;
+			break;
+
+		case DATE:
+			clazz = Date.class;
+			break;
+
+		case SHORT:
+			clazz = short.class;
+			break;
+
+		default:
+			break;
+		}
+		return clazz;
+	}
+
+	/**
+	 * @param typeLabel
+	 * @return
+	 */
+	public static Type getDataType(String typeLabel) {
+
+		return Type.valueOf(typeLabel.trim());
 	}
 
 	public static List<DossiersStatistics> getDossiersStatistics(List data) {
@@ -661,272 +608,6 @@ public class StatisticsUtil {
 	}
 
 	/**
-	 * @param dossierStatisticsBean
-	 * @return
-	 * @throws SystemException
-	 * @throws PortalException
-	 */
-	public static DossiersStatistics addDossiersStatistics(
-		DossierStatisticsBean dossierStatisticsBean)
-		throws SystemException, PortalException {
-
-		Date now = new Date();
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(now);
-
-		int currentYear = calendar.get(Calendar.YEAR);
-
-		int currentMonth = calendar.get(Calendar.MONTH) + 1;
-
-		_log.info("currentYear | currentMonth " + currentMonth + " | " +
-			currentYear);
-
-		DossiersStatistics dossierStatistics = null;
-
-		if (dossierStatisticsBean.getMonth() == currentMonth &&
-			dossierStatisticsBean.getYear() == currentYear) {
-			try {
-				dossierStatistics =
-					DossiersStatisticsLocalServiceUtil.getDossiersStatisticsByG_GC_DC_M_Y_L(
-						dossierStatisticsBean.getGroupId(),
-						Validator.isNotNull(dossierStatisticsBean.getGovItemCode())
-							? dossierStatisticsBean.getGovItemCode()
-							: StringPool.BLANK,
-						Validator.isNotNull(dossierStatisticsBean.getDomainItemCode())
-							? dossierStatisticsBean.getDomainItemCode()
-							: StringPool.BLANK,
-						dossierStatisticsBean.getMonth(),
-						dossierStatisticsBean.getYear(),
-						dossierStatisticsBean.getAdministrationLevel());
-			}
-			catch (Exception e) {
-				_log.info(e.getMessage());
-			}
-		}
-
-		if (dossierStatistics == null) {
-			dossierStatistics =
-				DossiersStatisticsLocalServiceUtil.addDossiersStatistics(
-					dossierStatisticsBean.getGroupId(),
-					dossierStatisticsBean.getCompanyId(),
-					dossierStatisticsBean.getUserId(),
-					dossierStatisticsBean.getRemainingNumber(),
-					dossierStatisticsBean.getReceivedNumber(),
-					dossierStatisticsBean.getOntimeNumber(),
-					dossierStatisticsBean.getOvertimeNumber(),
-					dossierStatisticsBean.getProcessingNumber(),
-					dossierStatisticsBean.getDelayingNumber(),
-					dossierStatisticsBean.getMonth(),
-					dossierStatisticsBean.getYear(),
-					dossierStatisticsBean.getGovItemCode(),
-					dossierStatisticsBean.getDomainItemCode(),
-					dossierStatisticsBean.getAdministrationLevel());
-		}
-		else {
-			_log.info("Update statistic: " + dossierStatisticsBean.getMonth() +
-				"|" + dossierStatisticsBean.getYear());
-			dossierStatistics =
-				DossiersStatisticsLocalServiceUtil.updateDossiersStatistics(
-					dossierStatistics.getDossierStatisticId(),
-					dossierStatisticsBean.getRemainingNumber(),
-					dossierStatisticsBean.getReceivedNumber(),
-					dossierStatisticsBean.getOntimeNumber(),
-					dossierStatisticsBean.getOvertimeNumber(),
-					dossierStatisticsBean.getProcessingNumber(),
-					dossierStatisticsBean.getDelayingNumber());
-		}
-
-		return dossierStatistics;
-	}
-
-	/**
-	 * @param dossiersStatistics
-	 * @param language
-	 * @return
-	 */
-	public static JSONArray statisticsDossierMonthly(
-		List<DossiersStatistics> dossiersStatistics, Locale locale) {
-
-		JSONArray datas = JSONFactoryUtil.createJSONArray();
-		String[] names =
-			new String[] {
-				"remaining-number", "received-number", "ontime-number",
-				"overtime-number", "processing-number", "delaying-number"
-			};
-
-		if (dossiersStatistics != null) {
-			for (int n = 0; n < names.length; n++) {
-				JSONArray months = JSONFactoryUtil.createJSONArray();
-				JSONArray values = JSONFactoryUtil.createJSONArray();
-				JSONObject data = JSONFactoryUtil.createJSONObject();
-				for (DossiersStatistics statistics : dossiersStatistics) {
-
-					months.put(String.valueOf(statistics.getMonth()) + "/" +
-						statistics.getYear());
-
-					if (names[n].equals("remaining-number")) {
-						values.put(String.valueOf(statistics.getRemainingNumber()));
-					}
-					else if (names[n].equals("received-number")) {
-						values.put(String.valueOf(statistics.getReceivedNumber()));
-					}
-					else if (names[n].equals("ontime-number")) {
-						values.put(String.valueOf(statistics.getOntimeNumber()));
-					}
-					else if (names[n].equals("overtime-number")) {
-						values.put(String.valueOf(statistics.getOvertimeNumber()));
-					}
-					else if (names[n].equals("processing-number")) {
-						values.put(String.valueOf(statistics.getProcessingNumber()));
-					}
-					else if (names[n].equals("delaying-number")) {
-						values.put(String.valueOf(statistics.getDelayingNumber()));
-					}
-
-				}
-
-				data.put("name", LanguageUtil.get(locale, names[n]));
-				data.put("months", months);
-				data.put("values", values);
-				datas.put(data);
-			}
-
-		}
-
-		return datas;
-	}
-
-	/**
-	 * @param startMonth
-	 * @param startYear
-	 * @param preriod
-	 * @return
-	 */
-	public static LinkedHashMap<Integer, List<Integer>> getPeriodMap(
-		int startMonth, int startYear, int period) {
-
-		LinkedHashMap<Integer, List<Integer>> map =
-			new LinkedHashMap<Integer, List<Integer>>();
-		List<Integer> months = new ArrayList<Integer>();
-		months.add(startMonth);
-		map.put(startYear, months);
-		for (int p = 1; p < period; p++) {
-			int numberOfMonth = startMonth + p;
-			if (numberOfMonth <= 12) {
-				List<Integer> monthsTemp = map.get(startYear);
-				monthsTemp.add(numberOfMonth);
-				map.put(startYear, monthsTemp);
-			}
-			else {
-				int year = (int) ((numberOfMonth - 1) / 12) + startYear;
-				List<Integer> monthsTemp = new ArrayList<Integer>();
-				if (map.containsKey(year)) {
-					monthsTemp = map.get(year);
-				}
-				int month = numberOfMonth % 12 == 0 ? 12 : numberOfMonth % 12;
-				monthsTemp.add(month);
-				map.put(year, monthsTemp);
-			}
-		}
-
-		return map;
-	}
-
-	/**
-	 * @param startMonth
-	 * @param startYear
-	 * @param period
-	 * @return
-	 */
-	public static String getPeriodConditions(
-		int startMonth, int startYear, int period) {
-
-		StringBuffer conditions = new StringBuffer();
-		LinkedHashMap<Integer, List<Integer>> map =
-			getPeriodMap(startMonth, startYear, period);
-		if (map != null) {
-			int count = 1;
-			conditions.append(StringPool.OPEN_PARENTHESIS);
-			for (Map.Entry<Integer, List<Integer>> entry : map.entrySet()) {
-
-				List<Integer> months = entry.getValue();
-				conditions.append(StringPool.OPEN_PARENTHESIS);
-				conditions.append("opencps_dossierstatistics.month BETWEEN" +
-					StringPool.SPACE);
-				conditions.append(months.get(0));
-				conditions.append(StringPool.SPACE + "AND" + StringPool.SPACE);
-				conditions.append(months.get(months.size() - 1));
-				conditions.append(StringPool.SPACE + "AND" + StringPool.SPACE);
-				conditions.append("opencps_dossierstatistics.year = ");
-				conditions.append(entry.getKey());
-				conditions.append(StringPool.CLOSE_PARENTHESIS);
-				if (count < map.size()) {
-					conditions.append(StringPool.SPACE + "OR" +
-						StringPool.SPACE);
-				}
-
-				count++;
-			}
-			conditions.append(StringPool.CLOSE_PARENTHESIS);
-		}
-
-		return conditions.toString();
-	}
-
-	/**
-	 * @param treeIndex
-	 * @return
-	 */
-	public static String getParentTreeIndex(String treeIndex) {
-
-		String parentTreeIndex = StringPool.BLANK;
-		if (Validator.isNotNull(treeIndex)) {
-			if (treeIndex.contains(StringPool.PERIOD)) {
-				parentTreeIndex =
-					treeIndex.substring(
-						0, treeIndex.lastIndexOf(StringPool.PERIOD));
-
-			}
-			else {
-				parentTreeIndex = treeIndex;
-			}
-		}
-		return parentTreeIndex;
-	}
-
-	/**
-	 * @param treeIndexs
-	 * @param treeIndex
-	 * @return
-	 */
-	public static List<String> getTreeIndexs(
-		List<String> treeIndexs, String treeIndex) {
-
-		String parentTreeIndex = StringPool.BLANK;
-		if (Validator.isNotNull(treeIndex)) {
-			if (treeIndex.contains(StringPool.PERIOD)) {
-				parentTreeIndex =
-					treeIndex.substring(
-						0, treeIndex.lastIndexOf(StringPool.PERIOD));
-
-			}
-			else {
-				parentTreeIndex = treeIndex;
-			}
-			if (!treeIndexs.contains(parentTreeIndex)) {
-				treeIndexs.add(parentTreeIndex);
-			}
-
-		}
-
-		if (treeIndex.contains(StringPool.PERIOD)) {
-			getTreeIndexs(treeIndexs, parentTreeIndex);
-		}
-
-		return treeIndexs;
-	}
-
-	/**
 	 * @param linkedMap
 	 * @param childDossierStatisticsBean
 	 * @return
@@ -1012,9 +693,6 @@ public class StatisticsUtil {
 			fieldLabels.length == fieldKeys.length &&
 			fieldKeys.length == fieldFormulas.length) {
 			for (int f = 0; f < fieldFormulas.length; f++) {
-				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>fieldLabels[f] " + fieldLabels[f] );
-				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>fieldKeys[f] " + fieldKeys[f] );
-				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>fieldFormulas[f] " + fieldFormulas[f] );
 				FieldDatasShema datasShema =
 					new FieldDatasShema(
 						fieldLabels[f], fieldKeys[f], fieldFormulas[f]);
@@ -1033,6 +711,336 @@ public class StatisticsUtil {
 	 * System.out.println(getPeriodConditions(5, 2016, 37)); }
 	 */
 
-	private static Log _log =
-		LogFactoryUtil.getLog(StatisticsUtil.class.getName());
+	/**
+	 * @param field
+	 * @param delayStatus
+	 * @return
+	 */
+	public static String getFilterCondition(String field, int... delayStatus) {
+
+		String filter = StringPool.BLANK;
+		StatisticsFieldNumber fieldNumber =
+			StatisticsFieldNumber.valueOf(field);
+		switch (fieldNumber) {
+		case ReceivedNumber:
+			filter =
+				CustomSQLUtil.get(DossiersStatisticsFinder.class.getName() +
+					StringPool.PERIOD + StringPool.OPEN_BRACKET + RECEIVED +
+					StringPool.CLOSE_BRACKET);
+			break;
+		case OntimeNumber:
+			filter =
+				CustomSQLUtil.get(DossiersStatisticsFinder.class.getName() +
+					StringPool.PERIOD + StringPool.OPEN_BRACKET + FINISHED +
+					StringPool.CLOSE_BRACKET);
+			break;
+		case OvertimeNumber:
+			filter =
+				CustomSQLUtil.get(DossiersStatisticsFinder.class.getName() +
+					StringPool.PERIOD + StringPool.OPEN_BRACKET + FINISHED +
+					StringPool.CLOSE_BRACKET);
+			break;
+
+		case ProcessingNumber:
+			filter =
+				CustomSQLUtil.get(DossiersStatisticsFinder.class.getName() +
+					StringPool.PERIOD + StringPool.OPEN_BRACKET + PROCESSING +
+					StringPool.CLOSE_BRACKET);
+			break;
+		case DelayingNumber:
+			filter =
+				CustomSQLUtil.get(DossiersStatisticsFinder.class.getName() +
+					StringPool.PERIOD + StringPool.OPEN_BRACKET + PROCESSING +
+					StringPool.CLOSE_BRACKET);
+			break;
+
+		default:
+			break;
+		}
+		return filter;
+	}
+
+	/**
+	 * @param columnName
+	 * @param coulmnDataType
+	 * @param field
+	 * @param delayStatus
+	 * @return
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
+	public static Method getMethod(
+		String columnName, String coulmnDataType, String field,
+		int... delayStatus)
+		throws NoSuchMethodException, SecurityException,
+		IllegalAccessException, IllegalArgumentException,
+		InvocationTargetException {
+
+		String methodName = "set";
+		columnName = columnName.trim();
+		coulmnDataType = coulmnDataType.trim();
+
+		columnName =
+			columnName.substring(0, columnName.indexOf(StringPool.SPACE));
+
+		if (columnName.contains("d.")) {
+			String temp =
+				columnName.substring(
+					columnName.lastIndexOf(StringPool.PERIOD) + 1,
+					columnName.length());
+			temp = StringUtil.upperCaseFirstLetter(temp);
+			methodName += "Domain" + temp;
+		}
+		else if (columnName.contains("g.")) {
+			String temp =
+				columnName.substring(
+					columnName.lastIndexOf(StringPool.PERIOD) + 1,
+					columnName.length());
+			temp = StringUtil.upperCaseFirstLetter(temp);
+			methodName += "Gov" + temp;
+
+		}
+		else if (columnName.contains("count(opencps_processorder.processOrderId)")) {
+			methodName = getSetterMethodName(field);
+		}
+		else {
+			String temp =
+				columnName.substring(
+					columnName.lastIndexOf(StringPool.PERIOD) + 1,
+					columnName.length());
+			temp = StringUtil.upperCaseFirstLetter(temp);
+			methodName += temp;
+		}
+
+		// System.out.println(methodName + "---" + columnName);
+
+		Class<?> clazz = getClazz(coulmnDataType);
+
+		Method method = null;
+		try {
+			if (clazz != null) {
+				method =
+					DossierStatisticsBean.class.getMethod(methodName, clazz);
+			}
+			else {
+				method = DossierStatisticsBean.class.getMethod(methodName);
+			}
+		}
+		catch (Exception e) {
+
+		}
+
+		return method;
+	}
+
+	/**
+	 * @param treeIndex
+	 * @return
+	 */
+	public static String getParentTreeIndex(String treeIndex) {
+
+		String parentTreeIndex = StringPool.BLANK;
+		if (Validator.isNotNull(treeIndex)) {
+			if (treeIndex.contains(StringPool.PERIOD)) {
+				parentTreeIndex =
+					treeIndex.substring(
+						0, treeIndex.lastIndexOf(StringPool.PERIOD));
+
+			}
+			else {
+				parentTreeIndex = treeIndex;
+			}
+		}
+		return parentTreeIndex;
+	}
+
+	/**
+	 * @param startMonth
+	 * @param startYear
+	 * @param period
+	 * @return
+	 */
+	public static String getPeriodConditions(
+		int startMonth, int startYear, int period) {
+
+		StringBuffer conditions = new StringBuffer();
+		LinkedHashMap<Integer, List<Integer>> map =
+			getPeriodMap(startMonth, startYear, period);
+		if (map != null) {
+			int count = 1;
+			conditions.append(StringPool.OPEN_PARENTHESIS);
+			for (Map.Entry<Integer, List<Integer>> entry : map.entrySet()) {
+
+				List<Integer> months = entry.getValue();
+				conditions.append(StringPool.OPEN_PARENTHESIS);
+				conditions.append("opencps_dossierstatistics.month BETWEEN" +
+					StringPool.SPACE);
+				conditions.append(months.get(0));
+				conditions.append(StringPool.SPACE + "AND" + StringPool.SPACE);
+				conditions.append(months.get(months.size() - 1));
+				conditions.append(StringPool.SPACE + "AND" + StringPool.SPACE);
+				conditions.append("opencps_dossierstatistics.year = ");
+				conditions.append(entry.getKey());
+				conditions.append(StringPool.CLOSE_PARENTHESIS);
+				if (count < map.size()) {
+					conditions.append(StringPool.SPACE + "OR" +
+						StringPool.SPACE);
+				}
+
+				count++;
+			}
+			conditions.append(StringPool.CLOSE_PARENTHESIS);
+		}
+
+		return conditions.toString();
+	}
+
+	/**
+	 * @param startMonth
+	 * @param startYear
+	 * @param preriod
+	 * @return
+	 */
+	public static LinkedHashMap<Integer, List<Integer>> getPeriodMap(
+		int startMonth, int startYear, int period) {
+
+		LinkedHashMap<Integer, List<Integer>> map =
+			new LinkedHashMap<Integer, List<Integer>>();
+		List<Integer> months = new ArrayList<Integer>();
+		months.add(startMonth);
+		map.put(startYear, months);
+		for (int p = 1; p < period; p++) {
+			int numberOfMonth = startMonth + p;
+			if (numberOfMonth <= 12) {
+				List<Integer> monthsTemp = map.get(startYear);
+				monthsTemp.add(numberOfMonth);
+				map.put(startYear, monthsTemp);
+			}
+			else {
+				int year = (int) ((numberOfMonth - 1) / 12) + startYear;
+				List<Integer> monthsTemp = new ArrayList<Integer>();
+				if (map.containsKey(year)) {
+					monthsTemp = map.get(year);
+				}
+				int month = numberOfMonth % 12 == 0 ? 12 : numberOfMonth % 12;
+				monthsTemp.add(month);
+				map.put(year, monthsTemp);
+			}
+		}
+
+		return map;
+	}
+
+	/**
+	 * @param fieldName
+	 * @return
+	 */
+	public static String getSetterMethodName(String fieldName) {
+
+		String methodName = "set" + fieldName;
+		return methodName;
+	}
+
+	/**
+	 * @param treeIndexs
+	 * @param treeIndex
+	 * @return
+	 */
+	public static List<String> getTreeIndexs(
+		List<String> treeIndexs, String treeIndex) {
+
+		String parentTreeIndex = StringPool.BLANK;
+		if (Validator.isNotNull(treeIndex)) {
+			if (treeIndex.contains(StringPool.PERIOD)) {
+				parentTreeIndex =
+					treeIndex.substring(
+						0, treeIndex.lastIndexOf(StringPool.PERIOD));
+
+			}
+			else {
+				parentTreeIndex = treeIndex;
+			}
+			if (!treeIndexs.contains(parentTreeIndex)) {
+				treeIndexs.add(parentTreeIndex);
+			}
+
+		}
+
+		if (treeIndex.contains(StringPool.PERIOD)) {
+			getTreeIndexs(treeIndexs, parentTreeIndex);
+		}
+
+		return treeIndexs;
+	}
+
+	/**
+	 * @param dossiersStatistics
+	 * @param language
+	 * @return
+	 */
+	public static JSONArray statisticsDossierMonthly(
+		List<DossiersStatistics> dossiersStatistics, Locale locale) {
+
+		JSONArray datas = JSONFactoryUtil.createJSONArray();
+		String[] names =
+			new String[] {
+				"remaining-number", "received-number", "ontime-number",
+				"overtime-number", "processing-number", "delaying-number"
+			};
+
+		if (dossiersStatistics != null) {
+			for (int n = 0; n < names.length; n++) {
+				JSONArray months = JSONFactoryUtil.createJSONArray();
+				JSONArray values = JSONFactoryUtil.createJSONArray();
+				JSONObject data = JSONFactoryUtil.createJSONObject();
+				for (DossiersStatistics statistics : dossiersStatistics) {
+
+					months.put(String.valueOf(statistics.getMonth()) + "/" +
+						statistics.getYear());
+
+					if (names[n].equals("remaining-number")) {
+						values.put(String.valueOf(statistics.getRemainingNumber()));
+					}
+					else if (names[n].equals("received-number")) {
+						values.put(String.valueOf(statistics.getReceivedNumber()));
+					}
+					else if (names[n].equals("ontime-number")) {
+						values.put(String.valueOf(statistics.getOntimeNumber()));
+					}
+					else if (names[n].equals("overtime-number")) {
+						values.put(String.valueOf(statistics.getOvertimeNumber()));
+					}
+					else if (names[n].equals("processing-number")) {
+						values.put(String.valueOf(statistics.getProcessingNumber()));
+					}
+					else if (names[n].equals("delaying-number")) {
+						values.put(String.valueOf(statistics.getDelayingNumber()));
+					}
+
+				}
+
+				data.put("name", LanguageUtil.get(locale, names[n]));
+				data.put("months", months);
+				data.put("values", values);
+				datas.put(data);
+			}
+
+		}
+
+		return datas;
+	}
+	
+	/**
+	 * @param jsonObject
+	 */
+	public static boolean updateStatistic(JSONObject jsonObject){
+		String strSubmitDate = jsonObject.getString("submitDate");
+		String strFinishDate = jsonObject.getString("strFinishDate");
+		String strEstimateDate = jsonObject.getString("strEstimateDate");
+		return true;
+		
+	}
 }
