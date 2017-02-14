@@ -109,6 +109,8 @@
 	</div> --%>
 </liferay-util:buffer>
 
+<div class="opencps-bound-wrapper pd20 default-box-shadow">
+
 <aui:form 
 	name="fm" 
 	method="post" 
@@ -128,3 +130,5 @@
 		</liferay-ui:form-navigator>
 	</div>
 </aui:form>
+
+</div>

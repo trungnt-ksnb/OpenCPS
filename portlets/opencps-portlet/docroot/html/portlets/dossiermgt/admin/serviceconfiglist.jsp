@@ -151,7 +151,7 @@
 				<div class="row-fluid">
 					
 					<div class="span4 bold">
-						<liferay-ui:message key="govAgency-Name"/>
+						<liferay-ui:message key="product-name"/>
 					</div>
 					
 					<div class="span8"><%=dossierTemplate.getTemplateName() %></div>
