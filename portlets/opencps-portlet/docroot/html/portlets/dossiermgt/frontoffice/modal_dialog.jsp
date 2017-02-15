@@ -38,10 +38,19 @@
 		<liferay-util:include page="/html/common/portlet/dossier_dynamic_form.jsp" servletContext="<%=application %>" >
 			<portlet:param name="primaryKey" value="<%=String.valueOf(primaryKey) %>"/>
 			<portlet:param name="reportTypes" value="<%=StringUtil.merge(reportTypes) %>"/>
+			<portlet:param name="offsetX" value="<%=String.valueOf(offsetX) %>"/>
+			<portlet:param name="offsetY" value="<%=String.valueOf(offsetY) %>"/>
+			<portlet:param name="signatureType" value="<%=signatureType %>"/>
+			<portlet:param name="characterAttachs" value="<%=StringUtil.merge(characterAttachs) %>"/>
 		</liferay-util:include>
 	</c:when>
 	<c:when test='<%=content.equals("view-form") %>'>
-		<liferay-util:include page="/html/common/portlet/dossier_dynamic_form.jsp" servletContext="<%=application %>"/>
+		<liferay-util:include page="/html/common/portlet/dossier_dynamic_form.jsp" servletContext="<%=application %>">
+			<portlet:param name="offsetX" value="<%=String.valueOf(offsetX) %>"/>
+			<portlet:param name="offsetY" value="<%=String.valueOf(offsetY) %>"/>
+			<portlet:param name="signatureType" value="<%=signatureType %>"/>
+			<portlet:param name="characterAttachs" value="<%=StringUtil.merge(characterAttachs) %>"/>
+		</liferay-util:include>
 	</c:when>
 	<c:when test='<%=content.equals("view-version") %>'>
 		<liferay-util:include  page='<%=templatePath + "dossier_file_version.jsp" %>' servletContext="<%=application %>"/>

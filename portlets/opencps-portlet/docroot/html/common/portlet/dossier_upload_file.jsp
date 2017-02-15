@@ -55,15 +55,12 @@
 <%@ include file="/init.jsp"%>
 
 <%
-	// hardcode
-	
-	boolean hasImageSignature = true;
-	// end hardcode
 	String signatureType = ParamUtil.getString(request, "signatureType");
 	
 	double offsetX = ParamUtil.getDouble(request, "offsetX");
 	double offsetY = ParamUtil.getDouble(request, "offsetY");
-	String[] characterAttachs = StringUtil.split(ParamUtil.getString(request, "characterAttachs", "text"));
+	String characterAttachs = ParamUtil.getString(request, "characterAttachs", "text");
+	
 	
 	boolean success = false;
 
@@ -381,16 +378,15 @@
 					alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "overload-total-file-upload-size") %>' + ' ' + '<%=maxTotalUploadFileSize%>' + ' ' + '<%=maxTotalUploadFileSizeUnit%>');
 				}else {
 					Liferay.Util.getOpener().Liferay.fire('turnOnOverlaymask');
-					
 					// is signature from configuration
 					var hasSignVal = hasSign.val().toString();
 					if(hasSignVal == 'true') {
 						// convert file from input to base64 encode
 						var fileBase64Encode = '';
 						var reader = new FileReader();
-						var fileName = file.name;
 						if(file) {
 							reader.readAsDataURL(file);
+							var fileName = file.name;
 							// callback when convert success
 							reader.onload = function() {
 								fileBase64Encode = reader.result;
@@ -445,12 +441,7 @@
 	
 	Liferay.provide(window, '<portlet:namespace/>signature', function(fileName, fileBase64Encode, imageName, imageBase64Encode) {
 		var A = AUI();
-		var hasImageSignature = '<%= hasImageSignature %>';
-		if(hasImageSignature == 'true') {
-			if(imageName != '' && imageBase64Encode != '') {
-				// create image file from Base64 data
-				window.parent.PDFSigningHelper.writeBase64ToFile(imageName, imageBase64Encode , function(imageFileJsonDataResult) {
-					
+		var characterAttachs = '<%= characterAttachs %>';
 					// create signature file from Base64 data
 					if(fileName != '' && fileBase64Encode != '') {
 						window.parent.PDFSigningHelper.writeBase64ToFile(fileName, fileBase64Encode, function(jsonDataSignedResult){
@@ -458,25 +449,37 @@
 							//get certificate index
 							window.parent.PDFSigningHelper.getCertIndex(function(certIndexJsonDataResutl){
 								if(certIndexJsonDataResutl.data != '-1') {
-									var signatureType = '<%= signatureType %>';
+									var signatureTypeVal = '<%= signatureType %>';
 									var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
-									
-									// if signal with select point type
-									if(signatureType == 'selectPoint') {
+									var characterAttachs = '<%= characterAttachs %>';
+									var characterAttachArray = characterAttachs.split(',');
+										// both image and text
+										if (characterAttachArray.indexOf('image') != -1 && characterAttachArray.indexOf('text') != -1) {
+											window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+											
+											window.parent.PDFSigningHelper.writeBase64ToFile(imageName, imageBase64Encode , function(imageFileJsonDataResult) {
+												<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
+											});
+										}
+										// has image
+										// if configuration contain image value
+										else if(characterAttachArray.indexOf('image') != -1) {
+											if(imageName != '' && imageBase64Encode != '') {
+												// create image file from Base64 data
+												window.parent.PDFSigningHelper.writeBase64ToFile(imageName, imageBase64Encode , function(imageFileJsonDataResult) {
+													<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
+												});
+											}
+										} 
+										// text
+										// if configuration contain text value
+										else if (characterAttachArray.indexOf('text') != -1) {
+											window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+											var noImage = {};
+											noImage.data = '';
+											<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, noImage , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
+										}
 										
-										window.parent.PDFSigningHelper.signPDFWithSelectedPoint(jsonDataSignedResult.data, imageFileJsonDataResult.data,
-												author, "", certIndexJsonDataResutl.data, "", function(jsonDataSignedResult){
-												<portlet:namespace/>updateDataAfterSign(jsonDataSignedResult, fileName);
-										});
-									} else if(signatureType == 'selectPoint'){
-										// sign with coordinate
-										var offsetX = '<%= offsetX %>';
-										var offsetY = '<%= offsetY %>';
-										window.parent.PDFSigningHelper.signPDFAtPoint(jsonDataSignedResult.data, imageFileJsonDataResult.data, author, 
-												"", parseFloat(offsetX), parseFloat(offsetY), 1, certIndexJsonDataResutl.data, "", function(jsonDataSignedResult) {
-											<portlet:namespace/>updateDataAfterSign(jsonDataSignedResult, fileName);
-										});
-									}
 								} else {
 									Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 			            			<portlet:namespace/>closeDialog();
@@ -485,12 +488,25 @@
 							});
 						});
 					}
+	});
+	
+	Liferay.provide(window, '<portlet:namespace/>chooseSignatureType', function(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal) {
+			// if signal with select point type
+			if(signatureTypeVal == 'selectPoint') {
+				window.parent.PDFSigningHelper.signPDFWithSelectedPoint(jsonDataSignedResult.data, imageFileJsonDataResult.data,
+						author, "", certIndexJsonDataResutl.data, "", function(jsonDataSignedResult){
+						<portlet:namespace/>updateDataAfterSign(jsonDataSignedResult, fileName);
+				});
+				
+			} else if(signatureTypeVal == 'fixAtPoint'){
+				// sign with coordinate
+				var offsetX = '<%= offsetX %>';
+				var offsetY = '<%= offsetY %>';
+				window.parent.PDFSigningHelper.signPDFAtPoint(jsonDataSignedResult.data, imageFileJsonDataResult.data, author, 
+						"", parseFloat(offsetX), parseFloat(offsetY), 1, certIndexJsonDataResutl.data, "", function(jsonDataSignedResult) {
+					<portlet:namespace/>updateDataAfterSign(jsonDataSignedResult, fileName);
 				});
 			}
-		} else {
-			// text
-			
-		}
 	});
 	
 	// update data ajax
