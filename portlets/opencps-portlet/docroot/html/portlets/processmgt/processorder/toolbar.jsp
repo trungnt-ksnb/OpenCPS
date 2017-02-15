@@ -1,3 +1,10 @@
+<%@page import="org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil"%>
+<%@page import="org.opencps.datamgt.service.DictItemLocalServiceUtil"%>
+<%@page import="org.opencps.util.PortletPropsValues"%>
+<%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
+<%@page import="org.opencps.datamgt.model.DictCollection"%>
+<%@page import="org.opencps.datamgt.model.DictItem"%>
+<%@page import="org.opencps.dossiermgt.search.DossierDisplayTerms"%>
 <%@page import="org.opencps.util.DateTimeUtil"%>
 <%@page import="java.util.Date"%>
 <%
@@ -49,6 +56,15 @@
 	String dossierSubStatus = ParamUtil.getString(request, "dossierSubStatus");
 	
 	String todolistDisplayStyle = GetterUtil.getString(portletPreferences.getValue("todolistDisplayStyle", "default"));
+	
+	String domainCode = ParamUtil.getString(request, "serviceDomainCode");
+	
+	List<ServiceInfo> serviceInfoList = new ArrayList<ServiceInfo>();
+	try {
+		serviceInfoList = ServiceInfoLocalServiceUtil.getServiceInfoByDomainCode(domainCode);
+	} catch (Exception e) {
+		//
+	}
 	
 	try{
 		
@@ -107,6 +123,13 @@
 	if(toDate != null){
 		nullableToDate = false;
 	}
+	DictItem curDictItem = null;
+	
+	DictCollection dictCollection = DictCollectionLocalServiceUtil.
+			getDictCollection(themeDisplay.getScopeGroupId(), PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN);
+	
+	List<DictItem> dictItems = DictItemLocalServiceUtil.getDictItemsByDictCollectionId(dictCollection.getDictCollectionId());
+	
 %>
 <liferay-portlet:renderURL varImpl="searchURL" portletName="<%=WebKeys.PROCESS_ORDER_PORTLET %>">
 	<liferay-portlet:param name="tabs1" value="<%=tabs1 %>"/>
@@ -169,7 +192,7 @@
 								<aui:input name="dossierSubStatus" type="hidden" value="<%=dossierSubStatus %>"></aui:input>
 							</c:otherwise>
 					</c:choose>
-					<aui:col width="<%=colWidth %>" cssClass="search-col div100">
+					<aui:col width="18" cssClass="search-col">
 						<aui:select 
 							name="processOrderStage" 
 							label="<%=StringPool.BLANK %>" 
@@ -182,7 +205,36 @@
 							<aui:option value="<%=true %>"><liferay-ui:message key="filter-process-order-stage-1"/></aui:option>
 						</aui:select>
 					</aui:col>
-					<aui:col width="<%=colWidth %>" cssClass="search-col">
+					<aui:col width="22" cssClass="search-col">
+					<aui:select name="<%=DossierDisplayTerms.SERVICE_DOMAIN_CODE %>" 
+								label="" 
+								cssClass="search-input select-box" 
+								onChange='<%=renderResponse.getNamespace() + "searchByProcecssOrderService(this)"%>' >
+									<aui:option value="">
+										<liferay-ui:message key="filter-by-service-domain"/>
+									</aui:option>
+									<%
+										if(dictItems != null){
+											for(DictItem dictItem : dictItems){
+												if((curDictItem != null && dictItem.getDictItemId() == curDictItem.getDictItemId())||
+													(curDictItem != null && dictItem.getTreeIndex().contains(curDictItem.getDictItemId() + StringPool.PERIOD))){
+													continue;
+											}
+															
+											int level = StringUtil.count(dictItem.getTreeIndex(), StringPool.PERIOD);
+											String index = "|";
+											for(int i = 0; i < level; i++){
+												index += "_";
+											}
+									%>
+										<aui:option value="<%=dictItem.getDictItemId() %>"><%=index + dictItem.getItemName(locale) %></aui:option>
+									<%
+											}
+										}
+									%>
+								</aui:select>
+							</aui:col>
+					<aui:col width="20" cssClass="search-col" >
 						<aui:select 
 							name="serviceInfoId" 
 							label="<%=StringPool.BLANK %>" 
@@ -194,11 +246,11 @@
 							<aui:option value="0" title="service-info"><liferay-ui:message key="filter-service-info"/></aui:option>
 							<%
 							
-								if(processOrderServices != null){
-									for(ProcessOrderBean processOrderService : processOrderServices){
+								if(Validator.isNotNull(serviceInfoList)){
+									for(ServiceInfo serviceInfo : serviceInfoList){
 										%>
-											<aui:option title="<%=processOrderService.getServiceName()%>" value="<%= processOrderService.getServiceInfoId()%>">
-												<%=StringUtil.shorten(processOrderService.getServiceName(), 50) %>
+											<aui:option title="<%=StringUtil.shorten(serviceInfo.getFullName(), 50)%>" value="<%= serviceInfo.getServiceinfoId()%>">
+												<%=StringUtil.shorten(serviceInfo.getFullName(), 50) %>
 											</aui:option>
 										<%
 									}
@@ -208,7 +260,7 @@
 						</aui:select>
 					</aui:col>
 				
-					<aui:col width="<%=colWidth %>" cssClass="search-col">
+					<aui:col width="21" cssClass="search-col">
 						<aui:select 
 							name="processStepId" 
 							label="<%=StringPool.BLANK %>" 
@@ -231,19 +283,18 @@
 							%>
 						</aui:select>
 					</aui:col>
-					<aui:col width="<%=colWidth %>" cssClass="search-col">
-						<liferay-ui:input-search 
-							id="keywords"
-							name="keywords"
-							title='<%= LanguageUtil.get(locale, "keywords") %>'
-							placeholder='<%=LanguageUtil.get(locale, "keywords") %>'
-							cssClass="search-input input-keyword"
-						/>
+					
+					<aui:col width="5" cssClass="search-col">
+						<a id="<portlet:namespace/>arrowButton">
+							<i class="fa fa-arrow-right" aria-hidden="true"></i>
+							<i class="fa fa-arrow-down" aria-hidden="true"></i>
+						</a>
 					</aui:col>
+					
 				</aui:row>
 				<aui:row>
-				
-					<aui:col width="30">
+					<div id="<portlet:namespace/>spoiler" class="showBottomRow">				
+					<aui:col width="25" cssClass="search-col">
 						<liferay-ui:input-date 
 		 					name="fromDate"
 		 					nullable="<%= nullableFromDate %>"
@@ -255,12 +306,12 @@
 		 					yearValue="<%= fromDateYear %>"
 		 					formName="fmSearch"
 		 					autoFocus="<%=true %>"
-		 					cssClass="input100" 
+		 					cssClass="search-input input-keyword" 
 		 				>
 		 				</liferay-ui:input-date>
 					</aui:col>
 					
-					<aui:col width="30">
+					<aui:col width="25" cssClass="search-col">
 						<liferay-ui:input-date 
 		 					name="toDate"
 		 					nullable="<%= nullableToDate %>"
@@ -272,17 +323,26 @@
 		 					yearValue="<%= toDateYear %>"
 		 					formName="fmSearch"
 		 					autoFocus="<%=true %>"
-		 					cssClass="input100"
+		 					cssClass="search-input input-keyword"
 		 				>
 		 				</liferay-ui:input-date> 
 					</aui:col>
+					<aui:col width="25" cssClass="search-col">
+						<liferay-ui:input-search 
+							id="keywords"
+							name="keywords"
+							title='<%= LanguageUtil.get(locale, "keywords") %>'
+							placeholder='<%=LanguageUtil.get(locale, "keywords") %>'
+							cssClass="search-input input-keyword"
+						/>
+					</aui:col>
+					</div>
 				</aui:row>
 
 			</aui:form>
 		</div>
 	</aui:nav-bar-search>
 </aui:nav-bar>
-
 <aui:script use="liferay-util-list-fields,liferay-portlet-url">
 	Liferay.provide(window, '<portlet:namespace/>processMultipleDossier', function() {
 		

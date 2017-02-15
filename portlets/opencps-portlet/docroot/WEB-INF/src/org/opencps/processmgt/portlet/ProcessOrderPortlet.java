@@ -2655,7 +2655,7 @@ public class ProcessOrderPortlet extends MVCPortlet {
 						.countProcessOrderKeyWords(serviceInfoId,
 								processStepId, themeDisplay.getUserId(),
 								themeDisplay.getUserId(), keywords,
-								item.getItemCode(), processOrderStage, null, null);
+								item.getItemCode(), processOrderStage, null, null, StringPool.BLANK);
 
 			}
 			obj.put("code", item.getItemCode());
