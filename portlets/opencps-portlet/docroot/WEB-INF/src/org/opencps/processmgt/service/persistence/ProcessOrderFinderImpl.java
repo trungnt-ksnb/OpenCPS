@@ -878,7 +878,7 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 	public int countProcessOrderKeyWords(
 		long serviceInfoId, long processStepId, long loginUserId,
 		long assignToUserId, String keyWords, String dossierSubStatus, 
-		String processOrderStage, Date fromDate, Date toDate) {
+		String processOrderStage, Date fromDate, Date toDate, String domainCode) {
 		
 		Timestamp fromDate_TS = null;
 		Timestamp toDate_TS = null;
@@ -931,6 +931,10 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 						.replace(sql, "AND (opencps_dossier.receiveDatetime BETWEEN ? AND ?)",
 							StringPool.BLANK);
 			}
+			if(Validator.isNull(domainCode)){
+				sql = StringUtil
+						.replace(sql, "AND opencps_serviceinfo.domainCode= ?", StringPool.BLANK);
+			}
 			
 			SQLQuery q = session
 				.createSQLQuery(sql);
@@ -982,7 +986,10 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 				qPos.add(fromDate_TS);
 				qPos.add(toDate_TS);
 			}
-			
+			if(Validator.isNotNull(domainCode)){
+				qPos
+					.add(domainCode);
+			}
 			Iterator<Integer> itr = q
 				.iterate();
 
@@ -1025,7 +1032,7 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 	public List searchProcessOrderKeyWords(
 			long serviceInfoId, long processStepId, long loginUserId, 
 			long assignToUserId, String keyWords, String dossierSubStatus, 
-			String processOrderStage, Date fromDate, Date toDate, 
+			String processOrderStage, Date fromDate, Date toDate, String domainCode,
 			int start, int end, OrderByComparator orderByComparator) {
 
 		Timestamp fromDate_TS = null;
@@ -1078,6 +1085,11 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 				sql = StringUtil
 						.replace(sql, "AND (opencps_dossier.receiveDatetime BETWEEN ? AND ?)",
 							StringPool.BLANK);
+			}
+			
+			if(Validator.isNull(domainCode)){
+				sql = StringUtil
+						.replace(sql, "AND opencps_serviceinfo.domainCode= ?", StringPool.BLANK);
 			}
 			
 			sql = CustomSQLUtil.replaceOrderBy(sql, orderByComparator);
@@ -1156,6 +1168,11 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 			if (Validator.isNotNull(fromDate_TS) && Validator.isNotNull(toDate_TS)) {
 				qPos.add(fromDate_TS);
 				qPos.add(toDate_TS);
+			}
+			
+			if(Validator.isNotNull(domainCode)){
+				qPos
+					.add(domainCode);
 			}
 			
 			Iterator<Object[]> itr = (Iterator<Object[]>) QueryUtil

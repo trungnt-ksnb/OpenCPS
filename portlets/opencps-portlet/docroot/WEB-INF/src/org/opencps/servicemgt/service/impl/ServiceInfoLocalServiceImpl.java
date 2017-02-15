@@ -523,4 +523,10 @@ public class ServiceInfoLocalServiceImpl
 
 		return serviceInfoPersistence.findByServiceNo(serviceNo);
 	}
+	
+	public List<ServiceInfo> getServiceInfoByDomainCode(String domainCode)
+			throws SystemException {
+
+			return serviceInfoPersistence.findByDomainCode(domainCode);
+		}
 }
