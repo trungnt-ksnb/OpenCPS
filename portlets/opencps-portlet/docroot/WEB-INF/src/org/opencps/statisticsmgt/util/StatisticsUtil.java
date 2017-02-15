@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.opencps.datamgt.model.DictCollection;
 import org.opencps.datamgt.model.DictItem;
+import org.opencps.datamgt.service.DictCollectionLocalServiceUtil;
 import org.opencps.datamgt.service.DictItemLocalServiceUtil;
 import org.opencps.statisticsmgt.bean.DossierStatisticsBean;
 import org.opencps.statisticsmgt.bean.FieldDatasShema;
@@ -20,6 +22,7 @@ import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
 import org.opencps.statisticsmgt.service.persistence.DossiersStatisticsFinder;
 import org.opencps.util.DateTimeUtil;
+import org.opencps.util.PortletPropsValues;
 
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Type;
@@ -1057,16 +1060,109 @@ public class StatisticsUtil {
 		Date estimateDate =
 			Validator.isNotNull(strEstimateDate)
 				? DateTimeUtil.convertStringToDate(strEstimateDate) : null;
-				
-		/*int remainingNumber =
-						dossierStatisticsBean.getProcessingNumber() +
-						dossierStatisticsBean.getDelayingNumber() +
-						dossierStatisticsBean.getOntimeNumber() +
-						dossierStatisticsBean.getOvertimeNumber() -
-						dossierStatisticsBean.getReceivedNumber();*/
-		
+
+		/*
+		 * int remainingNumber = dossierStatisticsBean.getProcessingNumber() +
+		 * dossierStatisticsBean.getDelayingNumber() +
+		 * dossierStatisticsBean.getOntimeNumber() +
+		 * dossierStatisticsBean.getOvertimeNumber() -
+		 * dossierStatisticsBean.getReceivedNumber();
+		 */
 
 		return updated;
 
+	}
+
+	public static JSONArray renderData(
+		long groupId, List<DossiersStatistics> dossiersStatistics,
+		List<FieldDatasShema> fieldDatasShemas, String filterKey,
+		int currentMonth, int currentYear, Locale locale) {
+
+		LinkedHashMap<String, List<DossiersStatistics>> statisticLinkedHashMap =
+			new LinkedHashMap<String, List<DossiersStatistics>>();
+
+		DictCollection dictCollection = null;
+		try {
+			if (dossiersStatistics != null) {
+
+				if (filterKey.equals("gov")) {
+					dictCollection =
+						DictCollectionLocalServiceUtil.getDictCollection(
+							groupId,
+							PortletPropsValues.DATAMGT_MASTERDATA_GOVERNMENT_AGENCY);
+				}
+				else {
+					dictCollection =
+						DictCollectionLocalServiceUtil.getDictCollection(
+							groupId,
+							PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN);
+				}
+
+				for (DossiersStatistics dossiersStatistic : dossiersStatistics) {
+					String code = dossiersStatistic.getGovAgencyCode();
+					if (filterKey.equals("domain")) {
+						code = dossiersStatistic.getDomainCode();
+					}
+					System.out.println("################################# " +
+						code);
+					List<DossiersStatistics> dossiersStatisticsTemp =
+						new ArrayList<DossiersStatistics>();
+					if (statisticLinkedHashMap.containsKey(code)) {
+						dossiersStatisticsTemp =
+							statisticLinkedHashMap.get(code);
+					}
+
+					dossiersStatisticsTemp.add(dossiersStatistic);
+					statisticLinkedHashMap.put(code, dossiersStatisticsTemp);
+				}
+
+				for (Map.Entry<String, List<DossiersStatistics>> entry : statisticLinkedHashMap.entrySet()) {
+
+					List<DossiersStatistics> dossiersStatisticsTemp =
+						entry.getValue();
+
+					JSONObject itemObject = JSONFactoryUtil.createJSONObject();
+
+					String code = entry.getKey();
+
+					String name = StringPool.BLANK;
+
+					try {
+						DictItem dictItem =
+							DictItemLocalServiceUtil.getDictItemInuseByItemCode(
+								dictCollection.getDictCollectionId(), code);
+						name = dictItem.getItemName(locale);
+					}
+					catch (Exception e) {
+						_log.warn(e);
+					}
+
+					if (dossiersStatisticsTemp != null &&
+						!dossiersStatisticsTemp.isEmpty()) {
+
+						int month = dossiersStatisticsTemp.get(0).getMonth();
+
+						itemObject.put("code", code);
+
+						itemObject.put("codeType", filterKey);
+
+						itemObject.put("name", name);
+
+						if (fieldDatasShemas != null) {
+							for (FieldDatasShema fieldDatasShema : fieldDatasShemas) {
+
+							}
+						}
+
+					}
+				}
+			}
+
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		return null;
 	}
 }
