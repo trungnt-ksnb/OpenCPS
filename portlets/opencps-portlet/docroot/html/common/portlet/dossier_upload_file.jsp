@@ -384,9 +384,9 @@
 						// convert file from input to base64 encode
 						var fileBase64Encode = '';
 						var reader = new FileReader();
-						var fileName = file.name;
 						if(file) {
 							reader.readAsDataURL(file);
+							var fileName = file.name;
 							// callback when convert success
 							reader.onload = function() {
 								fileBase64Encode = reader.result;
@@ -449,17 +449,16 @@
 							//get certificate index
 							window.parent.PDFSigningHelper.getCertIndex(function(certIndexJsonDataResutl){
 								if(certIndexJsonDataResutl.data != '-1') {
-									var signatureType = '<%= signatureType %>';
+									var signatureTypeVal = '<%= signatureType %>';
 									var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
 									var characterAttachs = '<%= characterAttachs %>';
 									var characterAttachArray = characterAttachs.split(',');
 										// both image and text
-										
 										if (characterAttachArray.indexOf('image') != -1 && characterAttachArray.indexOf('text') != -1) {
 											window.parent.PDFSigningHelper.setSignatureInfo(1,0);
 											
 											window.parent.PDFSigningHelper.writeBase64ToFile(imageName, imageBase64Encode , function(imageFileJsonDataResult) {
-												<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureType);
+												<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
 											});
 										}
 										// has image
@@ -468,7 +467,7 @@
 											if(imageName != '' && imageBase64Encode != '') {
 												// create image file from Base64 data
 												window.parent.PDFSigningHelper.writeBase64ToFile(imageName, imageBase64Encode , function(imageFileJsonDataResult) {
-													<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureType);
+													<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
 												});
 											}
 										} 
@@ -478,7 +477,7 @@
 											window.parent.PDFSigningHelper.setSignatureInfo(1,0);
 											var noImage = {};
 											noImage.data = '';
-											<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, noImage , author, certIndexJsonDataResutl, fileName, signatureType);
+											<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, noImage , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
 										}
 										
 								} else {
@@ -491,16 +490,15 @@
 					}
 	});
 	
-	Liferay.provide(window, '<portlet:namespace/>chooseSignatureType', function(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureType) {
-		window.parent.PDFSigningHelper.writeBase64ToFile(imageName, imageBase64Encode , function(imageFileJsonDataResult) {
+	Liferay.provide(window, '<portlet:namespace/>chooseSignatureType', function(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal) {
 			// if signal with select point type
-			if(signatureType == 'selectPoint') {
+			if(signatureTypeVal == 'selectPoint') {
 				window.parent.PDFSigningHelper.signPDFWithSelectedPoint(jsonDataSignedResult.data, imageFileJsonDataResult.data,
 						author, "", certIndexJsonDataResutl.data, "", function(jsonDataSignedResult){
 						<portlet:namespace/>updateDataAfterSign(jsonDataSignedResult, fileName);
 				});
 				
-			} else if(signatureType == 'fixAtPoint'){
+			} else if(signatureTypeVal == 'fixAtPoint'){
 				// sign with coordinate
 				var offsetX = '<%= offsetX %>';
 				var offsetY = '<%= offsetY %>';
