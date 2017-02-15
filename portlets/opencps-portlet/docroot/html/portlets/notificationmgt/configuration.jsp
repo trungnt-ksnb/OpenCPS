@@ -47,7 +47,7 @@
 %>
 
 <aui:form action="<%= configurationNotificationURL %>" method="post" name="configurationForm">
-	<aui:select label="root-layout" name="<%=WebKeys.PREFER__ROOTGROUPID__ %>">
+	<aui:select label="root-layout" name="<%=PortletKeys.PREFER__ROOTGROUPID__ %>">
 			<aui:option value="" />
 
 			<%
