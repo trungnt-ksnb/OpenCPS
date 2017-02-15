@@ -40,10 +40,11 @@
 <%@page import="javax.portlet.PortletPreferences"%>
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="org.opencps.util.ActionKeys"%>
+<%@page import="org.opencps.notificationmgt.utils.PortletKeys"%>
 <%
 	PortletPreferences preferences = renderRequest.getPreferences();
 	
-	long rootGroupId = GetterUtil.getLong(preferences.getValue("preferences--rootGroupId--",StringPool.BLANK),0);
+	long rootGroupId = GetterUtil.getLong(preferences.getValue(PortletKeys.PREFER__ROOTGROUPID__,StringPool.BLANK),0);
 	 
 %>
 

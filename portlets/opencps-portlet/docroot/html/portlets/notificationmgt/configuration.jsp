@@ -1,5 +1,6 @@
 
 
+
 <%@page import="org.opencps.util.LayoutView"%>
 <%@page import="org.opencps.util.LayoutLister"%>
 <%@page import="org.opencps.util.PortletPropsValues"%>
@@ -46,7 +47,7 @@
 %>
 
 <aui:form action="<%= configurationNotificationURL %>" method="post" name="configurationForm">
-	<aui:select label="root-layout" name="preferencesRootGroupId">
+	<aui:select label="root-layout" name="<%=WebKeys.PREFER__ROOTGROUPID__ %>">
 			<aui:option value="" />
 
 			<%

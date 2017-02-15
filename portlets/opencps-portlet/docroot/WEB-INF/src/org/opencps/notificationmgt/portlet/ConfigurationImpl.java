@@ -24,6 +24,8 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.opencps.notificationmgt.utils.PortletKeys;
+
 import com.liferay.portal.kernel.portlet.ConfigurationAction;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -48,7 +50,7 @@ public class ConfigurationImpl implements ConfigurationAction {
 			ActionRequest actionRequest, ActionResponse actionResponse)
 			throws Exception {
 
-		long rootGroupId = ParamUtil.getLong(actionRequest, "preferences--rootGroupId--");
+		long rootGroupId = ParamUtil.getLong(actionRequest, PortletKeys.PREFER__ROOTGROUPID__);
 
 		String portletResource = ParamUtil.getString(actionRequest,
 				"portletResource");
@@ -56,7 +58,7 @@ public class ConfigurationImpl implements ConfigurationAction {
 		PortletPreferences preferences = PortletPreferencesFactoryUtil
 				.getPortletSetup(actionRequest, portletResource);
 
-		preferences.setValue("preferences--rootGroupId--", String.valueOf(rootGroupId));
+		preferences.setValue(PortletKeys.PREFER__ROOTGROUPID__, String.valueOf(rootGroupId));
 
 		preferences.store();
 
