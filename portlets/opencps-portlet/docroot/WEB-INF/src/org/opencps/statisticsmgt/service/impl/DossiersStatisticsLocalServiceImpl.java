@@ -321,18 +321,15 @@ public class DossiersStatisticsLocalServiceImpl
 	 * @param govCode
 	 * @param domainCode
 	 * @param level
-	 * @param notNullGov
-	 * @param notNullDomain
 	 * @return
 	 */
 	public List<DossiersStatistics> getStatsByGovAndDomain(
 		long groupId, int startMonth, int startYear, int period,
-		String govCode, String domainCode, int level, boolean notNullGov,
-		boolean notNullDomain) {
+		String govCodes, String domainCodes, int level) {
 
 		return dossiersStatisticsFinder.getStatsByGovAndDomain(
-			groupId, startMonth, startYear, period, govCode, domainCode, level,
-			notNullGov, notNullDomain);
+			groupId, startMonth, startYear, period, govCodes, domainCodes,
+			level);
 	}
 
 	/**

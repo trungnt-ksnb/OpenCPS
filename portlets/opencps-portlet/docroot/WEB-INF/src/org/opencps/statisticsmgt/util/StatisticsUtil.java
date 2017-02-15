@@ -19,6 +19,7 @@ import org.opencps.statisticsmgt.bean.FieldDatasShema;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
 import org.opencps.statisticsmgt.service.persistence.DossiersStatisticsFinder;
+import org.opencps.util.DateTimeUtil;
 
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Type;
@@ -702,6 +703,7 @@ public class StatisticsUtil {
 		}
 		return shemas;
 	}
+
 	/*
 	 * public static void main(String[] args) { LinkedHashMap<Integer,
 	 * List<Integer>> map = getPeriodMap(5, 2016, 37); for (Map.Entry<Integer,
@@ -1032,15 +1034,39 @@ public class StatisticsUtil {
 
 		return datas;
 	}
-	
+
 	/**
 	 * @param jsonObject
 	 */
-	public static boolean updateStatistic(JSONObject jsonObject){
+	public static boolean updateStatistic(JSONObject jsonObject) {
+
+		boolean updated = false;
+
 		String strSubmitDate = jsonObject.getString("submitDate");
 		String strFinishDate = jsonObject.getString("strFinishDate");
 		String strEstimateDate = jsonObject.getString("strEstimateDate");
-		return true;
+		String govCode = jsonObject.getString("govCode");
+		String domainCode = jsonObject.getString("domainCode");
+
+		Date submitDate =
+			Validator.isNotNull(strSubmitDate)
+				? DateTimeUtil.convertStringToDate(strSubmitDate) : null;
+		Date finishDate =
+			Validator.isNotNull(strFinishDate)
+				? DateTimeUtil.convertStringToDate(strFinishDate) : null;
+		Date estimateDate =
+			Validator.isNotNull(strEstimateDate)
+				? DateTimeUtil.convertStringToDate(strEstimateDate) : null;
+				
+		/*int remainingNumber =
+						dossierStatisticsBean.getProcessingNumber() +
+						dossierStatisticsBean.getDelayingNumber() +
+						dossierStatisticsBean.getOntimeNumber() +
+						dossierStatisticsBean.getOvertimeNumber() -
+						dossierStatisticsBean.getReceivedNumber();*/
 		
+
+		return updated;
+
 	}
 }

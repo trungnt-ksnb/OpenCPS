@@ -204,17 +204,17 @@
 				</aui:col>
 			</aui:fieldset>
 			
-			<aui:fieldset>
+			<%-- <aui:fieldset>
 				<aui:col width="50">
 					<aui:input name="notNullGov" type="checkbox" value="<%=notNullGov %>"/>
 				</aui:col>
 				<aui:col width="50">
 					<aui:input name="notNullDomain" type="checkbox" value="<%=notNullDomain %>"/>
 				</aui:col>
-			</aui:fieldset>
+			</aui:fieldset> --%>
 		
-			<aui:fieldset id="domainFilter">
-				<aui:col width="50">
+			<aui:fieldset id="domainFilter" >
+				<%-- <aui:col width="50">
 					<datamgt:ddr
 						cssClass="input100"
 						depthLevel="1" 
@@ -225,6 +225,9 @@
 						optionValueType="code"
 						showLabel="true"
 					/>
+				</aui:col> --%>
+				<aui:col width="50">
+					<aui:input name="domainCodes" type="text" value="<%=domainCodes %>"/>
 				</aui:col>
 				<aui:col width="50">
 					<aui:select name="domainDeepLevel" label="domain-deep-level">
@@ -238,7 +241,7 @@
 			</aui:fieldset>
 			
 			<aui:fieldset id="govFilter">
-				<aui:col width="50">
+				<%-- <aui:col width="50">
 					<datamgt:ddr
 						cssClass="input100"
 						depthLevel="1" 
@@ -249,6 +252,9 @@
 						optionValueType="code"
 						showLabel="true"
 					/>
+				</aui:col> --%>
+				<aui:col width="50">
+					<aui:input name="govCodes" type="text" value="<%=govCodes %>"/>
 				</aui:col>
 				<aui:col width="50">
 					<aui:select name="level" label="level">
@@ -294,36 +300,6 @@
 </aui:form>
 
 <aui:script use="liferay-auto-fields">
-	AUI().ready(function(A){
-		var notNullGovCheckbox = A.one('#<portlet:namespace/>notNullGovCheckbox');
-		console.log(notNullGovCheckbox)
-		if(notNullGovCheckbox){
-			notNullGovCheckbox.on('click', function(){
-				console.log(notNullGovCheckbox.val());
-				var govFilter = A.one('#<portlet:namespace/>govFilter');
-				if(notNullGovCheckbox.val() == true){
-					govFilter.hide();
-				}else{
-					govFilter.show();
-				}
-			});
-		}
-		
-		var notNullDomainCheckbox = A.one('#<portlet:namespace/>notNullDomainCheckbox');
-		
-		if(notNullDomainCheckbox){
-			notNullDomainCheckbox.on('click', function(){
-				console.log(notNullDomainCheckbox.val());
-				var domainFilter = A.one('#<portlet:namespace/>domainFilter');
-				if(notNullDomainCheckbox.val() == true){
-					domainFilter.hide();
-				}else{
-					domainFilter.show();
-				}
-			});
-		}
-	});
-	
 	var autoFields = new Liferay.AutoFields(
 		{
 			contentBox: '#<portlet:namespace/>dynamicFormula',

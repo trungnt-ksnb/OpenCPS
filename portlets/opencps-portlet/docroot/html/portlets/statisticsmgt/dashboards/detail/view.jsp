@@ -36,7 +36,7 @@
 	
 	List<DossiersStatistics> dossiersStatistics =
 		DossiersStatisticsLocalServiceUtil.getStatsByGovAndDomain(scopeGroupId, startMonth, startYear, period, 
-			govCode, domainCode, level, notNullGov, notNullDomain);
+			govCodes, domainCodes, level);
 
 	long collectionId = 0;
 	

@@ -35,9 +35,9 @@ public class DetailDashBoardConfigurationImpl
 
 		String chartTitle = ParamUtil.getString(actionRequest, "chartTitle");
 
-		String govCode = ParamUtil.getString(actionRequest, "govCode");
+		String govCodes = ParamUtil.getString(actionRequest, "govCodes");
 
-		String domainCode = ParamUtil.getString(actionRequest, "domainCode");
+		String domainCodes = ParamUtil.getString(actionRequest, "domainCodes");
 
 		String filterKey = ParamUtil.getString(actionRequest, "filterKey");
 
@@ -67,10 +67,11 @@ public class DetailDashBoardConfigurationImpl
 		int domainDeepLevel =
 			ParamUtil.getInteger(actionRequest, "domainDeepLevel");
 
-		boolean notNullGov = ParamUtil.getBoolean(actionRequest, "notNullGov");
+		// boolean notNullGov = ParamUtil.getBoolean(actionRequest,
+		// "notNullGov");
 
-		boolean notNullDomain =
-			ParamUtil.getBoolean(actionRequest, "notNullDomain");
+		// boolean notNullDomain =
+		// ParamUtil.getBoolean(actionRequest, "notNullDomain");
 
 		String[] fields =
 			ParamUtil.getParameterValues(actionRequest, "fields", new String[] {
@@ -115,10 +116,10 @@ public class DetailDashBoardConfigurationImpl
 		preferences.setValue("chartTitle", chartTitle);
 		preferences.setValue("xaxisUnit", xaxisUnit);
 		preferences.setValue("yaxisUnit", yaxisUnit);
-		preferences.setValue("notNullGov", String.valueOf(notNullGov));
-		preferences.setValue("notNullDomain", String.valueOf(notNullDomain));
-		preferences.setValue("govCode", govCode);
-		preferences.setValue("domainCode", domainCode);
+		// preferences.setValue("notNullGov", String.valueOf(notNullGov));
+		// preferences.setValue("notNullDomain", String.valueOf(notNullDomain));
+		preferences.setValue("govCodes", govCodes);
+		preferences.setValue("domainCodes", domainCodes);
 		preferences.setValue("startMonth", String.valueOf(startMonth));
 		preferences.setValue("startYear", String.valueOf(startYear));
 		preferences.setValue("period", String.valueOf(period));

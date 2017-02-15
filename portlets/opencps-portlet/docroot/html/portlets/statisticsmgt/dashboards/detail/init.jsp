@@ -1,27 +1,27 @@
 
+<%
+/**
+ * OpenCPS is the open source Core Public Services software
+ * Copyright (C) 2016-present OpenCPS community
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+%>
+
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="org.opencps.statisticsmgt.bean.FieldDatasShema"%>
 <%@page import="org.opencps.statisticsmgt.util.StatisticsUtil"%>
 <%@page import="java.util.List"%>
-<%
-	/**
-	 * OpenCPS is the open source Core Public Services software
-	 * Copyright (C) 2016-present OpenCPS community
-	 * 
-	 * This program is free software: you can redistribute it and/or modify
-	 * it under the terms of the GNU Affero General Public License as published by
-	 * the Free Software Foundation, either version 3 of the License, or
-	 * any later version.
-	 * 
-	 * This program is distributed in the hope that it will be useful,
-	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-	 * GNU Affero General Public License for more details.
-	 * You should have received a copy of the GNU Affero General Public License
-	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
-	 */
-%>
-
 
 <%@ include file="../../init.jsp"%>
 
@@ -30,13 +30,9 @@
 		GetterUtil.getString(portletPreferences.getValue(
 			"chartTitle", StringPool.BLANK));
 
-	String govCode =
+	String govCodes =
 		GetterUtil.getString(portletPreferences.getValue(
-			"govCode", StringPool.BLANK));
-
-	String domainCode =
-		GetterUtil.getString(portletPreferences.getValue(
-			"domainCode", StringPool.BLANK));
+			"govCodes", "all"));
 
 	int startMonth =
 		GetterUtil.getInteger(portletPreferences.getValue(
@@ -50,13 +46,13 @@
 		GetterUtil.getInteger(portletPreferences.getValue(
 			"period", String.valueOf(1)));
 
-	boolean notNullGov =
+	/* boolean notNullGov =
 		GetterUtil.getBoolean(portletPreferences.getValue(
 			"notNullGov", String.valueOf(true)));
 
 	boolean notNullDomain =
 		GetterUtil.getBoolean(portletPreferences.getValue(
-			"notNullDomain", String.valueOf(false)));
+			"notNullDomain", String.valueOf(false))); */
 
 	int level =
 		GetterUtil.getInteger(portletPreferences.getValue(
@@ -82,6 +78,10 @@
 		GetterUtil.getString(portletPreferences.getValue(
 			"yaxisUnit", StringPool.BLANK));
 
+	String domainCodes =
+		GetterUtil.getString(portletPreferences.getValue(
+			"domainCodes", "all"));
+
 	String[] fields =
 		StringUtil.split(preferences.getValue(
 			"fields", "received-number"));
@@ -97,7 +97,7 @@
 	String[] fieldFormulas =
 		preferences.getValues("fieldKeys", new String[] {
 			"$receivedNumber"
-		});;
+		});
 
 	String fieldTotalFormula =
 		GetterUtil.getString(portletPreferences.getValue(
