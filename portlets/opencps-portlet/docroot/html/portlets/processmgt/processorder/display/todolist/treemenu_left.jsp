@@ -1,4 +1,5 @@
 
+<%@page import="org.apache.poi.util.SystemOutLogger"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -89,6 +90,8 @@
 	String dossierSubStatus = ParamUtil.getString(request, "dossierSubStatus");
 
 	String processOrderStage = ParamUtil.getString(request, "processOrderStage", "false");
+	
+	String serviceDomainCode = ParamUtil.getString(request, "serviceDomainCode");
 	
 	Date fromDate = null;
 	Date toDate = null;
@@ -398,6 +401,26 @@
 <aui:script use="liferay-util-list-fields,liferay-portlet-url">
 
 AUI().ready(function(A){
+	
+	var arrowButton = A.one('#<portlet:namespace/>arrowButton');
+	var arrowRight = A.one('.fa-arrow-right');
+	var arrowDown = A.one('.fa-arrow-down');
+	var valuee = 0;
+	arrowRight.show();
+	arrowDown.hide();
+	
+	arrowButton.on('click', function() {
+		if(valuee == 0) {
+			arrowRight.hide();
+			arrowDown.show();
+			valuee = 1;
+		} else if(valuee == 1) {
+			arrowRight.show();
+			arrowDown.hide();
+			valuee = 0;
+		}
+		$('.showBottomRow').toggleClass('show');
+	});
 	
 	var processDossier = A.one("#<portlet:namespace />processDossier");
 	var isMultiAssignvar = '<%= isMultiAssign %>';
