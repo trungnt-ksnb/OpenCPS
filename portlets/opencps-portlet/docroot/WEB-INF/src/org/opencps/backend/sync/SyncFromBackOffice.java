@@ -51,7 +51,6 @@ import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.MessageListenerException;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.SubscriptionSender;
 import com.liferay.util.PwdGenerator;
@@ -116,7 +115,6 @@ public class SyncFromBackOffice implements MessageListener {
 					WorkflowOutputLocalServiceUtil.getByProcessWFPostback(
 						toBackOffice.getProcessWorkflowId(), true);
 				
-				_log.info("=====workflowOutputs.size():" + workflowOutputs.size());
 				
 				// Lat co trang thai dossier file
 				DossierFileLocalServiceUtil.updateDossierFileResultSyncStatus(
@@ -229,11 +227,6 @@ public class SyncFromBackOffice implements MessageListener {
 				_log.error(e);
 			}
 
-/*			
-			if (toBackOffice.getSyncStatus() == 2) {
-				sendEmailCustomer(toBackOffice.getDossierId());
-			}
-*/
 		}
 
 	}

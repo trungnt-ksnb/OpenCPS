@@ -60,7 +60,7 @@
 	iteratorURL.setParameter("mvcPath", templatePath + "dossiermonitoringsearch.jsp");	
 %>
 
-<c:if test="<%= false %>">
+<%-- <c:if test="<%= false %>">
 	<aui:row>
 		<aui:col width="50">
 			<liferay-ui:search-container searchContainer="<%= new DossierNewProcessingSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>">
@@ -152,7 +152,7 @@
 		</aui:col>
 	</aui:row>
 
-</c:if>
+</c:if> --%>
 <%!
 	private Log _log = LogFactoryUtil.getLog("html.portlets.dossiermgt.monitoring.search.jsp");
 %>
