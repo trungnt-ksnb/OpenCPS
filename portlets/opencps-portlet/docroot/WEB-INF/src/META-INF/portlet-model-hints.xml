@@ -291,7 +291,7 @@
 		<field name="actionNote" type="String" />
 		<field name="actionUserId" type="long" />
 		<field name="daysDoing" type="int" />
-		<field name="daysDelay" type="int" />
+		<field name="daysDelay" type="long" />
 		<field name="oId" type="String" />
 		<field name="logId" type="long" />
 	</model>
@@ -331,7 +331,7 @@
 		<field name="sequenceNo" type="int" />
 		<field name="dossierStatus" type="String" />
 		<field name="dossierSubStatus" type="String" />
-		<field name="daysDuration" type="int" />
+		<field name="daysDuration" type="String" />
 		<field name="referenceDossierPartId" type="long" />
 		<field name="externalAppUrl" type="String" />
 		<field name="processStepNo" type="int" />
@@ -851,5 +851,19 @@
 		<field name="modifiedDate" type="Date" />
 		<field name="govAgencyCode" type="String" />
 		<field name="administrationLevel" type="int" />
+	</model>
+	<model name="org.opencps.notificationmgt.model.NotificationConfig">
+		<field name="notificationConfigId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="dossierCurrentStatus" type="String" />
+		<field name="dossierNextStatus" type="String" />
+		<field name="isSendNotification" type="boolean" />
+		<field name="notificationName" type="String" />
+		<field name="moreContent" type="String" />
+		<field name="plId" type="long" />
 	</model>
 </model-hints>
