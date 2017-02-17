@@ -606,12 +606,12 @@
 		if (required){
 			return 'please-upload-dossier-part-required-before-send';
 		}
-		if (requiredActionNote == true && actionNote.val() == ''){
+		if (requiredActionNote == true && actionNote != null && actionNote.val() == ''){
 			actionNote.addClass('changeDefErr');
 			A.one('#<portlet:namespace/>defErrActionNote').addClass('displayDefErr');
 			
 			return 'please-add-note-before-send';
-		} else {
+		} else if (actionNote != null){
 			actionNote.removeClass('changeDefErr');
 			A.one('#<portlet:namespace/>defErrActionNote').removeClass('displayDefErr');
 		}
