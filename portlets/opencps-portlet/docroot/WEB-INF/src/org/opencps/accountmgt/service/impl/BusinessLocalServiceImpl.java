@@ -290,16 +290,6 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 		return business;
 	}
 	
-//	public Business updateBusiness(
-//		long businessId, String fullName, String enName, String shortName,
-//		String businessType, String idNumber, String address, String cityCode,
-//		String districtCode, String wardCode, String cityName,
-//		String districtName, String wardName, String telNo,
-//		String representativeName, String representativeRole,
-//		String[] businessDomainCodes, boolean isChangePassword,
-//		String password, String rePassword, long repositoryId,
-//		ServiceContext serviceContext, Date dateOfIdNumber)
-//		throws SystemException, PortalException {
 	public Business updateBusinessSSO(long businessId, String fullName,
 			String enName, String shortName, String businessType,
 			String idNumber, String address, String cityCode,
@@ -338,6 +328,10 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 		Date now = new Date();
 		
 		if (mappingUser != null) {
+			
+			userLocalService.updateEmailAddress(mappingUser.getUserId(),
+					password, email, email);
+			
 			// Reset password
 			if (isChangePassword) {
 				userLocalService.updateModifiedDate(mappingUser.getUserId(), now);
