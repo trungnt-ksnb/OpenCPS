@@ -89,6 +89,7 @@ public class ConfigurationImpl implements ConfigurationAction {
 		double offsetY = ParamUtil.getDouble(actionRequest, "offsetY");
 		
 		String signatureType = ParamUtil.getString(actionRequest, "signatureType");
+		String textPositionWithImageSign = ParamUtil.getString(actionRequest, "textPositionWithImageSign", "overlaps");
 		String [] characterAttachs = ParamUtil.getParameterValues(actionRequest, "characterAttach");
 		
 		preferences.setValue("characterAttachs",
@@ -96,6 +97,7 @@ public class ConfigurationImpl implements ConfigurationAction {
 		preferences.setValue("offsetX", String.valueOf(offsetX));
 		preferences.setValue("offsetY", String.valueOf(offsetY));
 		preferences.setValue("signatureType", signatureType);
+		preferences.setValue("textPositionWithImageSign", textPositionWithImageSign);
 		
 	}
 

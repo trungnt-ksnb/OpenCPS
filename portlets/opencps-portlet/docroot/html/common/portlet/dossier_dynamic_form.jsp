@@ -49,6 +49,7 @@
 
 <%
 	String signatureType = ParamUtil.getString(request, "signatureType");
+	String textPositionWithImageSign = ParamUtil.getString(request, "textPositionWithImageSign", "overlaps");
 	double offsetX = ParamUtil.getDouble(request, "offsetX");
 	double offsetY = ParamUtil.getDouble(request, "offsetY");
 	String characterAttachs = ParamUtil.getString(request, "characterAttachs", "text");
@@ -77,14 +78,7 @@
 
 	String groupName = ParamUtil.getString(request, DossierFileDisplayTerms.GROUP_NAME);
 	
-	String modalDialogId = ParamUtil.getString(request, "modalDialogId");
-	
-	String redirectURL = ParamUtil.getString(request, "redirectURL");
-	
 	String sampleData = StringPool.BLANK;
-	
-	String base64Str = StringPool.BLANK;
-	String fileName = StringPool.BLANK;
 	
 	String[] docTypes = StringUtil.split(ParamUtil.getString(request, "reportTypes", ".pdf"));
 	
@@ -235,10 +229,6 @@
 	
 				</aui:nav-item>
 			</aui:nav>
-			
-			<%
-				String signUrl = PortletPropsValues.OPENCPS_SERVLET_EXPORT_FILE_URL + dossierFileId + "&sign=" + "true" +"&docType=.doc"; 
-			%>
 		</c:if>
 	</aui:fieldset>
 </aui:form>
@@ -313,7 +303,7 @@
 										var characterAttachArray = characterAttachs.split(',');
 										//both image and text
 										if (characterAttachArray.indexOf('image') != -1 && characterAttachArray.indexOf('text') != -1) {
-											window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+											overlapText();
 											
 											if(imgContentBase64Str != '' && condauImageSrc != '') {
 												window.parent.PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
@@ -332,7 +322,7 @@
 										// text
 										// if configuration contain text value
 										else if (characterAttachArray.indexOf('text') != -1) {
-											window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+											overlapText();
 											
 											var jsonImgObject = {};
 											jsonImgObject.data = "";
@@ -345,6 +335,15 @@
 						}
 			}
 		});
+	}
+	
+	function overlapText() {
+		var textPositionWithImageSign = '<%= textPositionWithImageSign %>';
+		if(textPositionWithImageSign == 'overlaps') {
+			window.parent.PDFSigningHelper.setSignatureInfo(1,1);
+		} else if(textPositionWithImageSign == 'noOverlaps') {
+			window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+		}
 	}
 	
 	function signatureTypeChoosen(jsondata, imgJsondata, author, dataJSON, signatureTypeVal) {
