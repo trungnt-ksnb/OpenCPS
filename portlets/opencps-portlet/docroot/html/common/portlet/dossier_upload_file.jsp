@@ -56,7 +56,7 @@
 
 <%
 	String signatureType = ParamUtil.getString(request, "signatureType");
-	
+	String textPositionWithImageSign = ParamUtil.getString(request, "textPositionWithImageSign", "overlaps");
 	double offsetX = ParamUtil.getDouble(request, "offsetX");
 	double offsetY = ParamUtil.getDouble(request, "offsetY");
 	String characterAttachs = ParamUtil.getString(request, "characterAttachs", "text");
@@ -455,7 +455,7 @@
 									var characterAttachArray = characterAttachs.split(',');
 										// both image and text
 										if (characterAttachArray.indexOf('image') != -1 && characterAttachArray.indexOf('text') != -1) {
-											window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+											<portlet:namespace/>overlapText();
 											
 											window.parent.PDFSigningHelper.writeBase64ToFile(imageName, imageBase64Encode , function(imageFileJsonDataResult) {
 												<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
@@ -474,7 +474,7 @@
 										// text
 										// if configuration contain text value
 										else if (characterAttachArray.indexOf('text') != -1) {
-											window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+											<portlet:namespace/>overlapText();
 											var noImage = {};
 											noImage.data = '';
 											<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, noImage , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
@@ -490,8 +490,21 @@
 					}
 	});
 	
+	Liferay.provide(window, '<portlet:namespace/>overlapText', function() {
+		var A = AUI();
+		var textPositionWithImageSign = '<%= textPositionWithImageSign %>';
+		if(textPositionWithImageSign = 'overlaps') {
+			window.parent.PDFSigningHelper.setSignatureInfo(1,1);
+		} else if(textPositionWithImageSign == 'noOverlaps') {
+			window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+		}
+	});
+	
 	Liferay.provide(window, '<portlet:namespace/>chooseSignatureType', function(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal) {
-			// if signal with select point type
+		
+		var A = AUI();
+		
+		// if signal with select point type
 			if(signatureTypeVal == 'selectPoint') {
 				window.parent.PDFSigningHelper.signPDFWithSelectedPoint(jsonDataSignedResult.data, imageFileJsonDataResult.data,
 						author, "", certIndexJsonDataResutl.data, "", function(jsonDataSignedResult){
