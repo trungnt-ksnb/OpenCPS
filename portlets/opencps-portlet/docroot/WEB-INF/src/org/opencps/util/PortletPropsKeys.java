@@ -148,4 +148,6 @@ public class PortletPropsKeys {
 	public static final String CONTENT_TO_CUSTOMER_WITHOUT_RECEPTION_NO = "content.email.to.customer.without.receptionNo";
 	public static final String HOLIDAYCONFIG_DESCRIPTION_LENGTH = "opencps.holidayconfig.description.lengths";
 	
+	public static final String DM_USER_GROUP_NOTIFY = "opencps.datamgt.masterdata.notification.user.group";
+	
 }

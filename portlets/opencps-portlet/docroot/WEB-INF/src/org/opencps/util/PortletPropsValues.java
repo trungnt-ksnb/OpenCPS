@@ -312,5 +312,8 @@ public class PortletPropsValues {
 			.getInteger(PortletProps
 					.get(PortletPropsKeys.HOLIDAYCONFIG_DESCRIPTION_LENGTH),
 					255);
+	
+	public static final String DM_USER_GROUP_NOTIFY = PortletProps
+			.get(PortletPropsKeys.DM_USER_GROUP_NOTIFY);
 
 }
