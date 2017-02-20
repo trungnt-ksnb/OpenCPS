@@ -18,6 +18,9 @@
 package org.opencps.dossiermgt.bean;
 
 import java.util.Date;
+import java.util.List;
+
+import org.opencps.util.PortletConstants;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -358,6 +361,19 @@ public class ProcessOrderBean {
 
 		return _assignToUserName;
 	}
+	
+	public String getAssignToUserName(String dossierStatus) {
+		String assignName = StringPool.BLANK;
+		switch (dossierStatus) {
+		case PortletConstants.DOSSIER_STATUS_WAITING:
+			assignName = getActionUserName();
+			break;
+		default:
+			assignName = getAssignToUserName();
+			break;
+		}
+		return assignName;
+	}
 
 	public void setAssignToUserName(String assignToUserName) {
 
@@ -441,6 +457,36 @@ public class ProcessOrderBean {
 	private String _assignToUserName;
 	private String _actionUserName;
 	private String _dealine;
+
+	private String _actionNote;
+	
+	private String dossierSubStatus;
+	
+	public String getDossierSubStatus() {
+		return dossierSubStatus;
+	}
+
+	public void setDossierSubStatus(String dossierSubStatus) {
+		this.dossierSubStatus = dossierSubStatus;
+	}
+
+	private String [] _testDuplicate;
+	
+	public String[] get_testDuplicate() {
+		return _testDuplicate;
+	}
+
+	public void set_testDuplicate(String[] _testDuplicate) {
+		this._testDuplicate = _testDuplicate;
+	}
+
+	public String getActionNote() {
+		return _actionNote;
+	}
+
+	public void setActionNote(String _actionNote) {
+		this._actionNote = _actionNote;
+	}
 
 	private boolean _readOnly;
 

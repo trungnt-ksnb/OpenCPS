@@ -23,7 +23,6 @@
 <%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
 <%@page import="org.opencps.dossiermgt.search.DossierTemplateDisplayTerms"%>
 <%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
-<%@page import="org.opencps.util.ActionKeys"%>
 <%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="org.opencps.dossiermgt.DuplicateDossierTemplateNumberException"%>
@@ -110,10 +109,13 @@
 	</div> --%>
 </liferay-util:buffer>
 
+<div class="opencps-bound-wrapper pd20 default-box-shadow">
+
 <aui:form 
 	name="fm" 
 	method="post" 
 	action="<%=updateDossierURL.toString() %>"
+	cssClass="bg-white"
 >
 	<div class="opencps-form-navigator-container">
 		<liferay-ui:form-navigator 
@@ -128,3 +130,5 @@
 		</liferay-ui:form-navigator>
 	</div>
 </aui:form>
+
+</div>

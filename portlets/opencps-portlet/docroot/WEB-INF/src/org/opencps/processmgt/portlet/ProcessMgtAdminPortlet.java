@@ -50,19 +50,28 @@ import org.opencps.processmgt.util.ProcessMgtUtil;
 import org.opencps.processmgt.util.ProcessUtils;
 import org.opencps.util.WebKeys;
 
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.Message;
-import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.expando.model.ExpandoColumn;
+import com.liferay.portlet.expando.model.ExpandoColumnConstants;
+import com.liferay.portlet.expando.model.ExpandoTable;
+import com.liferay.portlet.expando.service.ExpandoColumnLocalServiceUtil;
+import com.liferay.portlet.expando.service.ExpandoRowLocalServiceUtil;
+import com.liferay.portlet.expando.service.ExpandoTableLocalServiceUtil;
+import com.liferay.portlet.expando.service.ExpandoValueLocalServiceUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 /**
@@ -208,7 +217,9 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 		    ParamUtil.getBoolean(actionRequest, "generateDeadlineCheckbox");
 
 		String deadlinePattern =
-		    ParamUtil.getString(actionRequest, "deadlinePattern");
+					    ParamUtil.getString(actionRequest, "deadlinePattern");
+		String actionCode =
+					    ParamUtil.getString(actionRequest, "actionCode");
 		
 		boolean isFinishStep =
 					    ParamUtil.getBoolean(actionRequest, "isFinishStepCheckbox");
@@ -244,7 +255,7 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 					WorkflowOutputLocalServiceUtil.addWorkflowOutput(
 					    output.getDossierPartId(),
 					    output.getProcessWorkflowId(), output.getRequired(),
-					    output.getEsign(), output.getPostback());
+					    output.getEsign(), output.getPostback(), output.getPattern());
 				}
 
 			}
@@ -257,7 +268,7 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 				        autoEvent, actionName, assignUser, actionUserId,
 				        requestPayment, paymentFee, generateReceptionNo,
 				        receptionNoPattern, generateDeadline, deadlinePattern,
-				        isFinishStep, preCondition, isMultipled, serviceContext);
+				        isFinishStep, preCondition, isMultipled, actionCode, serviceContext);
 
 				// Add WorkflowOutput
 
@@ -283,14 +294,16 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 						    output.getDossierPartId(),
 						    output.getProcessWorkflowId(),
 						    output.getRequired(), output.getEsign(),
-						    output.getPostback());
+						    output.getPostback(),
+						    output.getPattern());
 					}
 					else {
 						WorkflowOutputLocalServiceUtil.addWorkflowOutput(
 						    output.getDossierPartId(),
 						    output.getProcessWorkflowId(),
 						    output.getRequired(), output.getEsign(),
-						    output.getPostback());
+						    output.getPostback(),
+							output.getPattern());
 					}
 				}
 
@@ -407,9 +420,13 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 		int sequenceNo = ParamUtil.getInteger(actionRequest, "sequenceNo");
 
 		String dossierStatus =
-		    ParamUtil.getString(actionRequest, "dossierStatus");
+					    ParamUtil.getString(actionRequest, "dossierStatus");
+		
+		String dossierSubStatus =
+					    ParamUtil.getString(actionRequest, "dossierSubStatus");
 
-		int daysDuration = ParamUtil.getInteger(actionRequest, "daysDuration");
+		String daysDuration = ParamUtil.getString(actionRequest, "daysDuration");
+		int processStepNo = ParamUtil.getInteger(actionRequest, "processStepNo");
 
 		long referenceDossierPartId =
 		    ParamUtil.getLong(actionRequest, "referenceDossierPartId");
@@ -429,8 +446,8 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 				// Add ProcessStep
 
 				ProcessStep step = ProcessStepLocalServiceUtil.addStep(
-				    serviceProcessId, stepName, sequenceNo, dossierStatus,
-				    daysDuration, referenceDossierPartId, externalAppUrl,
+				    serviceProcessId, stepName, sequenceNo, dossierStatus,dossierSubStatus,
+				    daysDuration, referenceDossierPartId, externalAppUrl, processStepNo, 
 				    serviceContext);
 				
 				if (Validator.isNotNull(step)) {
@@ -472,7 +489,8 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 					for (ProcessStepDossierPart stepDossierPart : stepDossiers) {
 						ProcessStepDossierPartLocalServiceUtil.addPSDP(
 						    stepDossierPart.getProcessStepId(),
-						    stepDossierPart.getDossierPartId());
+						    stepDossierPart.getDossierPartId(),
+						    stepDossierPart.getReadOnly());
 					}
 				}
 
@@ -489,8 +507,8 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 				ProcessStep step =
 				    ProcessStepLocalServiceUtil.updateStep(
 				        processStepId, serviceProcessId, stepName, sequenceNo,
-				        dossierStatus, daysDuration, referenceDossierPartId,
-				        externalAppUrl, serviceContext);
+				        dossierStatus, dossierSubStatus, daysDuration, referenceDossierPartId,
+				        externalAppUrl,processStepNo , serviceContext);
 
 
 				//StepAllowanceLocalServiceUtil.removeProcessStepByProcessId(step.getProcessStepId());
@@ -543,7 +561,8 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 				for (ProcessStepDossierPart stepDossierPart : stepDossiers) {
 					ProcessStepDossierPartLocalServiceUtil.addPSDP(
 					    stepDossierPart.getProcessStepId(),
-					    stepDossierPart.getDossierPartId());
+					    stepDossierPart.getDossierPartId(),
+					    stepDossierPart.getReadOnly());
 				}
 
 				// Redirect page
@@ -758,6 +777,102 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 		
 		super.render(renderRequest, renderResponse);
 
+	}
+	
+	public void updateRequiedActionNote(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+			throws IOException {
+		
+		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.
+				getAttribute(WebKeys.THEME_DISPLAY);
+		
+		String returnURL = ParamUtil.getString(actionRequest, "returnURL");
+		
+		long processWorkflowId = ParamUtil.getLong(actionRequest, "processWorkflowId");
+		boolean requiedActionNote = ParamUtil.getBoolean(actionRequest, "requiedActionNote");
+		
+		ProcessWorkflow processWorkflow = null;
+		
+		try {
+			processWorkflow = ProcessWorkflowLocalServiceUtil.
+					getProcessWorkflow(processWorkflowId);
+		} catch (Exception e) {
+			//
+		}
+		
+		if (Validator.isNotNull(processWorkflow)){
+			boolean isAutoEvent = false;
+			if (Validator.isNotNull(processWorkflow.getAutoEvent())){
+				isAutoEvent = true;
+			}
+			
+			if (!isAutoEvent){
+				try {
+					addExpandoProcessWorkFlow(themeDisplay, 
+							processWorkflowId, requiedActionNote);
+					
+					actionResponse.sendRedirect(returnURL);
+				} catch (Exception e) {
+					SessionErrors.add(actionRequest, "yeu-cau-thuc-hien-khong-thanh-cong");
+					actionResponse.sendRedirect(returnURL);
+				}
+			} else {
+				SessionErrors.add(actionRequest, "hanh-dong-duoc-kich-hoat-tu-dong");
+				actionResponse.sendRedirect(returnURL);
+			}
+		}
+	}
+	
+	private void addExpandoProcessWorkFlow(ThemeDisplay themeDisplay,
+			long processWorkflowId, boolean requiedActionNote) 
+			throws PortalException, SystemException {
+		
+		long classNameId = ClassNameLocalServiceUtil.getClassNameId(ProcessStep.class.getName());
+		
+		ExpandoTable expandoTable = null;
+		ExpandoColumn expandoColumn = null;
+		
+		try {
+			expandoTable = 
+					ExpandoTableLocalServiceUtil.getTable(
+							themeDisplay.getCompanyId(), 
+							classNameId, 
+							ProcessStep.class.getName());
+		} catch (Exception e) {
+			//
+		}
+		try {
+			expandoColumn = 
+					ExpandoColumnLocalServiceUtil.getColumn(
+							expandoTable.getTableId(), 
+							"requiedProcessActionNote");
+		} catch (Exception e) {
+			//
+		}
+		
+		if (Validator.isNull(expandoTable)){
+			expandoTable = 
+					ExpandoTableLocalServiceUtil.addTable(
+							themeDisplay.getCompanyId(), 
+							classNameId, 
+							ProcessStep.class.getName());
+		}
+		if (Validator.isNull(expandoColumn)){
+			expandoColumn = 
+					ExpandoColumnLocalServiceUtil.addColumn(
+							expandoTable.getTableId(), 
+							"requiedProcessActionNote", 
+							ExpandoColumnConstants.BOOLEAN);
+		}
+		
+		ExpandoValueLocalServiceUtil.addValue(
+				themeDisplay.getCompanyId(), 
+				ProcessStep.class.getName(), 
+				expandoTable.getName(), 
+				expandoColumn.getName(), 
+				processWorkflowId, 
+				requiedActionNote);
+		
 	}
 
 	private Log _log = LogFactoryUtil.getLog(ProcessMgtAdminPortlet.class);

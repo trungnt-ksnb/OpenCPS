@@ -1,4 +1,10 @@
 
+<%@page import="javax.portlet.PortletRequest"%>
+<%@page import="com.liferay.portal.kernel.portlet.LiferayPortletMode"%>
+<%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
+<%@page import="org.opencps.util.PortletConstants"%>
+<%@page import="org.opencps.util.PortletPropsValues"%>
+<%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -26,6 +32,9 @@
 
 
 <%
+	
+	String plidServiceDetail = preferences.getValue("plidServiceDetail","0");
+
 	PortletURL iteratorURL = renderResponse.createRenderURL();
 	iteratorURL.setParameter("mvcPath", templatePath + "serviceinfodirectorylist.jsp");
 	
@@ -39,6 +48,8 @@
 	 */
 	headerNames.add("service-bound-data");
 	
+	headerNames.add("action");
+	 
 	String headers = StringUtil.merge(headerNames, StringPool.COMMA);
 	
 	
@@ -65,12 +76,41 @@
 	if(Validator.isNotNull(collectionDomain)) {
 		dictItems = DictItemLocalServiceUtil.getDictItemsByDictCollectionId(collectionDomain.getDictCollectionId());
 	}
+	
+	String myComboTree = ProcessOrderUtils.generateComboboxTree(PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN, PortletConstants.TREE_VIEW_ALL_ITEM, 
+			PortletConstants.TREE_VIEW_LEVER_2, false, renderRequest);
+	
+	iteratorURL.setParameter(ServiceDisplayTerms.SERVICE_ADMINISTRATION, administrationCode);
+	iteratorURL.setParameter(ServiceDisplayTerms.SERVICE_DOMAINCODE, domainCode);
+	iteratorURL.setParameter("keywords", ParamUtil.getString(request, "keywords"));
 %>
 
-<div class="title_box">
-	<p class="txtitle"><i class="fa fa-file-text-o blue MR10"></i><liferay-ui:message key="serviceprocess-list"/></p>
-</div>
+<aui:script use="aui-base,aui-io">
+$(document).ready(function(){
+	var myComboTree = '<%=myComboTree %>';
+	var domainCode = '<%=domainCode%>';
+	var comboboxTree = $('#comboboxTree').comboTree({  
+		boundingBox: 'comboboxTree',
+		name: '#<portlet:namespace /><%=ServiceDisplayTerms.SERVICE_DOMAINCODE %>',
+		form: document.<portlet:namespace />fm,
+		formSubmit: true,
+		isMultiple: false,
+	    source: JSON.parse(myComboTree)
+	});
 
+	comboboxTree.setValue(domainCode);
+	
+	$("#<portlet:namespace />administrationCode").change(function() {
+		<portlet:namespace />onSelectSubmit();
+	});
+	Liferay.provide(window, '<portlet:namespace/>onSelectSubmit', function() {
+		var A = AUI();
+		
+		submitForm(document.<portlet:namespace />fm);
+	});
+});
+
+</aui:script>
 
 <aui:nav-bar cssClass="opencps-toolbar custom-toolbar">
 	<aui:nav-bar-search cssClass="pull-right">
@@ -105,31 +145,8 @@
 							>
 							</datamgt:ddr> --%>
 							
-							<aui:select name="<%=ServiceDisplayTerms.SERVICE_DOMAINCODE %>" label="">
-								<aui:option value="">
-									<liferay-ui:message key="<%=ServiceDisplayTerms.SERVICE_DOMAINCODE %>"/>
-								</aui:option>
-								<%
-									if(dictItems != null){
-										for(DictItem dictItem : dictItems){
-											if((curDictItem != null && dictItem.getDictItemId() == curDictItem.getDictItemId())||
-													(curDictItem != null && dictItem.getTreeIndex().contains(curDictItem.getDictItemId() + StringPool.PERIOD))){
-												continue;
-											}
-											
-											int level = StringUtil.count(dictItem.getTreeIndex(), StringPool.PERIOD);
-											String index = "|";
-											for(int i = 0; i < level; i++){
-												index += "_";
-											}
-											%>
-												<aui:option value="<%=dictItem.getDictItemId() %>"><%=index + dictItem.getItemName(locale) %></aui:option>
-											<%
-										}
-									}
-								%>
-							</aui:select>
-
+							<aui:input name="<%=ServiceDisplayTerms.SERVICE_DOMAINCODE %>" type="hidden" value="<%=domainCode %>"></aui:input>
+							<input type="text" id="comboboxTree" class="opencps-combotree" readonly="readonly" />
 						</aui:col>
 						<aui:col width="30" cssClass="search-col">
 							<%-- <label>
@@ -176,12 +193,20 @@
 			className="org.opencps.servicemgt.model.ServiceInfo" 
 			modelVar="service" 
 			keyProperty="serviceinfoId"
+			indexVar="index"
 		>
 			<%
 				PortletURL viewURL = renderResponse.createRenderURL();
 				viewURL.setParameter("mvcPath", templatePath + "service_detail.jsp");
 				viewURL.setParameter("serviceinfoId", String.valueOf(service.getServiceinfoId()));
 				viewURL.setParameter("backURL", currentURL);
+				
+				PortletURL renderToSubmitOnline = PortletURLFactoryUtil.create(request, WebKeys.P26_SUBMIT_ONLINE, Long.valueOf(plidServiceDetail), PortletRequest.RENDER_PHASE);
+				renderToSubmitOnline.setWindowState(LiferayWindowState.NORMAL);
+				renderToSubmitOnline.setPortletMode(LiferayPortletMode.VIEW);
+				renderToSubmitOnline.setParameter("mvcPath", "/html/portlets/dossiermgt/submit/dossier_submit_online.jsp");
+				renderToSubmitOnline.setParameter("serviceinfoId", String.valueOf(service.getServiceinfoId()));
+				renderToSubmitOnline.setParameter("backURL", currentURL);
 			%>
 				<liferay-util:buffer var="boundcol1">
 					
@@ -223,12 +248,18 @@
 						</div>
 					</div>
 				</liferay-util:buffer>
+				
+				<liferay-util:buffer var="boundcol3">
+					
+					<aui:button href="<%= renderToSubmitOnline.toString() %>" cssClass="des-sub-button radius20" value="service-description"></aui:button>
+					
+				</liferay-util:buffer>
 			<%
 				if(service.getActiveStatus() !=0) {
 					row.setClassName("opencps-searchcontainer-row");
 					
 					// no column
-					row.addText(String.valueOf(row.getPos() + 1), viewURL);
+					row.addText(String.valueOf((searchContainer.getCur() - 1) * searchContainer.getDelta() + index + 1), viewURL);
 				
 					
 					row.addText(boundcol1);
@@ -236,6 +267,7 @@
 					
 					row.addText(boundcol2); 
 					
+					row.addText(boundcol3); 
 				}
 			%>	
 		

@@ -1,3 +1,4 @@
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -30,6 +31,7 @@
 <%@page import="org.opencps.accountmgt.OutOfLengthBusinessEmailException"%>
 <%@page import="org.opencps.accountmgt.DuplicateBusinessEmailException"%>
 <%@page import="org.opencps.accountmgt.OutOfLengthBusinessNameException"%>
+<%@page import="org.opencps.accountmgt.DuplicateBusinessIdNumberException"%>
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="org.opencps.util.MessageKeys"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
@@ -108,10 +110,10 @@
 	/>
 	
 	<liferay-ui:error 
-		exception="<%= DuplicateBusinessEmailException.class %>" 
-		message="<%= DuplicateBusinessEmailException.class.getName() %>" 
+		exception="<%= DuplicateBusinessIdNumberException.class %>" 
+		message="<%= DuplicateBusinessIdNumberException.class.getName() %>" 
 	/>
-	
+
 	<liferay-ui:error 
 		exception="<%= OutOfLengthBusinessShortNameException.class %>" 
 		message="<%= OutOfLengthBusinessShortNameException.class.getName() %>" 
@@ -197,16 +199,32 @@
 					<aui:col width="30" cssClass="title-text">
 						<label ><liferay-ui:message key="register"></liferay-ui:message></label>
 					</aui:col>
-					<aui:col width="30" cssClass="register-options">
-						<aui:row>
-							<aui:col width="50">
-								<aui:input type="radio" name="typeOfRegister" value="citizen" inlineLabel="right" label="citizen"/>
-							</aui:col>
-							<aui:col width="50">
-								<aui:input type="radio" name="typeOfRegister" value="business" inlineLabel="right" label="business" checked="true"/>
-							</aui:col>
-						</aui:row>
-					</aui:col>
+					<c:choose>
+					<c:when test='<%=allowBussinessRegistration && allowCitizenRegistration %>'>
+						<aui:col width="30" cssClass="register-options">
+							<aui:row>
+								<aui:col width="50">
+									<aui:input type="radio" name="typeOfRegister" value="citizen" inlineLabel="right" label="citizen"/>
+								</aui:col>
+								<aui:col width="50">
+									<aui:input type="radio" name="typeOfRegister" value="business" inlineLabel="right" label="business" checked="true"/>
+								</aui:col>
+							</aui:row>
+						</aui:col>
+					</c:when>
+					<c:otherwise>
+						<aui:col width="30" cssClass="register-options">
+							<aui:row>
+								<aui:col width="50">
+									<aui:input type="radio" name="typeOfRegister" value="citizen" disabled="true" inlineLabel="right" label="citizen"/>
+								</aui:col>
+								<aui:col width="50">
+									<aui:input type="radio" name="typeOfRegister" value="business" disabled="true" inlineLabel="right" label="business" checked="true"/>
+								</aui:col>
+							</aui:row>
+						</aui:col>
+					</c:otherwise>
+					</c:choose>
 					<aui:col width="30" cssClass="login-redirect">
 						<a href='<%=themeDisplay.getURLSignIn() %>'><liferay-ui:message key="login" /></a>
 					</aui:col>
@@ -314,8 +332,9 @@
 					<aui:input 
 						name="<%=BusinessDisplayTerms.BUSINESS_ADDRESS %>" 
 						cssClass="input100"
-						placeholder="<%=BusinessDisplayTerms.BUSINESS_ADDRESS %>"
+						placeholder="address-place-holder"
 					>
+						<aui:validator name="required" />
 						<aui:validator name="maxLength">500</aui:validator>
 					</aui:input>
 				</aui:row>
@@ -408,6 +427,7 @@
 						name="attachFile" 
 						label="<%= LanguageUtil.format(pageContext, \"business-attach-file-x\", attachFileX) %>"
 					>
+						<aui:validator name="required" />
 						<aui:validator name="acceptFiles">
 							'<%= StringUtil.merge(PortletPropsValues.ACCOUNTMGT_FILE_TYPE) %>'
 						</aui:validator>
@@ -415,12 +435,14 @@
 				</aui:row>
 				<div class="term-user">
 					<aui:row>
-						<liferay-portlet:renderURL var="linkToPage" ></liferay-portlet:renderURL>
+						<liferay-portlet:renderURL var="linkToPage" windowState="<%=LiferayWindowState.EXCLUSIVE.toString() %>">
+							<liferay-portlet:param name="mvcPath" value="/html/portlets/accountmgt/registration/termOfUse.jsp"/>
+						</liferay-portlet:renderURL>
 						<aui:input name="linkToPageURL" value="<%=linkToPage %>" type="hidden"></aui:input>
 						<%
 							String chiTiet = StringPool.BLANK;
 							String popupURL = renderResponse.getNamespace() +  "openDialogTermOfUse();";
-							chiTiet =  "<a onclick=\""+popupURL+"\" class=\"detail-terms-links\">"+LanguageUtil.get(pageContext, "term-detail")+"</a>";
+							chiTiet =  "<a href=\"http://dichvucong.mt.gov.vn/-ieu-khoan-su-dung\" target=\"_blank\" class=\"detail-terms-links\">"+LanguageUtil.get(pageContext, "term-detail")+"</a>";
 						%>
 						<aui:input 
 							name="termsOfUse"

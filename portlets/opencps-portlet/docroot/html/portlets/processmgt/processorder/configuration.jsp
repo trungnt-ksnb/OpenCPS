@@ -16,6 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
+
+<%@page import="org.opencps.util.PortletConstants"%>
+
 <%@ include file="init.jsp"%>
 
 <%
@@ -80,5 +83,54 @@
 			<aui:option selected="<%= templatesToDisplay_cfg.equals(\"20_80\") %>" value="20_80">20_80</aui:option>
 	
 	</aui:select>
+
+	<aui:select name="assignFormDisplayStyle">
+		<aui:option 
+			value="popup"
+			selected='<%=assignFormDisplayStyle.equals("popup") %>'
+		>
+			Popup
+		</aui:option>
+		<aui:option 
+			value="form"
+			selected='<%=assignFormDisplayStyle.equals("form") %>'
+		>
+			Form
+		</aui:option>
+	</aui:select>
+
+	<aui:input 
+		type="checkbox"
+		name="hiddenTreeNodeEqualNone" 
+		value="<%=hiddenTreeNodeEqualNone %>"
+	/>
+	
+	<aui:select name="redirectToPageProcessCfg">
+		<aui:option 
+			value="dossier_content"
+			selected='<%=redirectToPageProcessCfg.equals("dossier_content") %>'
+		>
+			dossier_content
+		</aui:option>
+		<aui:option 
+			value="dossier_info"
+			selected='<%=redirectToPageProcessCfg.equals("dossier_info") %>'
+		>
+			dossier_info
+		</aui:option>
+		<aui:option 
+			value="history"
+			selected='<%=redirectToPageProcessCfg.equals("history") %>'
+		>
+			history
+		</aui:option>
+		<aui:option 
+			value="process"
+			selected='<%=redirectToPageProcessCfg.equals("process") %>'
+		>
+			process
+		</aui:option>
+	</aui:select>
 	<aui:button type="submit" name="Save" value="save"/>
+
 </aui:form>

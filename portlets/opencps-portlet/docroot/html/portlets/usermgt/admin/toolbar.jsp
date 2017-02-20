@@ -129,19 +129,21 @@
 	                        </aui:col>
 	                        
 	                        <aui:col width="50">
-	                            <liferay-ui:input-search 
-	                                id="keywords1" 
-	                                name="keywords" 
-	                                title='<%= LanguageUtil.get(locale, "keywords") %>' 
-	                                placeholder='<%= LanguageUtil.get(locale, "keyword") %>' 
-	                            />
+	                        	<div class="search-input input-keyword">
+		                            <liferay-ui:input-search 
+		                                id="keywords1" 
+		                                name="keywords" 
+		                                title='<%= LanguageUtil.get(locale, "keywords") %>' 
+		                                placeholder='<%= LanguageUtil.get(locale, "keyword") %>' 
+		                            />
+	                            </div>
 	                        </aui:col>
 	                    </aui:row>
 			     </c:when>
 			    
 			     <c:when test="<%=tabs1.contentEquals(UserMgtUtil.TOP_TABS_WORKINGUNIT) %>">
                       <aui:row>
-                        <aui:col width="20">
+                        <aui:col cssClass="span4">
                             <aui:select name="<%=WorkingUnitDisplayTerms.WORKINGUNIT_ISEMPLOYER %>" label="<%=StringPool.BLANK %>"
                             	onChange='<%=renderResponse.getNamespace() + "searchByIsemployee(this)"%>'
                             >

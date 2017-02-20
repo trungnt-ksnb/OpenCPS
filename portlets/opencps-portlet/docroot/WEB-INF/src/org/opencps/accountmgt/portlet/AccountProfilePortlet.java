@@ -19,6 +19,7 @@ package org.opencps.accountmgt.portlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
@@ -48,6 +49,7 @@ import org.opencps.datamgt.model.DictItem;
 import org.opencps.datamgt.service.DictItemLocalServiceUtil;
 import org.opencps.usermgt.search.EmployeeDisplayTerm;
 import org.opencps.util.AccountUtil;
+import org.opencps.util.DateTimeUtil;
 import org.opencps.util.MessageKeys;
 import org.opencps.util.PortletPropsValues;
 import org.opencps.util.WebKeys;
@@ -59,10 +61,14 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.Company;
+import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.UserGroup;
+import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
@@ -171,7 +177,7 @@ public class AccountProfilePortlet extends MVCPortlet {
 			Validator.isNotNull(rePass)) {
 			isChangePassword = true;
 		}
-
+		
 		boolean updated = false;
 
 		try {
@@ -179,8 +185,11 @@ public class AccountProfilePortlet extends MVCPortlet {
 				citizenId, StringPool.BLANK, StringPool.BLANK, address,
 				StringPool.BLANK, telNo, 1, StringPool.BLANK, cityId,
 				districtId, wardId, StringPool.BLANK);
+			
 			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
+			
+			AccountRegPortlet.validatePassword(curPass, newPass, rePass, serviceContext);
 
 			city = DictItemLocalServiceUtil.getDictItem(cityId);
 
@@ -312,14 +321,27 @@ public class AccountProfilePortlet extends MVCPortlet {
 				actionRequest, BusinessDisplayTerms.NEW_PASSWORD);
 		String rePass =
 			ParamUtil.getString(actionRequest, BusinessDisplayTerms.RE_PASSWORD);
+		
+		int dateDayIDNumber =
+		    ParamUtil.getInteger(
+		        actionRequest, BusinessDisplayTerms.DATE_DAY);
+		int dateMonthIDNumber =
+		    ParamUtil.getInteger(
+		    		actionRequest, BusinessDisplayTerms.DATE_MONTH);
+		int dateYearIDNumber =
+		    ParamUtil.getInteger(
+		    		actionRequest, BusinessDisplayTerms.DATE_YEAR);
+		
+		Date dateOfIdNumber = DateTimeUtil.getDate(dateDayIDNumber, dateMonthIDNumber,
+				dateYearIDNumber);
 
 		boolean isChangePassword = false;
 
 		if (Validator.isNotNull(curPass) && Validator.isNotNull(newPass) &&
 			Validator.isNotNull(rePass)) {
 			isChangePassword = true;
-		}
-
+		} 
+		
 		boolean updated = false;
 
 		DictItem city = null;
@@ -334,7 +356,7 @@ public class AccountProfilePortlet extends MVCPortlet {
 			AccountRegPortlet.validateBusiness(
 				businessId, StringPool.BLANK, StringPool.BLANK, enName,
 				shortName, address, representativeName, representativeRole,
-				cityId, districtId, wardId, 1, StringPool.BLANK);
+				cityId, districtId, wardId, 1, StringPool.BLANK, StringPool.BLANK);
 			city = DictItemLocalServiceUtil.getDictItem(cityId);
 
 			district = DictItemLocalServiceUtil.getDictItem(districtId);
@@ -342,10 +364,13 @@ public class AccountProfilePortlet extends MVCPortlet {
 			ward = DictItemLocalServiceUtil.getDictItem(wardId);
 
 			busType = DictItemLocalServiceUtil.getDictItem(type);
+			
 			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
+			
+			AccountRegPortlet.validatePassword(curPass, newPass, rePass, serviceContext);
+			
 			if (businessId > 0) {
-
 				district.getItemName(serviceContext.getLocale(), true);
 				BusinessLocalServiceUtil.updateBusiness(
 					businessId, name, enName, shortName, busType.getItemCode(),
@@ -356,7 +381,7 @@ public class AccountProfilePortlet extends MVCPortlet {
 					ward.getItemName(serviceContext.getLocale(), true), telNo,
 					representativeName, representativeRole,
 					listBussinessDomains, isChangePassword, curPass, rePass,
-					serviceContext.getScopeGroupId(), serviceContext);
+					serviceContext.getScopeGroupId(), serviceContext, dateOfIdNumber);
 
 				HttpServletRequest request =
 					PortalUtil.getHttpServletRequest(actionRequest);

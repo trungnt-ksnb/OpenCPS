@@ -40,6 +40,11 @@
 			<finder-column name="groupId" />
 			<finder-column name="dossierTemplateId" />
 		</finder>
+		
+		<finder return-type="ServiceProcess" name="G_P">
+			<finder-column name="groupId" />
+			<finder-column name="processNo" />
+		</finder>
 
 
 	</entity>
@@ -65,9 +70,11 @@
 		<column name="stepName" type="String" />
 		<column name="sequenceNo" type="int" />
 		<column name="dossierStatus" type="String" />
-		<column name="daysDuration" type="int" />
+		<column name="dossierSubStatus" type="String" />
+		<column name="daysDuration" type="String" />
 		<column name="referenceDossierPartId" type="long" />
 		<column name="externalAppUrl" type="String" />
+		<column name="processStepNo" type="int" />
 		
 		<!-- Order -->
 		<order by="asc">
@@ -87,6 +94,10 @@
 			<finder-column name="groupId"/>
 			<finder-column name="processStepId" arrayable-operator="OR"/>
 		</finder>
+		
+		<finder return-type="Collection" name="F_dossierSubStatus">
+			<finder-column name="dossierSubStatus"/>
+		</finder>
 	</entity>
 
 	<entity name="ProcessStepDossierPart" local-service="true" remote-service="true"
@@ -94,6 +105,7 @@
 
 		<column name="processStepId" type="long" primary="true" />
 		<column name="dossierPartId" type="long" primary="true" />
+		<column name="readOnly" type="boolean" />
 		
 		<finder return-type="Collection" name="ProcessStepId">
 			<finder-column name="processStepId"/>
@@ -192,6 +204,10 @@
 			<finder-column name="autoEvent"/>
 			<finder-column name="preProcessStepId"/>
 		</finder>
+		
+		<finder return-type="Collection" name="AutoEvent">
+			<finder-column name="autoEvent"/>
+		</finder>
 
         <finder name="ActionCode" return-type="ProcessWorkflow">
             <finder-column name="actionCode"></finder-column>
@@ -218,6 +234,7 @@
 		<column name="required" type="boolean"/>
 		<column name="esign" type="boolean"/>
 		<column name="postback" type="boolean"/>
+		<column name="pattern" type="String"/>
 		
 		<finder return-type="Collection" name="P_W_ID">
 			<finder-column name="processWorkflowId"/>
@@ -282,6 +299,13 @@
 		<finder return-type="Collection" name="ServiceInfoId">
 			<finder-column name="serviceInfoId"/>
 		</finder>
+		<finder return-type="Collection" name="actionUserId">
+			<finder-column name="actionUserId" />
+		</finder>
+		
+		<finder name="_Dossier" return-type="ProcessOrder">
+            <finder-column name="dossierId"></finder-column>
+        </finder>
 	</entity>
 
 	<entity name="ActionHistory" local-service="true" remote-service="true"
@@ -309,18 +333,28 @@
 		<column name="actionNote" type="String"/>
 		<column name="actionUserId" type="long"/>
 		<column name="daysDoing" type="int"/>
-		<column name="daysDelay" type="int"/>
-        <column name="oId" type="String"></column>
+		<column name="daysDelay" type="long"/>
+        <column name="oId" type="String"/>
+        <column name="logId" type="long"/>
 
         <order >
             <order-column name="createDate" order-by="desc"></order-column>
             <order-column name="actionHistoryId" order-by="asc"/>
         </order>
+        
+        <finder name="LOG_ID" return-type="ActionHistory">
+            <finder-column name="logId"/>
+        </finder>
 
 
         <finder name="POID_PWID" return-type="Collection">
             <finder-column name="processOrderId"></finder-column>
             <finder-column name="processWorkflowId"></finder-column>
+        </finder>
+        
+        <finder name="POID_UAID" return-type="Collection">
+            <finder-column name="processOrderId"></finder-column>
+            <finder-column name="actionUserId"></finder-column>
         </finder>
 		
 		
@@ -329,7 +363,7 @@
 			<finder-column name="processOrderId"/>
 		</finder>
 		
-		<finder return-type="Collection" name="ProcessOrderId" where="stepName != ''">
+		<finder return-type="Collection" name="ProcessOrderId">
 			<finder-column name="processOrderId"/>
 		</finder>
         <finder name="OId" return-type="ActionHistory">

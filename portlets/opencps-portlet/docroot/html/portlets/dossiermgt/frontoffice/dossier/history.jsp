@@ -1,4 +1,3 @@
-
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -17,24 +16,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-<%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
+
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
-<%@page import="com.liferay.portal.model.User"%>
-<%@page import="com.liferay.portal.service.UserLocalServiceUtil"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="javax.portlet.PortletURL"%>
 <%@page import="org.opencps.dossiermgt.model.Dossier"%>
 <%@page import="org.opencps.dossiermgt.model.DossierLog"%>
 <%@page import="org.opencps.dossiermgt.service.DossierLogLocalServiceUtil"%>
-<%@page import="org.opencps.dossiermgt.service.persistence.DossierUtil"%>
 <%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%@page import="org.opencps.servicemgt.model.ServiceInfo"%>
 <%@page import="org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil"%>
 <%@page import="org.opencps.util.DateTimeUtil"%>
-<%@page import="org.opencps.util.DictItemUtil"%>
 <%@page import="org.opencps.util.PortletUtil"%>
 <%@page import="org.opencps.util.WebKeys"%>
+<%@page import="org.opencps.processmgt.util.ProcessUtils"%>
+<%@page import="org.opencps.processmgt.model.ProcessStep"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="org.opencps.dossiermgt.model.DossierFileLog"%>
 
 <%@ include file="../../init.jsp"%>
 
@@ -64,14 +63,31 @@
 	iteratorURL.setParameter("mvcPath", "/html/portlets/dossiermgt/frontoffice/dossier/history.jsp");
 
 %>
+<div class="header-title custom-title pdl30">
+		<liferay-ui:message key="history"/>
+</div>
 
 <aui:row>
-	<aui:col width="20" cssClass="bold">
-		<liferay-ui:message key="dossier-reception-no"/> 
-	</aui:col>
-	<aui:col width="80">
-		<%=receptionNo %>
-	</aui:col>
+			<aui:col width="30">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
+			<aui:col width="70">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-reception-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
 </aui:row>
 
 <aui:row cssClass="pd_b20">
@@ -114,13 +130,9 @@
 		keyProperty="dossierLogId"
 	>
 		<aui:row cssClass="top-line pd_b20 pd_t20">
-			<aui:col width="60">
+			<aui:col width="30">
 				<span class="span1">
 					<i class="fa fa-circle blue sx10"></i>
-				</span>
-				
-				<span class="span3 bold">
-					<liferay-ui:message key="time" />
 				</span>
 				
 				<span class="span8">
@@ -131,14 +143,45 @@
 					%>
 				</span>
 			</aui:col>
-			<aui:col width="40">
+			<aui:col width="70">
+
+				<aui:row>
+					<span class="span4 bold">
+						<liferay-ui:message key="action" />
+					</span>
+					
+					<span class="span8">
+						<liferay-ui:message key="<%= DossierMgtUtil.getDossierLogs(StringPool.BLANK, dossierLog.getActionInfo())  %>"/>
+					</span>
+					
+				</aui:row>
+				
 				<aui:row>
 					<span class="span4 bold">
 						<liferay-ui:message key="dossier-status" />
 					</span>
 					
 					<span class="span8">
-						<%=PortletUtil.getDossierStatusLabel(dossierLog.getDossierStatus(), locale)%>
+						
+						<%
+							String dossierSubStatus = StringPool.BLANK;
+							
+							ProcessStep processStep = ProcessUtils.getPostProcessStep(dossierLog.getStepId());
+
+							if (Validator.isNotNull(processStep) && Validator.isNotNull(processStep.getDossierSubStatus())) {
+								dossierSubStatus = LanguageUtil.get(locale, processStep.getDossierSubStatus());
+							}
+							
+						%>
+						
+						<%=PortletUtil.getDossierStatusLabel(dossierLog.getDossierStatus(), locale)%> 
+						
+						<c:if test="<%= Validator.isNotNull(dossierSubStatus) %>">
+							<span class="sub-status">
+								<%= StringPool.COLON + StringPool.SPACE + dossierSubStatus %> 
+							</span>
+						</c:if>
+						
 					</span>
 				</aui:row>
 			
@@ -151,6 +194,7 @@
 						<liferay-ui:message key="<%= dossierLog.getActorName() %>"/>
 					</span>
 				</aui:row>
+
 				
 				<aui:row>
 					<span class="span4 bold">
@@ -158,10 +202,51 @@
 					</span>
 					
 					<span class="span8">
-						<liferay-ui:message key="<%= DossierMgtUtil.getDossierLogs(StringPool.BLANK, dossierLog.getMessageInfo())  %>"/>
+						<liferay-ui:message key="<%= DossierMgtUtil.getDossierLogs(StringPool.BLANK, dossierLog.getMessageInfo()).replaceAll(\"update-version-file\", LanguageUtil.get(pageContext, \"update-version-file\"))  %>"/>
 					</span>
 					
 				</aui:row>
+				
+				<%
+					List<DossierFileLog> logFiles = DossierMgtUtil.getFileLogs(dossierLog.getDossierLogId(), dossierId);
+				
+				
+				%>
+				<c:if test="<%= logFiles.size() != 0 %>">
+					<aui:row>
+						<span class="span12 bold">
+							<liferay-ui:message key="file-modified" />
+						</span>
+						
+					</aui:row>
+				
+					<aui:row>
+						<span class="span12">
+							<%
+								SimpleDateFormat sdf = new SimpleDateFormat ("dd/MM/yy | hh:mm:ss");
+								for (DossierFileLog lf : logFiles) {
+									
+									String cssClass = "dossier-file-status-" + lf.getActionCode();
+									String actionCode = LanguageUtil.get(locale, cssClass);
+							%>
+								<div style="padding: 3px; ">
+									<%= StringPool.GREATER_THAN %> 
+										 <aui:a href="#" >
+										 	<%= lf.getFileName() %> 
+										 	<span style="font: smaller; color: #cbcbcb;">(<%= sdf.format(lf.getModifiedDate()) %> )</span>
+										 	
+										 </aui:a>
+								</div>
+							<%
+								}
+							%>
+							
+						</span>
+						
+					</aui:row>
+				
+				</c:if>
+				
 			</aui:col>
 		</aui:row>
 	</liferay-ui:search-container-row>

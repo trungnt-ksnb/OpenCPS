@@ -1,12 +1,4 @@
-<%@page import="org.opencps.util.WebKeys"%>
-<%@page import="org.opencps.datamgt.service.DictItemLocalServiceUtil"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
-<%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
-<%@page import="org.opencps.datamgt.model.DictItem"%>
-<%@page import="org.opencps.datamgt.model.DictCollection"%>
-<%@page import="org.opencps.util.PortletPropsValues"%>
-<%@page import="org.opencps.dossiermgt.search.DossierDisplayTerms"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -25,7 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-
+<%@page import="org.opencps.util.WebKeys"%>
+<%@page import="org.opencps.datamgt.service.DictItemLocalServiceUtil"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
+<%@page import="org.opencps.datamgt.model.DictItem"%>
+<%@page import="org.opencps.datamgt.model.DictCollection"%>
+<%@page import="org.opencps.util.PortletPropsValues"%>
+<%@page import="org.opencps.dossiermgt.search.DossierDisplayTerms"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="com.liferay.portal.kernel.log.Log"%>
 <%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
@@ -44,6 +44,8 @@
 	long serviceDomainId = ParamUtil.getLong(request, "serviceDomainId");
 	
 	long govAgencyId = ParamUtil.getLong(request, "govAgencyId");
+	
+	String selectDossierAction = ParamUtil.getString(request, "selectDossierAction");
 	
 	String dossierStatus = ParamUtil.getString(request, "dossierStatus", StringPool.BLANK);
 
@@ -98,9 +100,28 @@
 					&& tabs1.equals(DossierMgtUtil.TOP_TABS_DOSSIER)%>">
 					
 					<portlet:renderURL var="addDossierURL" windowState="<%=LiferayWindowState.NORMAL.toString() %>">
-						<portlet:param name="mvcPath" value="/html/portlets/dossiermgt/frontoffice/frontofficeservicelist.jsp"/>
 						<portlet:param name="isListServiceConfig" value="<%=String.valueOf(true) %>"/>
+						<portlet:param name="tabs1" value="<%=DossierMgtUtil.TOP_TABS_DOSSIER %>"/>
 						<portlet:param name="backURL" value="<%=currentURL %>"/>
+						<%
+							if(Validator.isNotNull(itemCode_cfg) && itemCode_cfg.length() > 0){
+								
+							DictItem dictItem_cfg = DictItemLocalServiceUtil.getDictItemInuseByItemCode(themeDisplay.getScopeGroupId(), PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN, itemCode_cfg);
+								
+							if(Validator.isNotNull(dictItem_cfg)){
+							
+						%>
+							<portlet:param name="mvcPath" value="<%=templatePath + \"display/20_80_servicelist_04.jsp\" %>"/>
+							<portlet:param name="serviceDomainId" value="<%=String.valueOf(dictItem_cfg.getDictItemId()) %>"/>
+							<portlet:param name="dictItemCode" value="<%=dictItem_cfg.getItemCode() %>"/>
+						<%
+							}
+							}else{
+						%>		
+							<portlet:param name="mvcPath" value="/html/portlets/dossiermgt/frontoffice/frontofficeservicelist.jsp"/>
+						<%
+							}
+						%>
 						<portlet:param name="backURLFromList" value="<%=currentURL %>"/>
 					</portlet:renderURL>
 					<%-- <aui:nav-item 
@@ -116,7 +137,7 @@
 		</c:otherwise>
 	</c:choose>
 
-	<aui:nav-bar-search cssClass="pull-right front-custom-select-search" style="width: 70%;">
+	<aui:nav-bar-search cssClass="pull-right front-custom-select-search">
 		<div class="form-search">
 			<aui:form 
 				action="<%= searchURL %>" method="post"
@@ -133,16 +154,12 @@
 											<liferay-ui:input-search 
 												id="keywords1"
 												name="keywords"
-												title='<%= LanguageUtil.get(locale, "keywords") %>'
-												placeholder='<%=LanguageUtil.get(locale, "keywords") %>'
+												title='<%= LanguageUtil.get(locale, "entering-dossier-name-keyword") %>'
+												placeholder='<%=LanguageUtil.get(locale, "entering-dossier-name-keyword") %>'
 												cssClass="search-input input-keyword"
 											/>
 										</aui:col>
-										<style>
-											.navbar-search.pull-right.front-custom-select-search{
-												width: 100% !important;
-											}
-										</style>
+
 									</aui:row>
 								</c:when>
 								<c:otherwise>
@@ -224,8 +241,8 @@
 											<liferay-ui:input-search 
 												id="keywords1"
 												name="keywords"
-												title='<%= LanguageUtil.get(locale, "keywords") %>'
-												placeholder='<%=LanguageUtil.get(locale, "keywords") %>'
+												title='<%= LanguageUtil.get(locale, "entering-dossier-id-receiveid-name-keyword") %>'
+												placeholder='<%=LanguageUtil.get(locale, "entering-dossier-id-receiveid-name-keyword") %>'
 												cssClass="search-input input-keyword"
 											/>
 										</aui:col>

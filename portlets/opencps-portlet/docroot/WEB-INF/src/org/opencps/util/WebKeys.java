@@ -22,6 +22,8 @@ package org.opencps.util;
  */
 public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 
+	public static final String DASHBOARD_PORTLET = "1001_WAR_opencpsportlet";
+
 	public static final String DATA_MANAGEMENT_ADMIN_PORTLET =
 		"1_WAR_opencpsportlet";
 	
@@ -34,10 +36,20 @@ public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 	public static final String P26_SUBMIT_ONLINE = "26_WAR_opencpsportlet";
 
 	public static final String PAYMENT_MGT_PORTLET = "20_WAR_opencpsportlet";
+	
+	public static final String PAYMENT_MANAGER_PORTLET = "22_WAR_opencpsportlet";
 
 	public static final String PROCESS_ORDER_PORTLET = "16_WAR_opencpsportlet";
 	
+	public static final String RE_ASSIGN_PORTLET = "30_WAR_opencpsportlet";
+	
 	public static final String DOSSIER_BACKOFFICE_MANAGEMENT_PORTLET = "18_WAR_opencpsportlet";
+	
+	public static final String YEARLY_DASHBOARD_PORTLET = "33_WAR_opencpsportlet";
+	
+	public static final String MONTHLY_DASHBOARD_PORTLET = "34_WAR_opencpsportlet";
+	
+	public static final String DETAIL_DASHBOARD_PORTLET = "35_WAR_opencpsportlet";
 	
 	public static final String DICT_COLLECTION_ENTRY = "DICT_COLLECTION_ENTRY";
 
@@ -194,6 +206,8 @@ public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 	public static final int PAYMENT_METHOD_KEYPAY = 2;
 
 	public static final int PAYMENT_METHOD_BANK = 3;
+	
+	public static final int PAYMENT_METHOD_VTCPAY = 4;
 
 	public static final String REQUEST_COMMAND_CANCEL = "cancel";
 
@@ -248,5 +262,13 @@ public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 	public static final String BACK_URL= "backURL";
 	public static final String RETURN_URL= "returnURL";
 	public static final String REDIRECT_URL= "redirectURL";
+	public static final String CURRENT_URL= "currentURL";
+	
+	public static final String READ_ONLY = "readOnly";
+	
+	public static final int ACTOR_CITIZEN = 1;
+
+	public static final int ACTOR_EMPLOYEE = 2;
+
 	
 }

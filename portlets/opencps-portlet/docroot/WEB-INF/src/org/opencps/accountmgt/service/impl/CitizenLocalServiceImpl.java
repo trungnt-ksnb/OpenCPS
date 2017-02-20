@@ -281,6 +281,12 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 
 		return citizenPersistence.findByEmail(email);
 	}
+	
+	public Citizen getCitizenByPersonalId(String personalId) throws NoSuchCitizenException,
+			SystemException {
+
+		return citizenPersistence.findByPersonalId(personalId);
+	}
 
 	public Citizen getCitizenByUUID(String uuid) throws NoSuchCitizenException,
 			SystemException {
@@ -305,6 +311,8 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 		if (mappingUser != null) {
 			// Reset password
 			if (isChangePassWord) {
+				userLocalService.updateModifiedDate(mappingUser.getUserId(), now);
+				
 				mappingUser = userLocalService.updatePassword(
 						mappingUser.getUserId(), newPassword, reTypePassword,
 						false);

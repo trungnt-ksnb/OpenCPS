@@ -46,11 +46,15 @@ public class ConfigurationImpl implements ConfigurationAction{
 		String businessRegStep = ParamUtil.getString(actionRequest, "businessRegStep");
 		String citizenRegStep = ParamUtil.getString(actionRequest, "citizenRegStep");
 		String emailConfirmToAdmin = ParamUtil.getString(actionRequest, "emailConfirmToAdmin");
+		String allowBussinessRegistration = ParamUtil.getString(actionRequest, "allowBussinessRegistration");
+		String allowCitizenRegistration = ParamUtil.getString(actionRequest, "allowCitizenRegistration");
 		String portletResource =
 					    ParamUtil.getString(actionRequest, "portletResource");
 		String showLabelTaglibDatamgt = ParamUtil.getString(actionRequest, "showLabelTaglibDatamgt");
 		
 		String messageSuccessfullRegistration = ParamUtil.getString(actionRequest, "messageSuccessfullRegistration");
+		
+		String termOfUse = ParamUtil.getString(actionRequest, "termOfUse");
 		
 		PortletPreferences preferences =
 					    PortletPreferencesFactoryUtil.getPortletSetup(
@@ -59,10 +63,16 @@ public class ConfigurationImpl implements ConfigurationAction{
 		preferences.setValue("citizenRegStep", citizenRegStep);
 		
 		preferences.setValue("emailConfirmToAdmin", emailConfirmToAdmin);
+		
+		preferences.setValue("allowBussinessRegistration", allowBussinessRegistration);
+		
+		preferences.setValue("allowCitizenRegistration", allowCitizenRegistration);
 
 		preferences.setValue("showLabelTaglibDatamgt", showLabelTaglibDatamgt);
 		
 		preferences.setValue("messageSuccessfullRegistration", messageSuccessfullRegistration);
+		
+		preferences.setValue("termOfUse", termOfUse);
 		
 		preferences.store();
 		
