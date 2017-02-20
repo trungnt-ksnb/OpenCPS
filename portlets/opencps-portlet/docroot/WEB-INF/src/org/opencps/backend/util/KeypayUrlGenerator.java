@@ -25,7 +25,7 @@ import java.util.Random;
 
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
-import org.opencps.keypay.model.KeyPay;
+import org.opencps.paymentmgt.keypay.model.KeyPay;
 import org.opencps.paymentmgt.model.PaymentConfig;
 import org.opencps.paymentmgt.model.PaymentFile;
 import org.opencps.paymentmgt.service.PaymentConfigLocalServiceUtil;
@@ -302,7 +302,7 @@ public class KeypayUrlGenerator {
 		try {
 			paymentConfig =
 				PaymentConfigLocalServiceUtil.getPaymentConfigByGovAgency(
-					groupId, govAgencyOrganizationId);
+					groupId, govAgencyOrganizationId,true);
 		}
 		catch (Exception e) {
 			paymentConfig = null;

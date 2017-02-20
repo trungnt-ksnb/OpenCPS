@@ -42,7 +42,6 @@
 <%@page import="org.opencps.dossiermgt.OutOfLengthDossierContactTelNoException"%>
 <%@page import="org.opencps.dossiermgt.EmptyDossierContactNameException"%>
 <%@page import="org.opencps.dossiermgt.OutOfLengthDossierAddressException"%>
-<%@page import="org.opencps.dossiermgt.InvalidDossierObjectException"%>
 
 <%@ include file="../../init.jsp"%>
 
@@ -129,8 +128,36 @@
 	message="<%=DuplicateFolderNameException.class.getName() %>"
 />
 
+<aui:row cssClass="header-title custom-title">
+	<aui:col width="100">
+		<liferay-ui:message key="dossier_info"/>
+	</aui:col>
+</aui:row>
 
-<aui:row cssClass="nav-content-row">
+	<aui:row>
+			<aui:col width="50">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier) ? dossier.getDossierId() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
+			<aui:col width="50">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-reception-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier) ? dossier.getReceptionNo() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
+	</aui:row>
+	
+<aui:row cssClass="nav-content-row hidden">
 	<aui:col width="100">
 		<aui:input 
 			name="<%=DossierDisplayTerms.SERVICE_NAME %>"
@@ -142,7 +169,7 @@
 	</aui:col>
 </aui:row>
 
-<aui:row cssClass="nav-content-row">
+<aui:row cssClass="nav-content-row hidden">
 	<aui:col width="100">
 		<aui:input 
 			name="<%=DossierDisplayTerms.SERVICE_NO %>" 
@@ -155,7 +182,7 @@
 </aui:row>
 
 
-<aui:row cssClass="nav-content-row">
+<aui:row cssClass="nav-content-row hidden">
 	<aui:col width="100">
 		<aui:input 
 			name="<%=DossierDisplayTerms.GOVAGENCY_NAME%>"
@@ -166,7 +193,7 @@
 	</aui:col>
 </aui:row>
 
-<aui:row cssClass="nav-content-row">
+<aui:row cssClass="nav-content-row hidden">
 	<aui:col width="100">
 		<aui:input 
 			name="<%=DossierDisplayTerms.GOVAGENCY_CODE %>" 
@@ -212,6 +239,7 @@
 
 <aui:row cssClass="nav-content-row">
 	<aui:col width="100">
+		<p class=address-hint><liferay-ui:message key="address-hint"/></p>
 		<aui:input 
 			name="<%=DossierDisplayTerms.ADDRESS %>" 
 			cssClass="" 
@@ -226,15 +254,16 @@
 	</aui:col>
 </aui:row>
 
-<aui:row cssClass="nav-content-row">
+<aui:row cssClass="nav-content-row hidden-option">
 	<datamgt:ddr 
 		depthLevel="3" 
 		dictCollectionCode="<%=PortletPropsValues.DATAMGT_MASTERDATA_ADMINISTRATIVE_REGION %>"
-		itemNames='<%=StringUtil.merge(new String[]{DossierDisplayTerms.CITY_ID,DossierDisplayTerms.DISTRICT_ID,DossierDisplayTerms.WARD_ID}) %>'
+		itemNames='<%=StringUtil.merge(new String[]{DossierDisplayTerms.CITY_CODE,DossierDisplayTerms.DISTRICT_CODE,DossierDisplayTerms.WARD_CODE}) %>'
 		itemsEmptyOption="true,true,true"
 		showLabel="true"
 		selectedItems="<%=itemSelected %>"
 		displayStyle="vertical"
+		optionValueType="code"
 	/>
 </aui:row>
 

@@ -125,6 +125,8 @@ public class PortletPropsKeys {
 	
 	public static final String OPENCPS_SERVLET_VERIFY_SIGN_DOCUMENT_URL = "opencps.servlet.verify.sign.document.url";
 	
+	public static final String OPENCPS_SERVLET_EXPORT_FILE_URL = "opencps.servlet.export.file.url";
+	
 	//KeyPay
 	public static final String OPENCPS_KEYPAY_CURRENT_LOCATE = "opencps.keypay.current.locale";
 	public static final String OPENCPS_KEYPAY_COUNTRY_CODE = "opencps.keypay.country.code";
@@ -139,9 +141,10 @@ public class PortletPropsKeys {
 	public static final String OPENCPS_CANCEL_DOSSIER_NOTICE = "opencps.cancel.dossier.notice";
 	public static final String OPENCPS_PERSON_MAKE_PROCEDURE_CANCEL = "opencps.person.make.procedure.cancel";
 	
+	public static final String SYSTEM_EMAIL = "email.from.default";
 	public static final String SUBJECT_TO_CUSTOMER = "subject.email.to.customer";
 	public static final String CONTENT_TO_CUSTOMER = "content.email.to.customer";
-	
+	public static final String CONTENT_TO_CUSTOMER_WITHOUT_RECEPTION_NO = "content.email.to.customer.without.receptionNo";
 	public static final String HOLIDAYCONFIG_DESCRIPTION_LENGTH = "opencps.holidayconfig.description.lengths";
 	
 }

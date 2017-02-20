@@ -18,7 +18,9 @@
 package org.opencps.backend.message;
 
 import java.util.Date;
+import java.util.List;
 
+import org.opencps.notificationmgt.message.SendNotificationMessage;
 import org.opencps.paymentmgt.model.PaymentFile;
 
 /**
@@ -596,6 +598,30 @@ public class SendToBackOfficeMsg {
     	this.createRecptionDate = createRecptionDate;
     }
 
+	
+    public String getStepName() {
+    
+    	return stepName;
+    }
+
+	
+    public void setStepName(String stepName) {
+    
+    	this.stepName = stepName;
+    }
+
+	
+    public List<SendNotificationMessage> getListNotifications() {
+    
+    	return listNotifications;
+    }
+
+	
+    public void setListNotifications(List<SendNotificationMessage> listNotifications) {
+    
+    	this.listNotifications = listNotifications;
+    }
+
 	protected String requestCommand;
 	protected long processOrderId;
 	protected long dossierId;
@@ -631,5 +657,10 @@ public class SendToBackOfficeMsg {
 	protected Date resubmitDate;
 	protected Date createProcessOrderDate;
 	protected Date createRecptionDate;
+	
+	protected String stepName;
+	
+	protected List<SendNotificationMessage> listNotifications;
+	
 
 }

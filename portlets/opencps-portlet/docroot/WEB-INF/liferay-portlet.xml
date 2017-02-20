@@ -112,6 +112,37 @@
 		<portlet-name>15</portlet-name>
 		<icon>/icon.png</icon>
 		<scheduler-entry>
+			<scheduler-event-listener-class>org.opencps.backend.scheduler.Weekly</scheduler-event-listener-class>
+			<trigger>
+				<simple>
+					<simple-trigger-value>1</simple-trigger-value>
+					<time-unit>week</time-unit>
+				</simple>
+			</trigger>
+		</scheduler-entry>
+
+		<scheduler-entry>
+			<scheduler-event-listener-class>org.opencps.backend.scheduler.Daily</scheduler-event-listener-class>
+			<trigger>
+				<simple>
+					<simple-trigger-value>1</simple-trigger-value>
+					<time-unit>day</time-unit>
+				</simple>
+			</trigger>
+		</scheduler-entry>
+
+		<scheduler-entry>
+			<scheduler-event-listener-class>org.opencps.backend.scheduler.Hourly</scheduler-event-listener-class>
+			<trigger>
+				<simple>
+					<simple-trigger-value>60</simple-trigger-value>
+					<time-unit>minute</time-unit>
+				</simple>
+			</trigger>
+		</scheduler-entry>
+
+
+		<scheduler-entry>
 			<scheduler-event-listener-class>org.opencps.backend.scheduler.FiveMinutes</scheduler-event-listener-class>
 			<trigger>
 				<simple>
@@ -126,6 +157,16 @@
 			<trigger>
 				<simple>
 					<simple-trigger-value>1</simple-trigger-value>
+					<time-unit>minute</time-unit>
+				</simple>
+			</trigger>
+		</scheduler-entry>
+		
+		<scheduler-entry>
+			<scheduler-event-listener-class>org.opencps.backend.scheduler.CheckPaymentStatus</scheduler-event-listener-class>
+			<trigger>
+				<simple>
+					<simple-trigger-value>5</simple-trigger-value>
 					<time-unit>minute</time-unit>
 				</simple>
 			</trigger>
@@ -268,7 +309,7 @@
 	<portlet>
 		<portlet-name>22</portlet-name>
 		<icon>/icon.png</icon>
-		<instanceable>true</instanceable>
+		<instanceable>false</instanceable>
 		<header-portlet-css>/css/main.css</header-portlet-css>
 		<footer-portlet-javascript>
 			/js/main.js
@@ -316,6 +357,86 @@
 		</footer-portlet-javascript>
 		<css-class-wrapper>27-portlet</css-class-wrapper>
 	</portlet>
+	<portlet>
+		<portlet-name>28</portlet-name>
+		<icon>/icon.png</icon>
+		<user-notification-definitions>org/opencps/notificationmgt/engine/user-notification-definitions.xml</user-notification-definitions>
+		<user-notification-handler-class>org.opencps.notificationmgt.engine.UserNotificationHandler</user-notification-handler-class>
+		<header-portlet-css>/css/main.css</header-portlet-css>
+		<footer-portlet-javascript>
+			/js/main.js
+		</footer-portlet-javascript>
+		<css-class-wrapper>28-portlet</css-class-wrapper>
+	</portlet>
+	<portlet>
+		<portlet-name>1001</portlet-name>
+		<icon>/icon.png</icon>
+		<configuration-action-class>org.opencps.dashboard.portlet.ConfigurationImpl</configuration-action-class>
+		<header-portlet-css>/css/main.css</header-portlet-css>
+		<footer-portlet-javascript>
+			/js/main.js
+		</footer-portlet-javascript>
+		<css-class-wrapper>1001-portlet</css-class-wrapper>
+	</portlet>
+
+	
+	<portlet>
+		<portlet-name>30</portlet-name>
+
+		<icon>/icon.png</icon>
+		<header-portlet-css>/css/main.css</header-portlet-css>
+		<footer-portlet-javascript>
+			/js/main.js
+		</footer-portlet-javascript>
+		<css-class-wrapper>30-portlet</css-class-wrapper>
+	</portlet>
+	
+	<portlet>
+		<portlet-name>32</portlet-name>
+		<icon>/icon.png</icon>
+		<header-portlet-css>/css/statistics.css</header-portlet-css>
+		<footer-portlet-javascript>
+			/js/main.js
+		</footer-portlet-javascript>
+		<css-class-wrapper>32-portlet</css-class-wrapper>
+	</portlet>
+	
+	<portlet>
+		<portlet-name>33</portlet-name>
+		<icon>/icon.png</icon>
+		<configuration-action-class>org.opencps.statisticsmgt.dashboard.portlet.YearlyDashBoardConfigurationImpl</configuration-action-class>
+		<template-handler>org.opencps.statisticsmgt.dashboard.template.YearlyDashBoardPortletDisplayTemplateHandler</template-handler>
+		<header-portlet-css>/css/statistics.css</header-portlet-css>
+		<footer-portlet-javascript>
+			/js/main.js
+		</footer-portlet-javascript>
+		<css-class-wrapper>33-portlet</css-class-wrapper>
+	</portlet>
+	
+	<portlet>
+		<portlet-name>34</portlet-name>
+		<icon>/icon.png</icon>
+		<configuration-action-class>org.opencps.statisticsmgt.dashboard.portlet.MonthlyDashBoardConfigurationImpl</configuration-action-class>
+		<template-handler>org.opencps.statisticsmgt.dashboard.template.MonthlyDashBoardPortletDisplayTemplateHandler</template-handler>
+		<header-portlet-css>/css/statistics.css</header-portlet-css>
+		<footer-portlet-javascript>
+			/js/main.js
+		</footer-portlet-javascript>
+		<css-class-wrapper>34-portlet</css-class-wrapper>
+	</portlet>
+	
+	<portlet>
+		<portlet-name>35</portlet-name>
+		<icon>/icon.png</icon>
+		<configuration-action-class>org.opencps.statisticsmgt.dashboard.portlet.DetailDashBoardConfigurationImpl</configuration-action-class>
+		<template-handler>org.opencps.statisticsmgt.dashboard.template.DetailDashBoardPortletDisplayTemplateHandler</template-handler>
+		<header-portlet-css>/css/statistics.css</header-portlet-css>
+		<footer-portlet-javascript>
+			/js/main.js
+		</footer-portlet-javascript>
+		<css-class-wrapper>35-portlet</css-class-wrapper>
+	</portlet>
+
 	<role-mapper>
 		<role-name>administrator</role-name>
 		<role-link>Administrator</role-link>

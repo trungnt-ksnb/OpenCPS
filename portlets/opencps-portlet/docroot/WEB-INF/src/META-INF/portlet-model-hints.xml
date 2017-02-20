@@ -163,6 +163,7 @@
 		</field>
 		<field name="businessType" type="String" />
 		<field name="idNumber" type="String" />
+		<field name="dateOfIdNumber" type="Date" />
 		<field name="address" type="String">
 			<hint name="display-width">255</hint>
 		</field>
@@ -290,8 +291,9 @@
 		<field name="actionNote" type="String" />
 		<field name="actionUserId" type="long" />
 		<field name="daysDoing" type="int" />
-		<field name="daysDelay" type="int" />
+		<field name="daysDelay" type="long" />
 		<field name="oId" type="String" />
+		<field name="logId" type="long" />
 	</model>
 	<model name="org.opencps.processmgt.model.ProcessOrder">
 		<field name="processOrderId" type="long" />
@@ -328,13 +330,16 @@
 		<field name="stepName" type="String" />
 		<field name="sequenceNo" type="int" />
 		<field name="dossierStatus" type="String" />
-		<field name="daysDuration" type="int" />
+		<field name="dossierSubStatus" type="String" />
+		<field name="daysDuration" type="String" />
 		<field name="referenceDossierPartId" type="long" />
 		<field name="externalAppUrl" type="String" />
+		<field name="processStepNo" type="int" />
 	</model>
 	<model name="org.opencps.processmgt.model.ProcessStepDossierPart">
 		<field name="processStepId" type="long" />
 		<field name="dossierPartId" type="long" />
+		<field name="readOnly" type="boolean" />
 	</model>
 	<model name="org.opencps.processmgt.model.ProcessWorkflow">
 		<field name="processWorkflowId" type="long" />
@@ -403,6 +408,7 @@
 		<field name="required" type="boolean" />
 		<field name="esign" type="boolean" />
 		<field name="postback" type="boolean" />
+		<field name="pattern" type="String" />
 	</model>
 	<model name="org.opencps.dossiermgt.model.Dossier">
 		<field name="dossierId" type="long" />
@@ -468,6 +474,7 @@
 		<field name="estimateDatetime" type="Date" />
 		<field name="finishDatetime" type="Date" />
 		<field name="dossierStatus" type="String" />
+		<field name="dossierSubStatus" type="String" />
 		<field name="dossierSource" type="int" />
 		<field name="keypayRedirectUrl" type="String" />
 		<field name="delayStatus" type="int" />
@@ -506,6 +513,27 @@
 		<field name="syncStatus" type="int" />
 		<field name="version" type="int" />
 		<field name="signed" type="boolean" />
+		<field name="signCheck" type="int" />
+		<field name="signInfo" type="String" />
+	</model>
+	<model name="org.opencps.dossiermgt.model.DossierFileLog">
+		<field name="dossierFileLogId" type="long" />
+		<field name="modifiedDate" type="Date" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="dossierId" type="long" />
+		<field name="fileGroupId" type="long" />
+		<field name="stepId" type="long" />
+		<field name="isUpdate" type="boolean" />
+		<field name="actor" type="int" />
+		<field name="logId" type="long" />
+		<field name="fileName" type="String" />
+		<field name="fileVersion" type="int" />
+		<field name="fileLink" type="String" />
+		<field name="actionCode" type="int" />
+		<field name="count_" type="int" />
+		<field name="oId" type="String" />
+		<field name="fileEntryId" type="long" />
 	</model>
 	<model name="org.opencps.dossiermgt.model.DossierLog">
 		<field name="dossierLogId" type="long" />
@@ -534,6 +562,8 @@
 		<field name="oId" type="String" />
 		<field name="stepId" type="long" />
 		<field name="stepName" type="String" />
+		<field name="processOrderId" type="long" />
+		<field name="processWorkflowId" type="long" />
 	</model>
 	<model name="org.opencps.dossiermgt.model.DossierPart">
 		<field name="dossierpartId" type="long" />
@@ -669,6 +699,9 @@
 		<field name="keypayMerchantCode" type="String" />
 		<field name="keypaySecureKey" type="String" />
 		<field name="reportTemplate" type="String" />
+		<field name="paymentGateType" type="long" />
+		<field name="status" type="boolean" />
+		<field name="returnUrl" type="String" />
 	</model>
 	<model name="org.opencps.paymentmgt.model.PaymentFile">
 		<field name="uuid" type="String" />
@@ -683,10 +716,14 @@
 		<field name="ownerUserId" type="long" />
 		<field name="ownerOrganizationId" type="long" />
 		<field name="govAgencyOrganizationId" type="long" />
-		<field name="paymentName" type="String" />
+		<field name="paymentName" type="String">
+			<hint name="max-length">1000</hint>
+		</field>
 		<field name="requestDatetime" type="Date" />
 		<field name="amount" type="double" />
-		<field name="requestNote" type="String" />
+		<field name="requestNote" type="String">
+			<hint name="max-length">1000</hint>
+		</field>
 		<field name="paymentOptions" type="String" />
 		<field name="keypayUrl" type="String" />
 		<field name="keypayTransactionId" type="long">
@@ -711,6 +748,15 @@
 		<field name="invoiceNo" type="String" />
 		<field name="syncStatus" type="int" />
 		<field name="oid" type="String" />
+		<field name="paymentConfig" type="long" />
+		<field name="paymentGateStatusCode" type="int" />
+		<field name="paymentGateResponseData" type="String" />
+		<field name="paymentGateCheckCode" type="int" />
+		<field name="paymentGateCheckResponseData" type="String" />
+	</model>
+	<model name="org.opencps.paymentmgt.model.PaymentGateConfig">
+		<field name="paymentGateId" type="long" />
+		<field name="paymentGateName" type="String" />
 	</model>
 	<model name="org.opencps.api.model.ApiService">
 		<field name="apiLogId" type="long" />
@@ -747,5 +793,77 @@
 		<field name="companyId" type="long" />
 		<field name="groupId" type="long" />
 		<field name="userId" type="long" />
+	</model>
+	<model name="org.opencps.statistics.portlet.dao.model.DossiersStatistics">
+		<field name="dossierStatisticId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="remainingNumber" type="int" />
+		<field name="receivedNumber" type="int" />
+		<field name="ontimeNumber" type="int" />
+		<field name="overtimeNumber" type="int" />
+		<field name="processingNumber" type="int" />
+		<field name="delayingNumber" type="int" />
+		<field name="month" type="int" />
+		<field name="year" type="int" />
+		<field name="govAgencyCode" type="String" />
+		<field name="domainCode" type="String" />
+		<field name="administrationLevel" type="int" />
+	</model>
+	<model name="org.opencps.statistics.portlet.dao.model.GovagencyLevel">
+		<field name="govagencylevel" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="govAgencyCode" type="String" />
+		<field name="administrationLevel" type="int" />
+	</model>
+	<model name="org.opencps.statisticsmgt.model.DossiersStatistics">
+		<field name="dossierStatisticId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="remainingNumber" type="int" />
+		<field name="receivedNumber" type="int" />
+		<field name="ontimeNumber" type="int" />
+		<field name="overtimeNumber" type="int" />
+		<field name="processingNumber" type="int" />
+		<field name="delayingNumber" type="int" />
+		<field name="month" type="int" />
+		<field name="year" type="int" />
+		<field name="govAgencyCode" type="String" />
+		<field name="domainCode" type="String" />
+		<field name="administrationLevel" type="int" />
+	</model>
+	<model name="org.opencps.statisticsmgt.model.GovagencyLevel">
+		<field name="govagencylevel" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="govAgencyCode" type="String" />
+		<field name="administrationLevel" type="int" />
+	</model>
+	<model name="org.opencps.notificationmgt.model.NotificationConfig">
+		<field name="notificationConfigId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="dossierCurrentStatus" type="String" />
+		<field name="dossierNextStatus" type="String" />
+		<field name="isSendNotification" type="boolean" />
+		<field name="notificationName" type="String" />
+		<field name="moreContent" type="String" />
+		<field name="plId" type="long" />
 	</model>
 </model-hints>

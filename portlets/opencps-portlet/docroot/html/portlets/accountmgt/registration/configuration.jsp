@@ -57,6 +57,17 @@
 		value="<%=emailConfirmToAdmin %>"
 		>
 	</aui:input>
+	
+	<aui:row>
+		<aui:col width="30">
+			<aui:input type="checkbox" name="allowBussinessRegistration" value="<%= allowBussinessRegistration %>" />
+		</aui:col>
+		<aui:col width="30">
+			<aui:input type="checkbox" name="allowCitizenRegistration" value="<%= allowCitizenRegistration %>" />
+		</aui:col>
+		<aui:col width="40"></aui:col>
+	</aui:row>
+	
 	<aui:input 
 		type="checkbox"
 		name="showLabelTaglibDatamgt" 
@@ -70,6 +81,13 @@
 		</aui:col>
 	</aui:row>
 	
+	<aui:row >
+		<aui:col>
+			<label class="pd_t20 pd_b10"><liferay-ui:message key="term-of-use"/></label>
+			<liferay-ui:input-editor name="termOfUse" initMethod="termOfUseMethod"/>
+		</aui:col>
+	</aui:row>
+	
     <aui:button-row>
         <aui:button type="submit" name="save" value="save" />  
     </aui:button-row>
@@ -78,5 +96,8 @@
 <aui:script>
 	function <portlet:namespace />messageRegistration() {
 		return "<%= Validator.isNotNull(messageSuccessfullRegistration) ? UnicodeFormatter.toString(messageSuccessfullRegistration) : StringPool.BLANK %>";
+	}
+	function <portlet:namespace />termOfUseMethod() {
+		return "<%= Validator.isNotNull(termOfUse) ? UnicodeFormatter.toString(termOfUse) : StringPool.BLANK %>";
 	}
 </aui:script>

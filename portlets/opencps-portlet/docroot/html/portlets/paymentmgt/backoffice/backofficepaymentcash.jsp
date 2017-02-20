@@ -1,4 +1,5 @@
 
+<%@page import="javax.portlet.PortletURL"%>
 <%
 	/**
  * OpenCPS is the open source Core Public Services software
@@ -72,6 +73,12 @@
 	}
 	
 	DecimalFormat df2 = new DecimalFormat("#,###,###,##0.00");
+	
+	PortletURL detailURL = renderResponse.createRenderURL();
+	detailURL.setParameter("paymentFileId", String.valueOf(paymentFileId));
+	detailURL.setParameter("redirect", currentURL);
+	detailURL.setParameter("mvcPath", templatePath + "backofficepaymentdetail.jsp");
+
 %>
 
 <liferay-ui:header backURL="<%=backRedirect%>" title="payment-cash" />
@@ -81,8 +88,14 @@
 		<aui:form name="payForm" action="">
 			<div class="box100">
 				<div>
+                	<p>
+                		<span><liferay-ui:message key="subject-name"/>:</span> 
+                		<%=Validator.isNotNull(dossier)? HtmlUtil.escape(dossier.getSubjectName()): StringPool.BLANK %>
+                	</p>
+                </div>
+				<div>
 					<p>
-						<span><liferay-ui:message key="so-ho-so" />:</span>
+						<span><liferay-ui:message key="reception-no" />:</span>
 						<%=HtmlUtil.escape(soHoSo)%></p>
 				</div>
 				<div>
@@ -111,18 +124,18 @@
 				</div>
 				<div>
 					<p>
-						<span><liferay-ui:message key="ghi-chu-kem-theo" />:</span>
+						<span><liferay-ui:message key="request-note" />:</span>
 						<%=HtmlUtil.escape(paymentFile.getRequestNote())%></p>
 				</div>
 				<div>
-					<aui:input name="termsOfUse" type="checkbox"
-						label="ban-da-thu-thu-so-tien-cua-nguoi-lam-thu-tuc" />
-					<aui:button name="register" type="button" value="dong-y"
-						disabled="true" />
+					<aui:input name="termsOfUse" type="checkbox" label="ban-da-thu-thu-so-tien-cua-nguoi-lam-thu-tuc" />
+					<aui:button name="register" type="button" value="dong-y" disabled="true" />
+				</div>
+				<div>
+					<aui:button name="detail" type="button" value="detail" href="<%= detailURL.toString() %>"/>
 				</div>
 			</div>
-			<aui:input name="<%=PaymentFileDisplayTerms.PAYMENT_FILE_ID%>"
-				value="<%=paymentFileId%>" type="hidden"></aui:input>
+			<aui:input name="<%=PaymentFileDisplayTerms.PAYMENT_FILE_ID%>" value="<%=paymentFileId%>" type="hidden"></aui:input>
 			<aui:input type="hidden" name="confirmHopLeHidden" value="1" />
 
 		</aui:form>

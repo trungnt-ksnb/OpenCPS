@@ -19,11 +19,10 @@
 %>
 
 <%@page import="org.opencps.util.PortletUtil"%>
-<%@page import="org.opencps.util.DateTimeUtil"%>
-<%@page import="org.opencps.util.DictItemUtil"%>
 <%@page import="org.opencps.dossiermgt.model.ServiceConfig"%>
 <%@page import="org.opencps.dossiermgt.model.Dossier"%>
 <%@page import="org.opencps.processmgt.model.ProcessOrder"%>
+<%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
 <%@ include file="../../init.jsp"%>
 
 <%
@@ -35,6 +34,9 @@
 	ServiceConfig serviceConfig = (ServiceConfig)request.getAttribute(WebKeys.SERVICE_CONFIG_ENTRY);
 %>
 <div class="ocps-dossier-info">
+<%-- <div class="header-title custom-title pdl20">
+		<liferay-ui:message key="dossier_info"/>
+</div> --%>
 <table class="table table-bordered dossier-info-table">
 	<tr>
 		<td width="150">
@@ -42,6 +44,14 @@
 		</td>
 		<td >
 			<%=dossier != null ? dossier.getDossierId() :  StringPool.BLANK %>
+		</td>
+	</tr>
+	<tr>
+		<td >
+			<liferay-ui:message key="reception-no"/>
+		</td>
+		<td >
+			<%= dossier != null &&  Validator.isNotNull(dossier.getReceptionNo())? dossier.getReceptionNo() :  StringPool.BLANK %>
 		</td>
 	</tr>
 	<tr>
@@ -97,15 +107,7 @@
 			<liferay-ui:message key="reception-date"/>
 		</td>
 		<td >
-			<%=processOrder != null ? DateTimeUtil.convertDateToString(processOrder.getCreateDate(), DateTimeUtil._VN_DATE_TIME_FORMAT) :  StringPool.BLANK %>
-		</td>
-	</tr>
-	<tr>
-		<td >
-			<liferay-ui:message key="reception-no"/>
-		</td>
-		<td >
-			<%=dossier != null &&  Validator.isNotNull(dossier.getReceptionNo())? dossier.getReceptionNo() :  StringPool.BLANK %>
+			<%= ProcessOrderUtils.getDossierDate(dossier.getDossierId(), 1, "dd/MM/yyyy hh:mm") %>
 		</td>
 	</tr>
 	<tr>
@@ -113,15 +115,15 @@
 			<liferay-ui:message key="estimate-date"/>
 		</td>
 		<td >
-			<%=StringPool.BLANK %>
+			<%= ProcessOrderUtils.getDossierDate(dossier.getDossierId(), 2, "dd/MM/yyyy hh:mm") %>
 		</td>
 	</tr>
 	<tr>
 		<td >
-			<liferay-ui:message key="complate-date"/>
+			<liferay-ui:message key="complete-date"/>
 		</td>
 		<td >
-			<%=StringPool.BLANK %>
+			<%= ProcessOrderUtils.getDossierDate(dossier.getDossierId(), 3, "dd/MM/yyyy hh:mm") %>
 		</td>
 	</tr>
 	<tr>
@@ -134,10 +136,10 @@
 	</tr>
 	<tr>
 		<td >
-			<liferay-ui:message key="modified-date"/>
+			<liferay-ui:message key="modified-date-dossier"/>
 		</td>
 		<td >
-			<%=processOrder != null ? DateTimeUtil.convertDateToString(processOrder.getModifiedDate(), DateTimeUtil._VN_DATE_TIME_FORMAT) :  StringPool.BLANK %>
+			<%= ProcessOrderUtils.getDossierDate(dossier.getDossierId(), 4, "dd/MM/yyyy hh:mm") %>
 		</td>
 	</tr>
 	<tr>

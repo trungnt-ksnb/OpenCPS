@@ -52,6 +52,14 @@
 					<td class="col-right">
 						<%= dossier.getDossierId() %>
 					</td>
+				</tr>	
+				<tr>
+					<td class="col-left">
+						<liferay-ui:message key="reception-no"/>
+					</td>
+					<td class="col-right">
+						<%= dossier.getReceptionNo() %>
+					</td>
 				</tr>		
 				<tr>
 					<td class="col-left">
@@ -118,14 +126,6 @@
 						<%= Validator.isNotNull(dossier.getReceiveDatetime()) ? dateFormatDate.format(dossier.getReceiveDatetime()) : "" %>
 					</td>
 				</tr>		
-				<tr>
-					<td class="col-left">
-						<liferay-ui:message key="reception-no"/>
-					</td>
-					<td class="col-right">
-						<%= dossier.getReceptionNo() %>
-					</td>
-				</tr>	
 				<tr>
 					<td class="col-left">
 						<liferay-ui:message key="estimate-datetime"/>

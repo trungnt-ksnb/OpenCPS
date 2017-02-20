@@ -1,3 +1,5 @@
+
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -25,6 +27,8 @@
 <%@page import="org.opencps.accountmgt.OutOfLengthCitizenEmailException"%>
 <%@page import="org.opencps.accountmgt.OutOfLengthCitizenAddressException"%>
 <%@page import="org.opencps.accountmgt.OutOfLengthCitizenNameException"%>
+<%@page import="org.opencps.accountmgt.DuplicateCitizenPersonalIdException"%>
+<%@page import="com.liferay.portal.ContactBirthdayException"%>
 <%@page import="org.opencps.util.WebKeys"%>
 <%@page import="org.opencps.accountmgt.model.Citizen"%>
 <%@page import="org.opencps.accountmgt.search.CitizenDisplayTerms"%>
@@ -67,7 +71,6 @@
  		cdw.add(wardId);
  	}
 %>
-
 
 <div class="opencps-register-wrapper">
 	
@@ -120,6 +123,14 @@
 		exception="<%= OutOfSizeFileUploadException.class %>" 
 		message="<%= OutOfSizeFileUploadException.class.getName() %>" 
 	/>
+	<liferay-ui:error 
+		exception="<%= DuplicateCitizenPersonalIdException.class %>" 
+		message="<%= DuplicateCitizenPersonalIdException.class.getName() %>" 
+	/>
+	<liferay-ui:error 
+		exception="<%= ContactBirthdayException.class %>" 
+		message="<%= ContactBirthdayException.class.getName() %>" 
+	/>
 	
 	<%
 		String ACCOUNT_UPDATE_CUCCESS = StringPool.BLANK;
@@ -152,6 +163,8 @@
 	
 		<aui:model-context bean='<%=citizenValidate %>' model='<%=Citizen.class %>'/>
 		<aui:input name="citizenRegStep_cfg" value="<%=citizenRegStep_cfg %>" type="hidden"></aui:input>
+		
+		<aui:input name="citizenEmailConfirmToAdmin" value="<%=emailConfirmToAdmin %>" type="hidden"></aui:input>
 			
 		<div class="register-content">
 		
@@ -160,16 +173,32 @@
 					<aui:col width="30" cssClass="title-text">
 						<label ><liferay-ui:message key="register"></liferay-ui:message></label>
 					</aui:col>
-					<aui:col width="30" cssClass="register-options">
-						<aui:row>
-							<aui:col width="50">
-								<aui:input type="radio" name="typeOfRegister" value="citizen" inlineLabel="right" label="citizen" checked="true"/>
-							</aui:col>
-							<aui:col width="50">
-								<aui:input type="radio" name="typeOfRegister" value="business" inlineLabel="right" label="business"/>
-							</aui:col>
-						</aui:row>
-					</aui:col>
+					<c:choose>
+					<c:when test='<%=allowBussinessRegistration && allowCitizenRegistration %>'>
+						<aui:col width="30" cssClass="register-options">
+							<aui:row>
+								<aui:col width="50">
+									<aui:input type="radio" name="typeOfRegister" value="citizen" inlineLabel="right" label="citizen" checked="true"/>
+								</aui:col>
+								<aui:col width="50">
+									<aui:input type="radio" name="typeOfRegister" value="business" inlineLabel="right" label="business"/>
+								</aui:col>
+							</aui:row>
+						</aui:col>	
+					</c:when>
+					<c:otherwise>
+						<aui:col width="30" cssClass="register-options">
+							<aui:row>
+								<aui:col width="50">
+									<aui:input type="radio" name="typeOfRegister" disabled="true" value="citizen" inlineLabel="right" label="citizen" checked="true"/>
+								</aui:col>
+								<aui:col width="50">
+									<aui:input type="radio" name="typeOfRegister" disabled="true" value="business" inlineLabel="right" label="business"/>
+								</aui:col>
+							</aui:row>
+						</aui:col>	
+					</c:otherwise>
+					</c:choose>
 					<aui:col width="30" cssClass="login-redirect">
 						<a href='<%=themeDisplay.getURLSignIn() %>'><liferay-ui:message key="login" /></a>
 					</aui:col>
@@ -223,27 +252,37 @@
 				</aui:row>
 				
 				<aui:row>
-					<label class="control-label custom-lebel" for='<portlet:namespace/><%=CitizenDisplayTerms.CITIZEN_BIRTHDATE %>'>
-	 					<liferay-ui:message key="birth-date-full"/>
+					<label class="control-label custom-lebel" for='<portlet:namespace/><%=CitizenDisplayTerms.CITIZEN_BIRTHDATE + "_REG" %>'>
+	 					<liferay-ui:message key="birth-date-full"/> <span style="color:red">*</span>
 	 				</label>
-	 				<liferay-ui:input-date 
-	 					nullable="true"
-	 					dayParam="<%=CitizenDisplayTerms.BIRTH_DATE_DAY %>"
-	 					dayValue="<%= spd.getDayOfMoth() %>"
-	 					monthParam="<%=CitizenDisplayTerms.BIRTH_DATE_MONTH %>"
-	 					monthValue="<%= spd.getMonth() %>"
-	 					name="<%=CitizenDisplayTerms.CITIZEN_BIRTHDATE %>"
-	 					yearParam="<%=CitizenDisplayTerms.BIRTH_DATE_YEAR %>"
-	 					yearValue="<%= spd.getYear() %>"
-	 					formName="fm"
-	 					autoFocus="<%=true %>"
-	 					cssClass="input100"
-	 					
-	 				>
-	 				</liferay-ui:input-date>
-	 				<div  id="<portlet:namespace/>defErrBirthDate" style="text-align: left; color: #b50303; margin-left:7px; margin-bottom: 10px; display: none;">
-						<liferay-ui:message key="required-field"/>
-					</div>
+					<aui:input name="<%=CitizenDisplayTerms.BIRTH_DATE_DAY %>" type="hidden" />
+					<aui:input name="<%=CitizenDisplayTerms.BIRTH_DATE_MONTH %>" type="hidden" />
+					<aui:input name="<%=CitizenDisplayTerms.BIRTH_DATE_YEAR %>" type="hidden" />
+	 				<aui:input name="<%=CitizenDisplayTerms.CITIZEN_BIRTHDATE + \"_REG\" %>" type="text" label=" " cssClass="input100" placeholder="<%=LanguageUtil.get(pageContext, \"ngay-sinh-placehoder\") %>" >
+	 					<aui:validator name="required" />
+	 					<aui:validator name="custom" errorMessage="<%=LanguageUtil.get(pageContext, \"ngay-sinh-pattern\") %>">
+							function (val, fieldNode, ruleValue) {
+								var result = false;
+
+								var dateParts = val.split("/");
+                
+								if(dateParts.length == 1 && new Date(val) != 'Invalid Date'){
+								    result = true;
+								}else{
+								  val = dateParts[1] + '/' + dateParts[0] + '/' + dateParts[2];
+				
+								  if (new Date(val) == 'Invalid Date') {
+								    result = false;
+								  }else{
+								    result = true;
+								  }
+
+								}
+				
+								return result;
+							}
+						</aui:validator>
+	 				</aui:input>
 				</aui:row>
 				
 				<aui:row cssClass="input-file">
@@ -292,7 +331,7 @@
 					<aui:input 
 						name="<%=CitizenDisplayTerms.CITIZEN_ADDRESS %>" 
 						cssClass="input100"
-						placeholder="<%=CitizenDisplayTerms.CITIZEN_ADDRESS %>"
+						placeholder="address-place-holder"
 					>
 						<aui:validator name="maxLength">255</aui:validator>
 						<aui:validator name="required"/>
@@ -331,12 +370,14 @@
 				</aui:row>
 				<div class="term-user">
 					<aui:row>
-						<liferay-portlet:renderURL var="linkToPage" ></liferay-portlet:renderURL>
+						<liferay-portlet:renderURL var="linkToPage" windowState="<%=LiferayWindowState.EXCLUSIVE.toString() %>">
+							<liferay-portlet:param name="mvcPath" value="/html/portlets/accountmgt/registration/termOfUse.jsp"/>
+						</liferay-portlet:renderURL>
 						<aui:input name="linkToPageURL" value="<%=linkToPage %>" type="hidden"></aui:input>
 						<%
 							String chiTiet = StringPool.BLANK;
 							String popupURL = renderResponse.getNamespace() +  "openDialogTermOfUse();";
-							chiTiet =  "<a onclick=\""+popupURL+"\" class=\"detail-terms-links\">"+LanguageUtil.get(pageContext, "term-detail")+"</a>";
+							chiTiet =  "<a href=\"http://dichvucong.mt.gov.vn/-ieu-khoan-su-dung\" target=\"_blank\" class=\"detail-terms-links\">"+LanguageUtil.get(pageContext, "term-detail")+"</a>";
 						%>
 						<aui:input 
 							name="termsOfUse"
@@ -388,7 +429,6 @@
 				}
 			});
 		}
-		A.one('#<portlet:namespace />birthDate').setAttribute("placeholder", '<%=LanguageUtil.get(pageContext, "ngay-sinh-placehoder") %>');
 	
 	
 	});
@@ -399,7 +439,7 @@
 		var termsOfUse = A.one('#<portlet:namespace />termsOfUse');
 		var checkTel = telephoneCheck();
 		var checkDate = checkBirthDate();
-		if(termsOfUse.val() == 'true' && checkTel == true && checkDate == true 	){
+		if(termsOfUse.val() == 'true' && checkTel == true && checkDate == true){
 			submitForm(document.<portlet:namespace />fm);
 		}else{
 			return;
@@ -414,17 +454,36 @@
 	},['aui-io','liferay-portlet-url']);
 	
 	function checkBirthDate() {
-			
-		var birthDate = A.one('#<portlet:namespace />birthDate');
-		if(birthDate.val() === "") {
-			birthDate.addClass('changeDefErr');
-			A.one("#<portlet:namespace/>defErrBirthDate").addClass('displayDefErr');
-			return false;
-		} else {
-			birthDate.removeClass('changeDefErr');
-			A.one("#<portlet:namespace/>defErrBirthDate").removeClass('displayDefErr');
-			return true;
+		var A = AUI();
+		var birthDateDay = A.one('#<portlet:namespace /><%=CitizenDisplayTerms.BIRTH_DATE_DAY %>');
+		var birthDateMonth = A.one('#<portlet:namespace /><%=CitizenDisplayTerms.BIRTH_DATE_MONTH %>');
+		var birthDateYear = A.one('#<portlet:namespace /><%=CitizenDisplayTerms.BIRTH_DATE_YEAR %>');
+
+		var birthDateReg = A.one('#<portlet:namespace /><%=CitizenDisplayTerms.CITIZEN_BIRTHDATE + "_REG" %>');
+
+		var dateParts = birthDateReg.val().split("/");
+
+		var result = false;
+                if(dateParts.length == 1 && new Date(birthDateReg.val()) != 'Invalid Date'){
+			result = true;
+			birthDateDay.val(1);
+			birthDateMonth.val(0)
+			birthDateYear.val(birthDateReg.val());
+		} else if(dateParts.length == 3){
+			result = true;
+			birthDateDay.val(parseInt(dateParts[0]));
+			//birthDateDay.attr("value", dateParts[0]);
+                        birthDateMonth.val(parseInt(dateParts[1]) - 1);
+			//birthDateMonth.attr("value", dateParts[1]);
+                        birthDateYear.val(parseInt(dateParts[2]));
+			//birthDateYear.attr("value", dateParts[2]);
+			//console.log(birthDateDay);
+			//console.log(birthDateMonth);
+			//console.log(birthDateYear);
+			//birthDate.val(dateParts[1] + '/' + dateParts[0] + '/' + dateParts[2]);
 		}
+
+		return result;
 	}
 	
 	function telephoneCheck() {

@@ -1,17 +1,4 @@
-<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
-<%@page import="org.opencps.util.PortletUtil"%>
-<%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
-<%@page import="org.opencps.datamgt.model.DictCollection"%>
-<%@page import="javax.portlet.PortletRequest"%>
-<%@page import="org.opencps.util.WebKeys"%>
-<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
-<%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
-<%@page import="com.liferay.portal.kernel.json.JSONFactoryUtil"%>
-<%@page import="com.liferay.portal.kernel.json.JSONObject"%>
-<%@page import="org.opencps.util.PortletPropsValues"%>
-<%@page import="org.opencps.dossiermgt.search.DossierDisplayTerms"%>
-<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
-<%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -30,7 +17,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-
+<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
+<%@page import="org.opencps.util.PortletUtil"%>
+<%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
+<%@page import="org.opencps.datamgt.model.DictCollection"%>
+<%@page import="javax.portlet.PortletRequest"%>
+<%@page import="org.opencps.util.WebKeys"%>
+<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
+<%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.json.JSONFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.json.JSONObject"%>
+<%@page import="org.opencps.util.PortletPropsValues"%>
+<%@page import="org.opencps.dossiermgt.search.DossierDisplayTerms"%>
+<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
+<%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
 <%@page import="com.liferay.portal.kernel.dao.search.SearchEntry"%>
 <%@page import="com.liferay.portal.kernel.log.Log"%>
 <%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
@@ -98,7 +98,8 @@
 				PortletConstants.TREE_VIEW_LEVER_2, 
 				"radio",
 				false,
-				renderRequest);
+				renderRequest,
+				new String[]{});
 		%>
 		
 	</div>
@@ -119,7 +120,20 @@
 				'normal',
 				null,
 				serviceDomainId,
-				'<%=renderResponse.getNamespace() %>');
+				'<%=renderResponse.getNamespace() %>',
+				'<%=hiddenTreeNodeEqualNone%>');
+		
+		if(JSON.parse(serviceDomainJsonData)[0]["children"][0]["children"].length === 0){
+			var portletTempURL = Liferay.PortletURL.createURL('<%= PortletURLFactoryUtil.create(request, WebKeys.DOSSIER_MGT_PORTLET, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE) %>');
+			portletTempURL.setParameter("mvcPath", '<%=templatePath + "display/20_80_servicelist_05.jsp" %>');
+			portletTempURL.setWindowState('<%=LiferayWindowState.NORMAL.toString() %>'); 
+			portletTempURL.setPortletMode('normal');
+			portletTempURL.setParameter("serviceDomainId", '<%=serviceDomainId %>');
+			portletTempURL.setParameter("dictItemCode", '<%=dictItemCode %>');
+			portletTempURL.setParameter("backURL", '<%=currentURL %>');
+			portletTempURL.setParameter("isListServiceConfig", '<%=String.valueOf(true) %>');
+			window.location = portletTempURL.toString();
+		}
 	});
 	
 </aui:script>
@@ -128,6 +142,7 @@
 
 <portlet:actionURL var="keywordsAutoCompleteURL" name="keywordsAutoComplete">
 	<portlet:param name="administrationId" value="<%=String.valueOf(administrationId) %>"/>
+	<portlet:param name="serviceDomainId" value="<%=String.valueOf(serviceDomainId) %>"/>
 </portlet:actionURL>
 
 <script type="text/javascript">

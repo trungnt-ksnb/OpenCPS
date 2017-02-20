@@ -19,6 +19,8 @@ package org.opencps.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,8 +43,18 @@ import org.opencps.datamgt.service.AdministrationServicedomainLocalServiceUtil;
 import org.opencps.datamgt.service.DictCollectionLocalServiceUtil;
 import org.opencps.datamgt.service.DictItemLocalServiceUtil;
 import org.opencps.dossiermgt.model.Dossier;
+import org.opencps.dossiermgt.model.DossierFile;
+import org.opencps.dossiermgt.model.DossierPart;
+import org.opencps.dossiermgt.service.DossierFileLocalServiceUtil;
+import org.opencps.dossiermgt.service.DossierPartLocalServiceUtil;
 import org.opencps.paymentmgt.util.PaymentMgtUtil;
+import org.opencps.processmgt.model.ProcessStepDossierPart;
+import org.opencps.processmgt.model.WorkflowOutput;
+import org.opencps.processmgt.service.WorkflowOutputLocalServiceUtil;
+import org.opencps.processmgt.util.ProcessUtils;
+import org.opencps.util.PortletConstants.FileSizeUnit;
 
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONException;
@@ -54,6 +66,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -62,6 +75,7 @@ import com.liferay.portal.util.PortalUtil;
 
 /**
  * @author trungnt
+ *
  */
 public class PortletUtil {
 
@@ -370,9 +384,11 @@ public class PortletUtil {
 		DictItem dictItem = null;
 
 		try {
-			dictItem = DictItemLocalServiceUtil.getDictItemByCode(itemCode);
-			if (Validator.isNotNull(dictItem)) {
-				name = dictItem.getItemName(locale);
+			if (itemCode.trim().length() > 0) {
+				dictItem = DictItemLocalServiceUtil.getDictItemByCode(itemCode);
+				if (Validator.isNotNull(dictItem) && Validator.isNotNull(locale)) {
+					name = dictItem.getItemName(locale);
+				}
 			}
 		}
 		catch (Exception e) {
@@ -387,79 +403,75 @@ public class PortletUtil {
 		DictCollection dictCollection = null;
 		List<DictItem> result = new ArrayList<DictItem>();
 		try {
-			dictCollection =
-				DictCollectionLocalServiceUtil.getDictCollection(
+			dictCollection = DictCollectionLocalServiceUtil.getDictCollection(
 					groupId, "DOSSIER_STATUS");
 			if (Validator.isNotNull(dictCollection)) {
-				result =
-					DictItemLocalServiceUtil.getDictItemsByDictCollectionId(dictCollection.getDictCollectionId());
+				result = DictItemLocalServiceUtil
+						.getDictItemsByDictCollectionId(dictCollection
+								.getDictCollectionId());
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		return result;
 	}
 
-	public static List<DictItem> getDictItemInUseByCode(
-		long groupId, String dictCollectionCode, String itemCode) {
+	public static List<DictItem> getDictItemInUseByCode(long groupId,
+			String dictCollectionCode, String itemCode) {
 
 		DictCollection dictCollection = null;
 		List<DictItem> result = new ArrayList<DictItem>();
 		try {
-			dictCollection =
-				DictCollectionLocalServiceUtil.getDictCollection(
+			dictCollection = DictCollectionLocalServiceUtil.getDictCollection(
 					groupId, dictCollectionCode);
-			if (Validator.isNotNull(dictCollection) &&
-				(Validator.isNull(itemCode) || itemCode.equals(PortletConstants.TREE_VIEW_DEFAULT_ITEM_CODE))) {
-				result =
-					DictItemLocalServiceUtil.getDictItemsInUseByDictCollectionIdAndParentItemId(
-						dictCollection.getDictCollectionId(), 0);
-			}
-			else if (Validator.isNotNull(dictCollection) &&
-				(Validator.isNotNull(itemCode) && itemCode.equals(PortletConstants.TREE_VIEW_ALL_ITEM))) {
-				result =
-					DictItemLocalServiceUtil.getDictItemsInUseByDictCollectionId(dictCollection.getDictCollectionId());
-			}
-			else {
+			if (Validator.isNotNull(dictCollection)
+					&& (Validator.isNull(itemCode) || itemCode
+							.equals(PortletConstants.TREE_VIEW_DEFAULT_ITEM_CODE))) {
+				result = DictItemLocalServiceUtil
+						.getDictItemsInUseByDictCollectionIdAndParentItemId(
+								dictCollection.getDictCollectionId(), 0);
+			} else if (Validator.isNotNull(dictCollection)
+					&& (Validator.isNotNull(itemCode) && itemCode
+							.equals(PortletConstants.TREE_VIEW_ALL_ITEM))) {
+				result = DictItemLocalServiceUtil
+						.getDictItemsInUseByDictCollectionId(dictCollection
+								.getDictCollectionId());
+			} else {
 				// TODO
 				// get treedata from itemCode
-				DictItem dictItem =
-					DictItemLocalServiceUtil.getDictItemInuseByItemCode(
-						dictCollection.getDictCollectionId(), itemCode);
+				DictItem dictItem = DictItemLocalServiceUtil
+						.getDictItemInuseByItemCode(
+								dictCollection.getDictCollectionId(), itemCode);
 
-				result =
-					DictItemLocalServiceUtil.getDictItemsByTreeIndex(
+				result = DictItemLocalServiceUtil.getDictItemsByTreeIndex(
 						dictItem.getDictItemId(), dictItem.getParentItemId(),
 						1, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		return result;
 	}
 
 	public static List<DictItem> getDictItemInUseByCodeMappingAdminCode(
-		long groupId, String dictCollectionCode, String itemCode) {
+			long groupId, String dictCollectionCode, String itemCode) {
 
 		List<DictItem> result = new ArrayList<DictItem>();
 
-		List<AdministrationServicedomain> adServicedomains =
-			new ArrayList<AdministrationServicedomain>();
+		List<AdministrationServicedomain> adServicedomains = new ArrayList<AdministrationServicedomain>();
 		try {
 
-			adServicedomains =
-				AdministrationServicedomainLocalServiceUtil.getMappingAdministrationCode(
-					groupId, dictCollectionCode, itemCode);
+			adServicedomains = AdministrationServicedomainLocalServiceUtil
+					.getMappingAdministrationCode(groupId, dictCollectionCode,
+							itemCode);
 
 			DictItem dictItem = null;
 			for (AdministrationServicedomain administrationServicedomain : adServicedomains) {
 
-				dictItem =
-					DictItemLocalServiceUtil.getDictItemInuseByItemCode(
+				dictItem = DictItemLocalServiceUtil.getDictItemInuseByItemCode(
 						administrationServicedomain.getGroupId(),
-						administrationServicedomain.getServiceDomainCollectionCode(),
+						administrationServicedomain
+								.getServiceDomainCollectionCode(),
 						administrationServicedomain.getServiceDomainCode());
 				if (Validator.isNotNull(dictItem)) {
 
@@ -469,8 +481,7 @@ public class PortletUtil {
 
 			}
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			_log.error(e);
 		}
@@ -483,76 +494,74 @@ public class PortletUtil {
 	}
 
 	@Deprecated
-	public static String getCitizenDossierDestinationFolder(
-		long groupId, long userId) {
+	public static String getCitizenDossierDestinationFolder(long groupId,
+			long userId) {
 
-		return String.valueOf(groupId) + StringPool.SLASH +
-			"opencps/dossierfiles/citizen" + StringPool.SLASH +
-			String.valueOf(userId);
+		return String.valueOf(groupId) + StringPool.SLASH
+				+ "opencps/dossierfiles/citizen" + StringPool.SLASH
+				+ String.valueOf(userId);
 	}
 
 	@Deprecated
-	public static String getBusinessDossierDestinationFolder(
-		long groupId, long orgId) {
+	public static String getBusinessDossierDestinationFolder(long groupId,
+			long orgId) {
 
-		return String.valueOf(groupId) + StringPool.SLASH +
-			"opencps/dossierfiles/business" + StringPool.SLASH +
-			String.valueOf(orgId);
+		return String.valueOf(groupId) + StringPool.SLASH
+				+ "opencps/dossierfiles/business" + StringPool.SLASH
+				+ String.valueOf(orgId);
 	}
 
-	public static String getDossierDestinationFolder(
-		long groupId, int year, int month, int day) {
+	public static String getDossierDestinationFolder(long groupId, int year,
+			int month, int day) {
 
-		return String.valueOf(groupId) + StringPool.SLASH + "Dossiers" +
-			StringPool.SLASH + String.valueOf(year) + StringPool.SLASH +
-			String.valueOf(month) + StringPool.SLASH + String.valueOf(day);
+		return String.valueOf(groupId) + StringPool.SLASH + "Dossiers"
+				+ StringPool.SLASH + String.valueOf(year) + StringPool.SLASH
+				+ String.valueOf(month) + StringPool.SLASH
+				+ String.valueOf(day);
 	}
 
-	public static String getDossierDestinationFolder(
-		long groupId, int year, int month, int day, String oid) {
+	public static String getDossierDestinationFolder(long groupId, int year,
+			int month, int day, String oid) {
 
-		return String.valueOf(groupId) + StringPool.SLASH + "Dossiers" +
-			StringPool.SLASH + String.valueOf(year) + StringPool.SLASH +
-			String.valueOf(month) + StringPool.SLASH + String.valueOf(day) +
-			StringPool.SLASH + oid;
+		return String.valueOf(groupId) + StringPool.SLASH + "Dossiers"
+				+ StringPool.SLASH + String.valueOf(year) + StringPool.SLASH
+				+ String.valueOf(month) + StringPool.SLASH
+				+ String.valueOf(day) + StringPool.SLASH + oid;
 	}
 
-	public static String getSyncPaymentDestinationFolder(
-		long groupId, int year, int month, int day, String oId) {
+	public static String getSyncPaymentDestinationFolder(long groupId,
+			int year, int month, int day, String oId) {
 
-		return String.valueOf(groupId) + StringPool.SLASH + "Payments" +
-			StringPool.SLASH + "SYNC" + StringPool.SLASH +
-			String.valueOf(year) + StringPool.SLASH + String.valueOf(month) +
-			StringPool.SLASH + String.valueOf(day) + StringPool.SLASH +
-			String.valueOf(oId);
+		return String.valueOf(groupId) + StringPool.SLASH + "Payments"
+				+ StringPool.SLASH + "SYNC" + StringPool.SLASH
+				+ String.valueOf(year) + StringPool.SLASH
+				+ String.valueOf(month) + StringPool.SLASH
+				+ String.valueOf(day) + StringPool.SLASH + String.valueOf(oId);
 	}
 
-	public static String getPaymentDestinationFolder(
-		long groupId, int year, int month, int day, long ownId,
-		String accountType) {
+	public static String getPaymentDestinationFolder(long groupId, int year,
+			int month, int day, long ownId, String accountType) {
 
-		return String.valueOf(groupId) + StringPool.SLASH + "Payments" +
-			StringPool.SLASH + accountType + StringPool.SLASH +
-			String.valueOf(year) + StringPool.SLASH + String.valueOf(month) +
-			StringPool.SLASH + String.valueOf(day) + StringPool.SLASH +
-			String.valueOf(ownId);
+		return String.valueOf(groupId) + StringPool.SLASH + "Payments"
+				+ StringPool.SLASH + accountType + StringPool.SLASH
+				+ String.valueOf(year) + StringPool.SLASH
+				+ String.valueOf(month) + StringPool.SLASH
+				+ String.valueOf(day) + StringPool.SLASH
+				+ String.valueOf(ownId);
 	}
 
-	public static DictItem getDictItem(
-		String collectionCode, String itemCode, long groupId) {
+	public static DictItem getDictItem(String collectionCode, String itemCode,
+			long groupId) {
 
 		DictCollection dictCollection = null;
 		DictItem dictItem = null;
 
 		try {
-			dictCollection =
-				DictCollectionLocalServiceUtil.getDictCollection(
+			dictCollection = DictCollectionLocalServiceUtil.getDictCollection(
 					groupId, collectionCode);
-			dictItem =
-				DictItemLocalServiceUtil.getDictItemInuseByItemCode(
+			dictItem = DictItemLocalServiceUtil.getDictItemInuseByItemCode(
 					dictCollection.getDictCollectionId(), itemCode);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: nothing
 		}
 		return dictItem;
@@ -664,8 +673,8 @@ public class PortletUtil {
 			messageInfo = LanguageUtil.get(locale, "new-msg", "Create new");
 			break;
 		case PortletConstants.DOSSIER_STATUS_RECEIVING:
-			messageInfo =
-				LanguageUtil.get(locale, "receiving-msg", "Receiving");
+			messageInfo = LanguageUtil
+					.get(locale, "receiving-msg", "Receiving");
 			break;
 		case PortletConstants.DOSSIER_STATUS_WAITING:
 			messageInfo = LanguageUtil.get(locale, "waiting-msg", "Waiting");
@@ -680,8 +689,8 @@ public class PortletUtil {
 			messageInfo = LanguageUtil.get(locale, "received-msg", "Received");
 			break;
 		case PortletConstants.DOSSIER_STATUS_PROCESSING:
-			messageInfo =
-				LanguageUtil.get(locale, "processing-msg", "Processing");
+			messageInfo = LanguageUtil.get(locale, "processing-msg",
+					"Processing");
 			break;
 		case PortletConstants.DOSSIER_STATUS_CANCELED:
 			messageInfo = LanguageUtil.get(locale, "canceled-msg", "Canceled");
@@ -707,13 +716,11 @@ public class PortletUtil {
 		return messageInfo;
 	}
 
-	public static void writeJSON(
-		ActionRequest actionRequest, ActionResponse actionResponse, Object json)
-		throws IOException {
+	public static void writeJSON(ActionRequest actionRequest,
+			ActionResponse actionResponse, Object json) throws IOException {
 
-		HttpServletResponse response =
-			PortalUtil.getHttpServletResponse(actionResponse);
-
+		HttpServletResponse response = PortalUtil
+				.getHttpServletResponse(actionResponse);
 		response.setContentType(ContentTypes.APPLICATION_JSON);
 
 		ServletResponseUtil.write(response, json.toString());
@@ -745,9 +752,9 @@ public class PortletUtil {
 
 	public static String getEmployeeDestinationFolder(long groupId, long userId) {
 
-		return String.valueOf(groupId) + StringPool.SLASH +
-			"opencps/processmgtfiles/employee" + StringPool.SLASH +
-			String.valueOf(userId);
+		return String.valueOf(groupId) + StringPool.SLASH
+				+ "opencps/processmgtfiles/employee" + StringPool.SLASH
+				+ String.valueOf(userId);
 	}
 
 	public static String getPaymentStatusLabel(int value, Locale locale) {
@@ -760,7 +767,7 @@ public class PortletUtil {
 			statusLabel = LanguageUtil.get(locale, "requested");
 			break;
 		case PaymentMgtUtil.PAYMENT_STATUS_CONFIRMED:
-			statusLabel = LanguageUtil.get(locale, "confirmed");
+			statusLabel = LanguageUtil.get(locale, "payment-confirmed");
 			break;
 		case PaymentMgtUtil.PAYMENT_STATUS_APPROVED:
 			statusLabel = LanguageUtil.get(locale, "approved");
@@ -778,25 +785,24 @@ public class PortletUtil {
 
 	public static String getContextPath(ResourceRequest request) {
 
-		return request.getPortletSession().getPortletContext().getRealPath("/").replace(
-			"/", File.separator).replace(File.separator + ".", "");
+		return request.getPortletSession().getPortletContext().getRealPath("/")
+				.replace("/", File.separator).replace(File.separator + ".", "");
 
 	}
 
 	public static String getContextPath(HttpServletRequest request) {
 
-		return request.getSession().getServletContext().getRealPath("/").replace(
-			"/", File.separator).replace(File.separator + ".", "");
-
+		return request.getSession().getServletContext().getRealPath("/")
+				.replace("/", File.separator).replace(File.separator + ".", "");
 	}
 
 	public static String getContextPath(ActionRequest actionRequest) {
 
-		HttpServletRequest request =
-			PortalUtil.getHttpServletRequest(actionRequest);
+		HttpServletRequest request = PortalUtil
+				.getHttpServletRequest(actionRequest);
 
-		return request.getSession().getServletContext().getRealPath("/").replace(
-			"/", File.separator).replace(File.separator + ".", "");
+		return request.getSession().getServletContext().getRealPath("/")
+				.replace("/", File.separator).replace(File.separator + ".", "");
 
 	}
 
@@ -833,37 +839,32 @@ public class PortletUtil {
 	public static boolean checkJMSConfig(long companyId) {
 
 		try {
-			PortletPreferences preferences =
-				PrefsPropsUtil.getPreferences(companyId, true);
-			String jmsJSON =
-				GetterUtil.getString(preferences.getValue(
+			PortletPreferences preferences = PrefsPropsUtil.getPreferences(
+					companyId, true);
+			String jmsJSON = GetterUtil.getString(preferences.getValue(
 					WebKeys.JMS_CONFIGURATION, StringPool.BLANK));
 
 			if (Validator.isNotNull(jmsJSON)) {
 				return true;
-			}
-			else {
+			} else {
 				return false;
 			}
-		}
-		catch (SystemException e) {
+		} catch (SystemException e) {
 			return false;
 		}
 	}
 
-	public static Properties getJMSContextProperties(
-		long companyId, String code, boolean remote, String channelName,
-		String queueName, String lookup, String mom)
-		throws SystemException {
+	public static Properties getJMSContextProperties(long companyId,
+			String code, boolean remote, String channelName, String queueName,
+			String lookup, String mom) throws SystemException {
 
 		Properties properties = null;
 
-		PortletPreferences preferences =
-			PrefsPropsUtil.getPreferences(companyId, true);
+		PortletPreferences preferences = PrefsPropsUtil.getPreferences(
+				companyId, true);
 
 		// Get jms json from configuration
-		String jmsJSON =
-			GetterUtil.getString(preferences.getValue(
+		String jmsJSON = GetterUtil.getString(preferences.getValue(
 				WebKeys.JMS_CONFIGURATION, StringPool.BLANK));
 
 		// _log.info("(PortletUtil.getJMSContextProperties) - jmsJson: " +
@@ -873,8 +874,8 @@ public class PortletUtil {
 
 			properties = new Properties();
 			// Create json object from string
-			JSONObject jmsJSONObject =
-				JSONFactoryUtil.createJSONObject(jmsJSON);
+			JSONObject jmsJSONObject = JSONFactoryUtil
+					.createJSONObject(jmsJSON);
 
 			// Get mom configuration
 			JSONObject momObject = jmsJSONObject.getJSONObject(mom);
@@ -888,8 +889,7 @@ public class PortletUtil {
 				// Get jms remote server by gov agency code
 				jsmServerCnfObject = lookupObject.getJSONObject(code);
 
-			}
-			else {
+			} else {
 				// Local server
 				jsmServerCnfObject = lookupObject;
 			}
@@ -897,56 +897,57 @@ public class PortletUtil {
 			// Analyze configuration
 			if (jsmServerCnfObject != null) {
 
-				String providerURL =
-					jsmServerCnfObject.getString(WebKeys.JMS_PROVIDER_URL);
+				String providerURL = jsmServerCnfObject
+						.getString(WebKeys.JMS_PROVIDER_URL);
 
-				if (remote && Validator.isNotNull(providerURL) &&
-					mom.equals("jmscore")) {
+				if (remote && Validator.isNotNull(providerURL)
+						&& mom.equals("jmscore")) {
 					providerURL = "remote://" + providerURL;
 				}
 
-				String providerPort =
-					jsmServerCnfObject.getString(WebKeys.JMS_PROVIDER_PORT);
+				String providerPort = jsmServerCnfObject
+						.getString(WebKeys.JMS_PROVIDER_PORT);
 
-				String userName =
-					jsmServerCnfObject.getString(WebKeys.JMS_USERNAME);
+				String userName = jsmServerCnfObject
+						.getString(WebKeys.JMS_USERNAME);
 
-				String passWord =
-					jsmServerCnfObject.getString(WebKeys.JMS_PASSWORD);
+				String passWord = jsmServerCnfObject
+						.getString(WebKeys.JMS_PASSWORD);
 
-				String syncCompanyId =
-					jsmServerCnfObject.getString(WebKeys.JMS_COMPANY_ID);
+				String syncCompanyId = jsmServerCnfObject
+						.getString(WebKeys.JMS_COMPANY_ID);
 
-				String syncGroupId =
-					jsmServerCnfObject.getString(WebKeys.JMS_GROUP_ID);
+				String syncGroupId = jsmServerCnfObject
+						.getString(WebKeys.JMS_GROUP_ID);
 
-				String syncUserId =
-					jsmServerCnfObject.getString(WebKeys.JMS_USER_ID);
+				String syncUserId = jsmServerCnfObject
+						.getString(WebKeys.JMS_USER_ID);
 
 				if (Validator.isNotNull(channelName)) {
-					JSONObject channelObject =
-						jsmServerCnfObject.getJSONObject(WebKeys.JMS_CHANNEL);
+					JSONObject channelObject = jsmServerCnfObject
+							.getJSONObject(WebKeys.JMS_CHANNEL);
 					String channel = channelObject.getString(channelName);
 					properties.put(WebKeys.JMS_DESTINATION, channel);
 				}
 
 				if (Validator.isNotNull(queueName)) {
-					JSONObject queueObject =
-						jsmServerCnfObject.getJSONObject(WebKeys.JMS_QUEUE_NAME);
+					JSONObject queueObject = jsmServerCnfObject
+							.getJSONObject(WebKeys.JMS_QUEUE_NAME);
 					String queue = queueObject.getString(queueName);
 					properties.put(WebKeys.JMS_QUEUE, queue);
 
 				}
 
-				properties.put(Context.PROVIDER_URL, providerURL +
-					(remote
-						? (StringPool.COLON + providerPort) : StringPool.BLANK));
+				properties.put(Context.PROVIDER_URL, providerURL
+						+ (remote ? (StringPool.COLON + providerPort)
+								: StringPool.BLANK));
 
 				properties.put(Context.SECURITY_PRINCIPAL, userName);
 				properties.put(Context.SECURITY_CREDENTIALS, passWord);
-				properties.put(
-					Context.INITIAL_CONTEXT_FACTORY,
-					org.jboss.naming.remote.client.InitialContextFactory.class.getName());
+				properties
+						.put(Context.INITIAL_CONTEXT_FACTORY,
+								org.jboss.naming.remote.client.InitialContextFactory.class
+										.getName());
 
 				properties.put(WebKeys.JMS_COMPANY_ID, syncCompanyId);
 				properties.put(WebKeys.JMS_GROUP_ID, syncGroupId);
@@ -956,8 +957,7 @@ public class PortletUtil {
 
 			}
 
-		}
-		catch (JSONException e) {
+		} catch (JSONException e) {
 			_log.error(e);
 		}
 
@@ -978,33 +978,31 @@ public class PortletUtil {
 		return sb.toString();
 	}
 
-	public static String getDossierProcessStateLabel(
-		Dossier dossier, Locale locale) {
+	public static String getDossierProcessStateLabel(Dossier dossier,
+			Locale locale) {
 
 		String statusLabel = StringPool.BLANK;
 
-		if (Validator.isNotNull(dossier.getFinishDatetime()) &&
-			Validator.isNotNull(dossier.getEstimateDatetime())) {
-			if (dossier.getFinishDatetime().after(dossier.getEstimateDatetime())) {
+		if (Validator.isNotNull(dossier.getFinishDatetime())
+				&& Validator.isNotNull(dossier.getEstimateDatetime())) {
+			if (dossier.getFinishDatetime()
+					.after(dossier.getEstimateDatetime())) {
 				statusLabel = LanguageUtil.get(locale, "status-late");
-			}
-			else if (dossier.getFinishDatetime().before(
-				dossier.getEstimateDatetime())) {
+			} else if (dossier.getFinishDatetime().before(
+					dossier.getEstimateDatetime())) {
 				statusLabel = LanguageUtil.get(locale, "status-soon");
-			}
-			else if (dossier.getFinishDatetime().equals(
-				dossier.getEstimateDatetime())) {
+			} else if (dossier.getFinishDatetime().equals(
+					dossier.getEstimateDatetime())) {
 				statusLabel = LanguageUtil.get(locale, "status-ontime");
 			}
-		}
-		else {
+		} else {
 			Date now = new Date();
 
 			if (Validator.isNotNull(dossier.getEstimateDatetime())) {
 				if (dossier.getEstimateDatetime().before(now)) {
 					statusLabel = LanguageUtil.get(locale, "status-toosoon");
-				}
-				else if (dossier.getEstimateDatetime().after(now)) {
+				} else if (dossier.getEstimateDatetime().after(now)) {
+
 					statusLabel = LanguageUtil.get(locale, "status-toolate");
 				}
 			}
@@ -1013,6 +1011,465 @@ public class PortletUtil {
 		return statusLabel;
 	}
 
-	private static Log _log =
-		LogFactoryUtil.getLog(PortletUtil.class.getName());
+	/**
+	 * @param requiredDossierPartIds
+	 * @param parentDossierPart
+	 * @param childDossierPart
+	 * @param dossierFile
+	 * @return
+	 */
+	public static List<Long> getDossierPartRequired(
+			List<Long> requiredDossierPartIds, DossierPart parentDossierPart,
+			DossierPart childDossierPart, DossierFile dossierFile) {
+
+		int partType = parentDossierPart != null ? parentDossierPart
+				.getPartType() : 0;
+
+		switch (partType) {
+		case PortletConstants.DOSSIER_PART_TYPE_SUBMIT:
+			if (childDossierPart.isRequired()
+					&& dossierFile == null
+					&& !requiredDossierPartIds.contains(childDossierPart
+							.getDossierpartId())) {
+				requiredDossierPartIds.add(childDossierPart.getDossierpartId());
+			}
+			break;
+		case PortletConstants.DOSSIER_PART_TYPE_OTHER:
+			if (parentDossierPart.getDossierpartId() == childDossierPart
+					.getDossierpartId()) {
+				if (childDossierPart.isRequired()
+						&& !requiredDossierPartIds.contains(childDossierPart
+								.getDossierpartId())) {
+					requiredDossierPartIds.add(childDossierPart
+							.getDossierpartId());
+				}
+
+			} else {
+				if (dossierFile != null) {
+					if (requiredDossierPartIds.contains(parentDossierPart
+							.getDossierpartId())) {
+						requiredDossierPartIds.remove(parentDossierPart
+								.getDossierpartId());
+					}
+
+					if (requiredDossierPartIds.contains(childDossierPart
+							.getDossierpartId())) {
+						requiredDossierPartIds.remove(childDossierPart
+								.getDossierpartId());
+					}
+				} else {
+					if (!requiredDossierPartIds.contains(childDossierPart
+							.getDossierpartId())
+							&& childDossierPart.isRequired()) {
+						requiredDossierPartIds.add(childDossierPart
+								.getDossierpartId());
+					}
+				}
+			}
+
+			break;
+		case PortletConstants.DOSSIER_PART_TYPE_OPTION:
+			parentDossierPart
+					.setPartType(PortletConstants.DOSSIER_PART_TYPE_OTHER);
+			getDossierPartRequired(requiredDossierPartIds, parentDossierPart,
+					childDossierPart, dossierFile);
+			break;
+		case PortletConstants.DOSSIER_PART_TYPE_PRIVATE:
+			parentDossierPart
+					.setPartType(PortletConstants.DOSSIER_PART_TYPE_OTHER);
+			getDossierPartRequired(requiredDossierPartIds, parentDossierPart,
+					childDossierPart, dossierFile);
+			break;
+		case PortletConstants.DOSSIER_PART_TYPE_RESULT:
+
+			break;
+		case PortletConstants.DOSSIER_PART_TYPE_MULTIPLE_RESULT:
+
+			break;
+		default:
+			break;
+		}
+
+		return requiredDossierPartIds;
+	}
+
+	public static String getDossierPartName(int dossierPartType, Locale locale) {
+
+		String dossierPartTypeName = StringPool.BLANK;
+
+		switch (dossierPartType) {
+		case PortletConstants.DOSSIER_PART_TYPE_SUBMIT:
+			dossierPartTypeName = LanguageUtil.get(locale,
+					"dossier-part-type-submit");
+			break;
+		case PortletConstants.DOSSIER_PART_TYPE_OTHER:
+			dossierPartTypeName = LanguageUtil.get(locale,
+					"dossier-part-type-other");
+			break;
+		case PortletConstants.DOSSIER_PART_TYPE_OPTION:
+			dossierPartTypeName = LanguageUtil.get(locale,
+					"dossier-part-type-option");
+			break;
+		case PortletConstants.DOSSIER_PART_TYPE_PRIVATE:
+			dossierPartTypeName = LanguageUtil.get(locale,
+					"dossier-part-type-private");
+			break;
+		case PortletConstants.DOSSIER_PART_TYPE_RESULT:
+			dossierPartTypeName = LanguageUtil.get(locale,
+					"dossier-part-type-result");
+			break;
+		case PortletConstants.DOSSIER_PART_TYPE_MULTIPLE_RESULT:
+			dossierPartTypeName = LanguageUtil.get(locale,
+					"dossier-part-type-multiple-result");
+			break;
+		default:
+			break;
+		}
+
+		return dossierPartTypeName;
+	}
+
+	public static float convertSizeUnitToByte(float size, FileSizeUnit unit) {
+
+		switch (unit) {
+		case B:
+			break;
+		case KB:
+			size = size * 1024;
+			break;
+		case MB:
+			size = size * 1024 * 1024;
+			break;
+		case GB:
+			size = size * 1024 * 1024 * 1024;
+			break;
+		case TB:
+			size = size * 1024 * 1024 * 1024 * 1024;
+			break;
+		default:
+			break;
+
+		}
+
+		return size;
+	}
+
+	public static List<Long> getDossierPartResultRequired(
+			List<Long> requiredDossierPartIds, long dossierId,
+			long processWorkflowId, long processStepId) {
+		List<WorkflowOutput> workflowOutputs = new ArrayList<WorkflowOutput>();
+
+		List<ProcessStepDossierPart> processStepDossierParts = new ArrayList<ProcessStepDossierPart>();
+
+		if (processStepId > 0) {
+			processStepDossierParts = ProcessUtils
+					.getDossierPartByStep(processStepId);
+		}
+
+		if (processStepDossierParts != null) {
+
+			for (ProcessStepDossierPart processStepDossierPart : processStepDossierParts) {
+
+				if (processStepDossierPart.getDossierPartId() > 0) {
+					try {
+
+						List<WorkflowOutput> workflowOutputsTemp = WorkflowOutputLocalServiceUtil
+								.getByProcessByPWID_DPID(processWorkflowId,
+										processStepDossierPart
+												.getDossierPartId());
+
+						if (workflowOutputsTemp != null) {
+							workflowOutputs.addAll(workflowOutputsTemp);
+						}
+					} catch (Exception e) {
+					}
+				}
+
+			}
+		}
+
+		if (workflowOutputs != null && !workflowOutputs.isEmpty()) {
+			for (WorkflowOutput workflowOutput : workflowOutputs) {
+				if (workflowOutput.getRequired()) {
+
+					DossierFile dossierFile = null;
+					DossierPart dossierPart = null;
+					try {
+						dossierPart = DossierPartLocalServiceUtil
+								.getDossierPart(workflowOutput
+										.getDossierPartId());
+						dossierFile = DossierFileLocalServiceUtil
+								.getDossierFileInUse(dossierId,
+										dossierPart.getDossierpartId());
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+
+					if (dossierFile == null && dossierPart != null) {
+						requiredDossierPartIds.add(dossierPart
+								.getDossierpartId());
+
+					}
+
+				}
+			}
+		}
+
+		return requiredDossierPartIds;
+	}
+
+	/**
+	 * @param request
+	 * @param response
+	 * @param fileName
+	 * @param is
+	 * @param contentLength
+	 * @param contentType
+	 * @throws IOException
+	 */
+	public static void sendFile(HttpServletRequest request,
+			HttpServletResponse response, String fileName, InputStream is,
+			long contentLength, String contentType) throws IOException {
+		ServletResponseUtil.sendFile(request, response, fileName, is,
+				contentLength, contentType);
+	}
+
+	/**
+	 * @param actionRequest
+	 * @param actionResponse
+	 * @param fileName
+	 * @param is
+	 * @param contentLength
+	 * @param contentType
+	 * @throws IOException
+	 */
+
+	public static void sendFile(ActionRequest actionRequest,
+			ActionResponse actionResponse, String fileName, InputStream is,
+			long contentLength, String contentType) throws IOException {
+		HttpServletResponse response = PortalUtil
+				.getHttpServletResponse(actionResponse);
+
+		HttpServletRequest request = PortalUtil
+				.getHttpServletRequest(actionRequest);
+		ServletResponseUtil.sendFile(request, response, fileName, is,
+				contentLength, contentType);
+		
+		/*ServletResponseUtil.sendFile(response, fileName, is);*/
+	}
+
+	/**
+	 * @param groupId
+	 * @param collectionCode
+	 * @return
+	 */
+	public static List<String> getDictItemCode(long groupId,
+			String collectionCode) {
+		List<String> dictItemCodes = new ArrayList<String>();
+		try {
+			DictCollection collection = DictCollectionLocalServiceUtil
+					.getDictCollection(groupId, collectionCode);
+			List<DictItem> dictItems = DictItemLocalServiceUtil
+					.getDictItemsByDictCollectionId(collection
+							.getDictCollectionId());
+
+			if (dictItems != null) {
+				for (DictItem dictItem : dictItems) {
+					if (!dictItemCodes.contains(dictItem.getItemCode())) {
+						dictItemCodes.add(dictItem.getItemCode());
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			_log.equals(e);
+		}
+
+		return dictItemCodes;
+	}
+	
+	public static boolean isResetGenerateNumber(String pattern, Date date) {
+		boolean isReset = false;
+		
+		Date now = new Date();
+		
+		//if different month then reset 
+		if(pattern.contains("n-M") && (now.getMonth()) != date.getMonth()) {
+			isReset = true;
+		}
+		
+		//if different year then reset 
+		if(pattern.contains("n-Y") && (now.getYear()) != date.getYear()) {
+			isReset = true;
+		}
+		
+		return isReset;
+	}
+	
+	public Date getDateFromToolbar(HttpServletRequest request , String[] paramLst) {
+		String day = ParamUtil.getString(request, paramLst[0]);
+		String month = ParamUtil.getString(request, paramLst[1]);
+		String year = ParamUtil.getString(request, paramLst[2]);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(day);
+		sb.append(StringPool.FORWARD_SLASH);
+		sb.append(month);
+		sb.append(StringPool.FORWARD_SLASH);
+		sb.append(year);
+		
+		String strDate = sb.toString();
+		
+		if(strDate.equalsIgnoreCase("0/0/0")) {
+			return null;
+		}
+		
+		return DateTimeUtil.convertStringToDate(strDate);
+		
+	}
+	
+	public static String convertAmountToWriting(double amount, Locale locale) {
+		
+		String sNumber = formatNumberForRead(amount);
+		
+		String sReturn = StringPool.BLANK;
+		
+		int iLen = sNumber.length();
+
+		String sNumber1 = StringPool.BLANK;
+		for (int i = iLen - 1; i >= 0; i--) {
+			sNumber1 += sNumber.charAt(i);
+		}
+
+		int iRe = 0;
+		do {
+			String sCut = StringPool.BLANK;
+			if (iLen > 3) {
+				sCut = sNumber1.substring((iRe * 3), (iRe * 3) + 3);
+				sReturn = Read(sCut, iRe, locale) + sReturn;
+				iRe++;
+				iLen -= 3;
+			} else {
+				sCut = sNumber1.substring((iRe * 3), (iRe * 3) + iLen);
+				sReturn = Read(sCut, iRe, locale) + sReturn;
+				break;
+			}
+		} while (true);
+		if (sReturn.length() > 1) {
+			sReturn = sReturn.substring(0, 1).toUpperCase()
+					+ sReturn.substring(1);
+		}
+		sReturn = sReturn + LanguageUtil.get(locale, "dong");
+		return sReturn;
+	}
+	
+	private static String formatNumberForRead(double number) {
+		NumberFormat nf = NumberFormat.getInstance();
+		String temp = nf.format(number);
+		String strReturn = StringPool.BLANK;
+		int slen = temp.length();
+		for (int i = 0; i < slen; i++) {
+			if (String.valueOf(temp.charAt(i)).equals(StringPool.PERIOD))
+				break;
+			else if (Character.isDigit(temp.charAt(i))) {
+				strReturn += String.valueOf(temp.charAt(i));
+			}
+		}
+		return strReturn;
+	}
+	
+	private static String Read(String sNumber, int iPo, Locale locale) {
+		
+		String sReturn = StringPool.BLANK;
+		
+		String sPo[] = { 
+				StringPool.BLANK,
+				LanguageUtil.get(locale, "ngan") + StringPool.SPACE,
+				LanguageUtil.get(locale, "trieu") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "ty") + StringPool.SPACE };
+		
+		String sSo[] = { 
+				LanguageUtil.get(locale, "khong") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "mot") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "hai") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "ba") + StringPool.SPACE,
+				LanguageUtil.get(locale, "bon") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "nam") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "sau") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "bay") + StringPool.SPACE,
+				LanguageUtil.get(locale, "tam") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "chin") + StringPool.SPACE };
+		
+		String sDonvi[] = { 
+				StringPool.BLANK, 
+				LanguageUtil.get(locale, "muoi") + StringPool.SPACE, 
+				LanguageUtil.get(locale, "tram") + StringPool.SPACE };
+		
+		int iLen = sNumber.length();
+		
+		int iRe = 0;
+		
+		for (int i = 0; i < iLen; i++) {
+			String sTemp = StringPool.BLANK + sNumber.charAt(i);
+			int iTemp = Integer.parseInt(sTemp);
+			
+			String sRead = StringPool.BLANK;
+			
+			if (iTemp == 0) {
+				switch (iRe) {
+				case 0:
+					break;
+				case 1: {
+					if (Integer.parseInt(StringPool.BLANK + sNumber.charAt(0)) != 0) {
+						sRead = LanguageUtil.get(locale, "le") + StringPool.SPACE;
+					}
+					break;
+				}
+				case 2: {
+					if (Integer.parseInt(StringPool.BLANK + sNumber.charAt(0)) != 0
+							&& Integer.parseInt(StringPool.BLANK + sNumber.charAt(1)) != 0) {
+						sRead = LanguageUtil.get(locale, "khong-tram", "khong tram") + StringPool.SPACE;
+					}
+					break;
+				}
+				}
+			} else if (iTemp == 1) {
+				switch (iRe) {
+				case 1:
+					sRead = LanguageUtil.get(locale, "muoif", "muoi") + StringPool.SPACE;
+					break;
+				default:
+					sRead = LanguageUtil.get(locale, "mot") + StringPool.SPACE + sDonvi[iRe];
+					break;
+				}
+			} else if (iTemp == 5) {
+				switch (iRe) {
+				case 0: {
+					if (sNumber.length() <= 1) {
+						sRead = LanguageUtil.get(locale, "nam") + StringPool.SPACE;
+					} else if (Integer.parseInt(StringPool.BLANK + sNumber.charAt(1)) != 0) {
+						sRead = LanguageUtil.get(locale, "lam") + StringPool.SPACE;
+					} else
+						sRead = LanguageUtil.get(locale, "nam") + StringPool.SPACE;
+					break;
+				}
+				default:
+					sRead = sSo[iTemp] + sDonvi[iRe];
+				}
+			} else {
+				sRead = sSo[iTemp] + sDonvi[iRe];
+			}
+
+			sReturn = sRead + sReturn;
+			iRe++;
+		}
+		if (sReturn.length() > 0) {
+			sReturn += sPo[iPo];
+		}
+
+		return sReturn;
+	}
+
+	private static Log _log = LogFactoryUtil
+			.getLog(PortletUtil.class.getName());
 }

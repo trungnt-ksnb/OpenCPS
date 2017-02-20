@@ -27,7 +27,6 @@
 <%@page import="org.opencps.dossiermgt.permissions.ServiceConfigPermission"%>
 <%@page import="org.opencps.dossiermgt.search.DossierTemplateDisplayTerms"%>
 <%@page import="org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil"%>
-<%@page import="org.opencps.dossiermgt.search.ServiceConfigSearchTerm"%>
 <%@page import="org.opencps.dossiermgt.search.ServiceConfigSearch"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="org.opencps.dossiermgt.model.ServiceConfig"%>
@@ -92,7 +91,7 @@
 		
 		<c:if test="<%=ServiceConfigPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_SERVICE_CONFIG) %>">
 				<%-- <div id="<portlet:namespace/>toolbarResponse"></div> --%>
-				<aui:button href="<%= editServiceConfigURL.toString() %>" value="add-service-config"/>
+				<aui:button href="<%= editServiceConfigURL.toString() %>" value="add-service-config" cssClass="btn-plus"/>
 		</c:if>
 	</c:when>
 	<c:otherwise>
@@ -104,7 +103,7 @@
 		
 		<c:if test="<%=ServiceConfigPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ADD_SERVICE_CONFIG) %>">
 				<%-- <div id="<portlet:namespace/>toolbarResponse"></div> --%>
-				<aui:button href="<%= editServiceConfigURL.toString() %>" value="add-service-config"/>
+				<aui:button href="<%= editServiceConfigURL.toString() %>" value="add-service-config" cssClass="btn-plus"/>
 		</c:if>
 	</c:otherwise>
 </c:choose>

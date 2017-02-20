@@ -84,6 +84,18 @@
 	
 	long serviceDomainId = ParamUtil.getLong(request, "serviceDomainId");
 
+	String serviceDomainIndex_cfg = StringPool.BLANK;
+	
+	if(Validator.isNotNull(itemCode_cfg)){
+		DictItem dictItem_cfg = DictItemLocalServiceUtil.getDictItemInuseByItemCode(themeDisplay.getScopeGroupId(), PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN, itemCode_cfg);
+		
+		if(Validator.isNotNull(dictItem_cfg)){
+			serviceDomainId = dictItem_cfg.getDictItemId();
+			serviceDomainIndex_cfg = dictItem_cfg.getTreeIndex();
+		}
+		
+	}
+	
 	PortletURL iteratorURL = renderResponse.createRenderURL();
 	iteratorURL.setParameter("mvcPath", templatePath + "frontofficedossierlist.jsp");
 	iteratorURL.setParameter("tabs1", DossierMgtUtil.TOP_TABS_DOSSIER);
@@ -118,7 +130,8 @@
 					PortletConstants.TREE_VIEW_LEVER_2, 
 					"radio",
 					false,
-					renderRequest);
+					renderRequest,
+					new String[]{});
 			%>
 		</div>
 	</c:if>
@@ -135,7 +148,8 @@
 				PortletConstants.TREE_VIEW_LEVER_0, 
 				"radio",
 				true,
-				renderRequest);
+				renderRequest,
+				new String[]{});
 		%>
 	</div>
 	
@@ -160,7 +174,8 @@
 				'normal',
 				'<%=menuCounterUrl.toString() %>',
 				dossierStatus,
-				'<%=renderResponse.getNamespace() %>');
+				'<%=renderResponse.getNamespace() %>',
+				'<%=hiddenTreeNodeEqualNone%>');
 		if (showServiceDomainIdTree){
 			buildTreeView("serviceDomainIdTree", 
 					"<%=DossierDisplayTerms.SERVICE_DOMAIN_ID %>", 
@@ -172,7 +187,8 @@
 					'normal',
 					null,
 					serviceDomainId,
-					'<%=renderResponse.getNamespace() %>');
+					'<%=renderResponse.getNamespace() %>',
+					'<%=hiddenTreeNodeEqualNone%>');
 		}
 	});
 	
@@ -240,7 +256,8 @@
 						
 						<c:choose>
 							<c:when test='<%=Validator.isNotNull(displayDossierNo) && displayDossierNo %>'>
-								<div class="row-fluid">
+								<!--hot fix moit Comment by TrungNT hidden dossier-no and change label key off dossier-no to reception-no-->
+								<%-- <div class="row-fluid">
 									<div class='<%= "text-align-right span1 " + cssStatusColor%>'>
 										<i class='<%="fa fa-circle sx10 " + dossier.getDossierStatus()%>'></i>
 									</div>
@@ -259,6 +276,17 @@
 									</div>
 									
 									<div class="span8"><%=dossier.getReceptionNo() %></div>
+								</div> --%>
+								
+								<div class="row-fluid">
+									<div class='<%= "text-align-right span1 " + cssStatusColor%>'>
+										<i class='<%="fa fa-circle sx10 " + dossier.getDossierStatus()%>'></i>
+									</div>
+									<div class="span2 bold-label">
+										<liferay-ui:message key="reception-no"/>
+									</div>
+									
+									<div class="span9"><%=dossier.getReceptionNo() %></div>
 								</div>
 							</c:when>
 							
@@ -278,13 +306,13 @@
 						<div class="row-fluid">
 							<div class="span1"></div>
 							
-							<div class="span9"><%=dossierBean.getServiceName() %></div>
+							<div class="span11"><%=dossierBean.getServiceName() %></div>
 						</div>
 						
 						<div class="row-fluid">
 							<div class="span1"></div>
 							
-							<div class="span9"><%=dossier.getGovAgencyName() %></div>
+							<div class="span11"><%=dossier.getGovAgencyName() %></div>
 						</div>
 						
 					</liferay-util:buffer>
@@ -310,7 +338,7 @@
 								<%=
 									Validator.isNotNull(dossier.getReceiveDatetime()) ? 
 									DateTimeUtil.convertDateToString(dossier.getReceiveDatetime(), DateTimeUtil._VN_DATE_TIME_FORMAT): 
-									StringPool.DASH 
+									DateTimeUtil._EMPTY_DATE_TIME  
 								%>
 							</div>
 						</div>
@@ -324,7 +352,7 @@
 								<%=
 									Validator.isNotNull(dossier.getFinishDatetime()) ? 
 									DateTimeUtil.convertDateToString(dossier.getFinishDatetime(), DateTimeUtil._VN_DATE_TIME_FORMAT): 
-									StringPool.DASH 
+									DateTimeUtil._EMPTY_DATE_TIME 
 								%>
 							</div>
 						</div>
@@ -336,8 +364,19 @@
 							</div>
 							
 							<div class='<%="span7 " + cssStatusColor %>'>
-								<%-- <%=PortletUtil.getDossierStatusLabel(dossier.getDossierStatus(), locale) %> --%>
-								<%= PortletUtil.getDossierStatusLabel(dossier.getDossierStatus(), locale) %>
+								<c:choose>
+									<c:when test="<%=allowResultQuickView %>">
+										<liferay-util:include page="/html/portlets/dossiermgt/frontoffice/dossier/result_display/result_quick_view.jsp"
+																servletContext="<%=application %>">
+											<portlet:param name="dossierId" value="<%=String.valueOf(dossier.getDossierId()) %>"/>
+											<portlet:param name="dossierTemplateId" value="<%=String.valueOf(dossier.getDossierTemplateId()) %>"/>
+											<portlet:param name="statusName" value="<%= PortletUtil.getDossierStatusLabel(dossier.getDossierStatus(), locale) %>"/>
+										</liferay-util:include>
+									</c:when>
+									<c:otherwise>
+										<%= PortletUtil.getDossierStatusLabel(dossier.getDossierStatus(), locale) %>
+									</c:otherwise>
+								</c:choose>
 							</div>
 						</div>
 					</liferay-util:buffer>

@@ -1,5 +1,4 @@
-<%@page import="org.opencps.util.PortletPropsValues"%>
-<%@page import="org.opencps.util.PortletUtil"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -18,28 +17,47 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-<%@ include file="init.jsp"%>
+
+<%@page import="com.liferay.portal.kernel.dao.search.SearchEntry"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@page import="javax.portlet.PortletURL"%>
+<%@page import="org.opencps.datamgt.service.DictItemLocalServiceUtil"%>
+<%@page import="org.opencps.datamgt.model.DictItem"%>
+<%@page import="org.opencps.servicemgt.model.ServiceInfo"%>
+
 <%@page import="org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil"%>
 <%@page import="org.opencps.dossiermgt.model.ServiceConfig"%>
 <%@page import="org.opencps.util.DictItemUtil"%>
 <%@page import="org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil"%>
-<%@page import="javax.portlet.PortletURL"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
-<%@page import="org.opencps.servicemgt.model.ServiceInfo"%>
-<%@page import="java.util.List"%>
-<%@page import="org.opencps.datamgt.service.DictItemLocalServiceUtil"%>
+
+<%@ include file="init.jsp"%>
+
 <liferay-util:include page='<%= templatePath + "toolbar.jsp"%>' servletContext="<%=application %>" />
 <%
-	String administrationCode = ParamUtil.getString(request, "administrationCode");
+	String administrationCode = StringPool.BLANK;
+	String domainCode = StringPool.BLANK;
+	
+	ParamUtil.getString(request, "administrationCode");
 
-	String domainCode = ParamUtil.getString(request, "domainCode");
-
+	ParamUtil.getString(request, "domainCode");
+			
+	long serviceDomainId = ParamUtil.getLong(request, "serviceDomainId", 0L);
+			
+	if (serviceDomainId <= 0) {
+		
+		administrationCode = ParamUtil.getString(request, "administrationCode", StringPool.BLANK);
+		domainCode = ParamUtil.getString(request, "domainCode", StringPool.BLANK);
+	} else {
+		domainCode = String.valueOf(serviceDomainId);	
+	}
+	
 
 	PortletURL iteratorURL = renderResponse.createRenderURL();
 	iteratorURL.setParameter("mvcPath", templatePath + "submitinstruction.jsp");
 	iteratorURL.setParameter("administrationCode", administrationCode);
 	iteratorURL.setParameter("domainCode", domainCode);
+	iteratorURL.setParameter("keywords", ParamUtil.getString(request, "keywords"));
 	
 	List<ServiceInfo> serviceInfos = new ArrayList<ServiceInfo>();
 	List<ServiceConfig> serviceConfigs = new ArrayList<ServiceConfig>();	
@@ -56,7 +74,6 @@
 	}
 	String govCode = Validator.isNotNull(dictItemGov) ? dictItemGov.getItemCode() : StringPool.BLANK;	
 	List<String> headerNames = new ArrayList<String>();
-	
 	headerNames.add("col1");
 	headerNames.add("col2");
 	headerNames.add("col3");
@@ -118,29 +135,22 @@
 					<div class="span5 bold-label">
 						<liferay-ui:message key="service-domain"/>
 					</div>
-					<div class="span7"><%=DictItemUtil.getNameDictItem(service.getDomainCode())%></div>
+					<div class="span7"><%=DictItemUtil.getNameDictItem(service.getDomainCode())%> - <liferay-ui:message key="level-dvc-temp"/>: <%=service.getServiceLevel() %></div>
 				</div>
 				
 				<div class="row-fluid">
 					
 					<div class="span5 bold-label">
-						<liferay-ui:message key="service-administrator"/>
+						<liferay-ui:message key="gov-code-temp"/>
 					</div>
 					<div class="span7"><%=itemName%></div>
 				</div>
 				
-				<div class="row-fluid">
-					
-					<div class="span5 bold-label">
-						<liferay-ui:message key="level-dvc"/>
-					</div>
-					<div class="span7"><%=service.getServiceLevel() %> </div>
-				</div>
 			</liferay-util:buffer>
 			
 			<%
 				row.setClassName("opencps-searchcontainer-row");
-				row.addText(String.valueOf(row.getPos() + 1));
+				row.addText(String.valueOf((searchContainer.getCur() - 1) * searchContainer.getDelta() + index + 1), iteratorURL);
 				row.addText(boundcol1);
 				row.addText(boundcol2);
 				row.addJSP("center", SearchEntry.DEFAULT_VALIGN,"/html/portlets/dossiermgt/submit/submit_action.jsp", config.getServletContext(), request, response);

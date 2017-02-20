@@ -56,7 +56,7 @@
 		passwordPolicy = mappingUser.getPasswordPolicy();
 	}
 	
-	String[] processOrderSections = new String[]{"dossieroverview", "dossierfile", "dossierhistory"};
+	String[] processOrderSections = new String[]{"dossierfile", "dossierhistory", "dossieroverview"};
 	
 	String[][] categorySections = {processOrderSections};
 	
@@ -64,7 +64,7 @@
 
 <liferay-ui:header
 	backURL="<%= backURL %>"
-	title='back'
+	title='detail-dossier'
 />
 <div class="ocps-history-process-bound-navigator">
 

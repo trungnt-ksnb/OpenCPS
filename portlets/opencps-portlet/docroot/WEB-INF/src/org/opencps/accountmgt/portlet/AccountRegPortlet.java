@@ -34,7 +34,9 @@ import javax.portlet.RenderResponse;
 import net.sourceforge.jtds.jdbc.DateTime;
 
 import org.opencps.accountmgt.DuplicateBusinessEmailException;
+import org.opencps.accountmgt.DuplicateBusinessIdNumberException;
 import org.opencps.accountmgt.DuplicateCitizenEmailException;
+import org.opencps.accountmgt.DuplicateCitizenPersonalIdException;
 import org.opencps.accountmgt.FileTypeFailException;
 import org.opencps.accountmgt.InvalidCityCodeException;
 import org.opencps.accountmgt.InvalidDistricCodeException;
@@ -68,6 +70,11 @@ import org.opencps.util.PortletPropsValues;
 import org.opencps.util.PortletUtil;
 import org.opencps.util.WebKeys;
 
+import com.liferay.portal.DuplicateUserEmailAddressException;
+import com.liferay.portal.ContactBirthdayException;
+import com.liferay.portal.UserPasswordException;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
@@ -78,7 +85,10 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.Company;
+import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.model.User;
+import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.UserLocalServiceUtil;
@@ -207,7 +217,9 @@ public class AccountRegPortlet extends MVCPortlet {
 		
 		String emailConfirmToAdmin = ParamUtil.getString(uploadPortletRequest, "emailConfirmToAdmin");
 		
-		String adminEmailUserAddedBody = ParamUtil.getString(uploadPortletRequest, "adminEmailUserAddedBody");
+		int step = ParamUtil.getInteger(uploadPortletRequest, "businessRegStep_cfg");
+		
+		String emailConfigStep = String.valueOf(step);
 
 		DictItem city = null;
 
@@ -226,7 +238,7 @@ public class AccountRegPortlet extends MVCPortlet {
 			validateBusiness(
 			    businessId, email, sourceFileName, enName, shortName, address,
 			    representativeName, representativeRole, cityId, districtId, wardId,
-			    size, sourceFileName);
+			    size, sourceFileName, idNumber);
 			ServiceContext serviceContext =
 			    ServiceContextFactory.getInstance(uploadPortletRequest);
 
@@ -262,10 +274,9 @@ public class AccountRegPortlet extends MVCPortlet {
 					    UserLocalServiceUtil.getUser(business.getMappingUserId());
 					MessageBusUtil.sendEmailAddressVerification(
 					    business.getUuid(), mappingUser, email,
-					    PortletPropsValues.USERMGT_USERGROUP_NAME_BUSINESS,
-					    serviceContext);
+					    PortletPropsValues.USERMGT_USERGROUP_NAME_BUSINESS, emailConfigStep,
+					    emailConfirmToAdmin, serviceContext);
 					//check reg cfg
-					int step = ParamUtil.getInteger(uploadPortletRequest, "businessRegStep_cfg");
 					if(step == 2){
 						BusinessLocalServiceUtil
 					    .updateStatus(business.getBusinessId(), serviceContext
@@ -274,12 +285,6 @@ public class AccountRegPortlet extends MVCPortlet {
 					SessionMessages.add(
 					    actionRequest,
 							MessageKeys.ACCOUNT_UPDATE_CUCCESS);
-					// Gui email thong bao toi quan tri sau khi thuc hien dang ky thanh cong
-						MessageBusUtil.sendEmailConfirmToAdmin(business.getUuid(),
-								mappingUser, email, emailConfirmToAdmin,
-								PortletPropsValues.USERMGT_USERGROUP_NAME_BUSINESS, business,
-								serviceContext);
-					// Gui email thong bao toi quan tri sau khi thuc hien dang ky thanh cong -----END-----
 				}
 			} else {
 
@@ -316,6 +321,14 @@ public class AccountRegPortlet extends MVCPortlet {
 			if (e instanceof DuplicateBusinessEmailException) {
 				SessionErrors.add(
 				    actionRequest, DuplicateBusinessEmailException.class);
+			}
+			else if (e instanceof DuplicateUserEmailAddressException) {
+				SessionErrors.add(
+				    actionRequest, DuplicateBusinessEmailException.class);
+			}
+			else if (e instanceof DuplicateBusinessIdNumberException) {
+				SessionErrors.add(
+				    actionRequest, DuplicateBusinessIdNumberException.class);
 			}
 			else if (e instanceof OutOfLengthBusinessEmailException) {
 				SessionErrors.add(
@@ -456,12 +469,19 @@ public class AccountRegPortlet extends MVCPortlet {
 		contentType =
 		    Validator.isNotNull(contentType)
 		        ? MimeTypesUtil.getContentType(contentType) : StringPool.BLANK;
+		        
+        int step = ParamUtil.getInteger(uploadPortletRequest, "citizenRegStep_cfg");
+        
+        String emailConfirmToAdmin = ParamUtil.getString(uploadPortletRequest, "citizenEmailConfirmToAdmin");
+        
+        String emailConfigStep = String.valueOf(step);
+        
 		String title = "Personal File";
 
 		DictItem city = null;
-
+	
 		DictItem district = null;
-
+	
 		DictItem ward = null;
 
 		InputStream inputStream = null;
@@ -506,10 +526,9 @@ public class AccountRegPortlet extends MVCPortlet {
 					    UserLocalServiceUtil.getUser(citizen.getMappingUserId());
 					MessageBusUtil.sendEmailAddressVerification(
 					    citizen.getUuid(), mappingUser, email,
-					    PortletPropsValues.USERMGT_USERGROUP_NAME_CITIZEN,
-					    serviceContext);
+					    PortletPropsValues.USERMGT_USERGROUP_NAME_CITIZEN, emailConfigStep,
+					    emailConfirmToAdmin, serviceContext);
 					//check reg cfg
-					int step = ParamUtil.getInteger(uploadPortletRequest, "citizenRegStep_cfg");
 					if(step == 2){
 						CitizenLocalServiceUtil
 					    .updateStatus(citizen.getCitizenId(), serviceContext
@@ -558,6 +577,10 @@ public class AccountRegPortlet extends MVCPortlet {
 				SessionErrors.add(
 				    actionRequest, OutOfLengthCitizenAddressException.class);
 			}
+			else if (e instanceof DuplicateUserEmailAddressException) {
+				SessionErrors.add(
+				    actionRequest, DuplicateCitizenEmailException.class);
+			}
 			else if (e instanceof OutOfLengthCitizenEmailException) {
 				SessionErrors.add(
 				    actionRequest, OutOfLengthCitizenEmailException.class);
@@ -594,6 +617,14 @@ public class AccountRegPortlet extends MVCPortlet {
 				SessionErrors.add(
 				    actionRequest, OutOfSizeFileUploadException.class);
 			}
+			else if(e instanceof DuplicateCitizenPersonalIdException) {
+				SessionErrors.add(
+				    actionRequest, DuplicateCitizenPersonalIdException.class);
+			}
+			else if(e instanceof ContactBirthdayException) {
+				SessionErrors.add(
+				    actionRequest, ContactBirthdayException.class);
+			}
 			else {
 				SessionErrors.add(
 					actionRequest,
@@ -620,13 +651,23 @@ public class AccountRegPortlet extends MVCPortlet {
 	    OutOfLengthCitizenNameException, OutOfLengthCitizenEmailException,
 	    DuplicateCitizenEmailException, InvalidCityCodeException,
 	    InvalidDistricCodeException, InvalidWardCodeException,
-	    InvalidFileUploadException, OutOfSizeFileUploadException, FileTypeFailException {
+	    InvalidFileUploadException, OutOfSizeFileUploadException, FileTypeFailException,
+	    DuplicateCitizenPersonalIdException {
 
 		Citizen citizen = null;
+		Citizen citizenByPeronalId = null;
 
 		try {
 			if (!email.equals(StringPool.BLANK)) {
 				citizen = CitizenLocalServiceUtil.getCitizen(email);
+			}
+		}
+		catch (Exception e) {
+			// Nothing todo
+		}
+		try {
+			if (!personalId.equals(StringPool.BLANK)) {
+				citizenByPeronalId = CitizenLocalServiceUtil.getCitizenByPersonalId(personalId);
 			}
 		}
 		catch (Exception e) {
@@ -637,6 +678,13 @@ public class AccountRegPortlet extends MVCPortlet {
 		}
 		if (citizenId > 0 && citizen != null && citizen.getCitizenId() != citizenId) {
 			throw new DuplicateCitizenEmailException();
+		}
+		
+		if (citizenId == 0 && citizenByPeronalId != null) {
+			throw new DuplicateCitizenPersonalIdException();
+		}
+		if (citizenId > 0 && citizenByPeronalId != null && citizenByPeronalId.getPersonalId() != personalId) {
+			throw new DuplicateCitizenPersonalIdException();
 		}
 
 		if (fullName.length() > PortletPropsValues.ACCOUNTMGT_CITIZEN_NAME_LENGTH) {
@@ -669,12 +717,52 @@ public class AccountRegPortlet extends MVCPortlet {
 		}
 
 	}
+	protected static void validatePassword(String curPass,String newPass, String rePass, 
+			ServiceContext serviceContext) throws PortalException, SystemException{
+		if(Validator.isNull(curPass)
+				&& Validator.isNotNull(newPass) 
+				&& Validator.isNotNull(rePass)){
+			throw new UserPasswordException(0);
+		}
+		if(Validator.isNotNull(curPass)
+				&&Validator.isNotNull(newPass)
+				&&Validator.isNull(rePass)){
+			throw new UserPasswordException(0);
+		}
+		Company company = CompanyLocalServiceUtil.getCompany(serviceContext.getCompanyId());
+        User user = UserLocalServiceUtil.getUser(serviceContext.getUserId());
+        
+        String authType = company.getAuthType();
+        String login = StringPool.BLANK;
+        
+        if(authType.equals(CompanyConstants.AUTH_TYPE_EA)){
+          login = user.getEmailAddress();
+        }else if(authType.equals(CompanyConstants.AUTH_TYPE_SN)){
+          login = user.getScreenName();
+        }else if(authType.equals(CompanyConstants.AUTH_TYPE_ID)){
+          login = String.valueOf(user.getUserId());
+        }
+        
+        long userChangePasswordId = 
+            UserLocalServiceUtil.authenticateForBasic(
+                          serviceContext.getCompanyId(), 
+                          authType, 
+                          login, 
+                          curPass);
+        
+        if (!Validator.equals(userChangePasswordId, 
+            serviceContext.getUserId())){
+          throw new UserPasswordException(0);
+        }
+		
+	}
+		
 
 	protected static void validateBusiness(
 	    long businessId, String email, String name, String enName,
 	    String shortName, String address, String representativeName,
 	    String representativeRole, long cityId, long districId, long wardId,
-	    long size, String sourceFileName)
+	    long size, String sourceFileName, String idNumber)
 	    throws DuplicateBusinessEmailException,
 	    OutOfLengthBusinessEmailException, OutOfLengthBusinessNameException,
 	    OutOfLengthBusinessEnNameException, OutOfLengthCitizenAddressException,
@@ -682,15 +770,25 @@ public class AccountRegPortlet extends MVCPortlet {
 	    OutOfLengthBusinessRepresentativeRoleException,
 	    OutOfLengthBusinessShortNameException, InvalidCityCodeException, 
 	    InvalidWardCodeException, InvalidDistricCodeException, FileTypeFailException,
-	    OutOfSizeFileUploadException, InvalidFileUploadException {
+	    OutOfSizeFileUploadException, InvalidFileUploadException,
+	    DuplicateBusinessIdNumberException {
 
 		Business business = null;
+		Business businessByIdNumber = null;
 
 		try {
 			if (!email.equals(StringPool.BLANK)) {
 				business = BusinessLocalServiceUtil.getBusiness(email);
 			}
-
+		}
+		catch (Exception e) {
+			// Nothing todo
+		}
+		
+		try {
+			if (!idNumber.equals(StringPool.BLANK)) {
+				businessByIdNumber = BusinessLocalServiceUtil.getBusinessByIdNumber(idNumber);
+			}
 		}
 		catch (Exception e) {
 			// Nothing todo
@@ -704,6 +802,16 @@ public class AccountRegPortlet extends MVCPortlet {
 		    business.getBusinessId() != businessId) {
 			throw new DuplicateBusinessEmailException();
 		}
+		
+		if (businessId == 0 && businessByIdNumber != null) {
+			throw new DuplicateBusinessIdNumberException();
+		}
+
+		if (businessId != 0 && businessByIdNumber != null &&
+		    businessByIdNumber.getIdNumber() != idNumber) {
+			throw new DuplicateBusinessIdNumberException();
+		}
+		
 		if (email.length() > PortletPropsValues.ACCOUNTMGT_BUSINESS_EMAIL_LENGTH) {
 			throw new OutOfLengthBusinessEmailException();
 		}

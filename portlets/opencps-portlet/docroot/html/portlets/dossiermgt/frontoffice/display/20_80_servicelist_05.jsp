@@ -1,20 +1,4 @@
-<%@page import="javax.portlet.PortletMode"%>
-<%@page import="javax.portlet.WindowState"%>
-<%@page import="com.liferay.portal.kernel.dao.orm.QueryUtil"%>
-<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
-<%@page import="org.opencps.util.PortletUtil"%>
-<%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
-<%@page import="org.opencps.datamgt.model.DictCollection"%>
-<%@page import="javax.portlet.PortletRequest"%>
-<%@page import="org.opencps.util.WebKeys"%>
-<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
-<%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
-<%@page import="com.liferay.portal.kernel.json.JSONFactoryUtil"%>
-<%@page import="com.liferay.portal.kernel.json.JSONObject"%>
-<%@page import="org.opencps.util.PortletPropsValues"%>
-<%@page import="org.opencps.dossiermgt.search.DossierDisplayTerms"%>
-<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
-<%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -51,7 +35,23 @@
 <%@page import="org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil"%>
 <%@page import="org.opencps.servicemgt.util.ServiceUtil"%>
 <%@page import="org.opencps.util.PortletConstants"%>
-
+<%@page import="javax.portlet.PortletMode"%>
+<%@page import="javax.portlet.WindowState"%>
+<%@page import="com.liferay.portal.kernel.dao.orm.QueryUtil"%>
+<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
+<%@page import="org.opencps.util.PortletUtil"%>
+<%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
+<%@page import="org.opencps.datamgt.model.DictCollection"%>
+<%@page import="javax.portlet.PortletRequest"%>
+<%@page import="org.opencps.util.WebKeys"%>
+<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
+<%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.json.JSONFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.json.JSONObject"%>
+<%@page import="org.opencps.util.PortletPropsValues"%>
+<%@page import="org.opencps.dossiermgt.search.DossierDisplayTerms"%>
+<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
+<%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
 <%@ include file="../../init.jsp"%>
 
 <%
@@ -162,9 +162,15 @@
 					>
 						<%
 							
-							
+							long plIdP26 = 0;
+						
+							if(Validator.isNotNull(war_opencpsportlet_26_cfg)){
+								plIdP26 = Long.valueOf(war_opencpsportlet_26_cfg);
+							}else{
+								plIdP26 = PortalUtil.getPlidFromPortletId(themeDisplay.getScopeGroupId(),  WebKeys.P26_SUBMIT_ONLINE);
+							}
 							PortletURL linkURL = PortletURLFactoryUtil.create(request, WebKeys.P26_SUBMIT_ONLINE, 
-									PortalUtil.getPlidFromPortletId(themeDisplay.getScopeGroupId(),  WebKeys.P26_SUBMIT_ONLINE), 
+									plIdP26, 
 									PortletRequest.RENDER_PHASE);
 							linkURL.setWindowState(WindowState.MAXIMIZED);
 							linkURL.setPortletMode(PortletMode.VIEW);
@@ -175,7 +181,7 @@
 							row.setClassName("opencps-searchcontainer-row");
 							row.addText(String.valueOf(row.getPos() + 1 + searchContainer.getStart()));
 							row.addText(serviceInfo.getServiceName());
-							row.addText("<a class=\"button\" href=\""+linkURL.toString()+"\" >" + LanguageUtil.get(pageContext, "service-description") +"</a>");
+							row.addText("<a class=\"button\" href=\""+linkURL.toString()+"\" >" + LanguageUtil.get(pageContext, "declaring-dossier") +"</a>");
 							row.addText("");
 						%>
 					</liferay-ui:search-container-row> 

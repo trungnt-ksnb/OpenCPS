@@ -21,11 +21,15 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -190,6 +194,178 @@ public class DateTimeUtil {
 		}
 		return calendar;
 	}
+	
+	public static int convertTimemilisecondsToDays(long time) {
+
+		int days = 0;
+		days = (int) (time / (24 * 60 * 60 * 1000));
+
+		return days;
+	}
+
+	public static long convertTimemilisecondsToHours(long time) {
+
+		long hours = 0;
+
+		hours = time / (60 * 60 * 1000);
+
+		return hours;
+	}
+
+	public static long convertTimemilisecondsToMinutes(long time) {
+
+		long minutes = 0;
+
+		minutes = time / (60 * 1000);
+
+		return minutes;
+	}
+
+	public static long convertTimemilisecondsToSeconds(long time) {
+
+		long seconds = 0;
+
+		seconds = time / 1000;
+
+		return seconds;
+	}
+
+	public static String convertTimemilisecondsToFormat(long time, Locale locale) {
+
+		String format = new String(DATE_TIME_FORMAT);
+		String day = LanguageUtil.get(locale, DAY_PROPERTIES);
+
+		long diffMinutes = 0;
+		long diffHours = 0;
+		long diffDays = 0;
+
+		diffMinutes = time / (60 * 1000) % 60;
+		diffHours = time / (60 * 60 * 1000) % 24;
+		diffDays = time / (24 * 60 * 60 * 1000);
+
+		if (diffDays > 0) {
+			format = format.replace(DAY, String.valueOf(diffDays));
+			format = format.replace(DAY_LANG, day);
+		} else if (diffDays < 0) {
+			format = format.replace(DAY, String.valueOf(Math.abs(diffDays)));
+			format = format.replace(DAY_LANG, day);
+		} else {
+			format = format.replace(DAY, StringPool.BLANK.trim());
+			format = format.replace(DAY_LANG, StringPool.BLANK.trim());
+		}
+
+		if (diffHours == 0 && diffMinutes == 0) {
+			format = format.replace(SUB_DATE_TIME_FORMAT, StringPool.BLANK);
+		} else {
+			format = format.replace(HOUR, String.valueOf(Math.abs(diffHours)));
+			format = format.replace(MINUTE,
+					String.valueOf(Math.abs(diffMinutes)));
+		}
+
+		if (time > 0) {
+			format = LanguageUtil.get(locale, LATE) + format.trim();
+		} else if (time < 0) {
+			format = LanguageUtil.get(locale, EARLY) + format.trim();
+		} else {
+			format = LanguageUtil.get(locale, ONTIME) + format.trim();
+		}
+
+		return format;
+	}
+	
+	public DateTimeBean getDateTimeFromPattern(String pattern) {
+		
+		DateTimeBean dateTimeBean = new DateTimeBean();
+
+		int Days = 0;
+		int Hours = 0;
+		int Minutes = 0;
+		
+		/* Pattern Format Example : "3 10:30" */
+		
+		if(pattern.trim().length() > 0){
+		
+			String[] splitPattern = StringUtil.split(pattern, StringPool.SPACE);
+
+			if (splitPattern.length == 2) {
+
+				Days = GetterUtil.getInteger(splitPattern[0], 0);
+
+				String[] splitHour = StringUtil.split(splitPattern[1],
+						StringPool.COLON);
+
+				if (splitHour.length == 2) {
+					Hours = GetterUtil.getInteger(splitHour[0]);
+					Minutes = GetterUtil.getInteger(splitHour[1]);
+				}
+			}
+		}
+		dateTimeBean.setDays(Days);
+		dateTimeBean.setHours(Hours);
+		dateTimeBean.setMinutes(Minutes);
+		
+		
+		return dateTimeBean;
+
+	}
+	
+	public class DateTimeBean {
+
+		public DateTimeBean() {
+
+			this.Days = 0;
+			this.Hours = 0;
+			this.Minutes = 0;
+		}
+
+		protected int Days;
+		protected int Hours;
+		protected int Minutes;
+
+		public int getDays() {
+			return Days;
+		}
+
+		public void setDays(int days2) {
+			Days = days2;
+		}
+
+		public int getHours() {
+			return Hours;
+		}
+
+		public void setHours(int hours2) {
+			Hours = hours2;
+		}
+
+		public int getMinutes() {
+			return Minutes;
+		}
+
+		public void setMinutes(int minutes2) {
+			Minutes = minutes2;
+		}
+	}
+	
+	private static final String DAY = "{d}";
+	
+	private static final String DAY_LANG = "{D}";
+	
+	private static final String DAY_PROPERTIES = "day";
+	
+	private static final String HOUR = "{HH}";
+	
+	private static final String MINUTE = "{MM}";
+	
+	private static final String EARLY = "status-soon";
+	
+	private static final String LATE = "status-late";
+	
+	private static final String ONTIME = "status-ontime";
+	
+	private static final String DATE_TIME_FORMAT = "{d} {D} {HH}:{MM}";
+	
+	private static final String SUB_DATE_TIME_FORMAT = "{HH}:{MM}";
 
 	public static final String _TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -198,6 +374,19 @@ public class DateTimeUtil {
 	public static final String _VN_DATE_FORMAT = "dd/MM/yyyy";
 
 	public static final String _EMPTY_DATE_TIME = "__/__/__";
+	
+	public static final String _DATE_TIME_TO_NAME = "yyyyMMdd";
 
 	private static Log _log = LogFactoryUtil.getLog(DateTimeUtil.class);
+
+	public static DateTimeBean DateTimeBean;
+
+	public static DateTimeBean getDateTimeBean() {
+		return DateTimeBean;
+	}
+
+	public static void setDateTimeBean(DateTimeBean dateTimeBean) {
+		DateTimeBean = dateTimeBean;
+	}
+
 }

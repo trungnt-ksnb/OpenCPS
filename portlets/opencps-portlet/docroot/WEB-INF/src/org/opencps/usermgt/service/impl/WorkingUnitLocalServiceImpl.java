@@ -168,8 +168,13 @@ public class WorkingUnitLocalServiceImpl
 		Organization org = null;
 		org = OrganizationLocalServiceUtil
 						.getOrganization(workingUnit.getMappingOrganisationId());
-		org.setParentOrganizationId(OrganizationConstants
-						.DEFAULT_PARENT_ORGANIZATION_ID);
+		
+		if(parentWorkingUnitId <= 0) {
+			org.setParentOrganizationId(OrganizationConstants
+					.DEFAULT_PARENT_ORGANIZATION_ID);
+		} else {
+			org.setParentOrganizationId(parentWorkingUnitId);
+		}
 		
 		OrganizationLocalServiceUtil.updateOrganization(org);
 			
@@ -315,6 +320,12 @@ public class WorkingUnitLocalServiceImpl
 	public WorkingUnit fetchByMappingOrganisationId(long groupId, long mappingOrganisationId)
 					throws NoSuchWorkingUnitException, SystemException {
 		return workingUnitPersistence.fetchByMappingOrganisationId(groupId, mappingOrganisationId);
+	}
+
+	public WorkingUnit getWorkingUnitName(String name)
+		throws NoSuchWorkingUnitException, SystemException {
+
+		return workingUnitPersistence.findByName(name);
 	}
 	
 	private Log _log = LogFactoryUtil.getLog(WorkingUnitLocalServiceImpl.class);
