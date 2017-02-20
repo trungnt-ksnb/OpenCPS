@@ -24,7 +24,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
 import org.opencps.notificationmgt.model.NotificationConfig;
-import org.opencps.notificationmgt.search.NoficationConfigDisplayTerms;
+import org.opencps.notificationmgt.search.NotificationConfigDisplayTerms;
 import org.opencps.notificationmgt.service.NotificationConfigLocalServiceUtil;
 import org.opencps.util.WebKeys;
 
@@ -48,13 +48,13 @@ public class NotificationPortlet extends MVCPortlet {
 			ActionResponse actionResponse) throws IOException {
 
 		long notificationConfigId = ParamUtil.getLong(actionRequest,
-				NoficationConfigDisplayTerms.NOTIFICATIONCONFIG_ID);
+				NotificationConfigDisplayTerms.NOTICE_CONFIG_ID);
 		String dossierCurrentStatus = ParamUtil.getString(actionRequest,
-				NoficationConfigDisplayTerms.DOSSIER_CURRENT_STATUS);
+				NotificationConfigDisplayTerms.DOSSIER_CURRENT_STATUS);
 		String dossierNextStatus = ParamUtil.getString(actionRequest,
-				NoficationConfigDisplayTerms.DOSSIER_NEXT_STATUS);
+				NotificationConfigDisplayTerms.DOSSIER_NEXT_STATUS);
 		boolean isSendNotification = ParamUtil.getBoolean(actionRequest,
-				NoficationConfigDisplayTerms.IS_SEND_NOTIFICATION);
+				NotificationConfigDisplayTerms.IS_SEND_NOTIFICATION);
 
 		String returnURL = ParamUtil.getString(actionRequest,
 				WebKeys.RETURN_URL);

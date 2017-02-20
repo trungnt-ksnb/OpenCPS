@@ -862,8 +862,22 @@
 		<field name="dossierCurrentStatus" type="String" />
 		<field name="dossierNextStatus" type="String" />
 		<field name="isSendNotification" type="boolean" />
-		<field name="notificationName" type="String" />
-		<field name="moreContent" type="String" />
+	</model>
+	<model name="org.opencps.notificationmgt.model.NotificationLayoutConfig">
+		<field name="notificationLayoutConfigId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="notificationConfigId" type="long" />
+		<field name="dictItemId" type="long" />
 		<field name="plId" type="long" />
+		<field name="userGroupName" type="String" />
+		<field name="pattern" type="String" />
+		<field name="eventName" type="String" />
+		<field name="description" type="String" />
+		<field name="isEmployee" type="boolean" />
+		<field name="isPayment" type="boolean" />
 	</model>
 </model-hints>
