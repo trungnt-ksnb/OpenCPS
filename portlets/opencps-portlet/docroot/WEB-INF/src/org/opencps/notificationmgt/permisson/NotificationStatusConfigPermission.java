@@ -17,8 +17,7 @@
 
 package org.opencps.notificationmgt.permisson;
 
-import org.opencps.notificationmgt.model.NotificationConfig;
-import org.opencps.notificationmgt.model.NotificationLayoutConfig;
+import org.opencps.notificationmgt.model.NotificationStatusConfig;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -28,7 +27,7 @@ import com.liferay.portal.security.permission.PermissionChecker;
 /**
  * @author nhanhoang
  */
-public class NotificationConfigPermission {
+public class NotificationStatusConfigPermission {
 
 	public static void check(PermissionChecker permissionChecker,
 			long threadId, String actionId) throws PortalException,
@@ -40,26 +39,31 @@ public class NotificationConfigPermission {
 	}
 
 	public static void check(PermissionChecker permissionChecker,
-			NotificationConfig notificationConfig, String actionId)
+			NotificationStatusConfig notificationStatusConfig, String actionId)
 			throws PortalException, SystemException {
-		if (!contains(permissionChecker, notificationConfig, actionId)) {
+		if (!contains(permissionChecker, notificationStatusConfig, actionId)) {
 			throw new PrincipalException();
 		}
 	}
 
 	public static boolean contains(PermissionChecker permissionChecker,
-			NotificationConfig notificationConfig, String actionId)
+			NotificationStatusConfig notificationStatusConfig, String actionId)
 			throws PortalException, SystemException {
 
-		return permissionChecker.hasPermission(notificationConfig.getGroupId(),
-				NotificationConfig.class.getName(), notificationConfig.getPrimaryKey(),
+		return permissionChecker.hasPermission(notificationStatusConfig.getGroupId(),
+				NotificationStatusConfig.class.getName(), notificationStatusConfig.getPrimaryKey(),
 				actionId);
 	}
 
 	public static boolean contains(PermissionChecker permissionChecker,
 			long groupId, String actionId) {
+		
+		boolean permission = false;
 
-		return permissionChecker.hasPermission(groupId,
-				NotificationConfig.class.getName(), groupId, actionId);
+		permission = permissionChecker.hasPermission(groupId,
+				NotificationStatusConfig.class.getName(), groupId, actionId);
+		
+		
+		return permission;
 	}
 }

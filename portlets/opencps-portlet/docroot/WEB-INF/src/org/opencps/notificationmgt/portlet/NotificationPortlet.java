@@ -23,9 +23,9 @@ import java.util.Date;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
-import org.opencps.notificationmgt.model.NotificationConfig;
+import org.opencps.notificationmgt.model.NotificationStatusConfig;
 import org.opencps.notificationmgt.search.NotificationConfigDisplayTerms;
-import org.opencps.notificationmgt.service.NotificationConfigLocalServiceUtil;
+import org.opencps.notificationmgt.service.NotificationStatusConfigLocalServiceUtil;
 import org.opencps.util.WebKeys;
 
 import com.liferay.counter.service.CounterLocalServiceUtil;
@@ -65,22 +65,22 @@ public class NotificationPortlet extends MVCPortlet {
 		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
 				.getAttribute(WebKeys.THEME_DISPLAY);
 
-		NotificationConfig notificationConfig = null;
+		NotificationStatusConfig notificationConfig = null;
 
 		try {
 
 			try {
-				notificationConfig = NotificationConfigLocalServiceUtil
-						.fetchNotificationConfig(notificationConfigId);
+				notificationConfig = NotificationStatusConfigLocalServiceUtil
+						.fetchNotificationStatusConfig(notificationConfigId);
 			} catch (SystemException e) {
 
 			}
 
 			if (Validator.isNull(notificationConfig)) {
 
-				notificationConfig = NotificationConfigLocalServiceUtil
-						.createNotificationConfig(CounterLocalServiceUtil
-								.increment(NotificationConfig.class.getName()));
+				notificationConfig = NotificationStatusConfigLocalServiceUtil
+						.createNotificationStatusConfig(CounterLocalServiceUtil
+								.increment(NotificationStatusConfig.class.getName()));
 
 				notificationConfig.setCompanyId(themeDisplay.getCompanyId());
 				notificationConfig.setGroupId(themeDisplay.getScopeGroupId());
@@ -93,8 +93,8 @@ public class NotificationPortlet extends MVCPortlet {
 				notificationConfig.setDossierNextStatus(dossierNextStatus);
 				notificationConfig.setIsSendNotification(isSendNotification);
 
-				NotificationConfigLocalServiceUtil
-						.addNotificationConfig(notificationConfig);
+				NotificationStatusConfigLocalServiceUtil
+						.addNotificationStatusConfig(notificationConfig);
 
 			} else {
 
@@ -105,8 +105,8 @@ public class NotificationPortlet extends MVCPortlet {
 				notificationConfig.setDossierNextStatus(dossierNextStatus);
 				notificationConfig.setIsSendNotification(isSendNotification);
 
-				NotificationConfigLocalServiceUtil
-						.updateNotificationConfig(notificationConfig);
+				NotificationStatusConfigLocalServiceUtil
+						.updateNotificationStatusConfig(notificationConfig);
 
 			}
 			

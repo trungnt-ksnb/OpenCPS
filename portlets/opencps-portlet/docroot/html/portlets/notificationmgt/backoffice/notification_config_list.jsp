@@ -29,7 +29,7 @@
 
 <%@ include file="../init.jsp"%>
 
-<liferay-util:include page='<%=templatePath + "toolbar.jsp"%>'
+<liferay-util:include page='<%=templatePath + "backoffice/toolbar.jsp"%>'
 	servletContext="<%=application%>" />
 
 <%
@@ -40,6 +40,8 @@
 	boolean isPermission = NotificationConfigPermission.contains(
 	themeDisplay.getPermissionChecker(),
 	themeDisplay.getScopeGroupId(), ActionKeys.ADD_NOTICECONFIG);
+	
+	_log.info("isPermission:"+isPermission);
 	
 %>
 <div

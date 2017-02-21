@@ -852,8 +852,35 @@
 		<field name="govAgencyCode" type="String" />
 		<field name="administrationLevel" type="int" />
 	</model>
-	<model name="org.opencps.notificationmgt.model.NotificationConfig">
-		<field name="notificationConfigId" type="long" />
+	<model name="org.opencps.notificationmgt.model.NotificationEventConfig">
+		<field name="notiEventConfigId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="notiStatusConfigId" type="long" />
+		<field name="eventName" type="String" />
+		<field name="description" type="String" />
+		<field name="pattern" type="String" />
+		<field name="active" type="boolean" />
+	</model>
+	<model name="org.opencps.notificationmgt.model.NotificationRedirectConfig">
+		<field name="notiRedirectConfigId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="notiEventConfigId" type="long" />
+		<field name="dictItemId" type="long" />
+		<field name="userGroupName" type="String" />
+		<field name="plId" type="long" />
+		<field name="jspRedirect" type="String" />
+		<field name="active" type="boolean" />
+	</model>
+	<model name="org.opencps.notificationmgt.model.NotificationStatusConfig">
+		<field name="notiStatusConfigId" type="long" />
 		<field name="companyId" type="long" />
 		<field name="groupId" type="long" />
 		<field name="userId" type="long" />
@@ -862,22 +889,5 @@
 		<field name="dossierCurrentStatus" type="String" />
 		<field name="dossierNextStatus" type="String" />
 		<field name="isSendNotification" type="boolean" />
-	</model>
-	<model name="org.opencps.notificationmgt.model.NotificationLayoutConfig">
-		<field name="notificationLayoutConfigId" type="long" />
-		<field name="companyId" type="long" />
-		<field name="groupId" type="long" />
-		<field name="userId" type="long" />
-		<field name="createDate" type="Date" />
-		<field name="modifiedDate" type="Date" />
-		<field name="notificationConfigId" type="long" />
-		<field name="dictItemId" type="long" />
-		<field name="plId" type="long" />
-		<field name="userGroupName" type="String" />
-		<field name="pattern" type="String" />
-		<field name="eventName" type="String" />
-		<field name="description" type="String" />
-		<field name="isEmployee" type="boolean" />
-		<field name="isPayment" type="boolean" />
 	</model>
 </model-hints>

@@ -4,12 +4,12 @@
 	<author>nhanhoang</author>
 	<namespace>notificationmgt</namespace>
 
-	<entity name="NotificationConfig" local-service="true" remote-service="false"
-		table="opencps_config_notification">
+	<entity name="NotificationStatusConfig" local-service="true" remote-service="false"
+		table="opencps_config_notification_status">
 
 		<!-- PK fields -->
 
-		<column name="notificationConfigId" type="long" primary="true" />
+		<column name="notiStatusConfigId" type="long" primary="true" />
 
 		<!-- Audit fields -->
 
@@ -48,12 +48,12 @@
 		</finder>		
 	</entity>
 	
-	<entity name="NotificationLayoutConfig" local-service="true" remote-service="false"
-		table="opencps_config_notification_layout">
+		<entity name="NotificationEventConfig" local-service="true" remote-service="false"
+		table="opencps_config_notification_event">
 
 		<!-- PK fields -->
 
-		<column name="notificationLayoutConfigId" type="long" primary="true" />
+		<column name="notiEventConfigId" type="long" primary="true" />
 
 		<!-- Audit fields -->
 
@@ -65,29 +65,54 @@
 
 		<!-- Other fields -->
 
-		<column name="notificationConfigId" type="long" />
-		<column name="dictItemId" type="long" />
-		<column name="plId" type="long" />
-		<column name="userGroupName" type="String" />
-		<column name="pattern" type="String"></column>
+		<column name="notiStatusConfigId" type="long" />
 		<column name="eventName" type="String"></column>
 		<column name="description" type="String"></column>
-		<column name="isEmployee" type="boolean"></column>
-		<column name="isPayment" type="boolean"></column>
+		<column name="pattern" type="String"></column>
+		<column name="active" type="boolean"></column>
+		
+		<!-- Finder methods -->
+		<finder return-type="Collection" name="N_A" >
+			<finder-column name="notiStatusConfigId" />
+			<finder-column name="active" />
+		</finder>	
+	</entity>
+	
+	<entity name="NotificationRedirectConfig" local-service="true" remote-service="false"
+		table="opencps_config_notification_redirect">
+
+		<!-- PK fields -->
+
+		<column name="notiRedirectConfigId" type="long" primary="true" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="groupId" type="long" />
+		<column name="userId" type="long" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+		<column name="notiEventConfigId" type="long" />
+		<column name="dictItemId" type="long" />
+		<column name="userGroupName" type="String" />
+		<column name="plId" type="long" />
+		<column name="jspRedirect" type="String" />
+		<column name="active" type="boolean" />
+		
 		
 		<!-- Finder methods -->
 		
-		<finder return-type="Collection" name="N_D_E" >
-			<finder-column name="notificationConfigId" />
-			<finder-column name="dictItemId" />
-			<finder-column name="isEmployee" />
+		<finder return-type="Collection" name="N_A" >
+			<finder-column name="notiEventConfigId" />
+			<finder-column name="active" />
 		</finder>
 		
-		<finder return-type="NotificationLayoutConfig" name="NotificationConfigId" >
-			<finder-column name="notificationConfigId" />
-			<finder-column name="isEmployee" />
-			<finder-column name="isPayment" />
-		</finder>	
+		<finder return-type="NotificationRedirectConfig" name="N_A_S" >
+			<finder-column name="notiEventConfigId" />
+			<finder-column name="active" />
+		</finder>
 	</entity>
 
 </service-builder>
