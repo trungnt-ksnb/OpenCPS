@@ -43,6 +43,9 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 		int month = ParamUtil.getInteger(actionRequest, "month");
 		int year = ParamUtil.getInteger(actionRequest, "year");
 
+		//int currentMonth = ParamUtil.getInteger(actionRequest, "currentMonth");
+		//int currentYear = ParamUtil.getInteger(actionRequest, "currentYear");
+
 		int firstMonth = month;
 		int lastMonth = month;
 		if (month == 0) {
@@ -65,7 +68,7 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 		try {
 			for (int m = firstMonth; m <= lastMonth; m++) {
 
-				if (months.contains(m) && m < lastMonth) {
+				if ((months.contains(m) && m <= lastMonth)) {
 					continue;
 				}
 
@@ -240,7 +243,7 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 			beanMap.put(key, statisticsBean);
 
 			StatisticsUtil.getDossierStatisticsBeanByDomainTreeIndex(
-				beanMap, statisticsBean);
+				beanMap, statisticsBean, false);
 		}
 
 		if (beanMap.size() == dossierStatisticsBeans.size()) {
@@ -252,8 +255,8 @@ public class StatisticsMgtAdminPortlet extends MVCPortlet {
 				total.add(entry.getValue());
 			}
 		}
-		
-		//total.addAll(dossierStatisticsBeans);
+
+		// total.addAll(dossierStatisticsBeans);
 	}
 
 	/**

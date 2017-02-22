@@ -8,7 +8,7 @@ public class DossierStatisticsBean {
 	}
 
 	public DossierStatisticsBean(DossierStatisticsBean dossierStatisticsBean) {
-
+		//TODO get AdministrationLeve
 		this.setAdministrationLevel(dossierStatisticsBean.getAdministrationLevel());
 		this.setCompanyId(dossierStatisticsBean.getCompanyId());
 		this.setDelayingNumber(dossierStatisticsBean.getDelayingNumber());

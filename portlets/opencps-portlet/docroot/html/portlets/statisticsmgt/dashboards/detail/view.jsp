@@ -17,7 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-
+<%@page import="org.json.XML"%>
+<%@page import="com.liferay.portal.kernel.json.JSONFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.json.JSONObject"%>
+<%@page import="org.opencps.datamgt.service.DictItemLocalServiceUtil"%>
+<%@page import="org.opencps.datamgt.model.DictItem"%>
 <%@page import="org.opencps.util.PortletPropsValues"%>
 <%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
 <%@page import="org.opencps.datamgt.model.DictCollection"%>
@@ -33,21 +37,80 @@
 <%@ include file="init.jsp" %>
 
 <%
+	List<String> codes = new ArrayList<String>();
+
+	if (domainDeepLevel > 1 && Validator.isNotNull(domainCodes) &&
+		!domainCodes.equalsIgnoreCase("all")) {
+		
+		String[] arrCode = StringUtil.split(domainCodes);
+		
+		DictCollection dictCollection =
+			DictCollectionLocalServiceUtil.getDictCollection(
+				scopeGroupId,
+				PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN);
+
+		if (dictCollection != null) {
+			for (int i = 0; i < arrCode.length; i++) {
+				try {
+					String code = arrCode[i];
+					
+					DictItem dictItem =
+						DictItemLocalServiceUtil.getDictItemInuseByItemCode(
+							dictCollection.getDictCollectionId(), code);
+					
+					List<DictItem> dictItems =
+						DictItemLocalServiceUtil.getTreeItems(
+							dictItem.getTreeIndex(), 1);
+					
+					codes.add(code);
+					
+					if(dictItems != null){
+						for(DictItem item :dictItems){
+							codes.add(item.getItemCode());
+						}
+					}
+				}
+				catch (Exception e) {
+
+				}
+
+			}
+		}
+	}
 	
+	if(codes != null && !codes.isEmpty()){
+		domainCodes = StringUtil.merge(codes);
+		System.out.println(domainCodes);
+	}
+
 	List<DossiersStatistics> dossiersStatistics =
-		DossiersStatisticsLocalServiceUtil.getStatsByGovAndDomain(scopeGroupId, startMonth, startYear, period, 
-			govCodes, domainCodes, level);
+		DossiersStatisticsLocalServiceUtil.getStatsByGovAndDomain(
+			scopeGroupId, startMonth, startYear, period, govCodes,
+			domainCodes, level, domainDeepLevel);
 	
-	JSONArray jsonArray = StatisticsUtil.renderData(scopeGroupId, dossiersStatistics, fieldDatasShemas,
-		filterKey, currentMonth, currentYear, locale);
+	JSONArray jsonArray =
+		StatisticsUtil.renderData(
+			scopeGroupId, dossiersStatistics, fieldDatasShemas,
+			filterKey, startMonth, startYear, period, currentMonth, currentYear, level, 
+			domainDeepLevel, locale);
+	
+	JSONArray sortedJsonArray = StatisticsUtil.sortByCodes(jsonArray, StringUtil.split(domainCodes));
+	
+	System.out.println(sortedJsonArray.toString());
+	
+	//org.json.JSONArray array = new org.json.JSONArray(sortedJsonArray.toString());
+	//String xml = XML.toString(array, "data");
+	//System.out.println(xml);
 	
 %>
 <c:choose>
 	<c:when test="<%=portletDisplayDDMTemplateId > 0 %>">
 		<%
 			Map<String, Object> contextObjects = new HashMap<String, Object>();
-	
-			contextObjects.put("scopeGroupId", new Long(scopeGroupId));
+
+			contextObjects.put("jsonData", sortedJsonArray.toString());
+			contextObjects.put("periodMap", StatisticsUtil.getPeriodMap(startMonth, startYear, period));
+			//contextObjects.put("xmlData", xml);
 		%>
 		<%= PortletDisplayTemplateUtil.renderDDMTemplate(pageContext, portletDisplayDDMTemplateId, dossiersStatistics, contextObjects) %>
 	</c:when>

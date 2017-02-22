@@ -87,15 +87,15 @@
 			"fields", "received-number"));
 
 	String[] fieldLabels =
-		preferences.getValues("fieldLabels", new String[] {
+		portletPreferences.getValues("fieldLabels", new String[] {
 			LanguageUtil.get(locale, "received-number")
 		});
 	String[] fieldKeys =
-		preferences.getValues("fieldKeys", new String[] {
+		portletPreferences.getValues("fieldKeys", new String[] {
 			"rec"
 		});
 	String[] fieldFormulas =
-		preferences.getValues("fieldKeys", new String[] {
+		portletPreferences.getValues("fieldFormulas", new String[] {
 			"$receivedNumber"
 		});
 

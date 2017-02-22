@@ -44,7 +44,6 @@
 
 	int period = GetterUtil.getInteger(portletPreferences.getValue(
 			"period", String.valueOf(1)));
-	
-	System.out.println("##########################################period " + period);
+
 %>
 

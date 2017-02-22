@@ -7,10 +7,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 
 import org.opencps.datamgt.model.DictCollection;
 import org.opencps.datamgt.model.DictItem;
@@ -21,7 +25,6 @@ import org.opencps.statisticsmgt.bean.FieldDatasShema;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
 import org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil;
 import org.opencps.statisticsmgt.service.persistence.DossiersStatisticsFinder;
-import org.opencps.util.DateTimeUtil;
 import org.opencps.util.PortletPropsValues;
 
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
@@ -34,23 +37,28 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
+/**
+ * @author trungnt
+ */
 public class StatisticsUtil {
 
 	public static enum StatisticsFieldNumber {
 		DelayingNumber, OntimeNumber, OvertimeNumber, ProcessingNumber,
 			ReceivedNumber, RemainingNumber
 	}
-	private static Log _log =
-		LogFactoryUtil.getLog(StatisticsUtil.class.getName());
+
 	public static final String FINISHED = "finished";
 
 	public static final String MONTH = "month";
+
 	public static final String PROCESSING = "processing";
+
 	public static final String RECEIVED = "received";
 
 	public static final String STATISTICS_BY = "statisticsBy";
@@ -159,83 +167,6 @@ public class StatisticsUtil {
 	}
 
 	/**
-	 * @param map
-	 * @return
-	 */
-
-	public static List fakeData() {
-
-		List data = new ArrayList<DossierStatisticsBean>();
-		String[] govs =
-			new String[] {
-				"CQ1", "CQ2", "CQ3", "CQ1.1", "CQ1.1.1", "CQ2.1", "CQ2.2",
-				"CQ3.1", "CQ3.2"
-			};
-
-		String[] govTreeIndexs = new String[] {
-			"1", "2", "3", "1.1", "1.1.1", "2.1", "2.2", "3.1", "3.2"
-		};
-
-		String[] domains = new String[] {
-			"LV1", "LV2", "LV3", "LV1.1", "LV4.1", "LV4.2", "LV4.1.1"
-		};
-
-		String[] domainTreeIndexs = new String[] {
-			"1", "2", "3", "1.1", "4.1", "4.2", "4.1.1"
-		};
-
-		String[] domainParentTreeIndexs = new String[] {
-			"1", "2", "3", "1", "4", "4", "4.1"
-		};
-
-		for (int g = 0; g < govs.length; g++) {
-			for (int d = 0; d < domains.length; d++) {
-				for (int i = 1; i <= 12; i++) {
-					DossierStatisticsBean d1 = new DossierStatisticsBean();
-
-					d1.setGroupId(20182);
-					d1.setMonth(i);
-					d1.setYear(2016);
-
-					for (int n = 0; n < 5; n++) {
-						switch (n) {
-						case 0:
-							d1.setReceivedNumber(20);
-							break;
-
-						case 1:
-							d1.setOntimeNumber(10);
-							break;
-						case 2:
-
-							d1.setOvertimeNumber(5);
-							break;
-						case 3:
-							d1.setProcessingNumber(3);
-							break;
-						case 4:
-							d1.setDelayingNumber(2);
-							break;
-
-						default:
-							break;
-						}
-					}
-					d1.setGovTreeIndex(govTreeIndexs[g]);
-					d1.setGovItemCode(govs[g]);
-					d1.setDomainTreeIndex(domainTreeIndexs[d]);
-					d1.setDomainItemCode(domains[d]);
-					data.add(d1);
-
-				}
-
-			}
-		}
-
-		return data;
-	}
-
-	/**
 	 * @param typeLabel
 	 * @return
 	 */
@@ -280,6 +211,10 @@ public class StatisticsUtil {
 		return Type.valueOf(typeLabel.trim());
 	}
 
+	/**
+	 * @param data
+	 * @return
+	 */
 	public static List<DossiersStatistics> getDossiersStatistics(List data) {
 
 		List<DossiersStatistics> dossiersStatistics =
@@ -292,8 +227,9 @@ public class StatisticsUtil {
 			new HashMap<String, DossierStatisticsBean>();
 		HashMap<String, DossierStatisticsBean> beanMap =
 			new HashMap<String, DossierStatisticsBean>();
-		HashMap<String, DossierStatisticsBean> statisticGroupByDomainMapParent =
-			new HashMap<String, DossierStatisticsBean>();
+		// HashMap<String, DossierStatisticsBean>
+		// statisticGroupByDomainMapParent =
+		// new HashMap<String, DossierStatisticsBean>();
 
 		if (data != null) {
 			_log.info("################################## data.size" +
@@ -614,11 +550,12 @@ public class StatisticsUtil {
 	/**
 	 * @param linkedMap
 	 * @param childDossierStatisticsBean
+	 * @param mergeToParent
 	 * @return
 	 */
 	public static LinkedHashMap<String, DossierStatisticsBean> getDossierStatisticsBeanByDomainTreeIndex(
 		LinkedHashMap<String, DossierStatisticsBean> linkedMap,
-		DossierStatisticsBean currentBean) {
+		DossierStatisticsBean currentBean, boolean mergeToParent) {
 
 		DossierStatisticsBean dossierStatisticsBean = null;
 
@@ -626,8 +563,7 @@ public class StatisticsUtil {
 
 		String parentTreeIndex = getParentTreeIndex(treeIndex);
 
-		if (Validator.isNotNull(parentTreeIndex) &&
-			parentTreeIndex != treeIndex) {
+		if (Validator.isNotNull(parentTreeIndex)) {
 			try {
 				DictItem dictItem =
 					DictItemLocalServiceUtil.getDicItemByTreeIndex(parentTreeIndex);
@@ -638,24 +574,39 @@ public class StatisticsUtil {
 						currentBean.getMonth() + StringPool.DASH +
 						currentBean.getYear() + StringPool.DASH +
 						currentBean.getAdministrationLevel();
-				if (linkedMap.containsKey(key)) {
-					dossierStatisticsBean = linkedMap.get(parentTreeIndex);
-					dossierStatisticsBean.setReceivedNumber(currentBean.getReceivedNumber() +
-						dossierStatisticsBean.getReceivedNumber());
-					dossierStatisticsBean.setRemainingNumber(currentBean.getRemainingNumber() +
-						dossierStatisticsBean.getRemainingNumber());
-					dossierStatisticsBean.setOntimeNumber(currentBean.getOntimeNumber() +
-						dossierStatisticsBean.getOntimeNumber());
-					dossierStatisticsBean.setOvertimeNumber(currentBean.getOvertimeNumber() +
-						dossierStatisticsBean.getOvertimeNumber());
-					dossierStatisticsBean.setDelayingNumber(currentBean.getDelayingNumber() +
-						dossierStatisticsBean.getDelayingNumber());
-					dossierStatisticsBean.setProcessingNumber(currentBean.getProcessingNumber() +
-						dossierStatisticsBean.getProcessingNumber());
+				if (mergeToParent) {
+					if (linkedMap.containsKey(key)) {
+						dossierStatisticsBean = linkedMap.get(parentTreeIndex);
+						dossierStatisticsBean.setReceivedNumber(currentBean.getReceivedNumber() +
+							dossierStatisticsBean.getReceivedNumber());
+						dossierStatisticsBean.setRemainingNumber(currentBean.getRemainingNumber() +
+							dossierStatisticsBean.getRemainingNumber());
+						dossierStatisticsBean.setOntimeNumber(currentBean.getOntimeNumber() +
+							dossierStatisticsBean.getOntimeNumber());
+						dossierStatisticsBean.setOvertimeNumber(currentBean.getOvertimeNumber() +
+							dossierStatisticsBean.getOvertimeNumber());
+						dossierStatisticsBean.setDelayingNumber(currentBean.getDelayingNumber() +
+							dossierStatisticsBean.getDelayingNumber());
+						dossierStatisticsBean.setProcessingNumber(currentBean.getProcessingNumber() +
+							dossierStatisticsBean.getProcessingNumber());
+					}
+					else {
+						dossierStatisticsBean =
+							new DossierStatisticsBean(currentBean);
+						dossierStatisticsBean.setDomainTreeIndex(parentTreeIndex);
+					}
+
 				}
 				else {
-					dossierStatisticsBean =
-						new DossierStatisticsBean(currentBean);
+					dossierStatisticsBean = new DossierStatisticsBean();
+					dossierStatisticsBean.setAdministrationLevel(currentBean.getAdministrationLevel());
+					dossierStatisticsBean.setCompanyId(currentBean.getCompanyId());
+					dossierStatisticsBean.setGovItemCode(currentBean.getGovItemCode());
+					dossierStatisticsBean.setGovTreeIndex(currentBean.getGovTreeIndex());
+					dossierStatisticsBean.setGroupId(currentBean.getGroupId());
+					dossierStatisticsBean.setMonth(currentBean.getMonth());
+					dossierStatisticsBean.setUserId(currentBean.getUserId());
+					dossierStatisticsBean.setYear(currentBean.getYear());
 					dossierStatisticsBean.setDomainTreeIndex(parentTreeIndex);
 				}
 
@@ -670,7 +621,7 @@ public class StatisticsUtil {
 
 				if (parentTreeIndex.contains(StringPool.PERIOD)) {
 					getDossierStatisticsBeanByDomainTreeIndex(
-						linkedMap, dossierStatisticsBean);
+						linkedMap, dossierStatisticsBean, mergeToParent);
 				}
 			}
 			catch (Exception e) {
@@ -982,6 +933,446 @@ public class StatisticsUtil {
 	}
 
 	/**
+	 * @param groupId
+	 * @param dossiersStatistics
+	 * @param fieldDatasShemas
+	 * @param filterKey
+	 * @param startMonth
+	 * @param startYear
+	 * @param period
+	 * @param currentMonth
+	 * @param currentYear
+	 * @param govLevel
+	 * @param domainDeepLevel
+	 * @param locale
+	 * @return
+	 */
+	public static JSONArray renderData(
+		long groupId, List<DossiersStatistics> dossiersStatistics,
+		List<FieldDatasShema> fieldDatasShemas, String filterKey,
+		int startMonth, int startYear, int period, int currentMonth,
+		int currentYear, int govLevel, int domainDeepLevel, Locale locale) {
+
+		LinkedHashMap<String, List<DossiersStatistics>> statisticLinkedHashMap =
+			new LinkedHashMap<String, List<DossiersStatistics>>();
+
+		JSONArray items = JSONFactoryUtil.createJSONArray();
+
+		LinkedHashMap<String, JSONObject> mapItems =
+			new LinkedHashMap<String, JSONObject>();
+
+		LinkedHashMap<Integer, List<Integer>> periodMap =
+			getPeriodMap(startMonth, startYear, period);
+
+		JSONArray periods = JSONFactoryUtil.createJSONArray();
+
+		if (periodMap != null) {
+			for (Map.Entry<Integer, List<Integer>> entry : periodMap.entrySet()) {
+				if (entry.getValue() != null) {
+					for (Integer it : entry.getValue()) {
+						periods.put(it + StringPool.DASH + entry.getKey());
+					}
+				}
+			}
+		}
+
+		DictCollection dictCollection = null;
+
+		try {
+			if (dossiersStatistics != null) {
+
+				if (filterKey.equals("gov")) {
+					dictCollection =
+						DictCollectionLocalServiceUtil.getDictCollection(
+							groupId,
+							PortletPropsValues.DATAMGT_MASTERDATA_GOVERNMENT_AGENCY);
+				}
+				else {
+					dictCollection =
+						DictCollectionLocalServiceUtil.getDictCollection(
+							groupId,
+							PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN);
+				}
+
+				// Sap xep group theo nhom(domainCode hoac govCode)
+				for (DossiersStatistics dossiersStatistic : dossiersStatistics) {
+					String code = dossiersStatistic.getGovAgencyCode();
+					if (filterKey.equals("domain")) {
+						code = dossiersStatistic.getDomainCode();
+					}
+
+					List<DossiersStatistics> dossiersStatisticsTemp =
+						new ArrayList<DossiersStatistics>();
+					if (statisticLinkedHashMap.containsKey(code)) {
+						dossiersStatisticsTemp =
+							statisticLinkedHashMap.get(code);
+					}
+
+					dossiersStatisticsTemp.add(dossiersStatistic);
+					statisticLinkedHashMap.put(code, dossiersStatisticsTemp);
+				}
+
+				// Phan tich du lieu
+				for (Map.Entry<String, List<DossiersStatistics>> entry : statisticLinkedHashMap.entrySet()) {
+
+					List<DossiersStatistics> dossiersStatisticsTemp =
+						entry.getValue();
+
+					JSONObject item = JSONFactoryUtil.createJSONObject();
+
+					JSONObject statsMonths = JSONFactoryUtil.createJSONObject();
+
+					JSONObject statsPeriod = JSONFactoryUtil.createJSONObject();
+
+					DictItem dictItem = null;
+
+					if (dossiersStatisticsTemp != null &&
+						!dossiersStatisticsTemp.isEmpty()) {
+
+						try {
+							// Mang luu chi tiet so lieu
+							JSONArray schemas =
+								JSONFactoryUtil.createJSONArray();
+
+							LinkedHashMap<String, Integer> values =
+								new LinkedHashMap<String, Integer>();
+
+							LinkedHashMap<String, String> labels =
+								new LinkedHashMap<String, String>();
+
+							// Ma doi tuong
+							String code = entry.getKey();
+
+							// Ten doi tuong
+							String name = StringPool.BLANK;
+
+							// Ma cap cha cua doi tuong
+							String parentCode = StringPool.BLANK;
+
+							// Cap do cua doi tuong
+							int level = 0;
+
+							// Tham chieu den bang du lieu danh muc
+							dictItem =
+								DictItemLocalServiceUtil.getDictItemInuseByItemCode(
+									dictCollection.getDictCollectionId(), code);
+
+							if (dictItem.getParentItemId() > 0) {
+								DictItem parentDictItem =
+									DictItemLocalServiceUtil.getDictItem(dictItem.getParentItemId());
+								parentCode = parentDictItem.getItemCode();
+							}
+
+							// Lay ten doi tuong
+							name = dictItem.getItemName(locale);
+
+							// Lay cap do cua doi tuong
+							level =
+								StringUtil.count(
+									dictItem.getTreeIndex(), StringPool.PERIOD);
+
+							// luu vao json
+							item.put("code", code);
+
+							item.put("filterKey", filterKey);
+
+							item.put("name", name);
+
+							item.put("parent", parentCode);
+
+							item.put("level", level);
+
+							// Khoi tao bien du lieu ky truoc chuyen qua cho 1
+							// ky bao cao
+							// Vi du ky bao cao tu 1/2016 den 12/2016 thi so ky
+							// truoc chuyen qua bang so ky truoc chuyen qua tai
+							// thang 1
+							// Neu trong khoang 1/2016 den 12/2016 va chi co dl
+							// tu thang 5/2016 thi so ky truoc chuyen qua bang
+							// so ky truoc chuyen qua tai thang 5
+
+							// int remainingNumberAggregatePeriod = 0;
+
+							// Xac dinh thang, nam nho nhat trong ky bao cao co
+							// dl
+							int minMonth =
+								dossiersStatisticsTemp.get(0).getMonth();
+							int minYear =
+								dossiersStatisticsTemp.get(0).getYear();
+
+							// Tao mang doi tuong schemas
+							for (DossiersStatistics dossierStatistics : dossiersStatisticsTemp) {
+								// ------------------------------------------------
+								int month = dossierStatistics.getMonth();
+
+								int year = dossierStatistics.getYear();
+
+								if ((year == minYear && month <= minMonth) ||
+									(year < minYear)) {
+									minMonth = month;
+									minYear = year;
+								}
+								// ------------------------------------------------
+								JSONObject schema =
+									JSONFactoryUtil.createJSONObject();
+
+								JSONArray fields =
+									JSONFactoryUtil.createJSONArray();
+
+								schema.put(
+									"month", dossierStatistics.getMonth());
+
+								schema.put("year", dossierStatistics.getYear());
+
+								schema.put(
+									"code",
+									dossierStatistics.getGovAgencyCode());
+
+								// ------------------------------------------------
+								JSONObject statsMonth =
+									JSONFactoryUtil.createJSONObject();
+
+								if (statsMonths.has(month + StringPool.DASH +
+									year)) {
+									statsMonth =
+										statsMonths.getJSONObject(month +
+											StringPool.DASH + year);
+								}
+
+								// ------------------------------------------------
+
+								if (fieldDatasShemas != null) {
+
+									for (FieldDatasShema fieldDatasShema : fieldDatasShemas) {
+
+										String key =
+											fieldDatasShema.getFieldKey();
+										String label =
+											fieldDatasShema.getFieldLabel();
+										String formula =
+											fieldDatasShema.getFieldFomula();
+
+										if (formula.contains(FieldDatasShema.DefaultFieldValues.delayingNumber.toString())) {
+											formula =
+												formula.replaceAll(
+													FieldDatasShema.DefaultFieldValues.delayingNumber.toString(),
+													String.valueOf(dossierStatistics.getDelayingNumber()));
+										}
+										if (formula.contains(FieldDatasShema.DefaultFieldValues.ontimeNumber.toString())) {
+											formula =
+												formula.replaceAll(
+													FieldDatasShema.DefaultFieldValues.ontimeNumber.toString(),
+													String.valueOf(dossierStatistics.getOntimeNumber()));
+										}
+										if (formula.contains(FieldDatasShema.DefaultFieldValues.overtimeNumber.toString())) {
+											formula =
+												formula.replaceAll(
+													FieldDatasShema.DefaultFieldValues.overtimeNumber.toString(),
+													String.valueOf(dossierStatistics.getOvertimeNumber()));
+										}
+										if (formula.contains(FieldDatasShema.DefaultFieldValues.processingNumber.toString())) {
+											formula =
+												formula.replaceAll(
+													FieldDatasShema.DefaultFieldValues.processingNumber.toString(),
+													String.valueOf(dossierStatistics.getProcessingNumber()));
+										}
+										if (formula.contains(FieldDatasShema.DefaultFieldValues.receivedNumber.toString())) {
+											formula =
+												formula.replaceAll(
+													FieldDatasShema.DefaultFieldValues.receivedNumber.toString(),
+													String.valueOf(dossierStatistics.getReceivedNumber()));
+										}
+										if (formula.contains(FieldDatasShema.DefaultFieldValues.remainingNumber.toString())) {
+											formula =
+												formula.replaceAll(
+													FieldDatasShema.DefaultFieldValues.remainingNumber.toString(),
+													String.valueOf(dossierStatistics.getRemainingNumber()));
+										}
+
+										ScriptEngineManager engineManager =
+											new ScriptEngineManager();
+
+										ScriptEngine engine =
+											engineManager.getEngineByName("JavaScript");
+
+										Object object = engine.eval(formula);
+
+										int value =
+											GetterUtil.getInteger(object);
+
+										// ------------------------------------------------
+
+										JSONObject field =
+											JSONFactoryUtil.createJSONObject();
+
+										field.put("key", key);
+
+										field.put("label", label);
+
+										field.put("value", value);
+
+										fields.put(field);
+
+										// ------------------------------------------------
+
+										if (statsMonth.has(key)) {
+											int tempValue =
+												statsMonth.getInt(key);
+											statsMonth.put(key, tempValue +
+												value);
+										}
+										else {
+											statsMonth.put(key, value);
+										}
+
+										// ------------------------------------------------
+
+										if (statsPeriod.has(key)) {
+											int tempValue =
+												statsPeriod.getInt(key);
+											statsPeriod.put(key, tempValue +
+												value);
+										}
+										else {
+											statsPeriod.put(key, value);
+										}
+
+										// ------------------------------------------------
+										if (values.containsKey(key + "_value")) {
+											int temp =
+												values.get(key + "_value") +
+													value;
+											values.put(key + "_value", temp);
+										}
+										else {
+											values.put(key + "_value", value);
+										}
+
+										if (!labels.containsKey(key + "_label")) {
+
+											labels.put(key + "_label", label);
+										}
+									}
+								}
+
+								statsMonths.put(
+									month + StringPool.DASH + year, statsMonth);
+
+								schema.put("fields", fields);
+
+								schemas.put(schema);
+							}
+
+							item.put("schemas", schemas);
+
+							item.put("stats-months", statsMonths);
+
+							item.put("stats-period", statsPeriod);
+
+							// ------------------------------------------------
+
+							item.put(
+								"stats-period-wchild",
+								JSONFactoryUtil.createJSONObject(statsPeriod.toString()));
+
+							item.put(
+								"stats-months-wchild",
+								JSONFactoryUtil.createJSONObject(statsMonths.toString()));
+							// ------------------------------------------------
+							JSONObject aggregatePeriod =
+								JSONFactoryUtil.createJSONObject();
+
+							for (Map.Entry<String, Integer> mapValue : values.entrySet()) {
+
+								aggregatePeriod.put(
+									mapValue.getKey(), mapValue.getValue());
+
+							}
+
+							for (Map.Entry<String, String> mapLabel : labels.entrySet()) {
+
+								aggregatePeriod.put(
+									mapLabel.getKey(), mapLabel.getValue());
+
+							}
+
+							item.put("aggregate-period", aggregatePeriod);
+
+							String keys = StringUtil.merge(values.keySet());
+
+							if (Validator.isNotNull(keys)) {
+								keys =
+									keys.replaceAll("_value", StringPool.BLANK);
+							}
+
+							item.put("keys", keys);
+
+							item.put("period-labels", periods);
+							
+							item.put("start-month", startMonth);
+							
+							item.put("start-year", startYear);
+							
+							item.put("period", period);
+
+						}
+						catch (Exception e) {
+							_log.error(e);
+						}
+
+					}
+
+					items.put(item);
+
+					mapItems.put(entry.getKey(), item);
+				}
+
+				for (int i = 0; i < items.length(); i++) {
+					JSONObject item = items.getJSONObject(i);
+					JSONObject statsPeriod = item.getJSONObject("stats-period");
+					JSONObject statsMonths = item.getJSONObject("stats-months");
+					updateParentStats(mapItems, item, statsPeriod, statsMonths);
+				}
+
+			}
+
+		}
+		catch (Exception e) {
+			_log.error(e);
+		}
+
+		JSONArray data = JSONFactoryUtil.createJSONArray();
+		for (Map.Entry<String, JSONObject> entry : mapItems.entrySet()) {
+			data.put(entry.getValue());
+		}
+
+		return data;
+	}
+
+	/**
+	 * @param jsonArray
+	 * @param codes
+	 * @return
+	 */
+	public static JSONArray sortByCodes(JSONArray jsonArray, String[] codes) {
+
+		JSONArray temp = JSONFactoryUtil.createJSONArray();
+		if (codes != null && codes.length > 0 && jsonArray != null) {
+			for (int c = 0; c < codes.length; c++) {
+				for (int j = 0; j < jsonArray.length(); j++) {
+					JSONObject object = jsonArray.getJSONObject(j);
+					String code = object.getString("code");
+					if (codes[c].equalsIgnoreCase(code)) {
+						temp.put(object);
+					}
+				}
+			}
+		}
+
+		return temp;
+	}
+
+	/**
 	 * @param dossiersStatistics
 	 * @param language
 	 * @return
@@ -1039,130 +1430,79 @@ public class StatisticsUtil {
 	}
 
 	/**
-	 * @param jsonObject
+	 * @param items
+	 * @param code
+	 * @param parentCode
+	 * @param item
+	 * @return
 	 */
-	public static boolean updateStatistic(JSONObject jsonObject) {
+	public static void updateParentStats(
+		LinkedHashMap<String, JSONObject> map, JSONObject item,
+		JSONObject statsPeriod, JSONObject statsMonths) {
 
-		boolean updated = false;
+		String parentCode = item.getString("parent");
 
-		String strSubmitDate = jsonObject.getString("submitDate");
-		String strFinishDate = jsonObject.getString("strFinishDate");
-		String strEstimateDate = jsonObject.getString("strEstimateDate");
-		String govCode = jsonObject.getString("govCode");
-		String domainCode = jsonObject.getString("domainCode");
+		if (Validator.isNotNull(parentCode) && map.containsKey(parentCode)) {
+			JSONObject parentItem = map.get(parentCode);
+			JSONObject spwc = parentItem.getJSONObject("stats-period-wchild");
 
-		Date submitDate =
-			Validator.isNotNull(strSubmitDate)
-				? DateTimeUtil.convertStringToDate(strSubmitDate) : null;
-		Date finishDate =
-			Validator.isNotNull(strFinishDate)
-				? DateTimeUtil.convertStringToDate(strFinishDate) : null;
-		Date estimateDate =
-			Validator.isNotNull(strEstimateDate)
-				? DateTimeUtil.convertStringToDate(strEstimateDate) : null;
+			Iterator<String> it1 = spwc.keys();
+			Iterator<String> it2 = statsPeriod.keys();
 
-		/*
-		 * int remainingNumber = dossierStatisticsBean.getProcessingNumber() +
-		 * dossierStatisticsBean.getDelayingNumber() +
-		 * dossierStatisticsBean.getOntimeNumber() +
-		 * dossierStatisticsBean.getOvertimeNumber() -
-		 * dossierStatisticsBean.getReceivedNumber();
-		 */
+			while (it1.hasNext()) {
 
-		return updated;
+				String tempKey = it1.next();
 
-	}
+				while (it2.hasNext()) {
+					String key = it2.next();
 
-	public static JSONArray renderData(
-		long groupId, List<DossiersStatistics> dossiersStatistics,
-		List<FieldDatasShema> fieldDatasShemas, String filterKey,
-		int currentMonth, int currentYear, Locale locale) {
+					if (tempKey.equals(key)) {
 
-		LinkedHashMap<String, List<DossiersStatistics>> statisticLinkedHashMap =
-			new LinkedHashMap<String, List<DossiersStatistics>>();
+						int tempValue = spwc.getInt(tempKey);
+						int value = statsPeriod.getInt(key);
 
-		DictCollection dictCollection = null;
-		try {
-			if (dossiersStatistics != null) {
-
-				if (filterKey.equals("gov")) {
-					dictCollection =
-						DictCollectionLocalServiceUtil.getDictCollection(
-							groupId,
-							PortletPropsValues.DATAMGT_MASTERDATA_GOVERNMENT_AGENCY);
-				}
-				else {
-					dictCollection =
-						DictCollectionLocalServiceUtil.getDictCollection(
-							groupId,
-							PortletPropsValues.DATAMGT_MASTERDATA_SERVICE_DOMAIN);
-				}
-
-				for (DossiersStatistics dossiersStatistic : dossiersStatistics) {
-					String code = dossiersStatistic.getGovAgencyCode();
-					if (filterKey.equals("domain")) {
-						code = dossiersStatistic.getDomainCode();
-					}
-					System.out.println("################################# " +
-						code);
-					List<DossiersStatistics> dossiersStatisticsTemp =
-						new ArrayList<DossiersStatistics>();
-					if (statisticLinkedHashMap.containsKey(code)) {
-						dossiersStatisticsTemp =
-							statisticLinkedHashMap.get(code);
-					}
-
-					dossiersStatisticsTemp.add(dossiersStatistic);
-					statisticLinkedHashMap.put(code, dossiersStatisticsTemp);
-				}
-
-				for (Map.Entry<String, List<DossiersStatistics>> entry : statisticLinkedHashMap.entrySet()) {
-
-					List<DossiersStatistics> dossiersStatisticsTemp =
-						entry.getValue();
-
-					JSONObject itemObject = JSONFactoryUtil.createJSONObject();
-
-					String code = entry.getKey();
-
-					String name = StringPool.BLANK;
-
-					try {
-						DictItem dictItem =
-							DictItemLocalServiceUtil.getDictItemInuseByItemCode(
-								dictCollection.getDictCollectionId(), code);
-						name = dictItem.getItemName(locale);
-					}
-					catch (Exception e) {
-						_log.warn(e);
-					}
-
-					if (dossiersStatisticsTemp != null &&
-						!dossiersStatisticsTemp.isEmpty()) {
-
-						int month = dossiersStatisticsTemp.get(0).getMonth();
-
-						itemObject.put("code", code);
-
-						itemObject.put("codeType", filterKey);
-
-						itemObject.put("name", name);
-
-						if (fieldDatasShemas != null) {
-							for (FieldDatasShema fieldDatasShema : fieldDatasShemas) {
-
-							}
-						}
-
+						spwc.put(tempKey, tempValue + value);
+						parentItem.put("stats-period-wchild", spwc);
+						map.put(parentCode, parentItem);
+						break;
 					}
 				}
 			}
 
-		}
-		catch (Exception e) {
-			// TODO: handle exception
+			// ---------------------------------
+			JSONObject smwc = parentItem.getJSONObject("stats-months-wchild");
+
+			Iterator<String> it3 = smwc.keys();
+
+			while (it3.hasNext()) {
+				String tempKey = it3.next();
+
+				if (statsMonths.has(tempKey)) {
+
+					JSONObject temp1 = smwc.getJSONObject(tempKey);
+					JSONObject temp2 = statsMonths.getJSONObject(tempKey);
+
+					Iterator<String> it4 = temp1.keys();
+					while (it4.hasNext()) {
+
+						String key = it4.next();
+
+						if (temp2.has(key)) {
+							int tempValue = temp1.getInt(key);
+							int value = temp2.getInt(key);
+							temp1.put(key, tempValue + value);
+						}
+					}
+				}
+			}
+
+			if (Validator.isNotNull(parentItem.getString("parent"))) {
+				updateParentStats(map, parentItem, statsPeriod, statsMonths);
+			}
 		}
 
-		return null;
 	}
+
+	private static Log _log =
+		LogFactoryUtil.getLog(StatisticsUtil.class.getName());
 }

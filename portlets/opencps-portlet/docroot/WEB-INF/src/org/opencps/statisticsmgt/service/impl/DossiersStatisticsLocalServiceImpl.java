@@ -325,11 +325,11 @@ public class DossiersStatisticsLocalServiceImpl
 	 */
 	public List<DossiersStatistics> getStatsByGovAndDomain(
 		long groupId, int startMonth, int startYear, int period,
-		String govCodes, String domainCodes, int level) {
+		String govCodes, String domainCodes, int level, int domainDeepLevel) {
 
 		return dossiersStatisticsFinder.getStatsByGovAndDomain(
 			groupId, startMonth, startYear, period, govCodes, domainCodes,
-			level);
+			level, domainDeepLevel);
 	}
 
 	/**

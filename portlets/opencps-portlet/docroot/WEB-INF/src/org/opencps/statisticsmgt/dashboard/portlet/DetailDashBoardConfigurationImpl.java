@@ -88,7 +88,7 @@ public class DetailDashBoardConfigurationImpl
 			String[] fieldKeys = new String[fieldsIndexes.length];
 			String[] fieldFormulas = new String[fieldsIndexes.length];
 			for (int f = 0; f < fieldsIndexes.length; f++) {
-
+				
 				String fieldLabel =
 					ParamUtil.getString(actionRequest, "fieldLabel" +
 						fieldsIndexes[f]);
@@ -102,11 +102,13 @@ public class DetailDashBoardConfigurationImpl
 				fieldLabels[f] = fieldLabel;
 				fieldKeys[f] = fieldKey;
 				fieldFormulas[f] = fieldFormula;
+				
+				System.out.println(fieldLabel + "-----" + fieldKey + "-----" + fieldFormula);
 			}
 
 			preferences.setValues("fieldLabels", fieldLabels);
 			preferences.setValues("fieldKeys", fieldKeys);
-			preferences.setValues("fieldFomulas", fieldFormulas);
+			preferences.setValues("fieldFormulas", fieldFormulas);
 		}
 
 		preferences.setValue("fieldTotalFormula", fieldTotalFormula);

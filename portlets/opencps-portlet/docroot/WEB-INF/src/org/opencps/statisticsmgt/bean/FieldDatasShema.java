@@ -10,10 +10,10 @@ public class FieldDatasShema {
 
 	public FieldDatasShema(
 		String fieldLabel, String fieldKey, String fieldFomula) {
-
-		this.setFieldFomula(fieldFomula);
-		this.setFieldKey(fieldKey);
+		System.out.println(fieldLabel + "-----" + fieldKey + "-----" + fieldFomula);
 		this.setFieldLabel(fieldLabel);
+		this.setFieldKey(fieldKey);
+		this.setFieldFomula(fieldFomula);
 	}
 
 	public String getFieldLabel() {
@@ -47,8 +47,8 @@ public class FieldDatasShema {
 	}
 
 	public enum DefaultFieldValues {
-		$remainingNumber, $receivedNumber, $ontimeNumber, $overtimeNumber,
-			$processingNumber, $delayingNumber
+		remainingNumber, receivedNumber, ontimeNumber, overtimeNumber,
+			processingNumber, delayingNumber
 	}
 
 	private String _fieldLabel;

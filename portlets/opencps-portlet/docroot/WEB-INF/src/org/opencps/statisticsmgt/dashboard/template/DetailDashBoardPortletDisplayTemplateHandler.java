@@ -11,7 +11,6 @@ import org.opencps.util.WebKeys;
 
 import com.liferay.portal.kernel.portletdisplaytemplate.BasePortletDisplayTemplateHandler;
 import com.liferay.portal.kernel.template.TemplateVariableGroup;
-import com.liferay.portal.service.GroupLocalService;
 import com.liferay.portlet.portletdisplaytemplate.util.PortletDisplayTemplateConstants;
 
 public class DetailDashBoardPortletDisplayTemplateHandler extends
@@ -56,8 +55,11 @@ public class DetailDashBoardPortletDisplayTemplateHandler extends
 				"dossierStatistics", DossiersStatistics.class,
 				"curDossierStatistics", "year");
 
-		templateVariableGroup.addVariable("ListDossierStatistics", List.class,
-				PortletDisplayTemplateConstants.ENTRIES);
+		/*templateVariableGroup.addVariable("ListDossierStatistics", List.class,
+				PortletDisplayTemplateConstants.ENTRIES);*/
+		
+		templateVariableGroup.addVariable(
+			"json-data", String.class, "jsonData");
 
 		templateVariableGroup
 				.addVariable("dossierStatistics", List.class,
