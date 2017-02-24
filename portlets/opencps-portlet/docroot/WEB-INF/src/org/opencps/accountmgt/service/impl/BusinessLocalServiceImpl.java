@@ -22,12 +22,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.portlet.ActionRequest;
+
+import org.opencps.accountmgt.FileTypeFailException;
 import org.opencps.accountmgt.NoSuchBusinessException;
 import org.opencps.accountmgt.model.Business;
 import org.opencps.accountmgt.model.BusinessDomain;
 import org.opencps.accountmgt.service.base.BusinessLocalServiceBaseImpl;
 import org.opencps.util.DLFolderUtil;
 import org.opencps.util.DateTimeUtil;
+import org.opencps.util.MessageKeys;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.PortletPropsValues;
 import org.opencps.util.PortletUtil;
@@ -38,7 +42,9 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
@@ -385,7 +391,8 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 		String districtName, String wardName, String telNo,
 		String representativeName, String representativeRole,
 		String[] businessDomainCodes, boolean isChangePassword,
-		String password, String rePassword, long repositoryId,
+		String password, String rePassword, long repositoryId, String sourceFileName,
+        String contentType,String title, InputStream inputStream,long size,
 		ServiceContext serviceContext, Date dateOfIdNumber)
 		throws SystemException, PortalException {
 
@@ -437,6 +444,33 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 		organization.setName(fullName + StringPool.OPEN_PARENTHESIS + idNumber
 				+ StringPool.CLOSE_PARENTHESIS);
 		organizationPersistence.update(organization);
+		
+		String[] folderNames = new String[] {
+				PortletConstants.DestinationRoot.BUSINESS.toString(), cityName,
+				districtName, wardName, String.valueOf(mappingUser.getUserId()) };
+
+		String destination = PortletUtil.getDestinationFolder(folderNames);
+
+		serviceContext.setAddGroupPermissions(true);
+		serviceContext.setAddGuestPermissions(true);
+
+		FileEntry fileEntry = null;
+
+		if (size > 0 && inputStream != null) {
+			
+			if(business.getSignImageID()>0) {
+				DLAppServiceUtil.deleteFileEntry(business.getSignImageID());
+			}
+
+			DLFolder dlFolder = DLFolderUtil.getTargetFolder(
+					mappingUser.getUserId(), serviceContext.getScopeGroupId(),
+					repositoryId, false, 0, destination, StringPool.BLANK,
+					false, serviceContext);
+			fileEntry = DLAppServiceUtil.addFileEntry(repositoryId,
+					dlFolder.getFolderId(), sourceFileName, contentType, title,
+					StringPool.BLANK, StringPool.BLANK, inputStream, size,
+					serviceContext);
+		}
 
 		business.setAddress(address);
 
@@ -463,6 +497,9 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 		
 		business.setDateOfIdNumber(dateOfIdNumber);
 		
+		business.setSignImageID(fileEntry != null ? fileEntry.getFileEntryId()
+				: 0);
+		
 		business = businessPersistence.update(business);
 
 		if (businessDomainCodes != null && businessDomainCodes.length > 0) {
@@ -483,7 +520,7 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 		return business;
 
 	}
-
+	
 	public Business updateBusiness(long businessId, String fullName,
 			String enName, String shortName, String businessType,
 			String idNumber, String address, String cityCode,

@@ -136,6 +136,7 @@
 		
 		<aui:form name="fm" 
 			method="post" 
+			enctype="multipart/form-data"
 			action='<%=accountType.equals("CITIZEN") ? updateCitizenProfileURL.toString() : updateBusinessProfileURL.toString() %>'
 		>
 			<aui:input name="backURL" type="hidden" value="<%=backURL %>"/>

@@ -298,7 +298,8 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 			String cityCode, String districtCode, String wardCode,
 			String cityName, String districtName, String wardName,
 			String telNo, boolean isChangePassWord, String newPassword,
-			String reTypePassword, long repositoryId,
+			String reTypePassword, long repositoryId, String sourceFileName,
+	        String contentType,String title, InputStream inputStream,long size,
 			ServiceContext serviceContext) throws SystemException,
 			PortalException {
 

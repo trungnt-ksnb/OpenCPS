@@ -18,6 +18,7 @@
 package org.opencps.accountmgt.portlet;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +30,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.opencps.accountmgt.FileTypeFailException;
 import org.opencps.accountmgt.InvalidCityCodeException;
 import org.opencps.accountmgt.InvalidDistricCodeException;
 import org.opencps.accountmgt.InvalidWardCodeException;
@@ -58,6 +60,8 @@ import com.liferay.portal.UserPasswordException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.upload.UploadPortletRequest;
+import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
@@ -136,6 +140,9 @@ public class AccountProfilePortlet extends MVCPortlet {
 	public void updateCitizenProfile(
 		ActionRequest actionRequest, ActionResponse actionResponse)
 		throws IOException {
+		
+		UploadPortletRequest uploadPortletRequest =
+			    PortalUtil.getUploadPortletRequest(actionRequest);
 
 		long citizenId =
 			ParamUtil.getLong(actionRequest, CitizenDisplayTerms.CITIZEN_ID);
@@ -149,6 +156,11 @@ public class AccountProfilePortlet extends MVCPortlet {
 		long wardId =
 			ParamUtil.getLong(
 				actionRequest, CitizenDisplayTerms.CITIZEN_WARD_ID);
+		
+		long size =
+			    uploadPortletRequest.getSize("signImageID");
+		
+		long repositoryId = 0;
 
 		String address =
 			ParamUtil.getString(
@@ -162,6 +174,18 @@ public class AccountProfilePortlet extends MVCPortlet {
 			ParamUtil.getString(actionRequest, CitizenDisplayTerms.NEW_PASSWORD);
 		String rePass =
 			ParamUtil.getString(actionRequest, CitizenDisplayTerms.RE_PASSWORD);
+		
+		String contentType =
+			    uploadPortletRequest.getContentType("signImageID");
+
+		String sourceFileName =
+				uploadPortletRequest.getFileName("signImageID");
+	
+		String title = null;
+		
+		contentType =
+			    Validator.isNotNull(contentType)
+			        ? MimeTypesUtil.getContentType(contentType) : StringPool.BLANK;
 
 		String backURL = ParamUtil.getString(actionRequest, "backURL");
 
@@ -179,12 +203,17 @@ public class AccountProfilePortlet extends MVCPortlet {
 		}
 		
 		boolean updated = false;
+		
+		InputStream inputStream = null;
 
 		try {
 			AccountRegPortlet.validateCitizen(
 				citizenId, StringPool.BLANK, StringPool.BLANK, address,
 				StringPool.BLANK, telNo, 1, StringPool.BLANK, cityId,
 				districtId, wardId, StringPool.BLANK);
+			
+			inputStream =
+				    uploadPortletRequest.getFileAsStream("signImageID");
 			
 			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
@@ -205,7 +234,13 @@ public class AccountProfilePortlet extends MVCPortlet {
 					district.getItemName(serviceContext.getLocale(), true),
 					ward.getItemName(serviceContext.getLocale(), true), telNo,
 					isChangePassword, newPass, rePass,
-					serviceContext.getScopeGroupId(), serviceContext);
+					serviceContext.getScopeGroupId(), sourceFileName,
+			        contentType, title, inputStream, size,serviceContext);
+				
+				if (Validator.isNotNull(sourceFileName)
+						&& !AccountRegPortlet.isFileTypeSignImg(sourceFileName)) {
+					throw new FileTypeFailException();
+				}
 
 				HttpServletRequest request =
 					PortalUtil.getHttpServletRequest(actionRequest);
@@ -238,6 +273,9 @@ public class AccountProfilePortlet extends MVCPortlet {
 			else if (e instanceof InvalidWardCodeException) {
 				SessionErrors.add(actionRequest, InvalidWardCodeException.class);
 			}
+			else if (e instanceof FileTypeFailException) {
+				SessionErrors.add(actionRequest, FileTypeFailException.class);
+			}
 			else {
 				SessionErrors.add(
 					actionRequest,
@@ -261,6 +299,9 @@ public class AccountProfilePortlet extends MVCPortlet {
 	public void updateBusinessProfile(
 		ActionRequest actionRequest, ActionResponse actionResponse)
 		throws IOException {
+		
+		UploadPortletRequest uploadPortletRequest =
+			    PortalUtil.getUploadPortletRequest(actionRequest);
 
 		long businessId =
 			ParamUtil.getLong(
@@ -279,6 +320,11 @@ public class AccountProfilePortlet extends MVCPortlet {
 		long type =
 			ParamUtil.getLong(
 				actionRequest, BusinessDisplayTerms.BUSINESS_BUSINESSTYPE);
+		
+		long size =
+			    uploadPortletRequest.getSize("signImageID");
+		
+		long repositoryId = 0;
 
 		String backURL = ParamUtil.getString(actionRequest, "backURL");
 
@@ -307,6 +353,19 @@ public class AccountProfilePortlet extends MVCPortlet {
 		String representativeRole =
 			ParamUtil.getString(
 				actionRequest, BusinessDisplayTerms.BUSINESS_REPRESENTATIVEROLE);
+		
+		String contentType =
+			    uploadPortletRequest.getContentType("signImageID");
+
+		String sourceFileName =
+				uploadPortletRequest.getFileName("signImageID");
+	
+		String title = null;
+		
+		contentType =
+			    Validator.isNotNull(contentType)
+			        ? MimeTypesUtil.getContentType(contentType) : StringPool.BLANK;
+	
 		// String[] domain =
 		// ParamUtil.getParameterValues(
 		// actionRequest, BusinessDisplayTerms.BUSINESS_DOMAIN);
@@ -351,6 +410,8 @@ public class AccountProfilePortlet extends MVCPortlet {
 		DictItem ward = null;
 
 		DictItem busType = null;
+		
+		InputStream inputStream = null;
 
 		try {
 			AccountRegPortlet.validateBusiness(
@@ -358,6 +419,9 @@ public class AccountProfilePortlet extends MVCPortlet {
 				shortName, address, representativeName, representativeRole,
 				cityId, districtId, wardId, 1, StringPool.BLANK, StringPool.BLANK);
 			city = DictItemLocalServiceUtil.getDictItem(cityId);
+			
+			inputStream =
+				    uploadPortletRequest.getFileAsStream("signImageID");
 
 			district = DictItemLocalServiceUtil.getDictItem(districtId);
 
@@ -372,6 +436,10 @@ public class AccountProfilePortlet extends MVCPortlet {
 			
 			if (businessId > 0) {
 				district.getItemName(serviceContext.getLocale(), true);
+				if (Validator.isNotNull(sourceFileName)
+						&& !AccountRegPortlet.isFileTypeSignImg(sourceFileName)) {
+					throw new FileTypeFailException();
+				}
 				BusinessLocalServiceUtil.updateBusiness(
 					businessId, name, enName, shortName, busType.getItemCode(),
 					idNumber, address, city.getItemCode(),
@@ -381,16 +449,17 @@ public class AccountProfilePortlet extends MVCPortlet {
 					ward.getItemName(serviceContext.getLocale(), true), telNo,
 					representativeName, representativeRole,
 					listBussinessDomains, isChangePassword, curPass, rePass,
-					serviceContext.getScopeGroupId(), serviceContext, dateOfIdNumber);
-
+					serviceContext.getScopeGroupId(), sourceFileName,
+			        contentType, title, inputStream, size, serviceContext, dateOfIdNumber);
+				
 				HttpServletRequest request =
 					PortalUtil.getHttpServletRequest(actionRequest);
 				AccountUtil.destroy(request);
-
+				
 				updated = true;
 
 			}
-
+			
 		}
 		catch (Exception e) {
 			_log.error(e);
@@ -429,6 +498,9 @@ public class AccountProfilePortlet extends MVCPortlet {
 			else if (e instanceof InvalidWardCodeException) {
 				SessionErrors.add(actionRequest, InvalidWardCodeException.class);
 			}
+			else if (e instanceof FileTypeFailException) {
+				SessionErrors.add(actionRequest, FileTypeFailException.class);
+				}
 			else {
 				SessionErrors.add(
 					actionRequest,

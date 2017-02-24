@@ -1,3 +1,4 @@
+<%@page import="org.opencps.accountmgt.FileTypeFailException"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -110,6 +111,11 @@
 			
 %>
 
+<liferay-ui:error 
+	exception="<%= FileTypeFailException.class %>" 
+	message="<%= FileTypeFailException.class.getName() %>" 
+/>
+
 <aui:model-context bean="<%=business%>" model="<%=Business.class%>" />
 
 <c:if test="<%=isAdminViewProfile  && businessId > 0%>">
@@ -152,6 +158,8 @@
 			<aui:validator name="maxLength">100</aui:validator>
 		</aui:input>
 	</aui:col>
+</aui:row>
+<aui:row cssClass="nav-content-row-2">
 	
 	<aui:col width="50">
 		<label class="control-label custom-lebel" for='<portlet:namespace/><%=BusinessDisplayTerms.BUSINESS_DATE_OF_IDNUMBER %>'>
@@ -208,6 +216,17 @@
 				<aui:input name="<%=BusinessDisplayTerms.BUSINESS_ADDRESS %>" cssClass="input100">
 					<aui:validator name="maxLength">500</aui:validator>
 				</aui:input>
+		</aui:row>
+		<aui:row cssClass="input-file">
+			<aui:input 
+				type="file" 
+				name="signImageID" 
+				label='<%= LanguageUtil.get(pageContext, "business-attach-file-xy") %>'
+			>
+				<aui:validator name="acceptFiles">
+					'<%= StringUtil.merge(PortletPropsValues.ACCOUNTMGT_FILESignImg_TYPE) %>'
+				</aui:validator>
+			</aui:input>
 		</aui:row>
 	</aui:col>
 	<aui:col width="50">

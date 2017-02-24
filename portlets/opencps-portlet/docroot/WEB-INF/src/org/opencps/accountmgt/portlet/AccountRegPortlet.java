@@ -868,6 +868,14 @@ public class AccountRegPortlet extends MVCPortlet {
 		return false;
 		
 	}
+	public static boolean isFileTypeSignImg(String sourceFileName) {
+		for(String str : PortletPropsValues.ACCOUNTMGT_FILESignImg_TYPE) {
+			if(sourceFileName.endsWith(str)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	private Log _log = LogFactoryUtil.getLog(AccountRegPortlet.class.getName());
 }
