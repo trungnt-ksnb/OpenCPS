@@ -345,19 +345,6 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 						serviceContext);
 			}
 		}
-
-		citizen.setAddress(address);
-
-		citizen.setCityCode(cityCode);
-
-		citizen.setDistrictCode(districtCode);
-
-		citizen.setModifiedDate(now);
-
-		citizen.setTelNo(telNo);
-		citizen.setUserId(mappingUser.getUserId());
-		citizen.setWardCode(wardCode);
-		
 		String[] folderNames = new String[] {
 				PortletConstants.DestinationRoot.BUSINESS.toString(), cityName,
 				districtName, wardName, String.valueOf(mappingUser.getUserId()) };
@@ -384,7 +371,18 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 					StringPool.BLANK, StringPool.BLANK, inputStream, size,
 					serviceContext);
 		}
+		citizen.setAddress(address);
 
+		citizen.setCityCode(cityCode);
+
+		citizen.setDistrictCode(districtCode);
+
+		citizen.setModifiedDate(now);
+
+		citizen.setTelNo(telNo);
+		citizen.setUserId(mappingUser.getUserId());
+		citizen.setWardCode(wardCode);
+		
 		return citizenPersistence.update(citizen);
 
 	}
