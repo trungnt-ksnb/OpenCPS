@@ -357,6 +357,33 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 		citizen.setTelNo(telNo);
 		citizen.setUserId(mappingUser.getUserId());
 		citizen.setWardCode(wardCode);
+		
+		String[] folderNames = new String[] {
+				PortletConstants.DestinationRoot.BUSINESS.toString(), cityName,
+				districtName, wardName, String.valueOf(mappingUser.getUserId()) };
+
+		String destination = PortletUtil.getDestinationFolder(folderNames);
+
+		serviceContext.setAddGroupPermissions(true);
+		serviceContext.setAddGuestPermissions(true);
+
+		FileEntry fileEntry = null;
+
+		if (size > 0 && inputStream != null) {
+			
+			if(citizen.getSignImageID()>0) {
+				DLAppServiceUtil.deleteFileEntry(citizen.getSignImageID());
+			}
+
+			DLFolder dlFolder = DLFolderUtil.getTargetFolder(
+					mappingUser.getUserId(), serviceContext.getScopeGroupId(),
+					repositoryId, false, 0, destination, StringPool.BLANK,
+					false, serviceContext);
+			fileEntry = DLAppServiceUtil.addFileEntry(repositoryId,
+					dlFolder.getFolderId(), sourceFileName, contentType, title,
+					StringPool.BLANK, StringPool.BLANK, inputStream, size,
+					serviceContext);
+		}
 
 		return citizenPersistence.update(citizen);
 
