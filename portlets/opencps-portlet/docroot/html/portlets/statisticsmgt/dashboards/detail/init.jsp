@@ -99,7 +99,7 @@
 			"$receivedNumber"
 		});
 
-	String fieldTotalFormula =
+	/* String fieldTotalFormula =
 		GetterUtil.getString(portletPreferences.getValue(
 			"fieldTotalFormula", StringPool.BLANK));
 
@@ -109,7 +109,7 @@
 
 	String fieldTotalKey =
 		GetterUtil.getString(portletPreferences.getValue(
-			"fieldTotalKey", StringPool.BLANK));
+			"fieldTotalKey", StringPool.BLANK)); */
 
 	List<FieldDatasShema> fieldDatasShemas =
 		StatisticsUtil.getFieldDatasShemas(

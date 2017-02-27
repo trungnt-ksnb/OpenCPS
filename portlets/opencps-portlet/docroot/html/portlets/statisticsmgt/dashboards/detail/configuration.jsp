@@ -1,5 +1,4 @@
 
-<%@page import="java.util.ArrayList"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -25,14 +24,14 @@
 <%@page import="com.liferay.portal.kernel.template.TemplateHandlerRegistryUtil"%>
 <%@page import="com.liferay.portal.kernel.util.Constants"%>
 <%@page import="com.liferay.portal.kernel.template.TemplateHandler"%>
-
+<%@page import="java.util.ArrayList"%>
 <%@ include file="init.jsp" %>
 
 <%
 	int[] fieldsIndexes = null;
 	if(fieldDatasShemas == null || fieldDatasShemas.isEmpty()){
 		fieldDatasShemas = new ArrayList<FieldDatasShema>();
-		FieldDatasShema fieldDatasShema = new FieldDatasShema(LanguageUtil.get(locale, "received-number"),"rec","$receivedNumber");
+		FieldDatasShema fieldDatasShema = new FieldDatasShema(LanguageUtil.get(locale, "received-number"),"k1","receivedNumber");
 		fieldDatasShemas.add(fieldDatasShema);
 		fieldsIndexes = new int[]{0};
 	}else{
@@ -80,7 +79,7 @@
 				</aui:col>
 			</aui:fieldset>
 			
-			<aui:fieldset>
+			<%-- <aui:fieldset>
 				<aui:col width="100">
 					<aui:select name="chartType">
 						<aui:option value="pie" selected='<%=chartType.equals("pie") %>'><liferay-ui:message key="pie"/></aui:option>
@@ -88,7 +87,7 @@
 						<aui:option value="table" selected='<%=chartType.equals("table") %>'><liferay-ui:message key="table"/></aui:option>
 					</aui:select>
 				</aui:col>
-			</aui:fieldset>
+			</aui:fieldset> --%>
 		</liferay-ui:panel>
 		
 		<liferay-ui:panel 
@@ -98,7 +97,7 @@
 			persistState="<%= true %>" 
 			title="chart-filter"
 		>
-			<aui:fieldset>
+			<%-- <aui:fieldset>
 				<aui:col width="100">
 					<aui:select name="fields" multiple="<%=true %>" label="statistics-status">
 						<aui:option value="remaining-number" selected="<%=ArrayUtil.contains(fields, \"remaining-number\")%>">
@@ -121,10 +120,13 @@
 						</aui:option>
 					</aui:select>
 				</aui:col>
-			</aui:fieldset>
+			</aui:fieldset> --%>
 				
 				
 			<aui:fieldset id="dynamicFormula">
+				<div class="formul-note">
+					remainingNumber, receivedNumber, receivedNumber, ontimeNumber, overtimeNumber, processingNumber, delayingNumber
+				</div>
 				<%
 					if(fieldsIndexes != null){
 						for(int f = 0; f < fieldsIndexes.length; f++){
@@ -134,15 +136,15 @@
 								<div class="lfr-form-row lfr-form-row-inline">
 									<div class="row-fields">
 										<aui:col width="40">
-											<aui:input label="fieldLabel" name='<%= "fieldLabel" + index %>' id='<%= "fieldLabel" + index %>' type="text" value="<%=fieldDatasShema.getFieldLabel() %>"/>
+											<aui:input label="field-label" name='<%= "fieldLabel" + index %>' id='<%= "fieldLabel" + index %>' type="text" value="<%=fieldDatasShema.getFieldLabel() %>"/>
 										</aui:col>
 										
 										<aui:col width="20">
-											<aui:input label="fieldKey" name='<%= "fieldKey" + index %>'  id='<%= "fieldKey" + index %>' type="text" value="<%=fieldDatasShema.getFieldKey() %>"/>							
+											<aui:input label="field-key" name='<%= "fieldKey" + index %>'  id='<%= "fieldKey" + index %>' type="text" value="<%=fieldDatasShema.getFieldKey() %>"/>							
 										</aui:col>
 										
 										<aui:col width="40">
-											<aui:input label="fieldFormula" name='<%= "fieldFormula" + index %>'  id='<%= "fieldFormula" + index %>' type="text" value="<%=fieldDatasShema.getFieldFomula() %>"/>
+											<aui:input label="field-formula" name='<%= "fieldFormula" + index %>'  id='<%= "fieldFormula" + index %>' type="text" value="<%=fieldDatasShema.getFieldFomula() %>"/>
 										</aui:col>
 									</div>
 								</div>
@@ -154,7 +156,7 @@
 				<aui:input name="fieldsIndexes" type="hidden" value="<%= StringUtil.merge(fieldsIndexes) %>" />
 			</aui:fieldset>
 			
-			<aui:fieldset>
+			<%-- <aui:fieldset>
 				<aui:col width="40">
 					<aui:input name="fieldTotalLabel" type="text" value="<%=fieldTotalLabel %>"/>
 				</aui:col>
@@ -166,11 +168,7 @@
 				<aui:col width="40">
 					<aui:input name="fieldTotalFormula" type="text" value="<%=fieldTotalFormula %>"/>
 				</aui:col>
-			</aui:fieldset>
-			
-			<aui:fieldset>
-				<aui:col width="40"></aui:col>
-			</aui:fieldset>
+			</aui:fieldset> --%>
 			
 			<aui:fieldset>
 				<aui:col width="30">

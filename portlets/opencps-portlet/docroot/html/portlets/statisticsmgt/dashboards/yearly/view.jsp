@@ -26,7 +26,7 @@
 <%@ include file="init.jsp" %>
 
 <%
-	List<DossiersStatistics> dossiersStatistics = new ArrayList<DossiersStatistics>();
+	/* List<DossiersStatistics> dossiersStatistics = new ArrayList<DossiersStatistics>();
 	try {
 		for(int i = startMonth; i <= period; i++){
 			DossiersStatistics statistics = DossiersStatisticsLocalServiceUtil
@@ -36,7 +36,12 @@
 		}
 	} catch (Exception e) {
 
-	}
+	} */
+	
+	List<DossiersStatistics> dossiersStatistics =
+					DossiersStatisticsLocalServiceUtil.getStatsByGovAndDomain(
+						scopeGroupId, startMonth, startYear, period, StringPool.BLANK,
+						StringPool.BLANK, 0, 0);
 %>
 
 <c:choose>
@@ -76,45 +81,69 @@
 					
 					<ul class="widget-content">
 						<li class="widget-row">
-							<span class="span8 key">
-								<liferay-ui:message key="remaining-number"/>
+							<span class="widget-cell">
+								<span class="content">
+									<span class="number"><%=remainingNumber %></span>
+									<span class="key">
+										<liferay-ui:message key="remaining-number"/>
+									</span>
+								</span>
 							</span>
-							<span class="span4 number"><%=remainingNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8 key">
-								<liferay-ui:message key="received-number"/>
+							<span class="widget-cell">
+								<span class="content">
+									<span class="number"><%=receivedNumber %></span>
+									<span class="key">
+										<liferay-ui:message key="received-number"/>
+									</span>
+								</span>
 							</span>
-							<span class="span4 number"><%=receivedNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8 key">
-								<liferay-ui:message key="ontime-number"/>
+							<span class="widget-cell">
+								<span class="content">
+									<span class="number"><%=ontimeNumber %></span>
+									<span class="key">
+										<liferay-ui:message key="ontime-number"/>
+									</span>
+								</span>
 							</span>
-							<span class="span4 number"><%=ontimeNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8 key">
-								<liferay-ui:message key="overtime-number"/>
+							<span class="widget-cell">
+								<span class="content">
+									<span class="number"><%=overtimeNumber %></span>
+									<span class="key">
+										<liferay-ui:message key="overtime-number"/>
+									</span>
+								</span>
 							</span>
-							<span class="span4 number"><%=overtimeNumber %></span>
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8 key">
-								<liferay-ui:message key="processing-number"/>
-							</span>
-							<span class="span4 number"><%=processingNumber %></span>
+							<span class="widget-cell">
+								<span class="content">
+									<span class="number"><%=processingNumber %></span>
+									<span class="key">
+										<liferay-ui:message key="processing-number"/>
+									</span>
+								</span>
+							</span>							
 						</li>
 						
 						<li class="widget-row">
-							<span class="span8 key">
-								<liferay-ui:message key="delaying-number"/>
+							<span class="widget-cell">
+								<span class="content">
+									<span class="number"><%=delayingNumber %></span>
+									<span class="key">
+										<liferay-ui:message key="delaying-number"/>
+									</span>
+								</span>
 							</span>
-							<span class="span4 number"><%=delayingNumber %></span>
 						</li>
 					</ul>
 				</div>

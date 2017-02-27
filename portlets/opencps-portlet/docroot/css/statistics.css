@@ -57,3 +57,8 @@
     padding: 0;
     width: 100%;
 }
+
+.formul-note {
+    color: #888;
+    font-style: italic;
+}

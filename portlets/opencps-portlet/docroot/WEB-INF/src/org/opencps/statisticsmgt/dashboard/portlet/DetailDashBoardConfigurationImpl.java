@@ -47,14 +47,12 @@ public class DetailDashBoardConfigurationImpl
 
 		String yaxisUnit = ParamUtil.getString(actionRequest, "yaxisUnit");
 
-		String fieldTotalFormula =
-			ParamUtil.getString(actionRequest, "fieldTotalFormula");
-
-		String fieldTotalLabel =
-			ParamUtil.getString(actionRequest, "fieldTotalLabel");
-
-		String fieldTotalKey =
-			ParamUtil.getString(actionRequest, "fieldTotalKey");
+		/*
+		 * String fieldTotalFormula = ParamUtil.getString(actionRequest,
+		 * "fieldTotalFormula"); String fieldTotalLabel =
+		 * ParamUtil.getString(actionRequest, "fieldTotalLabel"); String
+		 * fieldTotalKey = ParamUtil.getString(actionRequest, "fieldTotalKey");
+		 */
 
 		int startMonth = ParamUtil.getInteger(actionRequest, "startMonth");
 
@@ -73,10 +71,10 @@ public class DetailDashBoardConfigurationImpl
 		// boolean notNullDomain =
 		// ParamUtil.getBoolean(actionRequest, "notNullDomain");
 
-		String[] fields =
-			ParamUtil.getParameterValues(actionRequest, "fields", new String[] {
-				"received-number"
-			});
+		//String[] fields =
+		//	ParamUtil.getParameterValues(actionRequest, "fields", new String[] {
+		//		"received-number"
+		//	});
 
 		int[] fieldsIndexes =
 			StringUtil.split(
@@ -88,7 +86,7 @@ public class DetailDashBoardConfigurationImpl
 			String[] fieldKeys = new String[fieldsIndexes.length];
 			String[] fieldFormulas = new String[fieldsIndexes.length];
 			for (int f = 0; f < fieldsIndexes.length; f++) {
-				
+
 				String fieldLabel =
 					ParamUtil.getString(actionRequest, "fieldLabel" +
 						fieldsIndexes[f]);
@@ -102,8 +100,9 @@ public class DetailDashBoardConfigurationImpl
 				fieldLabels[f] = fieldLabel;
 				fieldKeys[f] = fieldKey;
 				fieldFormulas[f] = fieldFormula;
-				
-				System.out.println(fieldLabel + "-----" + fieldKey + "-----" + fieldFormula);
+
+				System.out.println(fieldLabel + "-----" + fieldKey + "-----" +
+					fieldFormula);
 			}
 
 			preferences.setValues("fieldLabels", fieldLabels);
@@ -111,9 +110,9 @@ public class DetailDashBoardConfigurationImpl
 			preferences.setValues("fieldFormulas", fieldFormulas);
 		}
 
-		preferences.setValue("fieldTotalFormula", fieldTotalFormula);
-		preferences.setValue("fieldTotalLabel", fieldTotalLabel);
-		preferences.setValue("fieldTotalKey", fieldTotalKey);
+		// preferences.setValue("fieldTotalFormula", fieldTotalFormula);
+		// preferences.setValue("fieldTotalLabel", fieldTotalLabel);
+		// preferences.setValue("fieldTotalKey", fieldTotalKey);
 
 		preferences.setValue("chartTitle", chartTitle);
 		preferences.setValue("xaxisUnit", xaxisUnit);
@@ -128,7 +127,7 @@ public class DetailDashBoardConfigurationImpl
 		preferences.setValue("displayStyle", displayStyle);
 		preferences.setValue("filterKey", filterKey);
 		preferences.setValue("level", String.valueOf(level));
-		preferences.setValue("fields", StringUtil.merge(fields));
+		// preferences.setValue("fields", StringUtil.merge(fields));
 		preferences.setValue("chartType", String.valueOf(chartType));
 		preferences.setValue("domainDeepLevel", String.valueOf(domainDeepLevel));
 		preferences.store();
