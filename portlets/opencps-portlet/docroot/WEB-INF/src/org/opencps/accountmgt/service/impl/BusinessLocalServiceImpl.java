@@ -377,6 +377,7 @@ public class BusinessLocalServiceImpl extends BusinessLocalServiceBaseImpl {
 
 		return businessPersistence.findByUUID(uuid);
 	}
+	
 	public Business updateBusiness(
 			long businessId, String fullName, String enName, String shortName,
 			String businessType, String idNumber, String address, String cityCode,
