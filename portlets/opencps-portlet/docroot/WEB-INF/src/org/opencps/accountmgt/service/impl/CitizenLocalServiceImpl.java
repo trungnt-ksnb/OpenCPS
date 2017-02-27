@@ -293,6 +293,72 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 
 		return citizenPersistence.findByUUID(uuid);
 	}
+	public Citizen updateCitizen(long citizenId, String address,
+			String cityCode, String districtCode, String wardCode,
+			String cityName, String districtName, String wardName,
+			String telNo, boolean isChangePassWord, String newPassword,
+			String reTypePassword, long repositoryId ,
+			ServiceContext serviceContext) throws SystemException,
+			PortalException {
+
+		Citizen citizen = citizenPersistence.findByPrimaryKey(citizenId);
+
+		User mappingUser = userLocalService.getUser(citizen.getMappingUserId());
+
+		Date now = new Date();
+
+		if (mappingUser != null) {
+			// Reset password
+			if (isChangePassWord) {
+				userLocalService.updateModifiedDate(mappingUser.getUserId(), now);
+				
+				mappingUser = userLocalService.updatePassword(
+						mappingUser.getUserId(), newPassword, reTypePassword,
+						false);
+			}
+
+			if ((cityCode != citizen.getCityCode()
+					|| districtCode != citizen.getDistrictCode() || wardCode != citizen
+					.getWardCode()) && citizen.getAttachFile() > 0) {
+				// Move image folder
+
+				String[] newFolderNames = new String[] {
+						PortletConstants.DestinationRoot.CITIZEN.toString(),
+						cityName, districtName, wardName };
+
+				String destination = PortletUtil
+						.getDestinationFolder(newFolderNames);
+
+				DLFolder parentFolder = DLFolderUtil
+						.getTargetFolder(mappingUser.getUserId(),
+								serviceContext.getScopeGroupId(), repositoryId,
+								false, 0, destination, StringPool.BLANK, false,
+								serviceContext);
+
+				FileEntry fileEntry = DLAppServiceUtil.getFileEntry(citizen
+						.getAttachFile());
+
+				DLFolderLocalServiceUtil.moveFolder(mappingUser.getUserId(),
+						fileEntry.getFolderId(), parentFolder.getFolderId(),
+						serviceContext);
+			}
+		}
+
+		citizen.setAddress(address);
+
+		citizen.setCityCode(cityCode);
+
+		citizen.setDistrictCode(districtCode);
+
+		citizen.setModifiedDate(now);
+
+		citizen.setTelNo(telNo);
+		citizen.setUserId(mappingUser.getUserId());
+		citizen.setWardCode(wardCode);
+
+		return citizenPersistence.update(citizen);
+
+	}
 
 	public Citizen updateCitizen(long citizenId, String address,
 			String cityCode, String districtCode, String wardCode,
@@ -358,8 +424,8 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 
 		if (size > 0 && inputStream != null) {
 			
-			if(citizen.getSignImageID()>0) {
-				DLAppServiceUtil.deleteFileEntry(citizen.getSignImageID());
+			if(citizen.getSignImageId()>0) {
+				DLAppServiceUtil.deleteFileEntry(citizen.getSignImageId());
 			}
 
 			DLFolder dlFolder = DLFolderUtil.getTargetFolder(

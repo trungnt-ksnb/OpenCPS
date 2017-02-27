@@ -63,7 +63,7 @@ public class PortletPropsKeys {
 	public static final String DATAMGT_MASTERDATA_DOSSIER_STATUS = "opencps.datamgt.masterdata.dossier.status";
 	// validate file
 	public static final String ACCOUNTMGT_FILE_TYPE = "opencps.accountmgt.file.type";
-	public static final String ACCOUNTMGT_FILESignImg_TYPE = "opencps.accountmgt.fileSignImg.type";
+	public static final String ACCOUNTMGT_FILESIGNIMG_TYPE = "opencps.accountmgt.filesignimg.type";
 	public static final String ACCOUNTMGT_FILE_SIZE ="opencps.accountmgt.file.size";
 	// User Management
 	public static final String USERMGT_JOBPOS_LEADER = "opencps.usermgt.jobpos.leader";

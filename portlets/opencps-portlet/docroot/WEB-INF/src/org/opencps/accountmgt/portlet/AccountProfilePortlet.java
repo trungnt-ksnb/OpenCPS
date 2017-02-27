@@ -65,14 +65,10 @@ import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Company;
-import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.UserGroup;
-import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
-import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
@@ -158,7 +154,7 @@ public class AccountProfilePortlet extends MVCPortlet {
 				actionRequest, CitizenDisplayTerms.CITIZEN_WARD_ID);
 		
 		long size =
-			    uploadPortletRequest.getSize("signImageID");
+			    uploadPortletRequest.getSize("signImageId");
 		
 		long repositoryId = 0;
 
@@ -176,10 +172,10 @@ public class AccountProfilePortlet extends MVCPortlet {
 			ParamUtil.getString(actionRequest, CitizenDisplayTerms.RE_PASSWORD);
 		
 		String contentType =
-			    uploadPortletRequest.getContentType("signImageID");
+			    uploadPortletRequest.getContentType("signImageId");
 
 		String sourceFileName =
-				uploadPortletRequest.getFileName("signImageID");
+				uploadPortletRequest.getFileName("signImageId");
 	
 		String title = null;
 		
@@ -213,7 +209,7 @@ public class AccountProfilePortlet extends MVCPortlet {
 				districtId, wardId, StringPool.BLANK);
 			
 			inputStream =
-				    uploadPortletRequest.getFileAsStream("signImageID");
+				    uploadPortletRequest.getFileAsStream("signImageId");
 			
 			ServiceContext serviceContext =
 				ServiceContextFactory.getInstance(actionRequest);
@@ -322,7 +318,7 @@ public class AccountProfilePortlet extends MVCPortlet {
 				actionRequest, BusinessDisplayTerms.BUSINESS_BUSINESSTYPE);
 		
 		long size =
-			    uploadPortletRequest.getSize("signImageID");
+			    uploadPortletRequest.getSize("signImageId");
 		
 		long repositoryId = 0;
 
@@ -355,10 +351,10 @@ public class AccountProfilePortlet extends MVCPortlet {
 				actionRequest, BusinessDisplayTerms.BUSINESS_REPRESENTATIVEROLE);
 		
 		String contentType =
-			    uploadPortletRequest.getContentType("signImageID");
+			    uploadPortletRequest.getContentType("signImageId");
 
 		String sourceFileName =
-				uploadPortletRequest.getFileName("signImageID");
+				uploadPortletRequest.getFileName("signImageId");
 	
 		String title = null;
 		
@@ -421,7 +417,7 @@ public class AccountProfilePortlet extends MVCPortlet {
 			city = DictItemLocalServiceUtil.getDictItem(cityId);
 			
 			inputStream =
-				    uploadPortletRequest.getFileAsStream("signImageID");
+				    uploadPortletRequest.getFileAsStream("signImageId");
 
 			district = DictItemLocalServiceUtil.getDictItem(districtId);
 

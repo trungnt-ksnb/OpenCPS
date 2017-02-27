@@ -220,11 +220,11 @@
 		<aui:row cssClass="input-file">
 			<aui:input 
 				type="file" 
-				name="signImageID" 
+				name="signImageId" 
 				label='<%= LanguageUtil.get(pageContext, "business-attach-file-xy") %>'
 			>
 				<aui:validator name="acceptFiles">
-					'<%= StringUtil.merge(PortletPropsValues.ACCOUNTMGT_FILESignImg_TYPE) %>'
+					'<%= StringUtil.merge(PortletPropsValues.ACCOUNTMGT_FILESIGNIMG_TYPE) %>'
 				</aui:validator>
 			</aui:input>
 		</aui:row>
