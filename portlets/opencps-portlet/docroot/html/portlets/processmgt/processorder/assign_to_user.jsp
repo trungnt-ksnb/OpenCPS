@@ -522,12 +522,8 @@
 				var A = AUI();
 				var actionNote = A.one('#<portlet:namespace />actionNote');
 				if (requiredActionNote == 'true' && actionNote.val() == ''){
-					actionNote.addClass('changeDefErr');
-					A.one('#<portlet:namespace/>defErrActionNote').addClass('displayDefErr');
 					alert(Liferay.Language.get('please-add-note-before-send'));
 				} else {
-					actionNote.removeClass('changeDefErr');
-					A.one('#<portlet:namespace/>defErrActionNote').removeClass('displayDefErr');
 					submitForm(document.<portlet:namespace />fm);
 				}
 			});
