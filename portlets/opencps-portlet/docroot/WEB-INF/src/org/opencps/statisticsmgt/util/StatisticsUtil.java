@@ -987,7 +987,7 @@ public class StatisticsUtil {
 							groupId,
 							PortletPropsValues.DATAMGT_MASTERDATA_GOVERNMENT_AGENCY);
 				}
-				else {
+				else if(filterKey.equals("domain")){
 					dictCollection =
 						DictCollectionLocalServiceUtil.getDictCollection(
 							groupId,
@@ -1053,24 +1053,31 @@ public class StatisticsUtil {
 							int level = 0;
 
 							// Tham chieu den bang du lieu danh muc
-							dictItem =
-								DictItemLocalServiceUtil.getDictItemInuseByItemCode(
-									dictCollection.getDictCollectionId(), code);
+							
+							if(dictCollection != null){
+								dictItem =
+									DictItemLocalServiceUtil.getDictItemInuseByItemCode(
+										dictCollection.getDictCollectionId(),
+										code);
 
-							if (dictItem.getParentItemId() > 0) {
-								DictItem parentDictItem =
-									DictItemLocalServiceUtil.getDictItem(dictItem.getParentItemId());
-								parentCode = parentDictItem.getItemCode();
+								if (dictItem.getParentItemId() > 0) {
+									DictItem parentDictItem =
+										DictItemLocalServiceUtil.getDictItem(dictItem.getParentItemId());
+									parentCode = parentDictItem.getItemCode();
+								}
+
+								// Lay ten doi tuong
+								name = dictItem.getItemName(locale);
+
+								// Lay cap do cua doi tuong
+								level =
+									StringUtil.count(
+										dictItem.getTreeIndex(),
+										StringPool.PERIOD);
+
 							}
-
-							// Lay ten doi tuong
-							name = dictItem.getItemName(locale);
-
-							// Lay cap do cua doi tuong
-							level =
-								StringUtil.count(
-									dictItem.getTreeIndex(), StringPool.PERIOD);
-
+							
+							
 							// luu vao json
 							item.put("code", code);
 

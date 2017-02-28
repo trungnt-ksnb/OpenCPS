@@ -18,6 +18,9 @@
  */
 %>
 
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.Map"%>
+<%@page import="com.liferay.portal.kernel.json.JSONArray"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil"%>
@@ -42,35 +45,50 @@
 					DossiersStatisticsLocalServiceUtil.getStatsByGovAndDomain(
 						scopeGroupId, startMonth, startYear, period, StringPool.BLANK,
 						StringPool.BLANK, 0, 0);
+	
+	JSONArray jsonArray =
+					StatisticsUtil.renderData(
+						scopeGroupId, dossiersStatistics, fieldDatasShemas,
+						StringPool.BLANK, startMonth, startYear, period, currentMonth, currentYear, 0, 
+						0, locale);
+	System.out.println(jsonArray.toString());
 %>
 
 <c:choose>
-	<c:when test="<%=dossiersStatistics != null && !dossiersStatistics.isEmpty() %>">
+	<c:when test="<%=portletDisplayDDMTemplateId > 0 %>">
 		<%
-			int remainingNumber = 0;
-			int receivedNumber = 0;
-			int ontimeNumber = 0;
-			int overtimeNumber = 0;
-			int processingNumber = 0;
-			int delayingNumber = 0;
-			
-			for(DossiersStatistics statistics : dossiersStatistics){
-				receivedNumber += statistics.getReceivedNumber();
-				ontimeNumber += statistics.getOntimeNumber();
-				overtimeNumber += statistics.getOvertimeNumber();
-			}
-			
-			processingNumber += dossiersStatistics.get(dossiersStatistics.size() - 1).getProcessingNumber();
-			delayingNumber += dossiersStatistics.get(dossiersStatistics.size() - 1).getDelayingNumber();
+			Map<String, Object> contextObjects = new HashMap<String, Object>();
+
+			contextObjects.put("jsonData", jsonArray.toString());
+			contextObjects.put("periodMap", StatisticsUtil.getPeriodMap(startMonth, startYear, period));
+			//contextObjects.put("xmlData", xml);
 		%>
-		
+		<%= PortletDisplayTemplateUtil.renderDDMTemplate(pageContext, portletDisplayDDMTemplateId, dossiersStatistics, contextObjects) %>
+	</c:when>
+	
+	<c:otherwise>
 		<c:choose>
-			<c:when test="<%=portletDisplayDDMTemplateId > 0 %>">
-				<%= PortletDisplayTemplateUtil.renderDDMTemplate(pageContext, portletDisplayDDMTemplateId, dossiersStatistics) %>
-			</c:when>
-			
-			<c:otherwise>
-			
+			<c:when test="<%=dossiersStatistics != null && !dossiersStatistics.isEmpty() %>">
+				<%
+					int remainingNumber = 0;
+					int receivedNumber = 0;
+					int ontimeNumber = 0;
+					int overtimeNumber = 0;
+					int processingNumber = 0;
+					int delayingNumber = 0;
+					
+					for(DossiersStatistics statistics : dossiersStatistics){
+						receivedNumber += statistics.getReceivedNumber();
+						ontimeNumber += statistics.getOntimeNumber();
+						overtimeNumber += statistics.getOvertimeNumber();
+					}
+					
+					processingNumber += dossiersStatistics.get(dossiersStatistics.size() - 1).getProcessingNumber();
+					delayingNumber += dossiersStatistics.get(dossiersStatistics.size() - 1).getDelayingNumber();
+				%>
+				
+				
+					
 				<div class="widget-wrapper">
 					<%-- <div class="widget-header">
 						<span class="span8 key">
@@ -136,21 +154,23 @@
 						</li>
 						
 						<li class="widget-row">
-							<span class="widget-cell">
-								<span class="content">
-									<span class="number"><%=delayingNumber %></span>
-									<span class="key">
-										<liferay-ui:message key="delaying-number"/>
-									</span>
-								</span>
+					<span class="widget-cell">
+						<span class="content">
+							<span class="number"><%=delayingNumber %></span>
+							<span class="key">
+								<liferay-ui:message key="delaying-number"/>
 							</span>
-						</li>
-					</ul>
-				</div>
-			</c:otherwise>
-		</c:choose>
+						</span>
+					</span>
+				</li>
+			</ul>
+		</div>
 	</c:when>
+	
 	<c:otherwise>
 		<div class="portlet-msg-alert"><liferay-ui:message key="not-found-stats"/></div>
 	</c:otherwise>
 </c:choose>
+	</c:otherwise>
+</c:choose>
+

@@ -1,4 +1,3 @@
-
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -22,6 +21,7 @@
 <%@page import="org.opencps.statisticsmgt.bean.FieldDatasShema"%>
 <%@page import="java.util.List"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
+
 <%@ include file="../../init.jsp"%>
 
 <%

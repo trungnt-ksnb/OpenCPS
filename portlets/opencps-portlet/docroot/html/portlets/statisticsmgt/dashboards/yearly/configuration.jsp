@@ -31,8 +31,19 @@
 	int[] fieldsIndexes = null;
 	if(fieldDatasShemas == null || fieldDatasShemas.isEmpty()){
 		fieldDatasShemas = new ArrayList<FieldDatasShema>();
-		FieldDatasShema fieldDatasShema = new FieldDatasShema(LanguageUtil.get(locale, "received-number"),"k1","receivedNumber");
-		fieldDatasShemas.add(fieldDatasShema);
+		FieldDatasShema fieldDatasShema1 = new FieldDatasShema(LanguageUtil.get(locale, "remaining-number"),"k1","remainingNumber");
+		FieldDatasShema fieldDatasShema2 = new FieldDatasShema(LanguageUtil.get(locale, "received-number"),"k2","receivedNumber");
+		FieldDatasShema fieldDatasShema3 = new FieldDatasShema(LanguageUtil.get(locale, "ontime-number"),"k3","ontimeNumber");
+		FieldDatasShema fieldDatasShema4 = new FieldDatasShema(LanguageUtil.get(locale, "overtime-number"),"k4","overtimeNumber");
+		FieldDatasShema fieldDatasShema5 = new FieldDatasShema(LanguageUtil.get(locale, "processing-number"),"k5","processingNumber");
+		FieldDatasShema fieldDatasShema6 = new FieldDatasShema(LanguageUtil.get(locale, "delaying-number"),"k6","delayingNumber");
+		
+		fieldDatasShemas.add(fieldDatasShema1);
+		fieldDatasShemas.add(fieldDatasShema2);
+		fieldDatasShemas.add(fieldDatasShema3);
+		fieldDatasShemas.add(fieldDatasShema4);
+		fieldDatasShemas.add(fieldDatasShema5);
+		fieldDatasShemas.add(fieldDatasShema6);
 		fieldsIndexes = new int[]{0};
 	}else{
 		
@@ -114,7 +125,7 @@
 			</aui:fieldset>
 			
 			<aui:fieldset id="dynamicFormula">
-				<div class="formul-note">
+				<div class="formula-note">
 					remainingNumber, receivedNumber, receivedNumber, ontimeNumber, overtimeNumber, processingNumber, delayingNumber
 				</div>
 				<%
@@ -177,7 +188,7 @@
 	<aui:fieldset>
 		<div class="display-template">
 			<%
-				TemplateHandler templateHandler = TemplateHandlerRegistryUtil.getTemplateHandler(DossiersStatistics.class.getName());
+				TemplateHandler templateHandler = TemplateHandlerRegistryUtil.getTemplateHandler(DossiersStatistics.class.getName() + "#GENERAL");
 			%>
 		<liferay-ui:ddm-template-selector
 			classNameId="<%= PortalUtil.getClassNameId(templateHandler.getClassName()) %>"
