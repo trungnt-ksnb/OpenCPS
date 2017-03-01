@@ -23,29 +23,15 @@ import javax.portlet.PortletRequest;
 
 import org.opencps.util.DateTimeUtil;
 
-import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.util.ParamUtil;
 
 /**
  * @author nhanhoang
  */
-public class NotificationConfigDisplayTerms extends DisplayTerms {
+public class NotificationEventConfigSearchTerms extends
+		NotificationEventConfigDisplayTerms {
 
-	public static final String NOTICE_CONFIG_ID = "noticeConfigId";
-
-	public static final String DOSSIER_NEXT_STATUS = "dossierNextStatus";
-
-	public static final String DOSSIER_CURRENT_STATUS = "dossierCurrentStatus";
-
-	public static final String IS_SEND_NOTIFICATION = "isSendNotificaton";
-
-	public static final String CREATE_DATE = "createDate";
-
-	public static final String MODIFIED_DATE = "modifiedDate";
-
-	public static final String USER_ID = "userId";
-
-	public NotificationConfigDisplayTerms(PortletRequest portletRequest) {
+	public NotificationEventConfigSearchTerms(PortletRequest portletRequest) {
 		super(portletRequest);
 
 		createDate = ParamUtil.getDate(portletRequest, CREATE_DATE,
@@ -55,45 +41,73 @@ public class NotificationConfigDisplayTerms extends DisplayTerms {
 				DateTimeUtil
 						.getDateTimeFormat(DateTimeUtil._VN_DATE_TIME_FORMAT));
 		userId = ParamUtil.getLong(portletRequest, USER_ID);
-		noticeConfigId = ParamUtil.getLong(portletRequest, NOTICE_CONFIG_ID);
-		dossierCurrentStatus = ParamUtil.getString(portletRequest,
-				DOSSIER_CURRENT_STATUS);
-		dossierNextStatus = ParamUtil.getString(portletRequest,
-				DOSSIER_NEXT_STATUS);
-		isSendNotification = ParamUtil.getBoolean(portletRequest,
-				IS_SEND_NOTIFICATION);
-	}
+		notiEventConfigId = ParamUtil.getLong(portletRequest,
+				NOTICE_EVENT_CONFIG_ID);
+		notiStatusConfigId = ParamUtil.getLong(portletRequest,
+				NOTICE_STATUS_CONFIG_ID);
+		eventName = ParamUtil.getString(portletRequest, EVENT_NAME);
+		description = ParamUtil.getString(portletRequest, DESCRIPTION);
+		pattern = ParamUtil.getString(portletRequest, PATTERN);
+		active = ParamUtil.getBoolean(portletRequest, ACTIVE);
 
-	protected long noticeConfigId;
-	protected String dossierCurrentStatus;
-	protected String dossierNextStatus;
-	protected boolean isSendNotification;
+	}
+	protected long notiEventConfigId;
+	protected long notiStatusConfigId;
+	protected String eventName;
+	protected String description;
+	protected String pattern;
+	protected boolean active;
 	protected Date createDate;
 	protected Date modifiedDate;
 	protected long userId;
+	
 
-	public long getNoticeConfigId() {
-		return noticeConfigId;
+	public long getNotiEventConfigId() {
+		return notiEventConfigId;
 	}
 
-	public void setNoticeConfigId(long noticeConfigId) {
-		this.noticeConfigId = noticeConfigId;
+	public void setNotiEventConfigId(long notiEventConfigId) {
+		this.notiEventConfigId = notiEventConfigId;
 	}
 
-	public String getDossierCurrentStatus() {
-		return dossierCurrentStatus;
+	public long getNotiStatusConfigId() {
+		return notiStatusConfigId;
 	}
 
-	public void setDossierCurrentStatus(String dossierCurrentStatus) {
-		this.dossierCurrentStatus = dossierCurrentStatus;
+	public void setNotiStatusConfigId(long notiStatusConfigId) {
+		this.notiStatusConfigId = notiStatusConfigId;
 	}
 
-	public String getDossierNextStatus() {
-		return dossierNextStatus;
+	public String getEventName() {
+		return eventName;
 	}
 
-	public void setDossierNextStatus(String dossierNextStatus) {
-		this.dossierNextStatus = dossierNextStatus;
+	public void setEventName(String eventName) {
+		this.eventName = eventName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getPattern() {
+		return pattern;
+	}
+
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public Date getCreateDate() {
@@ -118,14 +132,6 @@ public class NotificationConfigDisplayTerms extends DisplayTerms {
 
 	public void setUserId(long userId) {
 		this.userId = userId;
-	}
-
-	public boolean isSendNotification() {
-		return isSendNotification;
-	}
-
-	public void setSendNotification(boolean isSendNotification) {
-		this.isSendNotification = isSendNotification;
 	}
 
 }

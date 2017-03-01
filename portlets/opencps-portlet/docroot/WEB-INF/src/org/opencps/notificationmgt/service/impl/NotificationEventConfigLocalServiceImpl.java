@@ -48,4 +48,11 @@ public class NotificationEventConfigLocalServiceImpl
 		return notificationEventConfigPersistence.findByN_A(notiStatusConfigId, active);
 		
 	}
+	
+	public List<NotificationEventConfig> getByNotiStatusConfigIds(
+			long notiStatusConfigId) throws SystemException {
+
+		return notificationEventConfigPersistence.findByNotiStatusConfigId(notiStatusConfigId);
+
+	}
 }

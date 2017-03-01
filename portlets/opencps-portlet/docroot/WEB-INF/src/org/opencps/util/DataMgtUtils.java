@@ -19,6 +19,7 @@ package org.opencps.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.opencps.datamgt.model.DictCollection;
 import org.opencps.datamgt.model.DictItem;
@@ -28,6 +29,7 @@ import org.opencps.datamgt.service.DictItemLocalServiceUtil;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
 /**
@@ -63,6 +65,36 @@ public class DataMgtUtils{
 		}
 		
 		return new ArrayList<DictItem>();
+	}
+	
+	public static String getDictItemName(long groupId, String collectionCode,
+			String itemCode, Locale locale) {
+
+		try {
+
+			DictCollection dictCollection = null;
+
+			dictCollection = DictCollectionLocalServiceUtil.getDictCollection(
+					groupId, collectionCode);
+
+			if (Validator.isNotNull(dictCollection)) {
+
+				DictItem dictItem = null;
+
+				dictItem = DictItemLocalServiceUtil.getDictItemInuseByItemCode(
+						dictCollection.getDictCollectionId(), itemCode);
+
+				if (Validator.isNotNull(dictItem)) {
+
+					return dictItem.getItemName(locale);
+				}
+
+			}
+		} catch (Exception e) {
+			_log.error(e);
+		}
+
+		return StringPool.BLANK;
 	}
 
 }

@@ -4,10 +4,10 @@
 <%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
 <%@page import="org.opencps.datamgt.model.impl.DictCollectionImpl"%>
 <%@page import="org.opencps.datamgt.model.DictCollection"%>
-<%@page import="org.opencps.notificationmgt.service.NotificationConfigLocalServiceUtil"%>
-<%@page import="org.opencps.notificationmgt.model.impl.NotificationConfigImpl"%>
-<%@page import="org.opencps.notificationmgt.model.NotificationConfig"%>
-<%@page import="org.opencps.notificationmgt.search.NotificationConfigDisplayTerms"%>
+<%@page import="org.opencps.notificationmgt.service.NotificationStatusConfigLocalServiceUtil"%>
+<%@page import="org.opencps.notificationmgt.model.impl.NotificationStatusConfigImpl"%>
+<%@page import="org.opencps.notificationmgt.model.NotificationStatusConfig"%>
+<%@page import="org.opencps.notificationmgt.search.NotificationStatusConfigDisplayTerms"%>
 <%@page import="net.sf.jasperreports.util.NoWriteFieldHandler"%>
 <%@page import="org.opencps.util.PortletUtil"%>
 <%@page import="java.util.Date"%>
@@ -38,20 +38,20 @@
 <%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
 <%@page import="javax.portlet.PortletRequest"%>
 <%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
-<%@ include file="../init.jsp"%>
+<%@ include file="../../init.jsp"%>
 
 <portlet:actionURL var="updateNofificationConfigURL" name="updateNofificationConfig" />
 
 <%
-	long notificationConfigId = ParamUtil.getLong(request,NotificationConfigDisplayTerms.NOTICE_CONFIG_ID,0);
+	long notificationConfigId = ParamUtil.getLong(request,NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID,0);
 	String backURL = ParamUtil.getString(request, WebKeys.BACK_URL);
 
-	NotificationConfig notificationConfig = new NotificationConfigImpl();
+	NotificationStatusConfig notificationConfig = new NotificationStatusConfigImpl();
 
 	if (notificationConfigId > 0) {
 
 		try {
-			notificationConfig = NotificationConfigLocalServiceUtil.getNotificationConfig(notificationConfigId);
+			notificationConfig = NotificationStatusConfigLocalServiceUtil.getNotificationStatusConfig(notificationConfigId);
 		} catch (Exception e) {
 			_log.error(e);
 		}
@@ -86,8 +86,8 @@
 			method="post" name="fm">
 
 			<aui:model-context bean="<%=notificationConfig%>"
-				model="<%=NotificationConfig.class%>" />
-			<aui:input name="<%=NotificationConfigDisplayTerms.NOTICE_CONFIG_ID%>"
+				model="<%=NotificationStatusConfig.class%>" />
+			<aui:input name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
 				type="hidden" />
 			<aui:input name="<%=WebKeys.REDIRECT_URL%>" type="hidden"
 				value="<%=backURL%>" />
@@ -95,12 +95,7 @@
 				value="<%=currentURL%>" />
 			<aui:fieldset>
 
-<!-- 				<label class="control-label custom-lebel bold" -->
-<%-- 					for='<portlet:namespace/><%=NotificationConfigDisplayTerms.DOSSIER_NEXT_STATUS%>'> --%>
-<%-- 					<liferay-ui:message key="dossier-status" /> --%>
-<!-- 				</label> -->
-
-				<aui:select name="<%=NotificationConfigDisplayTerms.DOSSIER_NEXT_STATUS%>"
+				<aui:select name="<%=NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS%>"
 					label="status">
 					
 					<% for (DictItem dictItem: dictItems){ %>
@@ -110,16 +105,9 @@
 								value="<%= dictItem.getItemCode() %>" />
 					<%} %>
 				</aui:select>
-
-
-<%-- 				<aui:select name="" label="status"> --%>
-<%-- 					<aui:option value="<%=true%>" label="active" --%>
-<%-- 						selected="<%=notificationConfig.isIsSendNotification()%>" /> --%>
-<%-- 					<aui:option value="<%=false%>" label="disable" --%>
-<%-- 						selected="<%=!notificationConfig.isIsSendNotification()%>" /> --%>
-<%-- 				</aui:select> --%>
-
 				
+				<aui:input name=""></aui:input>
+
 
 			</aui:fieldset>
 

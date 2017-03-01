@@ -45,6 +45,8 @@
 	PortletPreferences preferences = renderRequest.getPreferences();
 	
 	long rootGroupId = GetterUtil.getLong(preferences.getValue(PortletKeys.PREFER__ROOTGROUPID__,StringPool.BLANK),0);
+	
+	boolean isPermisson = false;
 	 
 %>
 

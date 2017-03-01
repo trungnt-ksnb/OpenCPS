@@ -26,7 +26,7 @@
 		<column name="isSendNotification" type="boolean"></column>
 		
 		<!-- Finder methods -->
-		<finder return-type="NotificationConfig" name="C_N_S" >
+		<finder return-type="NotificationStatusConfig" name="C_N_S" >
 			<finder-column name="dossierCurrentStatus" />
 			<finder-column name="dossierNextStatus" />
 			<finder-column name="isSendNotification" />
@@ -42,10 +42,14 @@
 			<finder-column name="isSendNotification" />
 		</finder>
 		
-		<finder return-type="NotificationConfig" name="DossierNextStatus" >
+		<finder return-type="NotificationStatusConfig" name="DossierNextStatus" >
 			<finder-column name="dossierNextStatus" />
 			<finder-column name="isSendNotification" />
-		</finder>		
+		</finder>
+		
+		<finder return-type="NotificationStatusConfig" name="DS_" >
+			<finder-column name="dossierNextStatus" />
+		</finder>			
 	</entity>
 	
 		<entity name="NotificationEventConfig" local-service="true" remote-service="false"
@@ -75,6 +79,11 @@
 		<finder return-type="Collection" name="N_A" >
 			<finder-column name="notiStatusConfigId" />
 			<finder-column name="active" />
+		</finder>
+		
+		<!-- Finder methods -->
+		<finder return-type="Collection" name="NotiStatusConfigId" >
+			<finder-column name="notiStatusConfigId" />
 		</finder>	
 	</entity>
 	

@@ -34,62 +34,73 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
  * @author nhanhoang
  *
  */
-public class NotificationConfigSearch extends SearchContainer<DictItem> {
+public class NotificationEventConfigSearch extends SearchContainer<DictItem> {
 	static List<String> headerNames = new ArrayList<String>();
 	static {
 		headerNames.add("row-index");
-		headerNames.add("status");
 		headerNames.add("create-date");
 		headerNames.add("modified-date");
+		headerNames.add("event-name");
+		headerNames.add("description");
 		headerNames.add("inuse");
 
 	}
 
-	public static final String EMPTY_RESULTS_MESSAGE = "no-holiday-date-were-found";
+	public static final String EMPTY_RESULTS_MESSAGE = "no-notification-event-config-where-found";
 
-	public NotificationConfigSearch(PortletRequest portletRequest, int delta,
+	public NotificationEventConfigSearch(PortletRequest portletRequest, int delta,
 			PortletURL iteratorURL) {
 
 		super(portletRequest,
-				new NotificationConfigDisplayTerms(portletRequest),
-				new NotificationConfigSearchTerms(portletRequest),
+				new NotificationEventConfigDisplayTerms(portletRequest),
+				new NotificationEventConfigSearchTerms(portletRequest),
 				DEFAULT_CUR_PARAM, delta, iteratorURL, headerNames,
 				EMPTY_RESULTS_MESSAGE);
 
 		// PortletConfig portletConfig = (PortletConfig)
 		// portletRequest.getAttribute(JavaConstants.JAVAX_PORTLET_CONFIG);
 
-		NotificationConfigDisplayTerms displayTerms = (NotificationConfigDisplayTerms) getDisplayTerms();
+		NotificationEventConfigDisplayTerms displayTerms = (NotificationEventConfigDisplayTerms) getDisplayTerms();
 
-		iteratorURL.setParameter(NotificationConfigDisplayTerms.CREATE_DATE,
+		iteratorURL.setParameter(NotificationEventConfigDisplayTerms.CREATE_DATE,
 				DateTimeUtil.convertDateToString(displayTerms.getCreateDate(),
 						DateTimeUtil._VN_DATE_TIME_FORMAT));
-		iteratorURL.setParameter(NotificationConfigDisplayTerms.MODIFIED_DATE,
+		iteratorURL.setParameter(NotificationEventConfigDisplayTerms.MODIFIED_DATE,
 				DateTimeUtil.convertDateToString(
 						displayTerms.getModifiedDate(),
 						DateTimeUtil._VN_DATE_TIME_FORMAT));
-		iteratorURL.setParameter(NotificationConfigDisplayTerms.USER_ID,
+		iteratorURL.setParameter(NotificationEventConfigDisplayTerms.USER_ID,
 				String.valueOf(displayTerms.getUserId()));
 
+		
 		iteratorURL.setParameter(
-				NotificationConfigDisplayTerms.NOTICE_CONFIG_ID,
-				String.valueOf(displayTerms.getNoticeConfigId()));
+				NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID,
+				String.valueOf(displayTerms.getNotiEventConfigId()));
 		iteratorURL.setParameter(
-				NotificationConfigDisplayTerms.DOSSIER_NEXT_STATUS,
-				String.valueOf(displayTerms.getDossierNextStatus()));
+				NotificationEventConfigDisplayTerms.NOTICE_STATUS_CONFIG_ID,
+				String.valueOf(displayTerms.getNotiStatusConfigId()));
 		iteratorURL.setParameter(
-				NotificationConfigDisplayTerms.IS_SEND_NOTIFICATION,
-				String.valueOf(displayTerms.isSendNotification));
+				NotificationEventConfigDisplayTerms.EVENT_NAME,
+				String.valueOf(displayTerms.getEventName()));
+		iteratorURL.setParameter(
+				NotificationEventConfigDisplayTerms.DESCRIPTION,
+				String.valueOf(displayTerms.getDescription()));
+		iteratorURL.setParameter(
+				NotificationEventConfigDisplayTerms.PATTERN,
+				String.valueOf(displayTerms.getPattern()));
+		iteratorURL.setParameter(
+				NotificationEventConfigDisplayTerms.ACTIVE,
+				String.valueOf(displayTerms.isActive()));
 
 	}
 
-	public NotificationConfigSearch(PortletRequest portletRequest,
+	public NotificationEventConfigSearch(PortletRequest portletRequest,
 			PortletURL iteratorURL) {
 
 		this(portletRequest, DEFAULT_DELTA, iteratorURL);
 	}
 
 	private static Log _log = LogFactoryUtil
-			.getLog(NotificationConfigSearch.class);
+			.getLog(NotificationEventConfigSearch.class);
 
 }

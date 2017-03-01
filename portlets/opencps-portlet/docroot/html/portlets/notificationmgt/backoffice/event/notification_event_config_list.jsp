@@ -1,11 +1,11 @@
 
 <%@page import="com.liferay.portal.kernel.dao.search.SearchEntry"%>
-<%@page import="org.opencps.notificationmgt.search.NotificationConfigDisplayTerms"%>
-<%@page import="org.opencps.notificationmgt.service.NotificationConfigLocalServiceUtil"%>
-<%@page import="org.opencps.notificationmgt.model.impl.NotificationConfigImpl"%>
-<%@page import="org.opencps.notificationmgt.model.NotificationConfig"%>
-<%@page import="org.opencps.notificationmgt.permisson.NotificationConfigPermission"%>
-<%@page import="org.opencps.notificationmgt.search.NotificationConfigSearch"%>
+<%@page import="org.opencps.notificationmgt.search.NotificationStatusConfigDisplayTerms"%>
+<%@page import="org.opencps.notificationmgt.service.NotificationStatusConfigLocalServiceUtil"%>
+<%@page import="org.opencps.notificationmgt.model.impl.NotificationStatusConfigImpl"%>
+<%@page import="org.opencps.notificationmgt.model.NotificationStatusConfig"%>
+<%@page import="org.opencps.notificationmgt.permisson.NotificationStatusConfigPermission"%>
+<%@page import="org.opencps.notificationmgt.search.NotificationStatusConfigSearch"%>
 <%@page import="org.opencps.util.DateTimeUtil"%>
 <%@page import="com.liferay.portal.kernel.dao.orm.QueryUtil"%>
 <%
@@ -36,67 +36,60 @@
 	PortletURL iteratorURL = renderResponse.createRenderURL();
 	iteratorURL.setParameter("mvcPath", templatePath
 	+ "notification_config_list.jsp");
-
-	boolean isPermission = NotificationConfigPermission.contains(
-	themeDisplay.getPermissionChecker(),
-	themeDisplay.getScopeGroupId(), ActionKeys.ADD_NOTICECONFIG);
-	
-	_log.info("isPermission:"+isPermission);
 	
 %>
 <div
 	class="opencps-searchcontainer-wrapper-width-header default-box-shadow radius8">
 	
 	<liferay-ui:search-container
-		searchContainer="<%=new NotificationConfigSearch(renderRequest,
+		searchContainer="<%=new NotificationStatusConfigSearch(renderRequest,
 						SearchContainer.DEFAULT_DELTA, iteratorURL)%>">
 
 		<liferay-ui:search-container-results>
 			<%
-				List<NotificationConfig> notificationConfigs = NotificationConfigLocalServiceUtil
-									.getNotificationConfigs(searchContainer.getStart(),
-											searchContainer.getEnd());
+				List<NotificationStatusConfig> notificationStatusConfigs = NotificationStatusConfigLocalServiceUtil
+										.getNotificationStatusConfigs(searchContainer.getStart(),
+												searchContainer.getEnd());
 
-							int totalSize = NotificationConfigLocalServiceUtil
-									.getNotificationConfigs(QueryUtil.ALL_POS,
-											QueryUtil.ALL_POS).size();
+								int totalSize = NotificationStatusConfigLocalServiceUtil
+										.getNotificationStatusConfigsCount();
 
-							pageContext.setAttribute("results", notificationConfigs);
-							pageContext.setAttribute("total", totalSize);
+								pageContext.setAttribute("results", notificationStatusConfigs);
+								pageContext.setAttribute("total", totalSize);
 			%>
 
 		</liferay-ui:search-container-results>
 		<liferay-ui:search-container-row
-			className="org.opencps.notificationmgt.model.NotificationConfig"
-			modelVar="notificationConfig" keyProperty="notificationConfigId">
+			className="org.opencps.notificationmgt.model.NotificationStatusConfig"
+			modelVar="notificationStatusConfig" keyProperty="notificationConfigId">
 			<%
 				PortletURL editURL = renderResponse.createRenderURL();
 						editURL.setParameter("mvcPath",
 								templatePath+"backoffice/notification_config_edit.jsp");
-						editURL.setParameter(NotificationConfigDisplayTerms.NOTICE_CONFIG_ID,
-								String.valueOf(notificationConfig.getNotificationConfigId()));
+						editURL.setParameter(NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID,
+								String.valueOf(notificationStatusConfig.getNotiStatusConfigId()));
 						editURL.setParameter(WebKeys.BACK_URL, currentURL);
 
 						row.setClassName("opencps-searchcontainer-row");
 
-						row.addText(String.valueOf(notificationConfig.getNotificationConfigId()),
+						row.addText(String.valueOf(notificationStatusConfig.getNotiStatusConfigId()),
 								editURL);
-						row.addText(notificationConfig.getDossierNextStatus(), editURL);
+						row.addText(notificationStatusConfig.getDossierNextStatus(), editURL);
 						
 						row.addText(DateTimeUtil.convertDateToString(
-								notificationConfig.getCreateDate(),
+								notificationStatusConfig.getCreateDate(),
 								DateTimeUtil._VN_DATE_TIME_FORMAT), editURL);
 						
 						row.addText(DateTimeUtil.convertDateToString(
-								notificationConfig.getModifiedDate(),
+								notificationStatusConfig.getModifiedDate(),
 								DateTimeUtil._VN_DATE_TIME_FORMAT), editURL);
 						
 						row.addText(
-								String.valueOf(notificationConfig.getIsSendNotification() == true ? LanguageUtil
+								String.valueOf(notificationStatusConfig.getIsSendNotification() == true ? LanguageUtil
 										.get(pageContext, "active") : LanguageUtil
 										.get(pageContext, "inactive")), editURL);
 
-						if (isPermission) {
+						if (isPermisson) {
 							row.addJSP(
 									"center",
 									SearchEntry.DEFAULT_VALIGN,

@@ -28,10 +28,10 @@ import com.liferay.portal.kernel.util.ParamUtil;
 /**
  * @author nhanhoang
  */
-public class NotificationConfigSearchTerms extends
-		NotificationConfigDisplayTerms {
+public class NotificationStatusConfigSearchTerms extends
+		NotificationStatusConfigDisplayTerms {
 
-	public NotificationConfigSearchTerms(PortletRequest portletRequest) {
+	public NotificationStatusConfigSearchTerms(PortletRequest portletRequest) {
 		super(portletRequest);
 
 		createDate = ParamUtil.getDate(portletRequest, CREATE_DATE,
@@ -41,7 +41,7 @@ public class NotificationConfigSearchTerms extends
 				DateTimeUtil
 						.getDateTimeFormat(DateTimeUtil._VN_DATE_TIME_FORMAT));
 		userId = ParamUtil.getLong(portletRequest, USER_ID);
-		noticeConfigId = ParamUtil.getLong(portletRequest, NOTICE_CONFIG_ID);
+		notiStatusConfigId = ParamUtil.getLong(portletRequest, NOTICE_CONFIG_ID);
 		dossierCurrentStatus = ParamUtil.getString(portletRequest,
 				DOSSIER_CURRENT_STATUS);
 		dossierNextStatus = ParamUtil.getString(portletRequest,
@@ -51,7 +51,7 @@ public class NotificationConfigSearchTerms extends
 
 	}
 
-	protected long noticeConfigId;
+	protected long notiStatusConfigId;
 	protected String dossierCurrentStatus;
 	protected String dossierNextStatus;
 	protected boolean isSendNotification;
@@ -59,12 +59,12 @@ public class NotificationConfigSearchTerms extends
 	protected Date modifiedDate;
 	protected long userId;
 
-	public long getNoticeConfigId() {
-		return noticeConfigId;
+	public long getNotiStatusConfigId() {
+		return notiStatusConfigId;
 	}
 
-	public void setNoticeConfigId(long noticeConfigId) {
-		this.noticeConfigId = noticeConfigId;
+	public void setNotiStatusConfigId(long notiStatusConfigId) {
+		this.notiStatusConfigId = notiStatusConfigId;
 	}
 
 	public String getDossierCurrentStatus() {

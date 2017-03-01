@@ -71,17 +71,32 @@ public class NotificationStatusConfigLocalServiceImpl
 
 	}
 	
-	public NotificationStatusConfig getByDossierNextStatus(String dossierNextStatus,
-			boolean isSendNotification) throws SystemException {
+	public NotificationStatusConfig getByDossierNextStatus(
+			String dossierNextStatus, boolean isSendNotification)
+			throws SystemException {
 
 		try {
 			return notificationStatusConfigPersistence.findByDossierNextStatus(
 					dossierNextStatus, isSendNotification);
 		} catch (NoSuchNotificationStatusConfigException e) {
-			
+
 		}
 
 		return null;
 
-	} 
+	}
+	
+	public NotificationStatusConfig getByDossierNextStatus(
+			String dossierNextStatus) throws SystemException {
+
+		try {
+			return notificationStatusConfigPersistence
+					.findByDS_(dossierNextStatus);
+		} catch (NoSuchNotificationStatusConfigException e) {
+
+		}
+
+		return null;
+
+	}
 }
