@@ -360,6 +360,7 @@
 	<portlet>
 		<portlet-name>28</portlet-name>
 		<icon>/icon.png</icon>
+		<configuration-action-class>org.opencps.notificationmgt.portlet.ConfigurationImpl</configuration-action-class>
 		<user-notification-definitions>org/opencps/notificationmgt/engine/user-notification-definitions.xml</user-notification-definitions>
 		<user-notification-handler-class>org.opencps.notificationmgt.engine.UserNotificationHandler</user-notification-handler-class>
 		<header-portlet-css>/css/main.css</header-portlet-css>
