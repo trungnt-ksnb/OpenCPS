@@ -421,14 +421,52 @@ public class DossiersStatisticsLocalServiceImpl
 				dossiersStatistics =
 					dossiersStatisticsLocalService.getDossiersStatisticsByG_GC_DC_M_Y_S(
 						0, govCode, domainCode, month, year, source);
+			}
+			catch (NoSuchDossiersStatisticsException e) {
+				_log.info("########################## No found stats -----> add new staft: " +
+					govCode + " | " + domainCode);
+			}
+			catch (SystemException e) {
+				_log.info("########################## System exception -----> return error");
+				msg.put("message", "error");
+				return msg;
+			}
+
+			try {
 
 				dossiersStatisticsGroupByGov =
 					dossiersStatisticsLocalService.getDossiersStatisticsByG_GC_DC_M_Y_S(
 						0, StringPool.BLANK, domainCode, month, year, source);
 
+			}
+			catch (NoSuchDossiersStatisticsException e) {
+				_log.info("########################## No found stats -----> add new staft: " +
+					"Blank Gov" + " | " + domainCode);
+			}
+			catch (SystemException e) {
+				_log.info("########################## System exception -----> return error");
+				msg.put("message", "error");
+				return msg;
+			}
+
+			try {
+
 				dossiersStatisticsGroupByDomain =
 					dossiersStatisticsLocalService.getDossiersStatisticsByG_GC_DC_M_Y_S(
 						0, govCode, StringPool.BLANK, month, year, source);
+
+			}
+			catch (NoSuchDossiersStatisticsException e) {
+				_log.info("########################## No found stats -----> add new staft: " +
+					govCode + " | " + "Blank Domain");
+			}
+			catch (SystemException e) {
+				_log.info("########################## System exception -----> return error");
+				msg.put("message", "error");
+				return msg;
+			}
+
+			try {
 
 				dossiersStatisticsGroupAll =
 					dossiersStatisticsLocalService.getDossiersStatisticsByG_GC_DC_M_Y_S(
@@ -436,10 +474,12 @@ public class DossiersStatisticsLocalServiceImpl
 						source);
 			}
 			catch (NoSuchDossiersStatisticsException e) {
-
+				_log.info("########################## No found stats -----> add new staft: Blank Gov | Blank Domain");
 			}
 			catch (SystemException e) {
-
+				_log.info("########################## System exception -----> return error");
+				msg.put("message", "error");
+				return msg;
 			}
 
 			referenceDossiersStatistics[0] = dossiersStatisticsGroupByGov;
@@ -511,12 +551,13 @@ public class DossiersStatisticsLocalServiceImpl
 					referenceDossiersStatistic.setAdministrationLevel(0);
 					referenceDossiersStatistic.setCompanyId(0);
 					referenceDossiersStatistic.setCreateDate(now);
-					if(i == 0){
+					if (i == 0) {
 						referenceDossiersStatistic.setGovAgencyCode(govCode);
-					}else if(i == 1){
+					}
+					else if (i == 1) {
 						referenceDossiersStatistic.setDomainCode(domainCode);
 					}
-					
+
 					referenceDossiersStatistic.setGroupId(groupId);
 					referenceDossiersStatistic.setModifiedDate(now);
 					referenceDossiersStatistic.setMonth(month);

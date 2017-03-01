@@ -19,6 +19,7 @@ import org.opencps.statisticsmgt.service.base.DossiersStatisticsServiceBaseImpl;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
+import com.liferay.portal.security.ac.AccessControlled;
 
 /**
  * The implementation of the dossiers statistics remote service. <p> All custom
@@ -53,6 +54,7 @@ public class DossiersStatisticsServiceImpl
 	 * int, java.lang.String)
 	 */
 	@JSONWebService(value = "push-stats", method = "POST")
+	@AccessControlled(guestAccessEnabled = true)
 	public JSONObject updateStatistic(
 		String govCode, String domainCode, int remainingNumber,
 		int receivedNumber, int ontimeNumber, int overtimeNumber,
