@@ -511,8 +511,12 @@ public class DossiersStatisticsLocalServiceImpl
 					referenceDossiersStatistic.setAdministrationLevel(0);
 					referenceDossiersStatistic.setCompanyId(0);
 					referenceDossiersStatistic.setCreateDate(now);
-					referenceDossiersStatistic.setDomainCode(domainCode);
-					referenceDossiersStatistic.setGovAgencyCode(govCode);
+					if(i == 0){
+						referenceDossiersStatistic.setGovAgencyCode(govCode);
+					}else if(i == 1){
+						referenceDossiersStatistic.setDomainCode(domainCode);
+					}
+					
 					referenceDossiersStatistic.setGroupId(groupId);
 					referenceDossiersStatistic.setModifiedDate(now);
 					referenceDossiersStatistic.setMonth(month);
