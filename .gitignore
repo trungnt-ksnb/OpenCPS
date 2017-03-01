@@ -323,3 +323,6 @@ portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/notificationmgt/service
 portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/notificationmgt/service/persistence/NotificationConfigPersistenceImpl.java
 portlets/opencps-portlet/docroot/WEB-INF/lib/opencps-portlet-taglib.jar
 
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/notificationmgt/service/persistence/NotificationEventConfigPersistenceImpl.java
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/notificationmgt/service/persistence/NotificationRedirectConfigPersistenceImpl.java
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/notificationmgt/service/persistence/NotificationStatusConfigPersistenceImpl.java
