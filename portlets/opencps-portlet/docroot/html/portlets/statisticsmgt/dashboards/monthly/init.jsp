@@ -60,11 +60,11 @@
 		});
 	String[] fieldKeys =
 		portletPreferences.getValues("fieldKeys", new String[] {
-			"rec"
+			"k1"
 		});
 	String[] fieldFormulas =
 		portletPreferences.getValues("fieldFormulas", new String[] {
-			"$receivedNumber"
+			"receivedNumber"
 		});
 	
 	
