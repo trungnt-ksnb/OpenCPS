@@ -436,12 +436,12 @@ public class DossiersStatisticsLocalServiceImpl
 
 				dossiersStatisticsGroupByGov =
 					dossiersStatisticsLocalService.getDossiersStatisticsByG_GC_DC_M_Y_S(
-						0, StringPool.BLANK, domainCode, month, year, source);
+						0, govCode, StringPool.BLANK, month, year, source);
 
 			}
 			catch (NoSuchDossiersStatisticsException e) {
 				_log.info("########################## No found stats -----> add new staft: " +
-					"Blank Gov" + " | " + domainCode);
+								govCode + " | " + "Blank Domain");
 			}
 			catch (SystemException e) {
 				_log.info("########################## System exception -----> return error");
@@ -453,12 +453,13 @@ public class DossiersStatisticsLocalServiceImpl
 
 				dossiersStatisticsGroupByDomain =
 					dossiersStatisticsLocalService.getDossiersStatisticsByG_GC_DC_M_Y_S(
-						0, govCode, StringPool.BLANK, month, year, source);
+						0, StringPool.BLANK, domainCode, month, year, source);
 
 			}
 			catch (NoSuchDossiersStatisticsException e) {
 				_log.info("########################## No found stats -----> add new staft: " +
-					govCode + " | " + "Blank Domain");
+								"Blank Gov" + " | " + domainCode);
+				
 			}
 			catch (SystemException e) {
 				_log.info("########################## System exception -----> return error");
