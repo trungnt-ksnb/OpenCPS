@@ -412,7 +412,7 @@ public class CitizenLocalServiceImpl extends CitizenLocalServiceBaseImpl {
 			}
 		}
 		String[] folderNames = new String[] {
-				PortletConstants.DestinationRoot.BUSINESS.toString(), cityName,
+				PortletConstants.DestinationRoot.CITIZEN.toString(), cityName,
 				districtName, wardName, String.valueOf(mappingUser.getUserId()) };
 
 		String destination = PortletUtil.getDestinationFolder(folderNames);
