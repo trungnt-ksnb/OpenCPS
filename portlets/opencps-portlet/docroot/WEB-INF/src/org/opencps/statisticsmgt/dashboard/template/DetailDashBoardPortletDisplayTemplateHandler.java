@@ -54,9 +54,6 @@ public class DetailDashBoardPortletDisplayTemplateHandler extends
 				List.class, PortletDisplayTemplateConstants.ENTRIES,
 				"dossierStatistics", DossiersStatistics.class,
 				"curDossierStatistics", "year");
-
-		/*templateVariableGroup.addVariable("ListDossierStatistics", List.class,
-				PortletDisplayTemplateConstants.ENTRIES);*/
 		
 		templateVariableGroup.addVariable(
 			"json-data", String.class, "jsonData");
@@ -67,11 +64,6 @@ public class DetailDashBoardPortletDisplayTemplateHandler extends
 						"curDossierStatistics");
 
 		String[] restrictedVariables = getRestrictedVariables(language);
-
-		System.out
-				.println("#############################################################restrictedVariables");
-
-		System.out.println(restrictedVariables.length);
 		
 		TemplateVariableGroup statisticsServicesTemplateVariableGroup = new TemplateVariableGroup(
 				"statistic-services", restrictedVariables);
@@ -82,23 +74,9 @@ public class DetailDashBoardPortletDisplayTemplateHandler extends
 				DossiersStatisticsLocalService.class,
 				DossiersStatisticsService.class);
 
-		System.out.println(statisticsServicesTemplateVariableGroup.getLabel());
-
 		templateVariableGroups.put(
 				statisticsServicesTemplateVariableGroup.getLabel(),
 				statisticsServicesTemplateVariableGroup);
-		
-		
-		
-		for(Map.Entry<String, TemplateVariableGroup> entry : templateVariableGroups.entrySet()) {
-		    String key = entry.getKey();
-		    
-		    System.out.println("######### " + key);
-		   
-
-		    // do what you have to do here
-		    // In your case, an other loop.
-		}
 
 		return templateVariableGroups;
 	}
