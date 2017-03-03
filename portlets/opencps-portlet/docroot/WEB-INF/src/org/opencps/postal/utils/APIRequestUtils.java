@@ -1,4 +1,24 @@
-package org.opencps.post.utils;
+/**
+ * OpenCPS is the open source Core Public Services software
+ * Copyright (C) 2016-present OpenCPS community
+
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/**
+ * @author nhanhlt
+ * */
+package org.opencps.postal.utils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -26,6 +46,13 @@ public class APIRequestUtils {
 	public static final String API = "serviceApi/v1/postDieuTin?";
 	public static final String TOKEN = "token=c45b5eae-23a1-4da2-af66-db834db0e65b";
 
+	/**
+	 * @param domainName
+	 * @param APIPath
+	 * @param token
+	 * @param jsonData
+	 * @return
+	 */
 	public JSONObject callAPI(String domainName, String APIPath, String token,
 			String jsonData) {
 
