@@ -330,4 +330,5 @@ portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/notificationmgt/service
 portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/postal/service/persistence/PostalOrderPersistenceImpl.java
 portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/postal/service/persistence/VnPostalPersistenceImpl.java
 portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/postal/service/base/*
-portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/postal/service/model/impl/*
+portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/postal/model/impl/*
+
