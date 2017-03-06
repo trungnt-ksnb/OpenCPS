@@ -485,7 +485,6 @@
 						            			<portlet:namespace/>closeDialog();
 											}
 											
-											
 										}
 										// has image
 										// if configuration contain image value

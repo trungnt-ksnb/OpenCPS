@@ -555,6 +555,17 @@
 					</aui:option>
 				</aui:select>
 			</aui:fieldset>
+			
+			<aui:fieldset>
+				<aui:select name="textPositionWithImageSign">
+					<aui:option value="overlaps" selected='<%=textPositionWithImageSign.equals("overlaps") %>'>
+						<liferay-ui:message key="overlaps" />
+					</aui:option>
+					<aui:option value="noOverlaps" selected='<%=textPositionWithImageSign.equals("noOverlaps") %>'>
+						<liferay-ui:message key="no-overlaps" />
+					</aui:option>
+				</aui:select>
+			</aui:fieldset>
 		</c:when>
 		<c:otherwise>
 		

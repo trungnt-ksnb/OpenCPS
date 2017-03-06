@@ -56,7 +56,6 @@ import org.opencps.util.DateTimeUtil;
 import org.opencps.util.MessageBusUtil;
 import org.opencps.util.MessageKeys;
 import org.opencps.util.PortletConstants;
-import org.opencps.util.PortletPropsValues;
 import org.opencps.util.PortletUtil;
 import org.opencps.util.WebKeys;
 
@@ -349,7 +348,8 @@ public class AccountMgtPortlet extends MVCPortlet {
 				            .getItemName(serviceContext
 				                .getLocale(), true),
 				        telNo, isChangePassWord, newPass, rePass, serviceContext
-				            .getScopeGroupId(),
+				            .getScopeGroupId(),StringPool.BLANK,
+				            StringPool.BLANK, StringPool.BLANK, null, 0,
 				        serviceContext);
 
 			}
@@ -527,7 +527,8 @@ public class AccountMgtPortlet extends MVCPortlet {
 				                .getLocale(), true),
 				        telNo, representativeName, representativeRole, listBussinessDomains,
 				        isChangePassWord, curPass, rePass, serviceContext
-				            .getScopeGroupId(),
+				            .getScopeGroupId(),  StringPool.BLANK,
+				            StringPool.BLANK, StringPool.BLANK, null, 0,
 				        serviceContext, dateOfIdNumber);
 				
 				if(Validator.isNotNull(backURL)) {

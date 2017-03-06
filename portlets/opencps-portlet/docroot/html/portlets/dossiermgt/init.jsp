@@ -41,6 +41,8 @@
 	/* dossier list  */
 	String dossierListDisplayStyle = preferences.getValue("dossierListDisplayStyle", "default");
 	
+	String textPositionWithImageSign = preferences.getValue("textPositionWithImageSign","overlaps");
+	
 	String suggestionDossierStatus = preferences.getValue("suggestionDossierStatus",StringPool.BLANK);
 	
 	boolean hiddenTreeNodeEqualNone = GetterUtil.getBoolean(preferences.getValue("hiddenTreeNodeEqualNone", "false"), false);

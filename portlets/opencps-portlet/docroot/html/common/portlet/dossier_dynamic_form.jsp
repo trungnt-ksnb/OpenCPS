@@ -316,6 +316,7 @@
 										if (characterAttachArray.indexOf('image') != -1 && characterAttachArray.indexOf('text') != -1) {
 											overlapText();
 											if(imgContentBase64Str != 'undefined' && condauImageSrc != 'undefined') {
+
 												window.parent.PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
 													signatureTypeChoosen(jsondata, imgJsondata, author, dataJSON, signatureTypeVal);
 												});
