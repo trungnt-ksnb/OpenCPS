@@ -17,7 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-
+<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
+<%@page import="com.liferay.portal.kernel.json.JSONObject"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil"%>
 <%@page import="com.liferay.portal.kernel.servlet.SessionErrors"%>
@@ -173,6 +174,16 @@
 		portleName = WebKeys.PROCESS_ORDER_PORTLET;
 	}
 	
+	long signImageId = 0;
+	
+	if(accountType.equalsIgnoreCase("Business")) {
+		signImageId = business.getSignImageId();
+	} else if(accountType.equalsIgnoreCase("Citizen")) {
+		signImageId = citizen.getSignImageId();
+	}
+	
+	JSONObject signImageInfo = DossierMgtUtil.getSignImageAsBase64(signImageId);
+	
 %>
 
 <liferay-ui:success  key="<%=MessageKeys.DEFAULT_SUCCESS_KEY %>" message="<%=MessageKeys.DEFAULT_SUCCESS_KEY %>"/>
@@ -281,16 +292,16 @@
 			url : url,
 			data : {
 				<portlet:namespace/>dossierFileId: dossierFileId,
-				<portlet:namespace/>imgSrcName: imgSrcName,
 				<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_REQUEST_DATA%>'
 			},
 			success : function(datares) {
+				var signImageInfo = JSON.parse('<%= signImageInfo %>');
 				var jsonDataResponse = JSON.parse(datares);
 				
 				var fileName = jsonDataResponse.fileName;
 				var base64String = jsonDataResponse.base64ContentString;
-				var condauImageSrc = imgSrcName + "_condau.png";
-				var imgContentBase64Str = jsonDataResponse.imgContentBase64Str;
+				var condauImageSrc = signImageInfo.signImageName
+				var imgContentBase64Str = signImageInfo.signImageAsBase64;
 				
 						if(base64String != '' && fileName != '') {
 							
@@ -304,11 +315,15 @@
 										//both image and text
 										if (characterAttachArray.indexOf('image') != -1 && characterAttachArray.indexOf('text') != -1) {
 											overlapText();
-											
-											if(imgContentBase64Str != '' && condauImageSrc != '') {
+											if(imgContentBase64Str != 'undefined' && condauImageSrc != 'undefined') {
+
 												window.parent.PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
 													signatureTypeChoosen(jsondata, imgJsondata, author, dataJSON, signatureTypeVal);
 												});
+											} else {
+												alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "no-sign-image-please-upload-it-in-your-profile") %>');
+												Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
+						            			<portlet:namespace/>closeDialog();
 											}
 											
 										} 
@@ -316,7 +331,13 @@
 										// has image
 										// if configuration contain image value
 										else if(characterAttachArray.indexOf('image') != -1) {
-											signatureTypeChoosen(jsondata, imgJsondata, author, dataJSON, signatureTypeVal);
+											if(imgContentBase64Str != 'undefined' && condauImageSrc != 'undefined') {
+												signatureTypeChoosen(jsondata, imgJsondata, author, dataJSON, signatureTypeVal);
+											} else {
+												alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "no-sign-image-please-upload-it-in-your-profile") %>');
+												Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
+						            			<portlet:namespace/>closeDialog();
+											}
 										} 
 										
 										// text
@@ -360,7 +381,7 @@
 			});	
 		} else if(signatureTypeVal == 'fixAtPoint') {
 			window.parent.PDFSigningHelper.signPDFAtPoint(jsondata.data, imgJsondata.data, author, 
-					"", parseFloat(offsetX), parseFloat(offsetY), 1, dataJSON.data, "", function(jsondataSigned) {
+					"", parseFloat(offsetX), parseFloat(offsetY), 0, dataJSON.data, "", function(jsondataSigned) {
 				if(jsondataSigned.code == 0) {
 					updateData(jsondataSigned);
 				}

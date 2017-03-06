@@ -177,7 +177,8 @@ public class AccountProfilePortlet extends MVCPortlet {
 		String sourceFileName =
 				uploadPortletRequest.getFileName("signImageId");
 	
-		String title = null;
+		String title = StringPool.BLANK;
+		title = sourceFileName;
 		
 		contentType =
 			    Validator.isNotNull(contentType)
@@ -356,7 +357,8 @@ public class AccountProfilePortlet extends MVCPortlet {
 		String sourceFileName =
 				uploadPortletRequest.getFileName("signImageId");
 	
-		String title = null;
+		String title = StringPool.BLANK;
+		title = sourceFileName;
 		
 		contentType =
 			    Validator.isNotNull(contentType)
