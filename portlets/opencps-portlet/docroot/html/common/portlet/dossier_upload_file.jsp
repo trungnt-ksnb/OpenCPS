@@ -1,3 +1,4 @@
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -16,7 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-
+<%@page import="com.liferay.portal.kernel.json.JSONObject"%>
+<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="com.liferay.portal.kernel.servlet.SessionErrors"%>
 <%@page import="com.liferay.portal.kernel.servlet.SessionMessages"%>
@@ -56,14 +58,13 @@
 
 <%
 	String signatureType = ParamUtil.getString(request, "signatureType");
-	
+	String textPositionWithImageSign = ParamUtil.getString(request, "textPositionWithImageSign", "overlaps");
 	double offsetX = ParamUtil.getDouble(request, "offsetX");
 	double offsetY = ParamUtil.getDouble(request, "offsetY");
 	String characterAttachs = ParamUtil.getString(request, "characterAttachs", "text");
 	
-	
 	boolean success = false;
-
+	
 	try{
 		success = !SessionMessages.isEmpty(renderRequest) && SessionErrors.isEmpty(renderRequest);
 		
@@ -80,12 +81,22 @@
 	long fileGroupId = ParamUtil.getLong(request, DossierDisplayTerms.FILE_GROUP_ID);
 	
 	long groupDossierPartId = ParamUtil.getLong(request, "groupDossierPartId");
-
+	
+	long signImageId = 0;
+	
 	String groupName = ParamUtil.getString(request, DossierFileDisplayTerms.GROUP_NAME);
 	
 	String modalDialogId = ParamUtil.getString(request, "modalDialogId");
 	
 	String redirectURL = ParamUtil.getString(request, "redirectURL");
+	
+	if(accountType.equalsIgnoreCase("Business")) {
+		signImageId = business.getSignImageId();
+	} else if(accountType.equalsIgnoreCase("Citizen")) {
+		signImageId = citizen.getSignImageId();
+	}
+	
+	JSONObject signImageInfo = DossierMgtUtil.getSignImageAsBase64(signImageId);
 	
 	DossierFile dossierFile = null;
 	boolean hasSign = false;
@@ -238,6 +249,10 @@
 	<aui:input name="<%=DossierFileDisplayTerms.MAX_UPLOAD_FILE_SIZE_UNIT %>" type="hidden" value="<%=maxUploadFileSizeUnit %>"/>
 	<aui:input name="<%=DossierFileDisplayTerms.MAX_TOTAL_UPLOAD_FILE_SIZE %>" type="hidden" value="<%=maxTotalUploadFileSize %>"/>
 	<aui:input name="<%=DossierFileDisplayTerms.MAX_TOTAL_UPLOAD_FILE_SIZE_UNIT %>" type="hidden" value="<%=maxTotalUploadFileSizeUnit %>"/>
+	
+	<aui:input name="dossierFileSigned" type="hidden" />
+	<aui:input name="signatureFileName" type="hidden" />
+	<aui:input name="functionCase" type="hidden" />
 	
 	<aui:row>
 		<aui:col width="100">
@@ -394,7 +409,10 @@
 									
 									fileBase64Encode = fileBase64Encode.substring(fileBase64Encode.lastIndexOf(',') + 1);
 									// signal
-									<portlet:namespace/>requestDataSignalToServer(fileBase64Encode, imgSrcName, fileName);
+									// <portlet:namespace/>requestDataSignalToServer(fileBase64Encode, imgSrcName, fileName);
+									var signImageInfo = JSON.parse('<%= signImageInfo %>');
+									<portlet:namespace/>signature(fileName, fileBase64Encode, 
+											signImageInfo.signImageName, signImageInfo.signImageAsBase64);
 								}
 							}
 						}
@@ -407,7 +425,7 @@
 		}
 	});
 	
-	Liferay.provide(window, '<portlet:namespace/>requestDataSignalToServer', function(fileBase64Encode, imgSrcName, fileName) {
+	/* Liferay.provide(window, '<portlet:namespace/>requestDataSignalToServer', function(fileBase64Encode, imgSrcName, fileName) {
 		var A = AUI();
 		A.io.request(
 				'<%= addAttachmentFileURL %>',
@@ -437,7 +455,7 @@
 		             }
 				}
 			);
-	});
+	}); */
 	
 	Liferay.provide(window, '<portlet:namespace/>signature', function(fileName, fileBase64Encode, imageName, imageBase64Encode) {
 		var A = AUI();
@@ -455,26 +473,38 @@
 									var characterAttachArray = characterAttachs.split(',');
 										// both image and text
 										if (characterAttachArray.indexOf('image') != -1 && characterAttachArray.indexOf('text') != -1) {
-											window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+											if(imageName != 'undefined' && imageBase64Encode != 'undefined') {
+												<portlet:namespace/>overlapText();
+												window.parent.PDFSigningHelper.writeBase64ToFile(imageName, imageBase64Encode , function(imageFileJsonDataResult) {
+													<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
+												});
 											
-											window.parent.PDFSigningHelper.writeBase64ToFile(imageName, imageBase64Encode , function(imageFileJsonDataResult) {
-												<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
-											});
+											} else {
+												alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "no-sign-image-please-upload-it-in-your-profile") %>');
+												Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
+						            			<portlet:namespace/>closeDialog();
+											}
+											
+											
 										}
 										// has image
 										// if configuration contain image value
 										else if(characterAttachArray.indexOf('image') != -1) {
-											if(imageName != '' && imageBase64Encode != '') {
+											if(imageName != 'undefined' && imageBase64Encode != 'undefined') {
 												// create image file from Base64 data
 												window.parent.PDFSigningHelper.writeBase64ToFile(imageName, imageBase64Encode , function(imageFileJsonDataResult) {
 													<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
 												});
+											} else {
+												alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "no-sign-image-please-upload-it-in-your-profile") %>');
+												Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
+						            			<portlet:namespace/>closeDialog();
 											}
 										} 
 										// text
 										// if configuration contain text value
 										else if (characterAttachArray.indexOf('text') != -1) {
-											window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+											<portlet:namespace/>overlapText();
 											var noImage = {};
 											noImage.data = '';
 											<portlet:namespace/>chooseSignatureType(jsonDataSignedResult, noImage , author, certIndexJsonDataResutl, fileName, signatureTypeVal);
@@ -490,8 +520,21 @@
 					}
 	});
 	
+	Liferay.provide(window, '<portlet:namespace/>overlapText', function() {
+		var A = AUI();
+		var textPositionWithImageSign = '<%= textPositionWithImageSign %>';
+		if(textPositionWithImageSign = 'overlaps') {
+			window.parent.PDFSigningHelper.setSignatureInfo(1,1);
+		} else if(textPositionWithImageSign == 'noOverlaps') {
+			window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+		}
+	});
+	
 	Liferay.provide(window, '<portlet:namespace/>chooseSignatureType', function(jsonDataSignedResult, imageFileJsonDataResult , author, certIndexJsonDataResutl, fileName, signatureTypeVal) {
-			// if signal with select point type
+		
+		var A = AUI();
+		
+		// if signal with select point type
 			if(signatureTypeVal == 'selectPoint') {
 				window.parent.PDFSigningHelper.signPDFWithSelectedPoint(jsonDataSignedResult.data, imageFileJsonDataResult.data,
 						author, "", certIndexJsonDataResutl.data, "", function(jsonDataSignedResult){
@@ -503,30 +546,45 @@
 				var offsetX = '<%= offsetX %>';
 				var offsetY = '<%= offsetY %>';
 				window.parent.PDFSigningHelper.signPDFAtPoint(jsonDataSignedResult.data, imageFileJsonDataResult.data, author, 
-						"", parseFloat(offsetX), parseFloat(offsetY), 1, certIndexJsonDataResutl.data, "", function(jsonDataSignedResult) {
+						"", parseFloat(offsetX), parseFloat(offsetY), 0, certIndexJsonDataResutl.data, "", function(jsonDataSignedResult) {
 					<portlet:namespace/>updateDataAfterSign(jsonDataSignedResult, fileName);
 				});
 			}
 	});
 	
-	// update data ajax
+	// update data
 	Liferay.provide(window, '<portlet:namespace/>updateDataAfterSign', function(jsonDataSignedResult, fileName) {
 		var A = AUI();
 		if(jsonDataSignedResult.code == 0) {
 			window.parent.PDFSigningHelper.readFileasBase64(jsonDataSignedResult.data.path , function(jsonDataSignedBase64Result) {
+				// console.log(jsonDataSignedBase64Result);
+				// console.log(jsonDataSignedBase64Result.data);
 				
-				A.io.request(
+				var dossierFileSigned = A.one('#<portlet:namespace />dossierFileSigned');
+				var functionCase = A.one('#<portlet:namespace />functionCase');
+				var signatureFileName = A.one('#<portlet:namespace />signatureFileName');
+				
+				dossierFileSigned.val(jsonDataSignedBase64Result.data.toString());
+				signatureFileName.val(fileName);
+				functionCase.val('<%= PortletConstants.SIGNATURE_UPDATE_DATA_AFTER_SIGN %>');
+				submitForm(document.<portlet:namespace />fm);
+				
+				/* Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
+    			<portlet:namespace/>closeDialog(); */
+				
+				/*  A.io.request(
 						'<%= addAttachmentFileURL %>',
 						{
+							contentType:"application/x-www-form-urlencoded",
 							method: 'POST',
 				            form: { 
 				            		id: '<portlet:namespace />fm',
 				            	},
 				            data : {
 				            	<portlet:namespace/>signatureFileName: fileName,
-				            	<portlet:namespace/>dossierFileSigned: jsonDataSignedBase64Result.data.toString(),
 				            	<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_UPDATE_DATA_AFTER_SIGN %>'
 				            },
+				            cache:false,
 				            on : {
 				            	success : function() {
 				            		Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
@@ -540,7 +598,7 @@
 				            	}
 				            }
 				         }
-				);
+				); */
 			});
 		} else {
 			alert(jsonDataSignedResult.errormsg);

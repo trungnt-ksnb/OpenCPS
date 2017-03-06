@@ -189,23 +189,23 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 		//to do something.
 		long dossierFileId = ParamUtil
 				.getLong(resourceRequest, "dossierFileId");
-		String imgSrcName = ParamUtil.getString(resourceRequest, "imgSrcName");
+		// String imgSrcName = ParamUtil.getString(resourceRequest, "imgSrcName");
 		try {
 			DLFileEntry dlFileEntry = getDLFileFromDossierFile(dossierFileId);
 			InputStream is = dlFileEntry.getContentStream();
-			String condauImageSrc = ReportUtils.getTemplateReportFilePath(resourceRequest) + "resources/" + imgSrcName + "_condau.png";
+			// String condauImageSrc = ReportUtils.getTemplateReportFilePath(resourceRequest) + "resources/" + imgSrcName + "_condau.png";
 			
 			byte [] bytes = IOUtils.toByteArray(is);
-			byte[] byteArray = Files.readAllBytes(new File(condauImageSrc).toPath());
+		//	byte[] byteArray = Files.readAllBytes(new File(condauImageSrc).toPath());
 			
-			String imgContentBase64Str = Base64.encode(byteArray);
+		//	String imgContentBase64Str = Base64.encode(byteArray);
 			String base64ContentString = Base64.encode(bytes);
 			String fileName = dlFileEntry.getTitle();
 			JSONObject jsonResponse = JSONFactoryUtil.createJSONObject();
 			jsonResponse.put("base64ContentString", base64ContentString);
 			jsonResponse.put("fileName", fileName);
-			jsonResponse.put("condauImageSrc", condauImageSrc);
-			jsonResponse.put("imgContentBase64Str", imgContentBase64Str);
+		//	jsonResponse.put("condauImageSrc", condauImageSrc);
+		//	jsonResponse.put("imgContentBase64Str", imgContentBase64Str);
 			PrintWriter out = resourceResponse.getWriter();
 			out.print(jsonResponse.toString());
 		} catch (Exception e) {
@@ -580,7 +580,7 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 			}
 		}
 	}
-	
+	@Deprecated
 	private void requestDataSignature (ActionRequest actionRequest, ActionResponse actionResponse) {
 		
 		String imgSrcName = ParamUtil.getString(actionRequest, "imgSrcName");
@@ -610,7 +610,10 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 		Dossier dossier = null;
 		DossierFile dossierFile = null;
 		DossierPart dossierPart = null;
-
+		
+		UploadPortletRequest uploadPortletRequest = PortalUtil
+				.getUploadPortletRequest(actionRequest);
+		
 		boolean updated = false;
 
 		long dossierId = ParamUtil.getLong(actionRequest,
@@ -628,7 +631,7 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 		long fileGroupId = ParamUtil.getLong(actionRequest,
 				DossierDisplayTerms.FILE_GROUP_ID);
 		
-		String signedFileBase64 = ParamUtil.getString(actionRequest, "dossierFileSigned");
+		String signedFileBase64 = ParamUtil.getString(uploadPortletRequest, "dossierFileSigned");
 
 		int dossierFileType = ParamUtil.getInteger(actionRequest,
 				DossierFileDisplayTerms.DOSSIER_FILE_TYPE);

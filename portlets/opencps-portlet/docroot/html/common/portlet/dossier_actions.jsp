@@ -722,18 +722,3 @@
 	</tr>
 </table>
 
-<aui:script>
-	/* AUI().ready('aui-tooltip', 'aui-io-request' ,'aui-base', function(A){
-			var items = A.all('#<portlet:namespace />signInfoMsg');
-			items.each(function(item) {
-				item.on('mouseover',function(){
-					new A.Tooltip(
-				      {
-				        trigger: item,
-				        position: 'right'
-				      }
-				    ).render();
-				})
-			}); 
-		}); */
-</aui:script>
