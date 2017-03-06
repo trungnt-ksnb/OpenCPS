@@ -499,17 +499,18 @@
 		
 		var items = A.all('#<portlet:namespace />signInfoMsg');
 		items.each(function(item) {
-				new A.TooltipDelegate(
+				new A.Tooltip(
 			      {
 			    	position: 'right',
 		            triggerHideEvent: ['blur', 'mouseleave'],
 		            triggerShowEvent: ['focus', 'mouseover'],
+		            cssClass: 'tooltip-help',
+			        opacity: 1,
 		            trigger: item,
 		            visible: false
 			      } 
 			    ).render();
-		}); 
-		
+		});
 		
 		//Upload buttons
 		var uploadDossierFiles = A.all('.upload-dossier-file');
