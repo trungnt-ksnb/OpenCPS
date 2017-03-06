@@ -144,34 +144,13 @@
 </liferay-portlet:renderURL>
 
 <aui:nav-bar cssClass="opencps-toolbar custom-toolbar">
-	<aui:nav id="toolbarContainer" cssClass="nav-button-container  nav-display-style-buttons pull-left" >
-		<c:if test="<%=ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
-			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
-			serviceInfoId > 0 && processStepId > 0%>">
-			<portlet:renderURL var="processDossierURL" windowState="<%=LiferayWindowState.NORMAL.toString() %>">
-				<portlet:param name="mvcPath" value='<%=templatePath + "processordertodolist.jsp" %>'/>
-				<portlet:param name="backURL" value="<%=currentURL %>"/>
-			</portlet:renderURL>
-			
-			<div id ="<portlet:namespace />multiAssignBtn"> 
-			
-			</div>
-			<aui:nav-item 
-				cssClass="item-config search-input input-keyword"
-				id="processDossier" 
-				label="process-dossier" 
-				iconCssClass="icon-plus icon-config"  
-				href='<%="javascript:" + renderResponse.getNamespace() + "processMultipleDossier()" %>'
-			/>
-		</c:if>
-	</aui:nav>
+
 	
 	<aui:nav-bar-search cssClass="pull-right">
 		<div class="form-search">
 			<aui:form action="<%= searchURL %>" method="post" name="fmSearch">
 			<liferay-portlet:renderURLParams varImpl="searchURL" />
-				<aui:row>
-					<c:choose>
+				<c:choose>
 						<c:when test="<%=!todolistDisplayStyle.equals(\"treemenu_left\") %>">
 							<aui:col width="<%=colWidth %>" cssClass="search-col div100">
 								<datamgt:ddr 
@@ -192,7 +171,8 @@
 								<aui:input name="dossierSubStatus" type="hidden" value="<%=dossierSubStatus %>"></aui:input>
 							</c:otherwise>
 					</c:choose>
-					<aui:col width="18" cssClass="search-col">
+				<aui:row>
+					<aui:col width="25" cssClass="search-col">
 						<aui:select 
 							name="processOrderStage" 
 							label="<%=StringPool.BLANK %>" 
@@ -205,7 +185,7 @@
 							<aui:option value="<%=true %>"><liferay-ui:message key="filter-process-order-stage-1"/></aui:option>
 						</aui:select>
 					</aui:col>
-					<aui:col width="22" cssClass="search-col">
+					<aui:col width="25" cssClass="search-col">
 					<aui:select name="<%=DossierDisplayTerms.SERVICE_DOMAIN_CODE %>" 
 								label="" 
 								cssClass="search-input select-box" 
@@ -234,7 +214,7 @@
 									%>
 								</aui:select>
 							</aui:col>
-					<aui:col width="20" cssClass="search-col" >
+					<aui:col width="25" cssClass="search-col">
 						<aui:select 
 							name="serviceInfoId" 
 							label="<%=StringPool.BLANK %>" 
@@ -260,7 +240,7 @@
 						</aui:select>
 					</aui:col>
 				
-					<aui:col width="21" cssClass="search-col">
+					<aui:col width="25" cssClass="search-col">
 						<aui:select 
 							name="processStepId" 
 							label="<%=StringPool.BLANK %>" 
@@ -283,17 +263,15 @@
 							%>
 						</aui:select>
 					</aui:col>
-					
-					<aui:col width="5" cssClass="search-col">
-						<a id="<portlet:namespace/>arrowButton">
-							<i class="fa fa-arrow-right" aria-hidden="true"></i>
-							<i class="fa fa-arrow-down" aria-hidden="true"></i>
-						</a>
-					</aui:col>
-					
 				</aui:row>
+				
 				<aui:row>
-					<div id="<portlet:namespace/>spoiler" class="showBottomRow">				
+					<div id="<portlet:namespace/>spoiler" class="showBottomRow">	
+					
+					<aui:col width="25" cssClass="search-col">
+							<button type="button" class="fa fa-search-advanced-">search_advanced</button>
+					</aui:col>
+								
 					<aui:col width="25" cssClass="search-col">
 						<liferay-ui:input-date 
 		 					name="fromDate"
@@ -338,11 +316,36 @@
 					</aui:col>
 					</div>
 				</aui:row>
+				<aui:row>
+					<aui:nav id="toolbarContainer" cssClass="nav-button-container  nav-display-style-buttons pull-left" >
+						<c:if test="<%=ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
+							tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
+							serviceInfoId > 0 && processStepId > 0%>">
+						<portlet:renderURL var="processDossierURL" windowState="<%=LiferayWindowState.NORMAL.toString() %>">
+						<portlet:param name="mvcPath" value='<%=templatePath + "processordertodolist.jsp" %>'/>
+						<portlet:param name="backURL" value="<%=currentURL %>"/>
+						</portlet:renderURL>
+					
+						<div id ="<portlet:namespace />multiAssignBtn"> 
+					
+						</div>
+						<aui:nav-item 
+						cssClass="item-config search-input input-keyword"
+						id="processDossier" 
+						label="process-dossier" 
+						iconCssClass="icon-plus icon-config"  
+						href='<%="javascript:" + renderResponse.getNamespace() + "processMultipleDossier()" %>'
+						/>
+						</c:if>
+					</aui:nav>
+				</aui:row>
+	
 
 			</aui:form>
 		</div>
 	</aui:nav-bar-search>
 </aui:nav-bar>
+
 <aui:script use="liferay-util-list-fields,liferay-portlet-url">
 	Liferay.provide(window, '<portlet:namespace/>processMultipleDossier', function() {
 		
