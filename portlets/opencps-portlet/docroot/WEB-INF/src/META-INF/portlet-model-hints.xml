@@ -898,8 +898,20 @@
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
 		<field name="dossierId" type="long" />
+		<field name="transactionCode" type="String" />
 		<field name="postalOrderContent" type="String" />
-		<field name="postalOrderStatus" type="int" />
+		<field name="postalOrderStatus" type="String" />
+	</model>
+	<model name="org.opencps.postal.model.PostalOrderLog">
+		<field name="postalOrderLogId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="postalOrderId" type="long" />
+		<field name="postalOrderContent" type="String" />
+		<field name="postalOrderStatus" type="String" />
 	</model>
 	<model name="org.opencps.postal.model.VnPostal">
 		<field name="vnPostalId" type="long" />

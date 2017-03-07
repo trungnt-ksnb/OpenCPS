@@ -24,8 +24,17 @@ import org.opencps.util.WebKeys;
 
 public class PostalKeys extends WebKeys {
 	
-	public static final int NEW = 0;
-	public static final int SUCCES_ERROR = 1;
-	public static final int SUCCES_SENDED = 2;
+	public static final String ERROR = "error";
+	public static final String DOSSIER_SENDED = "dossier-sended";
+	
+	public static final String DOSSIER_COLLECT ="dossier-need-collect";
+	public static final String DOSSIER_COLLECTED = "dossier-collected";
+	
+	public static final String DOSSIER_DELIVERY = "dossier-need-delivery";
+	public static final String DOSSIER_DELIVERED = "dossier-delivered";
+	
+	public static final String API_DIEUTIN = "serviceApi/v1/postDieuTin?";
+	public static final String API_DELIVERY_STATUS = "serviceApi/v1/getDelivery?";
+	public static final String API_COLLECT_STATUS = "serviceApi/v1/getAcceptance?";
 
 }

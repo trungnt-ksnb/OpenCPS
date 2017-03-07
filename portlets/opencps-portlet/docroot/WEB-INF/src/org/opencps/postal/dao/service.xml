@@ -22,8 +22,9 @@
 		<!-- Other fields -->
 
 		<column name="dossierId" type="long" />
+		<column name="transactionCode" type="String" />
 		<column name="postalOrderContent" type="String"/>
-		<column name="postalOrderStatus" type="int" />
+		<column name="postalOrderStatus" type="String" />
 
 		<!-- Order -->
 		<order by="desc">
@@ -32,6 +33,11 @@
 		</order>
 
 		<!-- Finder methods -->
+		<finder name="D_S" return-type="PostalOrder">
+			<finder-column name="dossierId" />
+			<finder-column name="postalOrderStatus" />
+		</finder>
+		
 		<finder name="dossierId" return-type="PostalOrder">
 			<finder-column name="dossierId" />
 		</finder>
@@ -40,6 +46,35 @@
 			<finder-column name="postalOrderStatus" />
 		</finder>
 
+
+	</entity>
+	
+		<entity name="PostalOrderLog" local-service="true"
+		remote-service="false" table="opencps_postalorder_log">
+
+		<!-- PK fields -->
+
+		<column name="postalOrderLogId" type="long" primary="true" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="groupId" type="long" />
+		<column name="userId" type="long" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="postalOrderId" type="long" />
+		<column name="postalOrderContent" type="String"/>
+		<column name="postalOrderStatus" type="String" />
+
+		<!-- Order -->
+		<order by="desc">
+			<order-column name="postalOrderLogId" />
+			<order-column name="createDate" />
+		</order>
 
 	</entity>
 

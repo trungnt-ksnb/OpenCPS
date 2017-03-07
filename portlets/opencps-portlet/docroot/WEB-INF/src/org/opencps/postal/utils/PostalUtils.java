@@ -20,10 +20,13 @@
  * */
 package org.opencps.postal.utils;
 
+import org.opencps.postal.model.PostalOrder;
 import org.opencps.postal.model.VnPostal;
 import org.opencps.postal.model.impl.VnPostalImpl;
 import org.opencps.postal.service.PostalOrderLocalServiceUtil;
 
+import com.liferay.counter.service.CounterLocalServiceUtil;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONSerializer;
@@ -36,11 +39,11 @@ public class PostalUtils {
 
 	private static Log _log = LogFactoryUtil.getLog(PostalUtils.class);
 
-	public void updatePostalOrder(long dossierId, ServiceContext serviceContext) {
+	public void updatePostalOrder(long dossierId, String postalOrderStatus) {
 
 		try {
 
-			int PostIdThuGom = 0;
+			int postIdThuGom = 0;
 			int maTinhGui = 0;
 			int maHuyenGui = 0;
 			String maKhachHang = StringPool.BLANK;
@@ -63,15 +66,15 @@ public class PostalUtils {
 			String emailNguoiNhan = StringPool.BLANK;
 
 			String postalOrderContent = createJsonPostalOrderContent(
-					PostIdThuGom, maTinhGui, maHuyenGui, maKhachHang,
+					postIdThuGom, maTinhGui, maHuyenGui, maKhachHang,
 					soDonHang, diaChiNguoiGui, tenNguoiGui, emailNguoiGui,
 					dienThoaiNguoiGui, noiDungHang, soTienCOD, ghiChu,
 					ngayNhap, posIdNhanTin, tenNguoiNhan, diaChiNguoiNhan,
 					dienThoaiNguoiNhan, maBuuGui, maTinhNhan, maHuyenNhan,
 					emailNguoiNhan);
 
-			PostalOrderLocalServiceUtil.updatePosOrder(0, PostalKeys.NEW,
-					postalOrderContent, serviceContext);
+			PostalOrderLocalServiceUtil.updatePosOrder(0, postalOrderStatus,
+					postalOrderContent);
 		} catch (Exception e) {
 			_log.error(e);
 		}
@@ -184,6 +187,38 @@ public class PostalUtils {
 		// vnPost.setFlagConfig(0);
 
 		return vnPost;
+	}
+	
+	public JSONObject convertVnPostalToJSon(VnPostal vnPostal) {
+
+		try {
+
+			JSONSerializer jsonSerializer = JSONFactoryUtil
+					.createJSONSerializer();
+
+			String jsonData = JSONFactoryUtil.serialize(vnPostal);
+
+			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(jsonData);
+
+			return jsonObject;
+
+		} catch (Exception e) {
+			_log.error(e);
+		}
+
+		return null;
+	}
+	
+	public long _genetatorTransactionCode() {
+
+		long transactionCode = 0;
+		try {
+			transactionCode = CounterLocalServiceUtil.increment(PostalOrder.class
+					.getName() + ".generatorTransactionCode");
+		} catch (SystemException e) {
+			_log.error(e);
+		}
+		return transactionCode;
 	}
 
 }

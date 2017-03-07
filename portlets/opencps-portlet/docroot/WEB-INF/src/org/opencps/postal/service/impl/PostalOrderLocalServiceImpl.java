@@ -26,8 +26,6 @@ import org.opencps.postal.model.PostalOrder;
 import org.opencps.postal.service.base.PostalOrderLocalServiceBaseImpl;
 
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONSerializer;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceContext;
 
@@ -58,8 +56,15 @@ public class PostalOrderLocalServiceImpl extends PostalOrderLocalServiceBaseImpl
 		return postalOrderPersistence.findBydossierId(dossierId);
 
 	}
+	
+	public PostalOrder getPostalOrderBy(long dossierId,String postalOrderStatus)
+			throws NoSuchPostalOrderException, SystemException {
 
-	public List<PostalOrder> getPostalOrderByStatus(int postalOrderStatus,
+		return postalOrderPersistence.fetchByD_S(dossierId, postalOrderStatus);
+
+	}
+
+	public List<PostalOrder> getPostalOrderByStatus(String postalOrderStatus,
 			int start, int end) throws SystemException {
 
 		return postalOrderPersistence.findBypostalOrderStatus(
@@ -68,7 +73,7 @@ public class PostalOrderLocalServiceImpl extends PostalOrderLocalServiceBaseImpl
 	}
 
 	public PostalOrder updatePosOrder(long postalOrderId,
-			int postalOrderStatus, String postalOrderContent, ServiceContext serviceContext)
+			String postalOrderStatus, String postalOrderContent)
 			throws SystemException {
 
 		PostalOrder postalOrder = null;
@@ -95,9 +100,6 @@ public class PostalOrderLocalServiceImpl extends PostalOrderLocalServiceBaseImpl
 
 			postalOrder = postalOrderPersistence.create(postalOrderId);
 
-			postalOrder.setUserId(serviceContext.getUserId());
-			postalOrder.setCompanyId(serviceContext.getCompanyId());
-			postalOrder.setGroupId(serviceContext.getScopeGroupId());
 			postalOrder.setCreateDate(new Date());
 			postalOrder.setModifiedDate(new Date());
 
