@@ -401,12 +401,7 @@
 <aui:script use="liferay-util-list-fields,liferay-portlet-url">
 
 AUI().ready(function(A){
-	
-	/*var arrowButton = A.one('#<portlet:namespace/>arrowButton');
-	arrowButton.on('click', function() {
-		$('.showBottomRow').toggleClass();
-	});
-	*/
+
 	var arrowButton = A.one('#<portlet:namespace/>arrowButton');		
 	arrowButton.on('click', function() {
 		$('.showBottomRow').toggleClass('show');
