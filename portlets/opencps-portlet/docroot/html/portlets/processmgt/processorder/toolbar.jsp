@@ -150,6 +150,7 @@
 		<div class="form-search">
 			<aui:form action="<%= searchURL %>" method="post" name="fmSearch">
 			<liferay-portlet:renderURLParams varImpl="searchURL" />
+				<aui:row>
 				<c:choose>
 						<c:when test="<%=!todolistDisplayStyle.equals(\"treemenu_left\") %>">
 							<aui:col width="<%=colWidth %>" cssClass="search-col div100">
@@ -171,6 +172,7 @@
 								<aui:input name="dossierSubStatus" type="hidden" value="<%=dossierSubStatus %>"></aui:input>
 							</c:otherwise>
 					</c:choose>
+				</aui:row>
 				<aui:row>
 					<aui:col width="25" cssClass="search-col">
 						<aui:select 
@@ -266,12 +268,13 @@
 				</aui:row>
 				
 				<aui:row>
-					<div id="<portlet:namespace/>spoiler" class="showBottomRow">	
-					
 					<aui:col width="25" cssClass="search-col">
-							<button type="button" class="fa fa-search-advanced-">search_advanced</button>
+							<button type="button" id="<portlet:namespace/>arrowButton" class="fa fa-search-advanced">
+								<aui:option value="0" class="fa fa-search-advanced-key" ><liferay-ui:message key="search-advanced"/>
+								</aui:option>
+							</button>
 					</aui:col>
-								
+					<div id="<portlet:namespace/>spoiler" class="showBottomRow">
 					<aui:col width="25" cssClass="search-col">
 						<liferay-ui:input-date 
 		 					name="fromDate"
@@ -339,8 +342,6 @@
 						</c:if>
 					</aui:nav>
 				</aui:row>
-	
-
 			</aui:form>
 		</div>
 	</aui:nav-bar-search>
