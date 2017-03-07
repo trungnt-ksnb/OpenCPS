@@ -268,15 +268,13 @@
 				</aui:row>
 				
 				<aui:row>
-					<div id="<portlet:namespace/>spoiler" class="showBottomRow">	
-					
 					<aui:col width="25" cssClass="search-col">
-							<button type="button" class="fa fa-search-advanced">
-								<aui:option value="0"><liferay-ui:message key="search-advanced"/>
+							<button type="button" id="<portlet:namespace/>arrowButton" class="fa fa-search-advanced">
+								<aui:option value="0" class="fa fa-search-advanced-key" ><liferay-ui:message key="search-advanced"/>
 								</aui:option>
 							</button>
 					</aui:col>
-								
+					<div id="<portlet:namespace/>spoiler" class="showBottomRow">
 					<aui:col width="25" cssClass="search-col">
 						<liferay-ui:input-date 
 		 					name="fromDate"
