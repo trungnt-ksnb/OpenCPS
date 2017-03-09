@@ -507,6 +507,44 @@ public class DossierMgtUtil {
 		
 		return fileName;
 	}
+	
+	/**
+	 * @param receptionNo
+	 * @return
+	 */
+	public static Dossier getDossierByReceptionNo(String receptionNo) {
+		
+		Dossier dossier = null;
+		
+		if (Validator.isNotNull(receptionNo)) {
+			try {
+				dossier = DossierLocalServiceUtil.getDossierByReceptionNo(receptionNo);
+			} catch (Exception e) {
+				_log.debug(e);
+			}
+		}
+		
+		return dossier;
+	}
+	
+	/**
+	 * @param dossierId
+	 * @return
+	 */
+	public static Dossier getDossierByDossierId(long dossierId) {
+		
+		Dossier dossier = null;
+		
+		if (dossierId != 0) {
+			try {
+				dossier = DossierLocalServiceUtil.getDossier(dossierId);
+			} catch (Exception e) {
+				_log.debug(e);
+			}
+		}
+		
+		return dossier;
+	}
 
 	private static Log _log = LogFactoryUtil.getLog(DossierMgtUtil.class
 			.getName());
