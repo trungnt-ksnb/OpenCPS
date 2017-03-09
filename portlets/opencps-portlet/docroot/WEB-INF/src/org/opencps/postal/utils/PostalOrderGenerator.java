@@ -43,6 +43,9 @@ public class PostalOrderGenerator {
 	public static final String API_COLLECT = "serviceApi/v1/getAcceptance?";
 	public static final String TOKEN = "token=c45b5eae-23a1-4da2-af66-db834db0e65b";
 
+	/**
+	 * @param dossierId
+	 */
 	public void sendDossierCollectMessage(long dossierId) {
 
 		try {
@@ -71,7 +74,9 @@ public class PostalOrderGenerator {
 
 					vnPostal = postalUtils.convertJsonToVnPostal(jsonObject);
 
-					// ///////////////////////////////////
+					/*
+					 * Sinh so don hang truoc khi gui di
+					 * */
 
 					transactionCode = String.valueOf(postalUtils
 							._genetatorTransactionCode());
@@ -112,6 +117,9 @@ public class PostalOrderGenerator {
 		}
 	}
 
+	/**
+	 * @param dossierId
+	 */
 	public void sendDossierDeliveryMessage(long dossierId) {
 
 		try {
@@ -182,6 +190,11 @@ public class PostalOrderGenerator {
 	}
 
 	
+	/**
+	 * @param postalOrderId
+	 * @param API_PATH
+	 * @param postalOrderStatus
+	 */
 	public static void sendCheckStatusMessage(long postalOrderId,String API_PATH,String postalOrderStatus) {
 
 		try {

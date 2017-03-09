@@ -103,5 +103,35 @@
 		<column name="emailNguoiNhan" type="String" json-enabled="true"/>
 
 	</entity>
+	
+	<entity name="PostOfficeMapping" local-service="true" remote-service="false" table="opencps_postoffcicemapping"
+		 json-enabled="true">
+
+		<column name="postOfficeMappingId" type="long" primary="true" />
+		
+		
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="groupId" type="long" />
+		<column name="userId" type="long" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+		
+		<column name="postOfficeCode" type="String"/>
+		<column name="postOfficeName" type="String"/>
+		<column name="opencpsCityCode" type="String"/>
+		
+		<!-- Order -->
+		<order by="asc">
+			<order-column name="postOfficeCode" />
+			<order-column name="createDate" />
+		</order>
+		
+		<finder return-type="PostOfficeMapping" name="OpencpsCityCode">
+			<finder-column name="opencpsCityCode" />
+		</finder>
+
+	</entity>
 
 </service-builder>

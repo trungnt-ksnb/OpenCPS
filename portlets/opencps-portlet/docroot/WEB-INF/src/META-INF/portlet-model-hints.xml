@@ -913,6 +913,17 @@
 		<field name="postalOrderContent" type="String" />
 		<field name="postalOrderStatus" type="String" />
 	</model>
+	<model name="org.opencps.postal.model.PostOfficeMapping">
+		<field name="postOfficeMappingId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="postOfficeCode" type="String" />
+		<field name="postOfficeName" type="String" />
+		<field name="opencpsCityCode" type="String" />
+	</model>
 	<model name="org.opencps.postal.model.VnPostal">
 		<field name="vnPostalId" type="long" />
 		<field name="posIdThuGom" type="int" />
