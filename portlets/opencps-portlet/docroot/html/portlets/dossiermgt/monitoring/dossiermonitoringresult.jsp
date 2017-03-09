@@ -57,43 +57,35 @@
 	catch (Exception ex) {
 		
 	}
-	_log.debug("----DOSSIER ID----" + dossierId);
+
 	Format dateFormatDate = FastDateFormatFactoryUtil.getDate(locale, timeZone);
-%>
-<style>
-.opencps-theme .home_bg #column-1 .portlet-body{
-	margin-top: 0px !important;
-}
-</style>
-<%
+
 	String keywordSearch = ParamUtil.getString(request, "keywords", StringPool.BLANK);
 %>
 
 <c:if test="<%= !StringPool.BLANK.equals(keywordSearch) %>">
-<portlet:renderURL var="backURL">
-	<portlet:param name="mvcPath"
-		value="/html/portlets/dossiermgt/monitoring/dossiermonitoringdossierlist.jsp" />	
-	<portlet:param name="keywords"
-		value="<%= keywordSearch %>" />	
-</portlet:renderURL>
-<liferay-ui:header
-	backURL="<%= backURL.toString() %>"
-	title="dossier-list"
-	backLabel="back"
-/>
+	<portlet:renderURL var="backURL">
+		<portlet:param name="mvcPath" value="/html/portlets/dossiermgt/monitoring/dossiermonitoringdossierlist.jsp" />	
+		<portlet:param name="keywords" value="<%= keywordSearch %>" />	
+	</portlet:renderURL>
+	
+	<liferay-ui:header
+		backURL="<%= backURL.toString() %>"
+		title="dossier-list"
+		backLabel="back"
+	/>
 </c:if>
+
 <c:if test="<%= StringPool.BLANK.equals(keywordSearch) %>">
-<portlet:renderURL var="backURL">
-	<portlet:param name="mvcPath"
-		value="/html/portlets/dossiermgt/monitoring/dossiermonitoringsearch.jsp" />	
-	<portlet:param name="keywords"
-		value="<%= keywordSearch %>" />	
-</portlet:renderURL>
-<liferay-ui:header
-	backURL="<%= backURL.toString() %>"
-	title="dossier-list"
-	backLabel="back"
-/>
+	<portlet:renderURL var="backURL">
+		<portlet:param name="mvcPath" value="/html/portlets/dossiermgt/monitoring/dossiermonitoringsearch.jsp" />	
+		<portlet:param name="keywords" value="<%= keywordSearch %>" />	
+	</portlet:renderURL>
+	<liferay-ui:header
+		backURL="<%= backURL.toString() %>"
+		title="dossier-list"
+		backLabel="back"
+	/>
 </c:if>
 <div class="head">
 	<h3 class="headh3"><liferay-ui:message key="ket-qua-tra-cuu-ho-so"/> <%= Validator.isNotNull(dossier)?dossier.getReceptionNo():StringPool.BLANK %></h3>

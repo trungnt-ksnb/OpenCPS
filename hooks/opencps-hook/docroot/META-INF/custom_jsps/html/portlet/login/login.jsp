@@ -313,6 +313,7 @@
 								</aui:a>
 							</div>
 						</div>
+					<!-- 
 						<div class="advance-signin">
 							<div class="sign-in-label">
 								<liferay-ui:message key="sign-in-with-facebook"/>
@@ -347,6 +348,8 @@
 								<aui:button name="sign-in-with-digital-signature" value="sign-in-with-digital-signature" cssClass="btn-signature-signin"/>
 							</div>
 						</div>
+					
+ 					-->
 					</div>
 				</c:otherwise>
 			</c:choose>
