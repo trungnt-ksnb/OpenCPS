@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.StringPool;
 
 @SuppressWarnings("deprecation")
 public class APIRequestUtils {
@@ -41,10 +42,6 @@ public class APIRequestUtils {
 
 	public static final String USERNAME = "User10";
 	public static final String PASSWORD = "cd@2016";
-
-	public static final String TARGET_DOMAIN = "https://hcconline.vnpost.vn/demo/";
-	public static final String API = "serviceApi/v1/postDieuTin?";
-	public static final String TOKEN = "token=c45b5eae-23a1-4da2-af66-db834db0e65b";
 
 	/**
 	 * @param domainName
@@ -65,7 +62,8 @@ public class APIRequestUtils {
 			StringBuffer urlString = new StringBuffer();
 			urlString.append(domainName);
 			urlString.append(APIPath);
-			urlString.append(token);
+			urlString.append(StringPool.QUESTION);
+			urlString.append("token=").append(token);
 
 			HttpPost url = new HttpPost(urlString.toString());
 			json.setContentType("application/json");

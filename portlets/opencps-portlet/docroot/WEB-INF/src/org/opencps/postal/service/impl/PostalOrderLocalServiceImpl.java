@@ -73,7 +73,7 @@ public class PostalOrderLocalServiceImpl extends PostalOrderLocalServiceBaseImpl
 	}
 
 	public PostalOrder updatePosOrder(long postalOrderId,
-			String postalOrderStatus, String postalOrderContent)
+			String postalOrderStatus, String postalOrderContent,long postalConfigId)
 			throws SystemException {
 
 		PostalOrder postalOrder = null;
@@ -107,6 +107,8 @@ public class PostalOrderLocalServiceImpl extends PostalOrderLocalServiceBaseImpl
 			postalOrder.setPostalOrderStatus(postalOrderStatus);
 
 		}
+		
+		postalOrder.setPostalConfigId(postalConfigId);
 
 		return updatePostalOrder(postalOrder);
 	}

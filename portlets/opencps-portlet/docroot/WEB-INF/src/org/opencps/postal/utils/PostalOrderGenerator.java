@@ -21,8 +21,10 @@
 package org.opencps.postal.utils;
 
 import org.opencps.postal.NoSuchPostalOrderException;
+import org.opencps.postal.model.PostalConfig;
 import org.opencps.postal.model.PostalOrder;
 import org.opencps.postal.model.VnPostal;
+import org.opencps.postal.service.PostalConfigLocalServiceUtil;
 import org.opencps.postal.service.PostalOrderLocalServiceUtil;
 import org.opencps.postal.service.PostalOrderLogLocalServiceUtil;
 
@@ -37,13 +39,12 @@ public class PostalOrderGenerator {
 
 	private static Log _log = LogFactoryUtil.getLog(PostalOrder.class);
 
-	public static final String TARGET_DOMAIN = "https://hcconline.vnpost.vn/demo/";
-	public static final String API_DIEUTIN = "serviceApi/v1/postDieuTin?";
-	public static final String API_DELIVERY = "serviceApi/v1/getDelivery?";
-	public static final String API_COLLECT = "serviceApi/v1/getAcceptance?";
-	public static final String TOKEN = "token=c45b5eae-23a1-4da2-af66-db834db0e65b";
-
-	public void sendDossierCollectMessage(long dossierId) {
+	public static final String TARGET_DOMAIN = "https://hcconline.vnpost.vn/demo/serviceApi/v1/";
+	/**
+	 * @param dossierId
+	 * @param postalOrderStatus
+	 */
+	public void sendPostalOrderMessage(long dossierId, String postalOrderStatus) {
 
 		try {
 
@@ -54,7 +55,7 @@ public class PostalOrderGenerator {
 				try {
 
 					postalOrder = PostalOrderLocalServiceUtil.getPostalOrderBy(
-							dossierId, PostalKeys.DOSSIER_COLLECT);
+							dossierId, postalOrderStatus);
 				} catch (NoSuchPostalOrderException e) {
 
 				}
@@ -71,7 +72,9 @@ public class PostalOrderGenerator {
 
 					vnPostal = postalUtils.convertJsonToVnPostal(jsonObject);
 
-					// ///////////////////////////////////
+					/*
+					 * Sinh so don hang truoc khi gui di
+					 */
 
 					transactionCode = String.valueOf(postalUtils
 							._genetatorTransactionCode());
@@ -84,25 +87,49 @@ public class PostalOrderGenerator {
 
 					PostalOrderLocalServiceUtil.updatePostalOrder(postalOrder);
 
-					// ///////////////////////////////////
-					APIRequestUtils apiRequest = new APIRequestUtils();
-					jsonObject = apiRequest.callAPI(TARGET_DOMAIN, API_DIEUTIN,
-							TOKEN, postalOrder.getPostalOrderContent());
+					/*
+					 * Lay thong tin config postal
+					 */
 
-					if (jsonObject.getBoolean("Status") == true) {
+					PostalConfig postalConfig = null;
 
-						postalOrder
-								.setPostalOrderStatus(PostalKeys.DOSSIER_SENDED);
+					try {
 
-					} else {
-						postalOrder.setPostalOrderStatus(PostalKeys.ERROR);
+						postalConfig = PostalConfigLocalServiceUtil
+								.fetchPostalConfig(postalOrder
+										.getPostalConfigId());
+					} catch (Exception e) {
+
 					}
-					PostalOrderLocalServiceUtil.updatePostalOrder(postalOrder);
 
-					PostalOrderLogLocalServiceUtil.addLog(
-							postalOrder.getPostalOrderId(),
-							postalOrder.getPostalOrderStatus(),
-							jsonObject.toString());
+					/*
+					 * Goi API
+					 */
+
+					if (Validator.isNotNull(postalConfig)) {
+
+						APIRequestUtils apiRequest = new APIRequestUtils();
+						jsonObject = apiRequest.callAPI(
+								postalConfig.getPostalDomain(), PostalKeys.API_DIEUTIN,
+								postalConfig.getPostalTokenCode(),
+								postalOrder.getPostalOrderContent());
+
+						if (jsonObject.getBoolean("Status") == true) {
+
+							postalOrder
+									.setPostalOrderStatus(PostalKeys.DOSSIER_SENDED);
+
+						} else {
+							postalOrder.setPostalOrderStatus(PostalKeys.ERROR);
+						}
+						PostalOrderLocalServiceUtil
+								.updatePostalOrder(postalOrder);
+
+						PostalOrderLogLocalServiceUtil.addLog(
+								postalOrder.getPostalOrderId(),
+								postalOrder.getPostalOrderStatus(),
+								jsonObject.toString());
+					}
 				}
 
 			}
@@ -112,77 +139,13 @@ public class PostalOrderGenerator {
 		}
 	}
 
-	public void sendDossierDeliveryMessage(long dossierId) {
-
-		try {
-
-			PostalOrder postalOrder = null;
-
-			if (dossierId > 0) {
-
-				try {
-
-					postalOrder = PostalOrderLocalServiceUtil.getPostalOrderBy(
-							dossierId, PostalKeys.DOSSIER_DELIVERY);
-				} catch (NoSuchPostalOrderException e) {
-
-				}
-
-				if (Validator.isNotNull(postalOrder)) {
-
-					String transactionCode = StringPool.BLANK;
-					VnPostal vnPostal = null;
-					PostalUtils postalUtils = new PostalUtils();
-
-					JSONObject jsonObject = JSONFactoryUtil
-							.createJSONObject(postalOrder
-									.getPostalOrderContent());
-
-					vnPostal = postalUtils.convertJsonToVnPostal(jsonObject);
-
-					// ///////////////////////////////////
-
-					transactionCode = String.valueOf(postalUtils
-							._genetatorTransactionCode());
-
-					vnPostal.setSoDonHang(transactionCode);
-
-					postalOrder.setTransactionCode(transactionCode);
-					postalOrder.setPostalOrderContent(postalUtils
-							.convertVnPostalToJSon(vnPostal).toString());
-
-					PostalOrderLocalServiceUtil.updatePostalOrder(postalOrder);
-
-					// ///////////////////////////////////
-					APIRequestUtils apiRequest = new APIRequestUtils();
-					jsonObject = apiRequest.callAPI(TARGET_DOMAIN, API_DIEUTIN,
-							TOKEN, postalOrder.getPostalOrderContent());
-
-					if (jsonObject.getBoolean("Status") == true) {
-
-						postalOrder
-								.setPostalOrderStatus(PostalKeys.DOSSIER_SENDED);
-
-					} else {
-						postalOrder.setPostalOrderStatus(PostalKeys.ERROR);
-					}
-					PostalOrderLocalServiceUtil.updatePostalOrder(postalOrder);
-
-					PostalOrderLogLocalServiceUtil.addLog(
-							postalOrder.getPostalOrderId(),
-							postalOrder.getPostalOrderStatus(),
-							jsonObject.toString());
-				}
-
-			}
-
-		} catch (Exception e) {
-			_log.error(e);
-		}
-	}
-
-	
-	public static void sendCheckStatusMessage(long postalOrderId,String API_PATH,String postalOrderStatus) {
+	/**
+	 * @param postalOrderId
+	 * @param API_PATH
+	 * @param postalOrderStatus
+	 */
+	public static void sendCheckStatusMessage(long postalOrderId,
+			String API_PATH, String postalOrderStatus) {
 
 		try {
 
@@ -199,25 +162,46 @@ public class PostalOrderGenerator {
 
 					PostalOrderLocalServiceUtil.updatePostalOrder(postalOrder);
 
-					// ///////////////////////////////////
-					APIRequestUtils apiRequest = new APIRequestUtils();
-					jsonObject = apiRequest.callAPI(TARGET_DOMAIN,
-							API_PATH, TOKEN,
-							postalOrder.getPostalOrderContent());
+					/*
+					 * Lay thong tin config postal
+					 */
 
-					if (jsonObject.toString().length() > 0) {
+					PostalConfig postalConfig = null;
 
-						postalOrder
-								.setPostalOrderStatus(postalOrderStatus);
+					try {
 
-						PostalOrderLocalServiceUtil
-								.updatePostalOrder(postalOrder);
+						postalConfig = PostalConfigLocalServiceUtil
+								.fetchPostalConfig(postalOrder
+										.getPostalConfigId());
+					} catch (Exception e) {
 
-						PostalOrderLogLocalServiceUtil.addLog(
-								postalOrder.getPostalOrderId(),
-								postalOrder.getPostalOrderStatus(),
-								jsonObject.toString());
+					}
 
+					/*
+					 * Goi API
+					 */
+
+					if (Validator.isNotNull(postalConfig)) {
+
+						APIRequestUtils apiRequest = new APIRequestUtils();
+						jsonObject = apiRequest.callAPI(
+								postalConfig.getPostalDomain(), API_PATH,
+								postalConfig.getPostalTokenCode(),
+								postalOrder.getPostalOrderContent());
+
+						if (jsonObject.toString().length() > 0) {
+
+							postalOrder.setPostalOrderStatus(postalOrderStatus);
+
+							PostalOrderLocalServiceUtil
+									.updatePostalOrder(postalOrder);
+
+							PostalOrderLogLocalServiceUtil.addLog(
+									postalOrder.getPostalOrderId(),
+									postalOrder.getPostalOrderStatus(),
+									jsonObject.toString());
+
+						}
 					}
 
 				}
