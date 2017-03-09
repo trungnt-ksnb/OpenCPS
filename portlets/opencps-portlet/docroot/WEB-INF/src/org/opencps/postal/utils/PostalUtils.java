@@ -28,10 +28,12 @@ import org.opencps.dossiermgt.bean.AccountBean;
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
 import org.opencps.postal.model.PostOfficeMapping;
+import org.opencps.postal.model.PostalConfig;
 import org.opencps.postal.model.PostalOrder;
 import org.opencps.postal.model.VnPostal;
 import org.opencps.postal.model.impl.VnPostalImpl;
 import org.opencps.postal.service.PostOfficeMappingLocalServiceUtil;
+import org.opencps.postal.service.PostalConfigLocalServiceUtil;
 import org.opencps.postal.service.PostalOrderLocalServiceUtil;
 import org.opencps.usermgt.model.WorkingUnit;
 import org.opencps.usermgt.service.WorkingUnitLocalServiceUtil;
@@ -56,108 +58,132 @@ public class PostalUtils {
 	 * @param postalOrderStatus
 	 * @param groupId
 	 */
-	public void updatePostalOrder(long dossierId, String postalOrderStatus, long groupId, String noiDungHang, String ghiChu,Double soTienCOD) {
+	public void updatePostalOrder(long dossierId, String postalOrderStatus,
+			long groupId, String noiDungHang, String ghiChu, Double soTienCOD) {
 
 		try {
 
 			String maKhachHang = StringPool.BLANK;
-			
+
 			int postIdThuGom = 0;
 			String diaChiNguoiGui = StringPool.BLANK;
 			String tenNguoiGui = StringPool.BLANK;
 			String emailNguoiGui = StringPool.BLANK;
 			String dienThoaiNguoiGui = StringPool.BLANK;
-			
-//			String noiDungHang = StringPool.BLANK;
-//			Double soTienCOD = 0.0;
-//			String ghiChu = StringPool.BLANK;
-			
-			
+
+			// String noiDungHang = StringPool.BLANK;
+			// Double soTienCOD = 0.0;
+			// String ghiChu = StringPool.BLANK;
+
 			int posIdNhanTin = 0;
 			String tenNguoiNhan = StringPool.BLANK;
 			String diaChiNguoiNhan = StringPool.BLANK;
 			String dienThoaiNguoiNhan = StringPool.BLANK;
 			String maBuuGui = StringPool.BLANK;
 			String emailNguoiNhan = StringPool.BLANK;
-			
+
 			/*
 			 * Nhung thong tin khong can lay tai buoc nay
-			 * */
+			 */
 			int maTinhGui = 0;
 			int maHuyenGui = 0;
 			String soDonHang = StringPool.BLANK;
 			int maTinhNhan = 0;
 			int maHuyenNhan = 0;
 			String ngayNhap = StringPool.BLANK;
-			
-			/////////////////////////////////////
-			
-			if(dossierId > 0 && postalOrderStatus.trim().length() > 0){
-				
-				Dossier dossier = DossierLocalServiceUtil.fetchDossier(dossierId);
-				
-				if(Validator.isNotNull(dossier)){
-					
+
+			// ///////////////////////////////////
+
+			if (dossierId > 0 && postalOrderStatus.trim().length() > 0) {
+
+				Dossier dossier = DossierLocalServiceUtil
+						.fetchDossier(dossierId);
+
+				if (Validator.isNotNull(dossier)) {
+
 					/*
 					 * Lay thong tin nguoi gui
-					 * */
-					
-					postIdThuGom = getCityCodeMapping(Long.valueOf(dossier.getCityCode()));
-					
+					 */
+
+					postIdThuGom = getCityCodeMapping(Long.valueOf(dossier
+							.getCityCode()));
+
 					WorkingUnit workingUnit = null;
-					
-					workingUnit = WorkingUnitLocalServiceUtil.getWorkingUnit(groupId, dossier.getGovAgencyCode());
+
+					workingUnit = WorkingUnitLocalServiceUtil.getWorkingUnit(
+							groupId, dossier.getGovAgencyCode());
 					diaChiNguoiGui = workingUnit.getAddress();
 					tenNguoiGui = workingUnit.getName();
 					emailNguoiGui = workingUnit.getEmail();
 					dienThoaiNguoiGui = workingUnit.getTelNo();
-					
+
 					/*
 					 * Lay thong tin nguoi nhan
-					 * */
-					
-					AccountBean accountBean = AccountUtil.getAccountBean(dossier.getUserId(), groupId,
-							null);
+					 */
+
+					AccountBean accountBean = AccountUtil.getAccountBean(
+							dossier.getUserId(), groupId, null);
 
 					Citizen citizen = null;
 					Business bussines = null;
 					long dictItemId = 0;
-					
+
 					if (accountBean.isCitizen()) {
 						citizen = (Citizen) accountBean.getAccountInstance();
-						
+
 						dictItemId = Long.valueOf(citizen.getCityCode());
-						
+
 						tenNguoiNhan = citizen.getFullName();
 						diaChiNguoiNhan = citizen.getAddress();
 						dienThoaiNguoiNhan = citizen.getTelNo();
 						emailNguoiNhan = citizen.getEmail();
-						
-						
+
 					} else if (accountBean.isBusiness()) {
 						bussines = (Business) accountBean.getAccountInstance();
-						
+
 						dictItemId = Long.valueOf(bussines.getCityCode());
-						
+
 						tenNguoiNhan = bussines.getName();
 						diaChiNguoiNhan = bussines.getAddress();
 						dienThoaiNguoiNhan = bussines.getTelNo();
 						emailNguoiNhan = bussines.getEmail();
 					}
 					posIdNhanTin = getCityCodeMapping(dictItemId);
-					
-					
+
+					/*
+					 * lay maKhachHang duoc cau hinh trong table PostalConfig
+					 */
+					PostalConfig postalConfig = null;
+					try {
+						postalConfig = PostalConfigLocalServiceUtil
+								.getPostalConfigBy(
+										dossier.getGovAgencyOrganizationId(),
+										PostalKeys.ACTIVE);
+
+					} catch (Exception e) {
+
+					}
+
+					if (Validator.isNotNull(postalConfig)) {
+
+						maKhachHang = postalConfig.getPostalCustomerCode();
+					}
 
 					String postalOrderContent = createJsonPostalOrderContent(
 							postIdThuGom, maTinhGui, maHuyenGui, maKhachHang,
-							soDonHang, diaChiNguoiGui, tenNguoiGui, emailNguoiGui,
-							dienThoaiNguoiGui, noiDungHang, soTienCOD, ghiChu,
-							ngayNhap, posIdNhanTin, tenNguoiNhan, diaChiNguoiNhan,
-							dienThoaiNguoiNhan, maBuuGui, maTinhNhan, maHuyenNhan,
-							emailNguoiNhan);
-		
-					PostalOrderLocalServiceUtil.updatePosOrder(0, postalOrderStatus,
-							postalOrderContent);
+							soDonHang, diaChiNguoiGui, tenNguoiGui,
+							emailNguoiGui, dienThoaiNguoiGui, noiDungHang,
+							soTienCOD, ghiChu, ngayNhap, posIdNhanTin,
+							tenNguoiNhan, diaChiNguoiNhan, dienThoaiNguoiNhan,
+							maBuuGui, maTinhNhan, maHuyenNhan, emailNguoiNhan);
+
+					PostalOrderLocalServiceUtil.updatePosOrder(
+							0,
+							postalOrderStatus,
+							postalOrderContent,
+							Validator.isNotNull(postalConfig) ? postalConfig
+									.getGovAgencyOrganizationId() : 0);
+
 				}
 			}
 		} catch (Exception e) {
@@ -218,7 +244,7 @@ public class PostalUtils {
 		vnPost.setTenNguoiNhan(tenNguoiNhan);
 		vnPost.setDiaChiNguoiNhan(diaChiNguoiNhan);
 		vnPost.setDienThoaiNguoiNhan(dienThoaiNguoiNhan);
-		//vnPost.setMaBuuGui(maBuuGui);
+		// vnPost.setMaBuuGui(maBuuGui);
 		// vnPost.setTrongLuong(trongLuong);
 		// vnPost.setCuocChinh(cuocChinh);
 		// vnPost.setCuocCOD(cuocCOD);
@@ -273,7 +299,7 @@ public class PostalUtils {
 
 		return vnPost;
 	}
-	
+
 	/**
 	 * @param vnPostal
 	 * @return
@@ -294,7 +320,7 @@ public class PostalUtils {
 
 		return null;
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -302,19 +328,20 @@ public class PostalUtils {
 
 		long transactionCode = 0;
 		try {
-			transactionCode = CounterLocalServiceUtil.increment(PostalOrder.class
-					.getName() + ".generatorTransactionCode");
+			transactionCode = CounterLocalServiceUtil
+					.increment(PostalOrder.class.getName()
+							+ ".generatorTransactionCode");
 		} catch (SystemException e) {
 			_log.error(e);
 		}
 		return transactionCode;
 	}
-	
+
 	/**
 	 * @param dictItemId
 	 * @return
 	 */
-	public int getCityCodeMapping(long dictItemId){
+	public int getCityCodeMapping(long dictItemId) {
 
 		try {
 

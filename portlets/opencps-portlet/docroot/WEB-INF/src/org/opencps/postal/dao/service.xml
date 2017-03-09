@@ -25,6 +25,7 @@
 		<column name="transactionCode" type="String" />
 		<column name="postalOrderContent" type="String"/>
 		<column name="postalOrderStatus" type="String" />
+		<column name="postalConfigId" type="long" />
 
 		<!-- Order -->
 		<order by="desc">
@@ -130,6 +131,46 @@
 		
 		<finder return-type="PostOfficeMapping" name="OpencpsCityCode">
 			<finder-column name="opencpsCityCode" />
+		</finder>
+
+	</entity>
+	
+	<entity name="PostalConfig" local-service="true" remote-service="false" table="opencps_postalconfig"
+		 json-enabled="true">
+
+		<column name="postalConfigId" type="long" primary="true" />
+		
+		
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="groupId" type="long" />
+		<column name="userId" type="long" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+		
+		<column name="govAgencyOrganizationId" type="long"/>
+		<column name="postalDomain" type="String"/>
+		<column name="postalCustomerCode" type="String"/>
+		<column name="postalTokenCode" type="String"/>
+		<column name="postalGateType" type="String"/>
+		<column name="status" type="int"/>
+		
+		<!-- Order -->
+		<order by="asc">
+			<order-column name="govAgencyOrganizationId" />
+			<order-column name="createDate" />
+		</order>
+		
+		<finder return-type="PostalConfig" name="O_T_S">
+			<finder-column name="govAgencyOrganizationId" />
+			<finder-column name="postalGateType" />
+			<finder-column name="status" />
+		</finder>
+		
+		<finder return-type="PostalConfig" name="O_S">
+			<finder-column name="govAgencyOrganizationId" />
+			<finder-column name="status" />
 		</finder>
 
 	</entity>
