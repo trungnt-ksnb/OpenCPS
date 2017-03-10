@@ -355,9 +355,7 @@
 			</c:choose>
 		</aui:form>
 
-		<c:if test='<%=displayStyle.equals("default") %>'>
-			<liferay-util:include page="/html/portlet/login/navigation.jsp" />
-		</c:if>
+<!-- 		<liferay-util:include page="/html/portlet/login/navigation.jsp" /> -->
 		
 		<aui:script use="aui-base">
 			var form = A.one(document.<portlet:namespace />fm);
