@@ -61,7 +61,7 @@ public class DossierMornitoringPortlet extends MVCPortlet {
 		String receptionNo = ParamUtil.getString(request, "keywords", StringPool.BLANK);
 		Dossier ds = null;
 		
-		ds = DossierMgtUtil.getDossierByReceptionNo(receptionNo);
+		ds = DossierMgtUtil.searchDossier(receptionNo);
 		
 		ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
 		String portletName = (String)request.getAttribute(WebKeys.PORTLET_ID);

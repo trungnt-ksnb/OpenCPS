@@ -57,6 +57,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -544,6 +545,34 @@ public class DossierMgtUtil {
 		}
 		
 		return dossier;
+	}
+	
+	public static Dossier searchDossier(String keywords) {
+		Dossier dossier = null;
+
+		dossier = getDossierByReceptionNo(keywords);
+		
+		if (Validator.isNull(dossier)) {
+			
+			long dossierId = convertStringToLong(keywords);
+			
+			dossier = getDossierByDossierId(dossierId);
+			
+		}
+		
+		return dossier;
+	}
+	
+	private static long convertStringToLong(String input) {
+		long output = 0;
+		
+		try {
+			output = Long.valueOf(input);
+		} catch (Exception e) {
+			
+		}
+		
+		return output;
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(DossierMgtUtil.class
