@@ -27,6 +27,7 @@
 <%@page import="org.opencps.postal.model.impl.PostalConfigImpl"%>
 <%@page import="org.opencps.datamgt.model.DictItem"%>
 <%@page import="org.opencps.util.DictItemUtil"%>
+<%@page import="org.opencps.util.PortletPropsValues"%>
 
 <%@ include file="../init.jsp"%>
 
@@ -47,7 +48,7 @@
 	
 	DictItemUtil dicItemUtil = new DictItemUtil();
 	
-	List<DictItem> postalGates = dicItemUtil.getListDictItemBy(themeDisplay.getScopeGroupId(), "DM_POSTAL");
+	List<DictItem> postalGates = dicItemUtil.getListDictItemBy(themeDisplay.getScopeGroupId(), PortletPropsValues.DM_POSTAL_GATE);
 %>	
 
 <div class="opencps-bound-wrapper pd20 default-box-shadow">
