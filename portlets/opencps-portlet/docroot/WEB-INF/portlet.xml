@@ -1127,7 +1127,11 @@
 		</portlet-class>
 		<init-param>
 			<name>view-template</name>
-			<value>/html/portlets/statisticsmgt/admin/view.jsp</value>
+			<value>/html/portlets/statisticsmgt/admin/statistics.jsp</value>
+		</init-param>
+		<init-param>
+			<name>template-path</name>
+			<value>/html/portlets/statisticsmgt/admin/</value>
 		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>
@@ -1234,7 +1238,7 @@
 	
 	<portlet>
 		<portlet-name>35</portlet-name>
-		<display-name>Tree Dashboard</display-name>
+		<display-name>Detail Dashboard</display-name>
 		<portlet-class>
 			org.opencps.statisticsmgt.dashboard.portlet.DashBoardPortlet
 		</portlet-class>
