@@ -154,7 +154,7 @@
 		<column name="postalCustomerCode" type="String"/>
 		<column name="postalTokenCode" type="String"/>
 		<column name="postalGateType" type="String"/>
-		<column name="status" type="int"/>
+		<column name="status" type="boolean"/>
 		
 		<!-- Order -->
 		<order by="asc">
@@ -171,6 +171,15 @@
 		<finder return-type="PostalConfig" name="O_S">
 			<finder-column name="govAgencyOrganizationId" />
 			<finder-column name="status" />
+		</finder>
+		
+		<finder return-type="Collection" name="OrgId">
+			<finder-column name="govAgencyOrganizationId" />
+		</finder>
+		
+		<finder return-type="PostalConfig" name="O_T">
+			<finder-column name="govAgencyOrganizationId" />
+			<finder-column name="postalGateType" />
 		</finder>
 
 	</entity>

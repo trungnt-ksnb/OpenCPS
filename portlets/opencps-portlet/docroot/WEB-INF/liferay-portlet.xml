@@ -327,6 +327,16 @@
 		<css-class-wrapper>22-portlet</css-class-wrapper>
 	</portlet>
 	<portlet>
+		<portlet-name>23</portlet-name>
+		<icon>/icon.png</icon>
+		<instanceable>false</instanceable>
+		<header-portlet-css>/css/main.css</header-portlet-css>
+		<footer-portlet-javascript>
+			/js/main.js
+		</footer-portlet-javascript>
+		<css-class-wrapper>23-portlet</css-class-wrapper>
+	</portlet>
+	<portlet>
 		<portlet-name>24</portlet-name>
 		<icon>/icon.png</icon>
 		<header-portlet-css>/css/main.css</header-portlet-css>

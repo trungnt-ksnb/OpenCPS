@@ -902,7 +902,7 @@
 		<field name="postalCustomerCode" type="String" />
 		<field name="postalTokenCode" type="String" />
 		<field name="postalGateType" type="String" />
-		<field name="status" type="int" />
+		<field name="status" type="boolean" />
 	</model>
 	<model name="org.opencps.postal.model.PostalOrder">
 		<field name="postalOrderId" type="long" />
