@@ -179,8 +179,10 @@
 						PortletConstants.DOSSIER_FILE_SYNC_STATUS_SYNCSUCCESS };
 				List<DossierLog> dossierLogs = null;
 				try {
-					dossierLogs = DossierLogLocalServiceUtil
-							.getDossierLogByDossierId(dossierId, logFitter);
+// 					dossierLogs = DossierLogLocalServiceUtil
+// 							.getDossierLogByDossierId(dossierId, logFitter);
+					
+					dossierLogs = DossierLogLocalServiceUtil.findDossierLog(1, dossierId, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 				} catch (Exception e) {
 					_log.error(e);
 				}
@@ -203,10 +205,12 @@
 			<div>
 				<p>
 					<span><liferay-ui:message key="doi-tuong" />:</span>
-					<%= Validator.isNotNull(dossierLog.getActor())? LanguageUtil.get(pageContext, dossierLog.getActor()+"-cus"):StringPool.BLANK %></p>
+					<%= Validator.isNotNull(dossierLog.getActor())? LanguageUtil.get(pageContext, dossierLog.getActor()+"-cus"):StringPool.BLANK %>
+				</p>
 				<p>
 					<span><liferay-ui:message key="ghi-chu" />:</span>
-					<%= dossierLog.getActionInfo() %></p>
+					<liferay-ui:message key="<%= dossierLog.getActionInfo() %>" />
+				</p>
 			</div>
 			
 			<%			}
