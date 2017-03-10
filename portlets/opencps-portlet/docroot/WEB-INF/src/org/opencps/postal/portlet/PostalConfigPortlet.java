@@ -31,12 +31,10 @@ import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
-import org.opencps.postal.NoSuchPostalConfigException;
 import org.opencps.postal.model.PostalConfig;
 import org.opencps.postal.search.PostalConfigDisplayTerms;
 import org.opencps.postal.service.PostalConfigLocalServiceUtil;
 
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;

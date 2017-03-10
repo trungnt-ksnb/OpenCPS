@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.opencps.postal.NoSuchPostalConfigException;
 import org.opencps.postal.model.PostalConfig;
-import org.opencps.postal.service.PostalConfigLocalServiceUtil;
 import org.opencps.postal.service.base.PostalConfigLocalServiceBaseImpl;
 
 import com.liferay.portal.kernel.exception.SystemException;
@@ -164,9 +163,8 @@ public class PostalConfigLocalServiceImpl extends
 
 		try {
 			return postalConfigPersistence.findByO_T(govAgencyOrganizationId, postalGateType);
-		} catch (SystemException | NoSuchPostalConfigException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (NoSuchPostalConfigException | SystemException e) {
+			
 		}
 
 		return null;
