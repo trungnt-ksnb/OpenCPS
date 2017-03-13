@@ -274,8 +274,8 @@
 								</aui:option>
 							</button>
 					</aui:col>
-					<div id="<portlet:namespace/>spoiler" class="showBottomRow">
-					<aui:col width="25" cssClass="search-col">
+					<div id="<portlet:namespace/>spoiler" class="showBottomRow span9">
+					<aui:col width="33" cssClass="search-col">
 						<liferay-ui:input-date 
 		 					name="fromDate"
 		 					nullable="<%= nullableFromDate %>"
@@ -292,7 +292,7 @@
 		 				</liferay-ui:input-date>
 					</aui:col>
 					
-					<aui:col width="25" cssClass="search-col">
+					<aui:col width="33" cssClass="search-col">
 						<liferay-ui:input-date 
 		 					name="toDate"
 		 					nullable="<%= nullableToDate %>"
@@ -308,7 +308,7 @@
 		 				>
 		 				</liferay-ui:input-date> 
 					</aui:col>
-					<aui:col width="25" cssClass="search-col">
+					<aui:col width="33" cssClass="search-col">
 						<liferay-ui:input-search 
 							id="keywords"
 							name="keywords"
