@@ -334,3 +334,6 @@ portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/postal/model/impl/*
 
 portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/postal/service/persistence/PostOfficeMappingPersistenceImpl.java
 portlets/opencps-portlet/docroot/WEB-INF/src/org/opencps/postal/service/persistence/PostalConfigPersistenceImpl.java
+
+portlets/opencps-portlet/docroot/WEB-INF/lib/opencps-portlet-service.jar
+portlets/opencps-portlet/docroot/WEB-INF/lib/opencps-portlet-taglib.jar

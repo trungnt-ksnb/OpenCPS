@@ -33,9 +33,11 @@ public class PostalKeys extends WebKeys {
 	public static final String DOSSIER_DELIVERY = "dossier-need-delivery";
 	public static final String DOSSIER_DELIVERED = "dossier-delivered";
 	
-	public static final String API_DIEUTIN = "postDieuTin";
-	public static final String API_DELIVERY_STATUS = "getDelivery";
-	public static final String API_COLLECT_STATUS = "getAcceptance";
-	public static final String TOKEN = "c45b5eae-23a1-4da2-af66-db834db0e65b";
+	public static final String API_DIEUTIN = "/postDieuTin";
+	public static final String API_DELIVERY_STATUS = "/getDelivery";
+	public static final String API_COLLECT_STATUS = "/getAcceptance";
+	
+	public static final boolean DISABLE = false;
+	public static final boolean ACTIVE = true;
 
 }
