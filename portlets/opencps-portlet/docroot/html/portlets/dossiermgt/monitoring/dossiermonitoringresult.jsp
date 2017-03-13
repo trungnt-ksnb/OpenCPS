@@ -1,3 +1,4 @@
+<%@page import="java.text.SimpleDateFormat"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -61,6 +62,8 @@
 	}
 	
 	Format dateFormatDate = FastDateFormatFactoryUtil.getDate(locale, timeZone);
+	
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy | hh:MM:ss");
 
 	String keywordSearch = ParamUtil.getString(request, "keywords", StringPool.BLANK);
 %>
@@ -197,9 +200,11 @@
 										"error")) {
 			%>
 			<div class="date">
-				<p><%= (Validator.isNotNull(dossierLog.getUpdateDatetime())) ? dateFormatDate.format(dossierLog.getUpdateDatetime()) : StringPool.BLANK %></p>
-				<p><%= Validator.isNotNull(dossierLog.getDossierStatus())? LanguageUtil.get(pageContext, dossierLog.getDossierStatus()+"-cus"):StringPool.BLANK %><font
-						style="color: #fff;">-</font>
+				<p>
+					<%= (Validator.isNotNull(dossierLog.getUpdateDatetime())) ? sdf.format(dossierLog.getUpdateDatetime()) : StringPool.BLANK %>
+				</p>
+				<p>
+					<%= Validator.isNotNull(dossierLog.getDossierStatus())? LanguageUtil.get(pageContext, dossierLog.getDossierStatus()+"-cus"):StringPool.BLANK %>
 				</p>
 			</div>
 			<div>
