@@ -70,7 +70,7 @@
 
 <aui:script use="aui-base,aui-io">
 $(document).ready(function(){
-	var myComboTree = '<%=HtmlUtil.escape(myComboTree) %>';
+	var myComboTree = '<%=myComboTree %>';
 	var domainCode = '<%=HtmlUtil.escape(domainCode)%>';
 	var comboboxTree = $('#comboboxTree').comboTree({  
 		boundingBox: 'comboboxTree',
