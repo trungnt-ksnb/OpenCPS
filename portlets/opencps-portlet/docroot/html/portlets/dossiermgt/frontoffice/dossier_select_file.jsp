@@ -343,19 +343,19 @@
 					
 					<liferay-util:buffer var="boundCol2">
 						<div class="row-fluid">
-							<div class="span6 bold-label">
+							<div class="span4 bold-label">
 								<liferay-ui:message key="dossier-file-date"/>
 							</div>
-							<div class="span6"><%=Validator.isNotNull(dossierFile.getDossierFileDate()) ? 
+							<div class="span8"><%=Validator.isNotNull(dossierFile.getDossierFileDate()) ? 
 									DateTimeUtil.convertDateToString(dossierFile.getDossierFileDate(), DateTimeUtil._VN_DATE_FORMAT) :
 										StringPool.DASH %>
 							</div>
 						</div>
 						<div class="row-fluid">
-							<div class="span6 bold-label">
+							<div class="span4 bold-label">
 								<liferay-ui:message key="dossier-file-name"/>
 							</div>
-							<div class="span6">
+							<div class="span8">
 								<a href="<%=dossierFileURL %>" target="_blank">
 									<%=Validator.isNotNull(dossierFile.getDisplayName()) ? dossierFile.getDisplayName() : StringPool.DASH %>
 								</a>
