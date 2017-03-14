@@ -254,7 +254,7 @@ public class AccountMgtPortlet extends MVCPortlet {
 				}
 
 				mappingUser = UserLocalServiceUtil
-						.updatePassword(mappingUserId, password, password, false);
+						.updatePassword(mappingUserId, password, password, true);
 				
 				if (mappingUser != null) {
 					MessageBusUtil.sendEmailActiveAccount(mappingUser, password, serviceContext);
