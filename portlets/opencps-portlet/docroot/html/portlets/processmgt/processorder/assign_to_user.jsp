@@ -1,4 +1,3 @@
-<%@page import="java.text.DecimalFormatSymbols"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -47,6 +46,7 @@
 <%@page import="org.opencps.util.PortletPropsValues"%>
 <%@page import="org.opencps.util.PortletUtil"%>
 <%@page import="org.opencps.util.WebKeys"%>
+<%@page import="java.text.DecimalFormatSymbols"%>
 
 <%@ include file="init.jsp"%>
 
@@ -93,6 +93,8 @@
 	String deadlinePattern = ParamUtil.getString(request, "deadlinePattern");
 	
 	String backURL = ParamUtil.getString(request, "backURL");
+	
+	boolean requiredActionNote = ParamUtil.getBoolean(request, "requiredActionNote");
 	
 	Date receiveDate = ProcessOrderUtils.getRecevieDate(dossierId, processWorkflowId, processStepId);
 	
@@ -516,7 +518,14 @@
 		
 		if(submitButton){
 			submitButton.on('click', function(){
-				submitForm(document.<portlet:namespace />fm);
+				var requiredActionNote = '<%=requiredActionNote%>';
+				var A = AUI();
+				var actionNote = A.one('#<portlet:namespace />actionNote');
+				if (requiredActionNote == 'true' && actionNote.val() == ''){
+					alert(Liferay.Language.get('please-add-note-before-send'));
+				} else {
+					submitForm(document.<portlet:namespace />fm);
+				}
 			});
 		}
 		

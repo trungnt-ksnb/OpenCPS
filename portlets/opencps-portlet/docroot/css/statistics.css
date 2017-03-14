@@ -52,3 +52,13 @@
     text-transform: uppercase;
     width: 100%;
 }
+
+.opencps-toptabs .container {
+    padding: 0;
+    width: 100%;
+}
+
+.formul-note {
+    color: #888;
+    font-style: italic;
+}

@@ -314,7 +314,7 @@
 										</div>
 										<div class="span7">
 											<%=
-												Validator.isNotNull(dossier.getReceiveDatetime()) ? 
+												Validator.isNotNull(dossier.getSubmitDatetime()) ? 
 												DateTimeUtil.convertDateToString(dossier.getSubmitDatetime(), DateTimeUtil._VN_DATE_TIME_FORMAT): 
 												DateTimeUtil._EMPTY_DATE_TIME  
 											%>
@@ -401,24 +401,9 @@
 <aui:script use="liferay-util-list-fields,liferay-portlet-url">
 
 AUI().ready(function(A){
-	
-	var arrowButton = A.one('#<portlet:namespace/>arrowButton');
-	var arrowRight = A.one('.fa-arrow-right');
-	var arrowDown = A.one('.fa-arrow-down');
-	var valuee = 0;
-	arrowRight.show();
-	arrowDown.hide();
-	
+
+	var arrowButton = A.one('#<portlet:namespace/>arrowButton');		
 	arrowButton.on('click', function() {
-		if(valuee == 0) {
-			arrowRight.hide();
-			arrowDown.show();
-			valuee = 1;
-		} else if(valuee == 1) {
-			arrowRight.show();
-			arrowDown.hide();
-			valuee = 0;
-		}
 		$('.showBottomRow').toggleClass('show');
 	});
 	
