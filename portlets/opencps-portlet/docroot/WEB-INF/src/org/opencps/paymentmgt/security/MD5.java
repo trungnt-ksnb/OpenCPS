@@ -14,7 +14,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>
 */
-package org.opencps.keypay.security;
+package org.opencps.paymentmgt.security;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
