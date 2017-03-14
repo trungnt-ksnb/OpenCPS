@@ -333,7 +333,7 @@
 					
 						</div>
 						<aui:nav-item 
-						cssClass="item-config search-input input-keyword"
+						cssClass="item-config search-input input-keyword btn-XL"
 						id="processDossier" 
 						label="process-dossier" 
 						iconCssClass="icon-plus icon-config"  
