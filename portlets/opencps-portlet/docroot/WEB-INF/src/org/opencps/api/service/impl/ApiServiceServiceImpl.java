@@ -142,7 +142,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 			}
 		} catch (Exception e) {
 			result = e.getClass().getName();
-			e.printStackTrace();
+			_log.error(e);
 		}
 		
 		
@@ -169,7 +169,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 					
 					// DossierLocalServiceUtil.getByGC_DS(govAgencyCode, dossierStatus);
 		} catch (PortalException | SystemException e) {
-			e.printStackTrace();
+			_log.error(e);
 		}
 		
 		
@@ -179,7 +179,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 				try {
 					serviceInfo = ServiceInfoLocalServiceUtil.getServiceInfo(dossier.getServiceInfoId());
 				} catch (PortalException | SystemException e) {
-					e.printStackTrace();
+					_log.error(e);
 				}
 				String stringJsonMessageContent;
 				try {
@@ -190,8 +190,7 @@ public class ApiServiceServiceImpl extends ApiServiceServiceBaseImpl {
 						jsonMessageObjects.put(jsonMessageContent);
 					}
 				} catch (PortalException | SystemException e) {
-					// TODO Auto-generated catch block
-					 e.printStackTrace();
+					_log.error(e);
 				}
 				
 			}
