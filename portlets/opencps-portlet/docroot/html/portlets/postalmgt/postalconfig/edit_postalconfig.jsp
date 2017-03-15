@@ -31,6 +31,8 @@
 
 <%@ include file="../init.jsp"%>
 
+<liferay-util:include page="/html/portlets/postalmgt/toptabs.jsp" servletContext="<%=application %>"/>
+
 <%
 	String backURL = ParamUtil.getString(request, "backURL");
 	long postalConfigId = ParamUtil.getLong(request, PostalConfigDisplayTerms.POSTAL_CONFIG_ID, 0L);
@@ -81,7 +83,7 @@
 					<aui:col width="50">
 						<aui:select
 							id="<%=PostalConfigDisplayTerms.GOV_AGENCY_ORGANIZATION_ID%>"
-							onChange="loadPaymentConfig()"
+							onChange="loadPostalConfig()"
 							name="<%=PostalConfigDisplayTerms.GOV_AGENCY_ORGANIZATION_ID%>"
 							label="gov-agency-organization-id">
 							<%

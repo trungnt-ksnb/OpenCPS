@@ -132,6 +132,10 @@
 		<finder return-type="PostOfficeMapping" name="OpencpsCityCode">
 			<finder-column name="opencpsCityCode" />
 		</finder>
+		
+		<finder return-type="PostOfficeMapping" name="PostOfficeCode">
+			<finder-column name="postOfficeCode" />
+		</finder>
 
 	</entity>
 	

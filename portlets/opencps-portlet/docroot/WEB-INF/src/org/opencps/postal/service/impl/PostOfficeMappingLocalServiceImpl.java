@@ -17,10 +17,13 @@
 
 package org.opencps.postal.service.impl;
 
+import java.util.Date;
+
 import org.opencps.postal.model.PostOfficeMapping;
 import org.opencps.postal.service.base.PostOfficeMappingLocalServiceBaseImpl;
 
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.Validator;
 
 /**
  * The implementation of the post office mapping local service.
@@ -49,6 +52,47 @@ public class PostOfficeMappingLocalServiceImpl
 
 		return postOfficeMappingPersistence
 				.fetchByOpencpsCityCode(opencpsCityCode);
+
+	}
+	
+	public PostOfficeMapping getMappingByPostOfficeCode(String postOfficeCode)
+			throws SystemException {
+
+		return postOfficeMappingPersistence.fetchByPostOfficeCode(postOfficeCode);
+
+	}
+
+	public PostOfficeMapping updatePostOffce(String postOfficeCode,
+			String postOfficeName, String opencpsCityCode)
+			throws SystemException {
+
+		PostOfficeMapping postOfficeMapping = null;
+
+		postOfficeMapping = postOfficeMappingPersistence
+				.fetchByPostOfficeCode(postOfficeCode);
+
+		long postOfficeMappingId = 0;
+
+		if (Validator.isNull(postOfficeMapping)) {
+
+			postOfficeMappingId = counterLocalService
+					.increment(PostOfficeMapping.class.getName());
+
+			postOfficeMapping.setPostOfficeMappingId(postOfficeMappingId);
+			
+			postOfficeMapping.setCreateDate(new Date());
+
+		}
+		
+		postOfficeMapping.setModifiedDate(new Date());
+
+		postOfficeMapping.setPostOfficeCode(postOfficeCode);
+		postOfficeMapping.setPostOfficeName(postOfficeName);
+		postOfficeMapping.setOpencpsCityCode(opencpsCityCode);
+
+		postOfficeMappingPersistence.update(postOfficeMapping);
+
+		return postOfficeMapping;
 
 	}
 }

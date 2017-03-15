@@ -1,4 +1,5 @@
 /**
+
  * OpenCPS is the open source Core Public Services software
  * Copyright (C) 2016-present OpenCPS community
 
@@ -39,5 +40,15 @@ public class PostalKeys extends WebKeys {
 	
 	public static final boolean DISABLE = false;
 	public static final boolean ACTIVE = true;
+	
+	public static final String REQUEST_POSTALCONFIG = "request_postalconfig";
+	public static final String REQUEST_POSTOFFICEMAPPING = "request_postofficemapping";
+	
+	public static final String AJAX_REQUEST_NAME= "ajax_request_name";
+	
+	public static final String TOP_TABS_POSTALCONFIG = "postal_config_tab";
+	public static final String TOP_TABS_POSTOFFICEMAPPING = "postoffice_mapping_tab";
+	
+	public static final String TOP_TABS_CODE = "TAB_CODE";
 
 }
