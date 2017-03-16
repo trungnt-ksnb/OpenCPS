@@ -232,7 +232,7 @@
 						<%
 							for (DictItem dictItem : dictItems) {
 						%>
-							<aui:option selected="<%= itemCode_cfg == dictItem.getItemCode() %>" value="<%= dictItem.getItemCode() %>"><%= dictItem.getItemName(locale) %></aui:option>
+							<aui:option selected="<%= itemCode_cfg.equals(dictItem.getItemCode()) %>" value="<%= dictItem.getItemCode() %>"><%= dictItem.getItemName(locale) %></aui:option>
 						<%
 							}
 						%>
