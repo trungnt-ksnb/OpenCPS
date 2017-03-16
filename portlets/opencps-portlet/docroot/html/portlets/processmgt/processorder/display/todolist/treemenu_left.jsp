@@ -401,11 +401,6 @@
 <aui:script use="liferay-util-list-fields,liferay-portlet-url">
 
 AUI().ready(function(A){
-
-	var arrowButton = A.one('#<portlet:namespace/>arrowButton');		
-	arrowButton.on('click', function() {
-		$('.showBottomRow').toggleClass('show');
-	});
 	
 	var processDossier = A.one("#<portlet:namespace />processDossier");
 	var isMultiAssignvar = '<%= isMultiAssign %>';

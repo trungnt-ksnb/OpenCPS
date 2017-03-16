@@ -269,13 +269,6 @@
 				
 				<aui:row>
 					<aui:col width="25" cssClass="search-col">
-							<button type="button" id="<portlet:namespace/>arrowButton" class="fa fa-search-advanced">
-								<aui:option value="0" class="fa fa-search-advanced-key" ><liferay-ui:message key="search-advanced"/>
-								</aui:option>
-							</button>
-					</aui:col>
-					<div id="<portlet:namespace/>spoiler" class="showBottomRow span9">
-					<aui:col width="33" cssClass="search-col">
 						<liferay-ui:input-date 
 		 					name="fromDate"
 		 					nullable="<%= nullableFromDate %>"
@@ -292,7 +285,7 @@
 		 				</liferay-ui:input-date>
 					</aui:col>
 					
-					<aui:col width="33" cssClass="search-col">
+					<aui:col width="25" cssClass="search-col">
 						<liferay-ui:input-date 
 		 					name="toDate"
 		 					nullable="<%= nullableToDate %>"
@@ -308,7 +301,7 @@
 		 				>
 		 				</liferay-ui:input-date> 
 					</aui:col>
-					<aui:col width="33" cssClass="search-col">
+					<aui:col width="50" cssClass="search-col">
 						<liferay-ui:input-search 
 							id="keywords"
 							name="keywords"
@@ -317,7 +310,6 @@
 							cssClass="search-input input-keyword"
 						/>
 					</aui:col>
-					</div>
 				</aui:row>
 				<aui:row>
 					<aui:nav id="toolbarContainer" cssClass="nav-button-container  nav-display-style-buttons pull-left" >
