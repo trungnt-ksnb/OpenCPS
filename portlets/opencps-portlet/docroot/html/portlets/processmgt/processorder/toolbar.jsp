@@ -268,6 +268,7 @@
 				</aui:row>
 				
 				<aui:row>
+					<div id="<portlet:namespace/>spoiler" class="showBottomRow">
 					<aui:col width="25" cssClass="search-col">
 						<liferay-ui:input-date 
 		 					name="fromDate"
@@ -310,6 +311,7 @@
 							cssClass="search-input input-keyword"
 						/>
 					</aui:col>
+					</div>
 				</aui:row>
 				<aui:row>
 					<aui:nav id="toolbarContainer" cssClass="nav-button-container  nav-display-style-buttons pull-left" >
