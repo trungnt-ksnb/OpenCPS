@@ -29,11 +29,12 @@
 
 <%@ include file="../init.jsp"%>
 
-<liferay-util:include page="/html/portlets/postalmgt/toptabs.jsp" servletContext="<%=application %>"/>
+
 
 <%
 	String backURL = ParamUtil.getString(request, "backURL");
 	long postOfficeMappingId = ParamUtil.getLong(request, PostOfficeMappingDisplayTerms.POSTOFFICEMAPPING_ID, 0L);
+	
 	PostOfficeMapping postOfficeMapping = new PostOfficeMappingImpl();
 	
 	String selectItems = StringPool.BLANK;
@@ -53,8 +54,6 @@
 	List<PostOfficeMapping> postOfficeMappings = PostOfficeMappingLocalServiceUtil.getPostOfficeMappings(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 	
 	DictItemUtil dicItemUtil = new DictItemUtil();
-	
-	List<DictItem> cityList = dicItemUtil.getListDictItemBy(themeDisplay.getScopeGroupId(), PortletPropsValues.DATAMGT_MASTERDATA_ADMINISTRATIVE_REGION);
 %>	
 
 <div class="opencps-bound-wrapper pd20 default-box-shadow">
@@ -98,12 +97,19 @@
 							<%
 							boolean selected = false;
 							
-							for (PostOfficeMapping postMapping : postOfficeMappings) {
+							for (PostOfficeMapping postMapping1 : postOfficeMappings) {
+								
+								if(postMapping1.getPostOfficeCode().equals(postOfficeMapping.getPostOfficeCode())){
+									
+									selected = true;
+								}else{
+									selected = false;
+								}
 
 								
 							%>
-								<aui:option 
-									value="<%=postMapping.getPostOfficeCode()%>"><%=postMapping.getPostOfficeName()%></aui:option>
+								<aui:option selected="<%=selected %>"
+ 									value="<%=postMapping1.getPostOfficeCode()%>"><%=postMapping1.getPostOfficeName()%></aui:option>
 								
 							<%
 									
@@ -123,7 +129,7 @@
 							cssClass="input100"
 							name="<%=PostOfficeMappingDisplayTerms.POSTOFFICE_CODE_TXT%>" type="text"
 							label="post-office-code"
-							value="<%=postOfficeMapping.getPostOfficeCode()%>"
+							value="<%=postOfficeMapping.getPostOfficeCode() %>"
 							>
 							<aui:validator name="required"></aui:validator>
 						</aui:input>
@@ -135,7 +141,7 @@
 							cssClass="input100"
 							name="<%=PostOfficeMappingDisplayTerms.POSTOFFICE_NAME_TXT%>" type="text"
 							label="post-office-name"
-							value="<%=postOfficeMapping.getPostOfficeName()%>"
+							value="<%=postOfficeMapping.getPostOfficeName() %>"
 							>
 							<aui:validator name="required"></aui:validator>
 						</aui:input>
@@ -143,17 +149,16 @@
 					
 					<aui:col width="30">
 						<datamgt:ddr 
-						depthLevel="1" 
-						dictCollectionCode='<%=PortletPropsValues.DATAMGT_MASTERDATA_ADMINISTRATIVE_REGION %>'
-						itemNames="<%=PostOfficeMappingDisplayTerms.OPENCPS_CITY_CODE%>"
-						itemsEmptyOption="true"	
-						selectedItems="<%=selectItems.toString() %>"
-						emptyOptionLabels="cityId"
-						showLabel="<%=true%>"
-						cssClass="input100"
-						
-					/>	
-					</aui:col>
+ 						depthLevel="1"  
+ 						dictCollectionCode='<%=PortletPropsValues.DATAMGT_MASTERDATA_ADMINISTRATIVE_REGION %>'
+ 						itemNames="<%=PostOfficeMappingDisplayTerms.OPENCPS_CITY_CODE%>"
+ 						itemsEmptyOption="true"
+ 						selectedItems="<%=selectItems.toString() %>"
+ 						emptyOptionLabels="cityId"
+ 						showLabel="<%=true%>"
+ 						cssClass="input100"
+						/>
+ 					</aui:col>
 
 				</aui:row>
 				
@@ -167,8 +172,9 @@
 			
 			<portlet:resourceURL var="resourceURL"/>
 			<script type="text/javascript">
-			loadPostOfficeMapping();
+				loadPostOfficeMapping();
 				function loadPostOfficeMapping() {
+					console.log("loadPostOfficeMapping()");
 					AUI().use('aui-io-request', function(A){
 						
 						var postOfficeCode = A.one('#<portlet:namespace /><%= PostOfficeMappingDisplayTerms.POSTOFFICE_CODE %>').val();
@@ -209,7 +215,6 @@
 												A.one('#<portlet:namespace /><%= PostOfficeMappingDisplayTerms.POSTOFFICEMAPPING_ID %>').set('value', '');
 											}
 											
-											console.log("cityCode:"+obj.opencpsCityCode);
 											
 											if (obj.<%= PostOfficeMappingDisplayTerms.OPENCPS_CITY_CODE %>){
 												A.one('#<portlet:namespace /><%= PostOfficeMappingDisplayTerms.OPENCPS_CITY_CODE %>').set('value', obj.<%= PostOfficeMappingDisplayTerms.OPENCPS_CITY_CODE %>);

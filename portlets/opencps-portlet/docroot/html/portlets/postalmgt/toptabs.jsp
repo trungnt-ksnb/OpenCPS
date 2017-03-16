@@ -1,4 +1,6 @@
 
+<%@page import="javax.portlet.PortletRequest"%>
+<%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
 <%@page import="org.opencps.postal.utils.PostalKeys"%>
 <%
 /**
@@ -30,28 +32,25 @@
 	
 	String[] names = new String[]{PostalKeys.TOP_TABS_POSTALCONFIG, PostalKeys.TOP_TABS_POSTOFFICEMAPPING};
 
-	String value = ParamUtil.getString(request, "tabs1", PostalKeys.TOP_TABS_CODE);
+	String tabValue = ParamUtil.getString(request, "tabs1", PostalKeys.TOP_TABS_POSTALCONFIG);
 	
 	List<String> urls = new ArrayList<String>();
 	
-	if (PortletPermissionUtil.contains(permissionChecker, plid, portletDisplay.getId(), ActionKeys.VIEW) ) {
-		PortletURL viewCitizensURL = renderResponse.createRenderURL();
-		viewCitizensURL.setParameter("mvcPath", "/html/portlets/postalmgt/postalconfig/edit_postalconfig.jsp");
-		viewCitizensURL.setParameter("tabs1", PostalKeys.TOP_TABS_POSTALCONFIG);
-		urls.add(viewCitizensURL.toString());
-	}
+	PortletURL tabURL = null;
 	
-	if (PortletPermissionUtil.contains(permissionChecker, plid, portletDisplay.getId(), ActionKeys.VIEW)) {
-		PortletURL viewBusinessesURL = renderResponse.createRenderURL();
-		viewBusinessesURL.setParameter("mvcPath", "/html/portlets/postalmgt/postofficemapping/postofficemapping_list.jsp");
-		viewBusinessesURL.setParameter("tabs1", PostalKeys.TOP_TABS_POSTOFFICEMAPPING);
-		urls.add(viewBusinessesURL.toString());
+	if (PortletPermissionUtil.contains(permissionChecker, plid, portletDisplay.getId(), ActionKeys.VIEW) ) {
+		tabURL = PortletURLFactoryUtil.create(request, themeDisplay.getPortletDisplay().getId(), themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
 	}
 	
 %>
-<liferay-ui:tabs
-	names="<%= StringUtil.merge(names) %>"
-	param="tabs1"
-	url0="<%=urls != null && urls.size() > 0 ? urls.get(0): StringPool.BLANK %>"
-	url1="<%=urls != null && urls.size() > 1 ? urls.get(1): StringPool.BLANK %>"
-/>
+<liferay-ui:tabs names="<%= StringUtil.merge(names) %>" url="<%=tabURL.toString()%>" tabsValues="<%= StringUtil.merge(names) %>" value="<%=tabValue %>">
+
+	<c:if test='<%= tabValue.equalsIgnoreCase(PostalKeys.TOP_TABS_POSTALCONFIG)%>' >
+		<jsp:include page="/html/portlets/postalmgt/postalconfig/edit_postalconfig.jsp" flush="true" />
+	</c:if>
+	
+	<c:if test='<%= tabValue.equalsIgnoreCase(PostalKeys.TOP_TABS_POSTOFFICEMAPPING)%>' >
+		<jsp:include page="/html/portlets/postalmgt/postofficemapping/postofficemapping_list.jsp" flush="true" />
+	</c:if>
+	
+</liferay-ui:tabs>

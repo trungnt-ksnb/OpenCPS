@@ -38,6 +38,7 @@ import org.opencps.postal.search.PostalConfigDisplayTerms;
 import org.opencps.postal.service.PostOfficeMappingLocalServiceUtil;
 import org.opencps.postal.service.PostalConfigLocalServiceUtil;
 import org.opencps.postal.utils.PostalKeys;
+import org.opencps.util.WebKeys;
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -49,6 +50,7 @@ import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 public class PostalConfigPortlet extends MVCPortlet {
@@ -91,14 +93,17 @@ public class PostalConfigPortlet extends MVCPortlet {
 				}
 			}
 
-			PostalConfig postalConfig =  PostalConfigLocalServiceUtil.updateConfig(postalConfigId,
-					govAgencyOrganizationId, postalCustomerCode,
-					postalTokenCode, postalDomain, postalGateType,
-					postalConfigStatus);
+			PostalConfig postalConfig = PostalConfigLocalServiceUtil
+					.updateConfig(postalConfigId, govAgencyOrganizationId,
+							postalCustomerCode, postalTokenCode, postalDomain,
+							postalGateType, postalConfigStatus);
 
 			actionResponse.setRenderParameter(
 					PostalConfigDisplayTerms.POSTAL_CONFIG_ID,
 					String.valueOf(postalConfig.getPostalConfigId()));
+			actionResponse.setRenderParameter("tabs1",
+					PostalKeys.TOP_TABS_POSTALCONFIG);
+
 			SessionMessages.add(actionRequest, "update-postal-config-success");
 
 		} catch (Exception e) {
@@ -106,7 +111,7 @@ public class PostalConfigPortlet extends MVCPortlet {
 		}
 
 	}
-	
+
 	public void updatePostOfficeMapping(ActionRequest actionRequest,
 			ActionResponse actionResponse) throws IOException, PortletException {
 
@@ -125,10 +130,11 @@ public class PostalConfigPortlet extends MVCPortlet {
 					.updatePostOffce(postOfficeCode, postOfficeName,
 							opencpsCityCode);
 
+			actionResponse.setRenderParameter("tabs1",
+					PostalKeys.TOP_TABS_POSTOFFICEMAPPING);
 			actionResponse.setRenderParameter(
 					PostOfficeMappingDisplayTerms.POSTOFFICEMAPPING_ID,
 					String.valueOf(postOfficeMapping.getPostOfficeMappingId()));
-			actionResponse.setRenderParameter(PostalKeys.TOP_TABS_CODE, PostalKeys.TOP_TABS_POSTOFFICEMAPPING);
 
 			SessionMessages.add(actionRequest,
 					"update-post-office-mapping-success");
@@ -140,7 +146,6 @@ public class PostalConfigPortlet extends MVCPortlet {
 
 	}
 
-	
 	public void serveResourcePostalConfig(ResourceRequest resourceRequest,
 			ResourceResponse resourceResponse) throws IOException,
 			PortletException {
@@ -151,13 +156,12 @@ public class PostalConfigPortlet extends MVCPortlet {
 				PostalConfigDisplayTerms.POSTAL_GATETYPE, StringPool.BLANK);
 		PostalConfig postalConfig = null;
 
-		try{
+		try {
 			postalConfig = PostalConfigLocalServiceUtil.getPostalConfigBy(
 					govAgencyOrganizationId, postalGateType);
-		}catch(Exception e){
-			
+		} catch (Exception e) {
+
 		}
-		
 
 		PrintWriter writer = resourceResponse.getWriter();
 		JSONArray paymentConfigsJsonArray = JSONFactoryUtil.createJSONArray();
@@ -186,23 +190,22 @@ public class PostalConfigPortlet extends MVCPortlet {
 
 		super.serveResource(resourceRequest, resourceResponse);
 	}
-	
+
 	public void serveResourcePostOfficeMapping(ResourceRequest resourceRequest,
 			ResourceResponse resourceResponse) throws IOException,
 			PortletException {
 
-		
 		String postOfficeCode = ParamUtil.getString(resourceRequest,
 				PostOfficeMappingDisplayTerms.POSTOFFICE_CODE);
-		
+
 		PostOfficeMapping postOfficeMapping = null;
 
-		try{
-			postOfficeMapping = PostOfficeMappingLocalServiceUtil.getMappingByPostOfficeCode(postOfficeCode);
-		}catch(Exception e){
-			
+		try {
+			postOfficeMapping = PostOfficeMappingLocalServiceUtil
+					.getMappingByPostOfficeCode(postOfficeCode);
+		} catch (Exception e) {
+
 		}
-		
 
 		PrintWriter writer = resourceResponse.getWriter();
 		JSONArray paymentConfigsJsonArray = JSONFactoryUtil.createJSONArray();
@@ -228,20 +231,20 @@ public class PostalConfigPortlet extends MVCPortlet {
 
 		super.serveResource(resourceRequest, resourceResponse);
 	}
-	
+
 	@Override
 	public void serveResource(ResourceRequest resourceRequest,
-			ResourceResponse resourceResponse) throws IOException, PortletException {
-		
-		String functionCase = ParamUtil.getString(resourceRequest, PostalKeys.AJAX_REQUEST_NAME);
-		
-		
-		if(functionCase.equals(PostalKeys.REQUEST_POSTALCONFIG)){
+			ResourceResponse resourceResponse) throws IOException,
+			PortletException {
+
+		String functionCase = ParamUtil.getString(resourceRequest,
+				PostalKeys.AJAX_REQUEST_NAME);
+
+		if (functionCase.equals(PostalKeys.REQUEST_POSTALCONFIG)) {
 			serveResourcePostalConfig(resourceRequest, resourceResponse);
-		}else if(functionCase.equals(PostalKeys.REQUEST_POSTOFFICEMAPPING)){
+		} else if (functionCase.equals(PostalKeys.REQUEST_POSTOFFICEMAPPING)) {
 			serveResourcePostOfficeMapping(resourceRequest, resourceResponse);
 		}
-
 
 	}
 

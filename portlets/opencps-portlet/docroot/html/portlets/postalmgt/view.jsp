@@ -17,4 +17,4 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>
 	 */
 %>
-<%@ include file="/html/portlets/postalmgt/postalconfig/edit_postalconfig.jsp"%>
+<%@ include file="/html/portlets/postalmgt/toptabs.jsp"%>
