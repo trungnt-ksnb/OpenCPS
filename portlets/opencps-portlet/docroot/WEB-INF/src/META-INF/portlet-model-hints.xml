@@ -841,9 +841,12 @@
 		<field name="govAgencyCode" type="String" />
 		<field name="domainCode" type="String" />
 		<field name="administrationLevel" type="int" />
+		<field name="source" type="String">
+			<hint name="max-length">1000</hint>
+		</field>
 	</model>
 	<model name="org.opencps.statisticsmgt.model.GovagencyLevel">
-		<field name="govagencylevel" type="long" />
+		<field name="govagencyId" type="long" />
 		<field name="companyId" type="long" />
 		<field name="groupId" type="long" />
 		<field name="userId" type="long" />
