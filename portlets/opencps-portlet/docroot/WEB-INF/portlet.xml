@@ -1280,12 +1280,12 @@
 		<init-param>
 			<name>view-template</name>
 			<value>
-				/html/portlets/postalmgt/postalconfig/edit_postalconfig.jsp
+				/html/portlets/postalmgt/view.jsp
 			</value>
 		</init-param>
 		<init-param>
 			<name>template-path</name>
-			<value>/html/portlets/postalmgt/postalconfig/</value>
+			<value>/html/portlets/postalmgt/</value>
 		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>

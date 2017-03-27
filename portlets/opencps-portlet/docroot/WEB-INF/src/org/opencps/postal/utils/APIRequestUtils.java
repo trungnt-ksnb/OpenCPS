@@ -72,6 +72,8 @@ public class APIRequestUtils {
 			HttpResponse httpResponse = httpClient.execute(url);
 
 			int responseCode = httpResponse.getStatusLine().getStatusCode();
+			
+			_log.info("=====responseCode:"+responseCode);
 
 			// Reading response from input Stream
 			BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -89,6 +91,8 @@ public class APIRequestUtils {
 
 			JSONObject fileJSON = JSONFactoryUtil.createJSONObject(response
 					.toString());
+			
+			_log.info("=====return Data:"+fileJSON.toString());
 
 			return fileJSON;
 

@@ -31,9 +31,14 @@ import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.opencps.postal.model.PostOfficeMapping;
 import org.opencps.postal.model.PostalConfig;
+import org.opencps.postal.search.PostOfficeMappingDisplayTerms;
 import org.opencps.postal.search.PostalConfigDisplayTerms;
+import org.opencps.postal.service.PostOfficeMappingLocalServiceUtil;
 import org.opencps.postal.service.PostalConfigLocalServiceUtil;
+import org.opencps.postal.utils.PostalKeys;
+import org.opencps.util.WebKeys;
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -45,6 +50,7 @@ import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 public class PostalConfigPortlet extends MVCPortlet {
@@ -87,14 +93,17 @@ public class PostalConfigPortlet extends MVCPortlet {
 				}
 			}
 
-			PostalConfig postalConfig =  PostalConfigLocalServiceUtil.updateConfig(postalConfigId,
-					govAgencyOrganizationId, postalCustomerCode,
-					postalTokenCode, postalDomain, postalGateType,
-					postalConfigStatus);
+			PostalConfig postalConfig = PostalConfigLocalServiceUtil
+					.updateConfig(postalConfigId, govAgencyOrganizationId,
+							postalCustomerCode, postalTokenCode, postalDomain,
+							postalGateType, postalConfigStatus);
 
 			actionResponse.setRenderParameter(
 					PostalConfigDisplayTerms.POSTAL_CONFIG_ID,
 					String.valueOf(postalConfig.getPostalConfigId()));
+			actionResponse.setRenderParameter("tabs1",
+					PostalKeys.TOP_TABS_POSTALCONFIG);
+
 			SessionMessages.add(actionRequest, "update-postal-config-success");
 
 		} catch (Exception e) {
@@ -103,26 +112,56 @@ public class PostalConfigPortlet extends MVCPortlet {
 
 	}
 
-	@Override
-	public void serveResource(ResourceRequest resourceRequest,
+	public void updatePostOfficeMapping(ActionRequest actionRequest,
+			ActionResponse actionResponse) throws IOException, PortletException {
+
+		String postOfficeCode = ParamUtil.getString(actionRequest,
+				PostOfficeMappingDisplayTerms.POSTOFFICE_CODE_TXT);
+		String postOfficeName = ParamUtil.getString(actionRequest,
+				PostOfficeMappingDisplayTerms.POSTOFFICE_NAME_TXT,
+				StringPool.BLANK);
+		String opencpsCityCode = ParamUtil.getString(actionRequest,
+				PostOfficeMappingDisplayTerms.OPENCPS_CITY_CODE,
+				StringPool.BLANK);
+		PostOfficeMapping postOfficeMapping = null;
+
+		try {
+			postOfficeMapping = PostOfficeMappingLocalServiceUtil
+					.updatePostOffce(postOfficeCode, postOfficeName,
+							opencpsCityCode);
+
+			actionResponse.setRenderParameter("tabs1",
+					PostalKeys.TOP_TABS_POSTOFFICEMAPPING);
+			actionResponse.setRenderParameter(
+					PostOfficeMappingDisplayTerms.POSTOFFICEMAPPING_ID,
+					String.valueOf(postOfficeMapping.getPostOfficeMappingId()));
+
+			SessionMessages.add(actionRequest,
+					"update-post-office-mapping-success");
+		} catch (Exception e) {
+
+			SessionErrors
+					.add(actionRequest, "update-post-office-mapping-error");
+		}
+
+	}
+
+	public void serveResourcePostalConfig(ResourceRequest resourceRequest,
 			ResourceResponse resourceResponse) throws IOException,
 			PortletException {
 
 		long govAgencyOrganizationId = ParamUtil.getLong(resourceRequest,
 				PostalConfigDisplayTerms.GOV_AGENCY_ORGANIZATION_ID);
-		boolean postalStatus = ParamUtil.getBoolean(resourceRequest,
-				PostalConfigDisplayTerms.STATUS, true);
 		String postalGateType = ParamUtil.getString(resourceRequest,
 				PostalConfigDisplayTerms.POSTAL_GATETYPE, StringPool.BLANK);
 		PostalConfig postalConfig = null;
 
-		try{
+		try {
 			postalConfig = PostalConfigLocalServiceUtil.getPostalConfigBy(
 					govAgencyOrganizationId, postalGateType);
-		}catch(Exception e){
-			
+		} catch (Exception e) {
+
 		}
-		
 
 		PrintWriter writer = resourceResponse.getWriter();
 		JSONArray paymentConfigsJsonArray = JSONFactoryUtil.createJSONArray();
@@ -150,6 +189,63 @@ public class PostalConfigPortlet extends MVCPortlet {
 		writer.close();
 
 		super.serveResource(resourceRequest, resourceResponse);
+	}
+
+	public void serveResourcePostOfficeMapping(ResourceRequest resourceRequest,
+			ResourceResponse resourceResponse) throws IOException,
+			PortletException {
+
+		String postOfficeCode = ParamUtil.getString(resourceRequest,
+				PostOfficeMappingDisplayTerms.POSTOFFICE_CODE);
+
+		PostOfficeMapping postOfficeMapping = null;
+
+		try {
+			postOfficeMapping = PostOfficeMappingLocalServiceUtil
+					.getMappingByPostOfficeCode(postOfficeCode);
+		} catch (Exception e) {
+
+		}
+
+		PrintWriter writer = resourceResponse.getWriter();
+		JSONArray paymentConfigsJsonArray = JSONFactoryUtil.createJSONArray();
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+		if (Validator.isNotNull(postOfficeMapping)) {
+			jsonObject.put(PostOfficeMappingDisplayTerms.POSTOFFICEMAPPING_ID,
+					postOfficeMapping.getPostOfficeMappingId());
+			jsonObject.put(PostOfficeMappingDisplayTerms.POSTOFFICE_CODE,
+					postOfficeMapping.getPostOfficeCode());
+			jsonObject.put(PostOfficeMappingDisplayTerms.OPENCPS_CITY_CODE,
+					postOfficeMapping.getOpencpsCityCode());
+			jsonObject.put(PostOfficeMappingDisplayTerms.POSTOFFICE_CODE_TXT,
+					postOfficeMapping.getPostOfficeCode());
+			jsonObject.put(PostOfficeMappingDisplayTerms.POSTOFFICE_NAME_TXT,
+					postOfficeMapping.getPostOfficeName());
+		}
+		paymentConfigsJsonArray.put(jsonObject);
+
+		writer.print(paymentConfigsJsonArray.toString());
+		writer.flush();
+		writer.close();
+
+		super.serveResource(resourceRequest, resourceResponse);
+	}
+
+	@Override
+	public void serveResource(ResourceRequest resourceRequest,
+			ResourceResponse resourceResponse) throws IOException,
+			PortletException {
+
+		String functionCase = ParamUtil.getString(resourceRequest,
+				PostalKeys.AJAX_REQUEST_NAME);
+
+		if (functionCase.equals(PostalKeys.REQUEST_POSTALCONFIG)) {
+			serveResourcePostalConfig(resourceRequest, resourceResponse);
+		} else if (functionCase.equals(PostalKeys.REQUEST_POSTOFFICEMAPPING)) {
+			serveResourcePostOfficeMapping(resourceRequest, resourceResponse);
+		}
+
 	}
 
 }

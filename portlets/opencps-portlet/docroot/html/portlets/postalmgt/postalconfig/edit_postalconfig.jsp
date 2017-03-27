@@ -1,3 +1,4 @@
+<%@page import="org.opencps.postal.utils.PostalKeys"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -30,6 +31,7 @@
 <%@page import="org.opencps.util.PortletPropsValues"%>
 
 <%@ include file="../init.jsp"%>
+
 
 <%
 	String backURL = ParamUtil.getString(request, "backURL");
@@ -73,6 +75,11 @@
 				method="post" name="fm" id="fm">
 				
 				<aui:input type="hidden"
+					id="<%=PostalKeys.AJAX_REQUEST_NAME%>"
+					name="<%=PostalKeys.AJAX_REQUEST_NAME%>"
+					value="<%=PostalKeys.REQUEST_POSTALCONFIG%>" />
+				
+				<aui:input type="hidden"
 					id="<%=PostalConfigDisplayTerms.POSTAL_CONFIG_ID%>"
 					name="<%=PostalConfigDisplayTerms.POSTAL_CONFIG_ID%>"
 					value="<%=String.valueOf(postalConfigId)%>" />
@@ -81,7 +88,7 @@
 					<aui:col width="50">
 						<aui:select
 							id="<%=PostalConfigDisplayTerms.GOV_AGENCY_ORGANIZATION_ID%>"
-							onChange="loadPaymentConfig()"
+							onChange="loadPostalConfig()"
 							name="<%=PostalConfigDisplayTerms.GOV_AGENCY_ORGANIZATION_ID%>"
 							label="gov-agency-organization-id">
 							<%
@@ -199,13 +206,15 @@
 						
 						var govAgencyOrganizationId = A.one('#<portlet:namespace /><%= PostalConfigDisplayTerms.GOV_AGENCY_ORGANIZATION_ID %>').val();
 						var postalGateType = A.one('#<portlet:namespace /><%= PostalConfigDisplayTerms.POSTAL_GATETYPE %>').val();
+						var ajaxRequestName = A.one('#<portlet:namespace /><%= PostalKeys.AJAX_REQUEST_NAME %>').val();
 					
 						A.io.request('<%=resourceURL.toString()%>',{
 							
 							method: 'post',
 							data: {
 								<portlet:namespace /><%= PostalConfigDisplayTerms.GOV_AGENCY_ORGANIZATION_ID %>: govAgencyOrganizationId,
-								<portlet:namespace /><%= PostalConfigDisplayTerms.POSTAL_GATETYPE %>: postalGateType
+								<portlet:namespace /><%= PostalConfigDisplayTerms.POSTAL_GATETYPE %>: postalGateType,
+								<portlet:namespace /><%= PostalKeys.AJAX_REQUEST_NAME %>: ajaxRequestName
 							},
 							dataType:'json',
 							on:{
