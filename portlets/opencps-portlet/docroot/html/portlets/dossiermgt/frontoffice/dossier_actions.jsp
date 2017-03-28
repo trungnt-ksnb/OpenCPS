@@ -178,10 +178,13 @@
 					<portlet:param name="redirectURL" value="<%=currentURL%>" />
 				</portlet:actionURL>
 				
-				<c:set var="uptDossierStatusURL" value ="<%= updateDossierStatusURL.toString() %>"/>
-				
-				<aui:button cssClass="search-container-action fa forward" onClick="showConfirm('${uptDossierStatusURL}');" value='<%=LanguageUtil.get(themeDisplay.getLocale(),"resend") %>'/>
-				
+				<liferay-ui:icon
+					cssClass="search-container-action fa forward" 
+					image="reply"
+					url="javascript:void(0);"
+					message="resend"
+					onClick="showConfirm('${updateDossierStatusURL}');"
+				/>
 			</c:if>
 		</c:if>
 
@@ -199,7 +202,7 @@
 				<portlet:param 
 					name="dossierStatus"
 					value="<%=dossier.getDossierStatus()%>" 
-				/>
+				/> 
 			</portlet:actionURL>
 			<liferay-ui:icon-delete image="delete"
 				cssClass="search-container-action fa delete"
