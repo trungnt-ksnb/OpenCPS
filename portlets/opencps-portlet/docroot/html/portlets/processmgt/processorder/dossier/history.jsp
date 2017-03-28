@@ -1,3 +1,4 @@
+<%@page import="org.opencps.util.PortletConstants"%>
 <%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%@page import="org.opencps.dossiermgt.model.DossierFileLog"%>
 <%@page import="org.opencps.processmgt.util.ProcessUtils"%>
@@ -69,16 +70,40 @@
 	 
 	
 %>
+
 <div class="ocps-title-detail">
-	<div class="ocps-title-detail-top">	
-		<label class="service-reception-label">
-			<liferay-ui:message key="reception-no"/> 
-		</label>
-		<p class="service-reception-no"><%=receptionNo %></p>
-	</div>
+
+<%-- <aui:row cssClass="header-title custom-title">
+	<aui:col width="100">
+		<liferay-ui:message key="history"/>
+	</aui:col>
+</aui:row> --%>
+
+<aui:row>
+	<aui:col width="50">
+		<aui:row>
+			<aui:col width="30" cssClass="bold">
+				<liferay-ui:message key="dossier-no"/>
+			</aui:col>
+			<aui:col width="70">
+				<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+			</aui:col>
+		</aui:row>
+	</aui:col>
+	<aui:col width="50">
+		<aui:row>
+			<aui:col width="30" cssClass="bold">
+				<liferay-ui:message key="dossier-reception-no"/>
+			</aui:col>
+			<aui:col width="70">
+				<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+			</aui:col>
+		</aui:row>
+	</aui:col>
+</aui:row>
 	<div class="ocps-title-detail-bot">
 		<label class="service-name-label">
-			<liferay-ui:message key="dossier-name"/> 
+			<liferay-ui:message key="dossier-service-name"/> 
 		</label>
 		<p class="service-service-name"><%=serviceName%></p>
 	</div>
@@ -111,11 +136,11 @@
 					<aui:col width="50">
 						<aui:row>
 							<span class="span4 bold">
-								<liferay-ui:message key="step-name" />
+								<liferay-ui:message key="action-name" />
 							</span>
 							
 							<span class="span8">
-								<%= dossierLog.getStepName() %>
+								<%= LanguageUtil.get(locale, dossierLog.getActionInfo()) %>
 							</span>
 						</aui:row>
 						
@@ -136,14 +161,14 @@
 							
 							<span class="span8">
 								<%
-									int dayDelay = 0;
+									String timeDelay = StringPool.BLANK;
 									ActionHistory actionHis = ProcessUtils.getActionHistoryByLogId(dossierLog.getDossierLogId());
 								
 									if (Validator.isNotNull(actionHis)) {
-										dayDelay = actionHis.getDaysDelay();
+										timeDelay = DateTimeUtil.convertTimemilisecondsToFormat(actionHis.getDaysDelay(), themeDisplay.getLocale()) ;
 									}
 								%>
-								<%= dayDelay %>
+								<%= timeDelay %>
 							</span>
 						</aui:row>
 					</aui:col>
@@ -158,15 +183,6 @@
 							</span>
 						</aui:row>
 					
-						<aui:row>
-							<span class="span4 bold">
-								<liferay-ui:message key="action-name" />
-							</span>
-							
-							<span class="span8">
-								<%= LanguageUtil.get(locale, dossierLog.getActionInfo()) %>
-							</span>
-						</aui:row>
 						
 						<aui:row>
 							<span class="span4 bold">
@@ -200,11 +216,12 @@
 									%>
 										<span style="padding: 3px; display: block;">
 											<%= StringPool.GREATER_THAN %> 
-												 <aui:a href="#" >
+											<%= LanguageUtil.get(pageContext, "history-file-action-"+lf.getActionCode()) %> : 
+												 <span>
 												 	<%= lf.getFileName() %> 
 												 	<span style="font: smaller; color: #cbcbcb;">(<%= sdf.format(lf.getModifiedDate()) %> )</span>
 												 	
-												 </aui:a>
+												 </span>
 										</span>
 									<%
 										}

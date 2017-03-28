@@ -1,4 +1,5 @@
 
+<%@page import="org.opencps.util.WebKeys"%>
 <%@page import="java.text.DecimalFormat"%>
 <%
 /**
@@ -21,11 +22,12 @@
 
 <%@page import="javax.portlet.PortletPreferences"%>
 <%@page import="org.opencps.util.PortletConstants"%>
-<%@page import="org.opencps.util.WebKeys"%>
 
 <%@ include file="/init.jsp" %>
 
 <%
+
+	
 	DecimalFormat doubleFomart=new DecimalFormat("#,###.##");
 
 	PortletPreferences preferences = renderRequest.getPreferences();
@@ -56,7 +58,7 @@
 	String war_opencpsportlet_26_cfg = GetterUtil.getString(portletPreferences.getValue("war_opencpsportlet_26_cfg", ""));
 	
 	String itemCode_cfg = GetterUtil.getString(portletPreferences.getValue("itemCode_cfg", ""));
-	
+	String[] reportTypes = StringUtil.split(preferences.getValue("reportTypes", ".pdf"));
 	/* dossier  */
 	String dossierDisplayStyle = preferences.getValue("dossierDisplayStyle", "default");
 	
@@ -73,6 +75,8 @@
 	
 	boolean showBackToListButton = GetterUtil.getBoolean(preferences.getValue("showBackToListButton", "true"), true);
 	
+	boolean showDossierSuggestionButton = GetterUtil.getBoolean(preferences.getValue("showDossierSuggestionButton", "true"), true);
+	
 	String uploadFileTypes = preferences.getValue("uploadFileTypes", "pdf,doc,docx,xls,png");
 
 	
@@ -86,7 +90,7 @@
 	
 	/*dossier file list  */
 	
-	String dossierFileDisplayStyle = preferences.getValue("dossierFileListOrderByField", "default");
+	String dossierFileDisplayStyle = preferences.getValue("dossierFileDisplayStyle", "default");
 	
 	String dossierFileListOrderByField = preferences.getValue("dossierFileListOrderByField", StringPool.BLANK);
 	
@@ -101,6 +105,6 @@
 	long plidRes = GetterUtil.getLong(preferences.getValue("plid", "0"), 0);
 	
 	boolean displayRecentlyResultWhenSearch = GetterUtil.getBoolean(preferences.getValue("displayRecentlyResultWhenSearch", "false"), false);
-
+	
 %>
 

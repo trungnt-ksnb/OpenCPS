@@ -87,11 +87,28 @@
 	
 %>
 <div class="ocps-title-detail">
-	<div class="ocps-title-detail-top">	
-		<label class="service-reception-label">
-			<liferay-ui:message key="reception-no"/> : <b> <%=receptionNo %> </b>
-		</label>
-	</div>
+	<aui:row>
+		<aui:col width="50">
+			<aui:row>
+				<aui:col width="30" cssClass="bold">
+					<liferay-ui:message key="dossier-no"/>
+				</aui:col>
+				<aui:col width="70">
+					<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+				</aui:col>
+			</aui:row>
+		</aui:col>
+		<aui:col width="50">
+			<aui:row>
+				<aui:col width="30" cssClass="bold">
+					<liferay-ui:message key="dossier-reception-no"/>
+				</aui:col>
+				<aui:col width="70">
+					<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+				</aui:col>
+			</aui:row>
+		</aui:col>
+	</aui:row>
 	<div class="ocps-title-detail-bot">
 		<p class="service-service-name"><%=serviceName%></p>
 	</div>
@@ -149,14 +166,14 @@
 							
 							<span class="span8">
 								<%
-									int dayDelay = 0;
+									String timeDelay = StringPool.BLANK;
 									ActionHistory actionHis = ProcessUtils.getActionHistoryByLogId(dossierLog.getDossierLogId());
 								
 									if (Validator.isNotNull(actionHis)) {
-										dayDelay = actionHis.getDaysDelay();
+										timeDelay = DateTimeUtil.convertTimemilisecondsToFormat(actionHis.getDaysDelay(), themeDisplay.getLocale());
 									}
 								%>
-								<%= dayDelay %>
+								<%= timeDelay %>
 							</span>
 						</aui:row>
 					</aui:col>
@@ -213,6 +230,7 @@
 									%>
 										<span style="padding: 3px; display: block;">
 											<%= StringPool.GREATER_THAN %> 
+											<%= LanguageUtil.get(pageContext, "history-file-action-"+lf.getActionCode()) %> :
 												 <aui:a href="#" >
 												 	<%= lf.getFileName() %> 
 												 	<span style="font: smaller; color: #cbcbcb;">(<%= sdf.format(lf.getModifiedDate()) %> )</span>

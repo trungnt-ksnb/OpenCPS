@@ -39,6 +39,11 @@
 	Dossier dossier = (Dossier) request.getAttribute(WebKeys.DOSSIER_ENTRY);
 	DossierTemplate dossierTemplate = (DossierTemplate) request.getAttribute(WebKeys.DOSSIER_TEMPLATE_ENTRY);
 %>
+<aui:row cssClass="header-title custom-title">
+	<aui:col width="100">
+		<liferay-ui:message key="result"/>
+	</aui:col>
+</aui:row>
 
 <c:choose>
 	<c:when test="<%=dossier != null && dossier.getDossierStatus() != PortletConstants.DOSSIER_STATUS_NEW %>">
@@ -85,11 +90,25 @@
 		
 		
 		<aui:row>
-			<aui:col width="20" cssClass="bold">
-				<liferay-ui:message key="dossier-reception-no"/>
+			<aui:col width="50">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
 			</aui:col>
-			<aui:col width="80">
-				<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+			<aui:col width="50">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-reception-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
 			</aui:col>
 		</aui:row>
 		<aui:row cssClass="pd_b20">
@@ -237,7 +256,7 @@
 										</span>
 									</aui:col>
 									<aui:col width="30">
-										<span class="span4 bold">
+										<span class="span4 bold status-color-denied">
 											<liferay-ui:message key="message-info"/>
 										</span>
 										<span class="span8">

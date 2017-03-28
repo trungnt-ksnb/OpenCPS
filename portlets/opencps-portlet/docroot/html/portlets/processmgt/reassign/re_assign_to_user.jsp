@@ -23,9 +23,9 @@
 <%@page import="java.util.List"%>
 <%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="org.opencps.holidayconfig.util.HolidayUtils"%>
 <%@page import="org.opencps.dossiermgt.service.DossierLocalServiceUtil"%>
 <%@page import="org.opencps.dossiermgt.model.Dossier"%>
+<%@page import="org.opencps.holidayconfig.util.HolidayCheckUtils"%>
 <%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
 <%@page import="javax.portlet.PortletMode"%>
 <%@page import="org.opencps.processmgt.NoSuchWorkflowOutputException"%>
@@ -56,7 +56,7 @@
 <%@page import="org.opencps.processmgt.util.ProcessMgtUtil"%>
 <%@page import="org.opencps.util.WebKeys"%>
 
-<%@ include file="/init.jsp"%>
+<%@ include file="../processorder/init.jsp"%>
 
 <%
 	boolean success = false;
@@ -107,7 +107,7 @@
 	Date estimateDate = null;
 	
 	if(workflow != null && workflow.getGenerateDeadline() && Validator.isNotNull(receiveDate) && Validator.isNotNull(deadlinePattern)){
-		estimateDate = HolidayUtils.getEndDate(receiveDate, deadlinePattern);
+		estimateDate = HolidayCheckUtils.getEndDate(receiveDate, deadlinePattern);
 	}
 	
 	PortletUtil.SplitDate spd = null;
@@ -131,9 +131,10 @@
 
 	boolean esign = false;
 	
-	long assigerToUserId = 0;
+	long assigerToUserId = ProcessMgtUtil.getAssignUser(processWorkflowId, processOrderId, workflow.getPostProcessStepId());
 	
-	if(Validator.isNotNull(processOrder)) {
+	
+	/* if(Validator.isNotNull(processOrder)) {
 		assigerToUserId = processOrder.getAssignToUserId();
 		
 		if(assigerToUserId == 0) {
@@ -142,7 +143,7 @@
 		
 	} else {
 		assigerToUserId = ProcessMgtUtil.getAssignUser(processWorkflowId, processOrderId, workflow.getPostProcessStepId());
-	}
+	} */
 			
 	
 	PortletURL backTodoListURL =PortletURLFactoryUtil.create(request, WebKeys.PROCESS_ORDER_PORTLET, themeDisplay.getPlid(), PortletRequest.RENDER_PHASE);
@@ -693,7 +694,10 @@
 		var url = '<%=getDataAjax%>';
 		
 		var nanoTime = $('#<portlet:namespace/>nanoTimePDF').val();
-		
+		var offsetX = '<%= offsetX %>';
+		var offsetY = '<%= offsetY %>';
+		var imageZoom = '<%= imageZoom %>';
+		var showSignatureInfo = '<%= showSignatureInfo %>';
 		url = url + "&nanoTimePDF="+nanoTime;
 		
 		var listFileToSigner = $("#<portlet:namespace/>listFileToSigner").val().split(","); 
@@ -712,6 +716,10 @@
 					<portlet:namespace/>dossierId: $("#<portlet:namespace/>dossierId").val(),
 					<portlet:namespace/>dossierPartId: listDossierPartToSigner[i],
 					<portlet:namespace/>dossierFileId: listDossierFileToSigner[i],
+					<portlet:namespace/>offsetX: offsetX,
+					<portlet:namespace/>offsetY: offsetY,
+					<portlet:namespace/>imageZoom: imageZoom,
+					<portlet:namespace/>showSignatureInfo: showSignatureInfo,
 					<portlet:namespace/>type: 'getComputerHash'
 				},
 				success : function(data) {

@@ -37,6 +37,7 @@
 	<c:when test='<%=content.equals("declaration-online") %>'>
 		<liferay-util:include page="/html/common/portlet/dossier_dynamic_form.jsp" servletContext="<%=application %>" >
 			<portlet:param name="primaryKey" value="<%=String.valueOf(primaryKey) %>"/>
+			<portlet:param name="reportTypes" value="<%=StringUtil.merge(reportTypes) %>"/>
 		</liferay-util:include>
 	</c:when>
 	<c:when test='<%=content.equals("view-form") %>'>

@@ -32,7 +32,7 @@
 <%@page import="org.opencps.dossiermgt.RequiredDossierPartException"%>
 <%@page import="org.opencps.dossiermgt.service.DossierFileLocalServiceUtil"%>
 <%@page import="org.opencps.dossiermgt.service.DossierLocalServiceUtil"%>
-<%@page import="org.opencps.holidayconfig.util.HolidayUtils"%>
+<%@page import="org.opencps.holidayconfig.util.HolidayCheckUtils"%>
 <%@page import="org.opencps.processmgt.model.ProcessOrder"%>
 <%@page import="org.opencps.processmgt.model.ProcessWorkflow"%>
 <%@page import="org.opencps.processmgt.model.WorkflowOutput"%>
@@ -46,6 +46,7 @@
 <%@page import="org.opencps.util.PortletPropsValues"%>
 <%@page import="org.opencps.util.PortletUtil"%>
 <%@page import="org.opencps.util.WebKeys"%>
+<%@page import="java.text.DecimalFormatSymbols"%>
 
 <%@ include file="init.jsp"%>
 
@@ -93,12 +94,14 @@
 	
 	String backURL = ParamUtil.getString(request, "backURL");
 	
+	boolean requiredActionNote = ParamUtil.getBoolean(request, "requiredActionNote");
+	
 	Date receiveDate = ProcessOrderUtils.getRecevieDate(dossierId, processWorkflowId, processStepId);
 	
 	Date estimateDate = null;
 	
 	if(workflow != null && workflow.getGenerateDeadline() && Validator.isNotNull(receiveDate) && Validator.isNotNull(deadlinePattern)){
-		estimateDate = HolidayUtils.getEndDate(receiveDate, deadlinePattern);
+		estimateDate = HolidayCheckUtils.getEndDate(receiveDate, deadlinePattern);
 	}
 	
 	PortletUtil.SplitDate spd = null;
@@ -136,7 +139,15 @@
 	List<String> listDossierFileToSigner = new ArrayList<String>();
 	
 	for (WorkflowOutput workflowOutput : workflowOutputs) {
-		DossierFile dossierFileSign = DossierFileLocalServiceUtil.getDossierFileInUse(dossierId, workflowOutput.getDossierPartId());
+		DossierFile dossierFileSign = null;
+		
+		try {
+			dossierFileSign = DossierFileLocalServiceUtil.getDossierFileInUse(dossierId, workflowOutput.getDossierPartId());
+
+		} catch (Exception e) {
+			
+		}
+				
 		
 		if(Validator.isNotNull(dossierFileSign)){
 			listFileToSigner.add(String.valueOf(dossierFileSign.getFileEntryId()));
@@ -174,12 +185,7 @@
 		value="<%=assignToUserURL.toString() %>" 
 		type="hidden"
 	/>
-	
-	<aui:input 
-		name="assignActionURL" 
-		value="<%=assignToUserURL.toString() %>" 
-		type="hidden"
-	/>
+
 	<aui:input 
 		name="redirectURL" 
 		value="<%=currentURL %>" 
@@ -277,7 +283,7 @@
 	
 	<div class="row-fluid">
 	
-	<c:if test="<%= processWorkflow.getAssignUser() %>">
+	<%-- <c:if test="<%= processWorkflow.getAssignUser() %>">
 	
 			<div class="span12">
 				<aui:select 
@@ -291,23 +297,54 @@
 						
 						for (User userSel : assignUsers) {
 					%>	
-						<aui:option selected="<%= assigerToUserId == userSel.getUserId() ? true : false  %>" value="<%= userSel.getUserId() %>"><%= userSel.getFullName() %></aui:option>
+						<aui:option selected="<%= ((assigerToUserId == userSel.getUserId()) || (assigerToUserIdWasActioning == userSel.getUserId())) ? true : false  %>" value="<%= userSel.getUserId() %>"><%= userSel.getFullName() %></aui:option>
 					<%
 						}
 					%>
 				</aui:select>
 			</div>
-		</c:if>
+		</c:if> --%>
+		
+		<c:choose>
+			<c:when test="<%= processWorkflow.getAssignUser() %>">
+				<div class="span12">
+				<aui:select 
+					name="<%=ProcessOrderDisplayTerms.ASSIGN_TO_USER_ID %>" 
+					label="assign-to-next-user" 
+					showEmptyOption="true"
+					cssClass="input100"
+				>
+					<%
+						List<User> assignUsers = ProcessUtils.getAssignUsers(processStepId, 0);
+						
+						for (User userSel : assignUsers) {
+					%>	
+						<aui:option selected="<%= assigerToUserId == userSel.getUserId() ? true : false %>" value="<%= userSel.getUserId() %>"><%= userSel.getFullName() %></aui:option>
+					<%
+						}
+					%>
+				</aui:select>
+			</div>
+			</c:when>
+			<c:otherwise>
+				<aui:input name="<%=ProcessOrderDisplayTerms.ASSIGN_TO_USER_ID %>" type="hidden" value="<%= assigerToUserId %>"/>
+			</c:otherwise>
+		</c:choose>
 		
 		<c:if test="<%= processWorkflow.getRequestPayment() %>">
-		
+		<%
+			DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(locale);
+			otherSymbols.setDecimalSeparator(',');
+			otherSymbols.setGroupingSeparator('.'); 
+			DecimalFormat df = new DecimalFormat("###,###", otherSymbols);
+		%>
 			<div class="span12">
 				<aui:input 
 					cssClass="input100"
 					name="<%=ProcessOrderDisplayTerms.PAYMENTVALUE %>" 
 					label="requirement-to-pay-charges" 
 					type="text"
-					value="<%=Validator.isNotNull(processWorkflow.getPaymentFee()) ? PaymentRequestGenerator.getTotalPayment(processWorkflow.getPaymentFee(), dossierId) : StringPool.BLANK %>"
+					value='<%=Validator.isNotNull(processWorkflow.getPaymentFee()) ? df.format(PaymentRequestGenerator.getTotalPayment(processWorkflow.getPaymentFee(), dossierId)) + " VND" : StringPool.BLANK %>'
 				/>
 			</div>
 		</c:if>		
@@ -441,12 +478,19 @@
 		</div>
 	</c:if>
 	<div class="button-holder">
-		<aui:button type="button" value="submit" name="submit"/>
 		
-		<c:if test="<%=esign %>">
-			<%-- <aui:button type="button" value="esign" name="esign"/> --%>
-			<aui:button type="button" value="esign" name="esign" onClick="getFileComputerHash(1);"/>
-		</c:if>
+		<c:choose>
+			<c:when test="<%=esign %>">
+				<c:if test="<%= !assignTaskAfterSign %>">
+					<aui:button type="button" value="submit" name="submit"/>
+				</c:if>
+				<aui:button type="button" value="esign" name="esign" onClick="getFileComputerHash(1);"/>
+			</c:when>
+			<c:otherwise>
+				<aui:button type="button" value="submit" name="submit"/>
+			</c:otherwise>
+		</c:choose>
+		
 		<aui:button type="button" value="cancel" name="cancel"/>
 	</div>
 	
@@ -474,7 +518,14 @@
 		
 		if(submitButton){
 			submitButton.on('click', function(){
-				submitForm(document.<portlet:namespace />fm);
+				var requiredActionNote = '<%=requiredActionNote%>';
+				var A = AUI();
+				var actionNote = A.one('#<portlet:namespace />actionNote');
+				if (requiredActionNote == 'true' && actionNote.val() == ''){
+					alert(Liferay.Language.get('please-add-note-before-send'));
+				} else {
+					submitForm(document.<portlet:namespace />fm);
+				}
 			});
 		}
 		
@@ -669,6 +720,12 @@
 
 	function getFileComputerHash(symbolType) {
 
+		var offsetX = '<%= offsetX %>';
+		var offsetY = '<%= offsetY %>';
+		var imageZoom = '<%= imageZoom %>';
+		
+		var showSignatureInfo = '<%= showSignatureInfo %>';
+		
 		var url = '<%=getDataAjax%>';
 		
 		var nanoTime = $('#<portlet:namespace/>nanoTimePDF').val();
@@ -691,6 +748,10 @@
 					<portlet:namespace/>dossierId: $("#<portlet:namespace/>dossierId").val(),
 					<portlet:namespace/>dossierPartId: listDossierPartToSigner[i],
 					<portlet:namespace/>dossierFileId: listDossierFileToSigner[i],
+					<portlet:namespace/>offsetX: offsetX,
+					<portlet:namespace/>offsetY: offsetY,
+					<portlet:namespace/>imageZoom: imageZoom,
+					<portlet:namespace/>showSignatureInfo: showSignatureInfo,
 					<portlet:namespace/>type: 'getComputerHash'
 				},
 				success : function(data) {
@@ -723,14 +784,14 @@
 										completeSignature(sign, signFieldName, filePath, fileName, $("#<portlet:namespace/>dossierId").val(), dossierFileId, dossierPartId, index, indexSize, '<%=signatureURL%>');
 										
 	 								}else{
-	 									alert("signer error");
+	 									alert('<%=LanguageUtil.get(pageContext, "signer-error") %>');
 	 					            }
 								}else{
-									alert(msg);
+									alert('<%=LanguageUtil.get(pageContext, "signer-error-lien-he") %>');
 								}
 					        	
 					        } else {
-					         	alert("Plugin is not working");
+					         	alert('<%=LanguageUtil.get(pageContext, "plugin-is-not-working") %>');
 					        }
 						}
 					}
@@ -766,14 +827,16 @@
 									if(index == newis){
 										if(assignTaskAfterSign == 'true'){
 											formSubmit();
+										} else {
+											Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id_16_WAR_opencpsportlet');
 										}
 									}
 								} else {
-										alert("--------- vao day completeSignature- ky so ko dc-------------");
+										alert('<%=LanguageUtil.get(pageContext, "signer-error") %>');
 								}
 						},
 				    	error: function(){
-				    		alert("--------- vao day completeSignature- ky so ko dc-------------");
+				    		alert('<%=LanguageUtil.get(pageContext, "signer-fail") %>');
 				    	}
 					}
 				}

@@ -63,14 +63,31 @@
 	iteratorURL.setParameter("mvcPath", "/html/portlets/dossiermgt/frontoffice/dossier/history.jsp");
 
 %>
+<div class="header-title custom-title pdl30">
+		<liferay-ui:message key="history"/>
+</div>
 
 <aui:row>
-	<aui:col width="20" cssClass="bold">
-		<liferay-ui:message key="dossier-reception-no"/> 
-	</aui:col>
-	<aui:col width="80">
-		<%=receptionNo %>
-	</aui:col>
+			<aui:col width="30">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getDossierId()) ? dossier.getDossierId() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
+			<aui:col width="70">
+				<aui:row>
+					<aui:col width="30" cssClass="bold">
+						<liferay-ui:message key="dossier-reception-no"/>
+					</aui:col>
+					<aui:col width="70">
+						<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
+					</aui:col>
+				</aui:row>
+			</aui:col>
 </aui:row>
 
 <aui:row cssClass="pd_b20">
@@ -130,14 +147,15 @@
 
 				<aui:row>
 					<span class="span4 bold">
-						<liferay-ui:message key="step-name" />
+						<liferay-ui:message key="action" />
 					</span>
 					
 					<span class="span8">
-						<liferay-ui:message key="<%= dossierLog.getStepName() %>"/>
+						<liferay-ui:message key="<%= DossierMgtUtil.getDossierLogs(StringPool.BLANK, dossierLog.getActionInfo())  %>"/>
 					</span>
+					
 				</aui:row>
-			
+				
 				<aui:row>
 					<span class="span4 bold">
 						<liferay-ui:message key="dossier-status" />
@@ -176,17 +194,7 @@
 						<liferay-ui:message key="<%= dossierLog.getActorName() %>"/>
 					</span>
 				</aui:row>
-				
-				<aui:row>
-					<span class="span4 bold">
-						<liferay-ui:message key="action" />
-					</span>
-					
-					<span class="span8">
-						<liferay-ui:message key="<%= DossierMgtUtil.getDossierLogs(StringPool.BLANK, dossierLog.getActionInfo())  %>"/>
-					</span>
-					
-				</aui:row>
+
 				
 				<aui:row>
 					<span class="span4 bold">
@@ -223,6 +231,7 @@
 							%>
 								<div style="padding: 3px; ">
 									<%= StringPool.GREATER_THAN %> 
+									<%= LanguageUtil.get(pageContext, "history-file-action-"+lf.getActionCode()) %> :
 										 <aui:a href="#" >
 										 	<%= lf.getFileName() %> 
 										 	<span style="font: smaller; color: #cbcbcb;">(<%= sdf.format(lf.getModifiedDate()) %> )</span>

@@ -20,10 +20,10 @@
 
 
 <%
-	if(Validator.isNotNull(searchTerms.getKeywords()) || Validator.isNotNull(dossierSubStatus)){
-		totalCount = ProcessOrderLocalServiceUtil.countProcessOrderKeyWords(serviceInfoId, processStepId, themeDisplay.getUserId(), assignToUserId, searchTerms.getKeywords(),dossierSubStatus);
-		processOrders = ProcessOrderLocalServiceUtil.searchProcessOrderKeyWords(serviceInfoId, processStepId, themeDisplay.getUserId(), assignToUserId, searchTerms.getKeywords(),dossierSubStatus,
-			searchContainer.getStart(), searchContainer.getEnd(), 
+	if(Validator.isNotNull(searchTerms.getKeywords()) || Validator.isNotNull(dossierSubStatus) || Validator.isNotNull(processOrderStage)){
+		totalCount = ProcessOrderLocalServiceUtil.countProcessOrderKeyWords(serviceInfoId, processStepId, themeDisplay.getUserId(), assignToUserId, searchTerms.getKeywords(),dossierSubStatus, processOrderStage, fromDate, toDate, serviceDomainCode);
+		processOrders = ProcessOrderLocalServiceUtil.searchProcessOrderKeyWords(serviceInfoId, processStepId, themeDisplay.getUserId(), assignToUserId, searchTerms.getKeywords(),dossierSubStatus, processOrderStage,
+			fromDate, toDate, serviceDomainCode, searchContainer.getStart(), searchContainer.getEnd(), 
 			ProcessOrderUtils.getProcessOrderByComparator(todolistOrderByField, todolistOrderByType));
 	}else{
 		totalCount = ProcessOrderLocalServiceUtil.countProcessOrder(serviceInfoId, processStepId, themeDisplay.getUserId(), assignToUserId);

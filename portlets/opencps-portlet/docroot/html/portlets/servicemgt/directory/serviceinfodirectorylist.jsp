@@ -1,4 +1,7 @@
 
+<%@page import="javax.portlet.PortletRequest"%>
+<%@page import="com.liferay.portal.kernel.portlet.LiferayPortletMode"%>
+<%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
 <%@page import="org.opencps.util.PortletConstants"%>
 <%@page import="org.opencps.util.PortletPropsValues"%>
 <%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
@@ -29,6 +32,9 @@
 
 
 <%
+	
+	String plidServiceDetail = preferences.getValue("plidServiceDetail","0");
+
 	PortletURL iteratorURL = renderResponse.createRenderURL();
 	iteratorURL.setParameter("mvcPath", templatePath + "serviceinfodirectorylist.jsp");
 	
@@ -42,6 +48,8 @@
 	 */
 	headerNames.add("service-bound-data");
 	
+	headerNames.add("action");
+	 
 	String headers = StringUtil.merge(headerNames, StringPool.COMMA);
 	
 	
@@ -125,25 +133,12 @@ $(document).ready(function(){
 
 						</aui:col>
 						<aui:col width="30" cssClass="search-col">
-							<%-- <datamgt:ddr 
-								depthLevel="1" 
-								dictCollectionCode="SERVICE_DOMAIN"
-								itemNames="<%= ServiceDisplayTerms.SERVICE_DOMAINCODE %>"
-								itemsEmptyOption="true"	
-								selectedItems="<%= domainCode %>"
-								emptyOptionLabels="<%=ServiceDisplayTerms.SERVICE_DOMAINCODE %>"
-								cssClass="search-input select-box"
-								showLabel="false"
-							>
-							</datamgt:ddr> --%>
 							
 							<aui:input name="<%=ServiceDisplayTerms.SERVICE_DOMAINCODE %>" type="hidden" value="<%=domainCode %>"></aui:input>
 							<input type="text" id="comboboxTree" class="opencps-combotree" readonly="readonly" />
 						</aui:col>
 						<aui:col width="30" cssClass="search-col">
-							<%-- <label>
-								<liferay-ui:message key="keywords"/>
-							</label> --%>
+
 							<liferay-ui:input-search 
 								cssClass="search-input input-keyword"
 								id="keywords1"
@@ -185,18 +180,49 @@ $(document).ready(function(){
 			className="org.opencps.servicemgt.model.ServiceInfo" 
 			modelVar="service" 
 			keyProperty="serviceinfoId"
+			indexVar="index"
 		>
 			<%
 				PortletURL viewURL = renderResponse.createRenderURL();
 				viewURL.setParameter("mvcPath", templatePath + "service_detail.jsp");
 				viewURL.setParameter("serviceinfoId", String.valueOf(service.getServiceinfoId()));
 				viewURL.setParameter("backURL", currentURL);
+				
+				PortletURL renderToSubmitOnline = PortletURLFactoryUtil.create(request, WebKeys.P26_SUBMIT_ONLINE, Long.valueOf(plidServiceDetail), PortletRequest.RENDER_PHASE);
+				renderToSubmitOnline.setWindowState(LiferayWindowState.NORMAL);
+				renderToSubmitOnline.setPortletMode(LiferayPortletMode.VIEW);
+				renderToSubmitOnline.setParameter("mvcPath", "/html/portlets/dossiermgt/submit/dossier_submit_online.jsp");
+				renderToSubmitOnline.setParameter("serviceinfoId", String.valueOf(service.getServiceinfoId()));
+				renderToSubmitOnline.setParameter("backURL", currentURL);
 			%>
 				<liferay-util:buffer var="boundcol1">
 					
 					<div class="row-fluid">
 						<div class="span12">
 							<a href="<%=viewURL.toString() %>"><%=service.getServiceName() %></a>
+						</div>
+						
+						<div class="span12">
+						<%
+							List<TemplateFile> templates = new ArrayList<TemplateFile>();
+							
+							String iconType = StringPool.BLANK;
+							
+						
+							if (Validator.isNotNull(service)) {
+								templates = TemplateFileLocalServiceUtil.getServiceTemplateFiles(service.getServiceinfoId());
+							}
+						%>
+						<ul class="ls-file-download">
+							<%
+								for (TemplateFile tf : templates) {
+							%>
+								<li> <i class="icon-file"></i> <a href="<%= ServiceUtil.getDLFileURL(tf.getFileEntryId()) %>"> <%= tf.getFileName() %> </a></li>
+							<%		
+								}
+							%>
+						</ul>
+
 						</div>
 					</div>
 				</liferay-util:buffer>
@@ -232,12 +258,18 @@ $(document).ready(function(){
 						</div>
 					</div>
 				</liferay-util:buffer>
+				
+				<liferay-util:buffer var="boundcol3">
+					
+					<aui:button href="<%= renderToSubmitOnline.toString() %>" cssClass="des-sub-button radius20" value="service-description"></aui:button>
+					
+				</liferay-util:buffer>
 			<%
 				if(service.getActiveStatus() !=0) {
 					row.setClassName("opencps-searchcontainer-row");
 					
 					// no column
-					row.addText(String.valueOf(row.getPos() + 1), viewURL);
+					row.addText(String.valueOf((searchContainer.getCur() - 1) * searchContainer.getDelta() + index + 1), viewURL);
 				
 					
 					row.addText(boundcol1);
@@ -254,6 +286,8 @@ $(document).ready(function(){
 	
 	</liferay-ui:search-container>
 </div>
+
+
 <%!
 	private Log _log = LogFactoryUtil.getLog("html.portlets.servicemgt.directory.serviceinfo.jsp");
 %>

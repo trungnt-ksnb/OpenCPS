@@ -1,4 +1,6 @@
 
+<%@page import="org.opencps.processmgt.util.ReportUtils"%>
+<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -48,6 +50,7 @@
 <%@ include file="/init.jsp"%>
 
 <%
+	
 	boolean success = false;
 
 	boolean isViewForm = true;
@@ -77,6 +80,9 @@
 	String redirectURL = ParamUtil.getString(request, "redirectURL");
 	
 	String sampleData = StringPool.BLANK;
+	
+	String base64Str = StringPool.BLANK;
+	String fileName = StringPool.BLANK;
 	
 	String[] docTypes = StringUtil.split(ParamUtil.getString(request, "reportTypes", ".pdf"));
 	
@@ -117,22 +123,26 @@
 		ownerCitizen = (Citizen) accBean.getAccountInstance();
 		if(dossier != null && (dossier.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_NEW) || 
 						dossier.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_WAITING))){
-			isViewForm = false;
+			isViewForm = false;//TODO config
 		}
+		
 	} else if (accBean.isBusiness()) {
 		ownerBusiness = (Business) accBean.getAccountInstance();
 		if(dossier != null && (dossier.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_NEW) || 
 						dossier.getDossierStatus().equals(PortletConstants.DOSSIER_STATUS_WAITING))){
-			isViewForm = false;
+			isViewForm = false;//TODO config
 		}
+		
 	}else if(accBean.isEmployee()){
 		if(dossierPart.getPartType() != PortletConstants.DOSSIER_PART_TYPE_MULTIPLE_RESULT && 
 						dossierPart.getPartType() != PortletConstants.DOSSIER_PART_TYPE_RESULT){
 			isViewForm = true;
 		}else{
-			isViewForm = false;
+			isViewForm = false;//TODO config
 		}
 	}
+	
+	System.out.println("######################################### " + dossierPart.getPartName() + " | " + dossierPart.getPartType());
 	
 	String formData = "";
 	
@@ -184,7 +194,7 @@
 	<aui:input name="<%=DossierFileDisplayTerms.DOSSIER_FILE_TYPE %>" type="hidden" value="<%=String.valueOf(renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) ? PortletConstants.DOSSIER_FILE_TYPE_INPUT : PortletConstants.DOSSIER_FILE_TYPE_OUTPUT) %>"/>
 	<aui:input name="groupDossierPartId" type="hidden" value="<%=groupDossierPartId%>"/>
 	
-	<aui:fieldset id="dynamicForm"></aui:fieldset>
+	<div id="dynamicForm"></div>
 	<aui:fieldset>
 		<c:choose>
 			<c:when test="<%=!isViewForm %>">
@@ -194,39 +204,163 @@
 					
 				<c:if test="<%=dossierFileId > 0%>">
 					<aui:button type="button" value="preview" name="preview"/>
-					<aui:nav id="dropdownContainer" cssClass="btn export-report">
-						<aui:nav-item dropdown="<%= true %>" label="download">
-						
-							<%
-								if(docTypes != null){
-									for(int i = 0; i < docTypes.length; i++){
-										String extension = docTypes[i];
-								
-										String taglibURL = "javascript:" + renderResponse.getNamespace() + "exportReport('"+ extension +"')";
-										%>
-											<aui:nav-item href="<%= taglibURL %>" label="<%=StringUtil.replace(extension, StringPool.PERIOD, StringPool.BLANK).toUpperCase() %>" />
-										<%
-									}
-								}
-							%>
-			
-						</aui:nav-item>
-					</aui:nav>
+					
 <%-- 				<aui:button type="button" value="create-file" name="create-file"/> --%>
 				</c:if>
 			</c:when>
 		</c:choose>
+		
+		<c:if test="<%=dossierFileId > 0%>">
+			<aui:nav id="dropdownContainer" cssClass="btn export-report">
+				<aui:nav-item dropdown="<%= true %>" label="download">
+				
+					<%
+						if(docTypes != null){
+							for(int i = 0; i < docTypes.length; i++){
+								String extension = docTypes[i];
+								
+								//String taglibURL = "javascript:" + renderResponse.getNamespace() + "exportReport('"+ extension +"')";
+								String taglibURL = PortletPropsValues.OPENCPS_SERVLET_EXPORT_FILE_URL + dossierFileId + "&docType=" + extension;
+								%>
+									<aui:nav-item href="<%= taglibURL %>" label="<%=StringUtil.replace(extension, StringPool.PERIOD, StringPool.BLANK).toUpperCase() %>" />
+								<%
+							}
+						}
+					%>
+	
+				</aui:nav-item>
+			</aui:nav>
+			
+			<%
+				String signUrl = PortletPropsValues.OPENCPS_SERVLET_EXPORT_FILE_URL + dossierFileId + "&sign=" + "true" +"&docType=.doc"; 
+			%>
+		</c:if>
 	</aui:fieldset>
 </aui:form>
+<portlet:resourceURL var="getDataAjax"></portlet:resourceURL>
+
+<%-- <c:if test="<%= portleName.equals(WebKeys.DOSSIER_MGT_PORTLET) && dossierFileId > 0 %>">
+	<aui:button value="sign" onclick="signatureFrontOffice()" />
+</c:if> --%>
 
 <aui:script>
-
+	var url = '<%= getDataAjax %>';
 	var alpacaSchema = <%=Validator.isNotNull(alpacaSchema) ? alpacaSchema : PortletConstants.UNKNOW_ALPACA_SCHEMA%>;
 	var formData = '<%=formData%>';
 	var dossierFileId = '<%=dossierFileId%>';
+	/* function pluginload(loaded)
+	{
+		if(!loaded) {
+			alert('Loading plugin is failed!');
+		} 
+	}
+	
+	function callbackPathFile(jsondata) {
+		alert("data    " + jsondata.data);
+	}
+	
+	
+	//function to test
+	function SigningCallback(jsondata)
+	{			
+		if(jsondata.code == 0)
+		{
+			alert('suc:' + jsondata.data.path);
+			PDFSigningHelper.openFile(jsondata.data.path);
+		}
+		else
+		{
+			alert('error with code:' + jsondata.errormsg);
+		}
+	} */
+	
+	function signatureFrontOffice(){
+		
+		/* var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
+		var imgSrcName = '<%= Validator.isNotNull(user) ? user.getScreenName() : StringPool.BLANK %>';
+		$.ajax({
+			
+			type : 'POST',
+			url : url,
+			data : {
+				<portlet:namespace/>dossierFileId: dossierFileId,
+				<portlet:namespace/>imgSrcName: imgSrcName,
+				<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_REQUEST_DATA%>'
+			},
+			success : function(datares) {
+				var jsonDataResponse = JSON.parse(datares);
+				
+				var fileName = jsonDataResponse.fileName;
+				var base64String = jsonDataResponse.base64ContentString;
+				var condauImageSrc = imgSrcName + "_condau.png";
+				var imgContentBase64Str = jsonDataResponse.imgContentBase64Str;
+				
+				if(imgContentBase64Str != '' && condauImageSrc != '') {
+					
+					PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
+						
+						if(base64String != '' && fileName != '') {
+							
+							PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
+								
+								PDFSigningHelper.getCertIndex( function(dataJSON) {
+									
+									if(dataJSON.data != '-1') {
+										
+										PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
+												author, "", dataJSON.data , "", function(jsondataSigned) {
+											if(jsondataSigned.code == 0)
+											{
+												PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+													
+													
+													AUI().use('aui-io-request', function(A){
+												    	$.ajax({
+												    		type : 'POST',
+															url : url,
+															data : {
+																<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
+																<portlet:namespace/>dossierFileId: dossierFileId,
+																<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_UPDATE_DATA_AFTER_SIGN %>'
+															},
+															success : function(datares) {
+																if(datares) {
+																	
+																	var jsonDataResponse = JSON.parse(datares);
+																	
+																	if(jsonDataResponse.msg == 'success') {
+																		// open file on client after signed success
+																		PDFSigningHelper.openFile(jsondataSigned.data.path);
+																		
+																		// close dialog when signed success
+																		var ns = '<portlet:namespace/>';
+																		ns = ns.substring(1, ns.length);
+																		closeDialog('<portlet:namespace/>dossier-dynamic-form', ns);
+																	}
+																}
+															}
+												    	});
+											   		 });
+												});
+											}
+											else
+											{
+												alert('error with code:' + jsondataSigned.errormsg);
+											}
+										});
+									}
+								});
+							});
+						}
+					});
+				}
+			}
+		}); */
+	}
 	
 	AUI().ready(function(A){
-
+		/* PDFSigningHelper.init(pluginload); */
+		
 		if(alpacaSchema.options != 'undefined' && alpacaSchema.schema != 'undefined'){
 			
 			if(formData != ''){
@@ -236,6 +370,7 @@
 			//Overwrite function
 			alpacaSchema.postRender = function(control){
 				$(".saveForm").click(function(e) {
+					//Liferay.Util.getOpener().Liferay.fire('turnOnOverlaymask');
 					var formData = control.getValue();
 					$("#<portlet:namespace />formData" ).val(JSON.stringify(formData));
 					
@@ -255,7 +390,7 @@
 					  
 					});
 					
-					console.log("Alpacajs-required: "+errorMessage);
+					//console.log("Alpacajs-required: "+errorMessage);
 					
 					if(errorMessage.length == 0){
 					
@@ -279,7 +414,7 @@
 			};
 		
 		}
-		var el = $("#<portlet:namespace/>dynamicForm");
+		var el = $("#dynamicForm");
 		
 		Alpaca(el, alpacaSchema);
 		
@@ -300,6 +435,7 @@
 		var success = '<%=success%>';
 		
 		if(success == 'true'){
+			
 			var data = {
 				'conserveHash': true
 			};
@@ -307,6 +443,7 @@
 			Liferay.Util.getOpener().Liferay.Portlet.refresh('#p_p_id' + '<portlet:namespace/>', data);
 			
 			<portlet:namespace/>createReport(dossierFileId);
+			Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 		}
 	});
 	
@@ -340,14 +477,17 @@
 						
 						loadingMask.hide();
 						if(fileExportDir == ''){
+							Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 							alert('<%= UnicodeLanguageUtil.get(pageContext, "error-while-export-file") %>');
 						}else{
 							var ns = '<portlet:namespace/>';
 							ns = ns.substring(1, ns.length);
 							closeDialog('<portlet:namespace/>dossier-dynamic-form', ns);
+							Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 						}
 					},
 			    	error: function(){
+			    		Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 			    		loadingMask.hide();
 			    	}
 				}
@@ -374,6 +514,8 @@
 		window.location.href = portletURL.toString();
 		
 		loadingMask.hide();
+		
+		Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
 	},['aui-io','liferay-portlet-url', 'aui-loading-mask-deprecated']);
 	
 	Liferay.provide(window, '<portlet:namespace/>previewForm', function(dossierFileId) {

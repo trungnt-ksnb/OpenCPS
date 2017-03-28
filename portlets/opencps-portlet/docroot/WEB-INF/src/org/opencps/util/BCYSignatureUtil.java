@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.Base64;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
@@ -53,6 +54,12 @@ public class BCYSignatureUtil extends SignatureUtil {
 			long indexSize) throws IOException {
 
 		// String result = StringPool.BLANK;
+		
+		float offsetX = ParamUtil.getFloat(resourceRequest, "offsetX");
+		float offsetY = ParamUtil.getFloat(resourceRequest, "offsetY");
+		float imageZoom = ParamUtil.getFloat(resourceRequest, "imageZoom");
+		
+		boolean showSignatureInfo = ParamUtil.getBoolean(resourceRequest, "showSignatureInfo");
 
 		long userId = PortalUtil.getUserId(resourceRequest);
 
@@ -136,7 +143,7 @@ public class BCYSignatureUtil extends SignatureUtil {
 			Certificate cert = CertUtil.getCertificateByPath(cerPath);
 			
 			ServerSigner signer = BCYSignatureUtil.getServerSigner(filePath,
-					cert, imageBase64);
+					cert, imageBase64, showSignatureInfo);
 
 			// tinh kich thuoc cua anh
 
@@ -145,14 +152,14 @@ public class BCYSignatureUtil extends SignatureUtil {
 
 			int signatureImageHeight = (bufferedImage != null && bufferedImage
 					.getHeight() > 0) ? bufferedImage.getHeight() : 80;
-			float llx = textLocation.getAnchorX();
+			float llx = textLocation.getAnchorX() + offsetX;
 
-			float urx = llx + signatureImageWidth / 3;
+			float urx = llx + signatureImageWidth * imageZoom;
 
-			float lly = textLocation.getPageURY() - textLocation.getAnchorY()
-					- signatureImageHeight / 3;
+			float lly = textLocation.getAnchorY()
+					- signatureImageHeight * imageZoom + offsetY;
 
-			float ury = lly + signatureImageHeight / 3;
+			float ury = lly + signatureImageHeight * imageZoom;
 
 			// inHash = signer.computeHash(new Rectangle(llx + 65, lly - 55, urx
 			// + 114, ury-20), 1);
@@ -215,10 +222,14 @@ public class BCYSignatureUtil extends SignatureUtil {
 	 * @return
 	 */
 	public static ServerSigner getServerSigner(String fullPath,
-			Certificate cert, String imageBase64) {
+			Certificate cert, String imageBase64, boolean showSignatureInfo) {
 		ServerSigner signer = new ServerSigner(fullPath, cert);
 		signer.setSignatureGraphic(imageBase64);
-		signer.setSignatureAppearance(PdfSignatureAppearance.RenderingMode.GRAPHIC_AND_DESCRIPTION);
+		if(showSignatureInfo) {
+			signer.setSignatureAppearance(PdfSignatureAppearance.RenderingMode.GRAPHIC_AND_DESCRIPTION);
+		} else {
+			signer.setSignatureAppearance(PdfSignatureAppearance.RenderingMode.GRAPHIC);
+		}
 		return signer;
 	}
 

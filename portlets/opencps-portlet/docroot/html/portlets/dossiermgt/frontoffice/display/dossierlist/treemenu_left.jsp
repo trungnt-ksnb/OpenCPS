@@ -1,4 +1,7 @@
 
+<%@page import="com.liferay.portal.kernel.dao.orm.QueryUtil"%>
+<%@page import="org.opencps.dossiermgt.service.DossierLogLocalServiceUtil"%>
+<%@page import="org.opencps.dossiermgt.model.DossierLog"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -121,7 +124,8 @@
 					PortletConstants.TREE_VIEW_LEVER_2, 
 					"radio",
 					false,
-					renderRequest);
+					renderRequest,
+					new String[]{});
 			%>
 		</div>
 	</c:if>
@@ -138,7 +142,8 @@
 				PortletConstants.TREE_VIEW_LEVER_0, 
 				"radio",
 				true,
-				renderRequest);
+				renderRequest,
+				dossierStatusCodes);
 		%>
 	</div>
 	
@@ -239,6 +244,16 @@
 					<%
 						Dossier dossier = dossierBean.getDossier();
 						String cssStatusColor = "status-color-" + dossier.getDossierStatus();
+						List<DossierLog> dossierLogs = new ArrayList<DossierLog>();
+						String noteContent = StringPool.BLANK;
+						try {
+							dossierLogs = DossierLogLocalServiceUtil.findDossierLog(1, dossier.getDossierId(), 0, 1);
+							if(dossierLogs.size() > 0) {
+								noteContent = DossierMgtUtil.getDossierLogs(StringPool.BLANK, dossierLogs.get(0).getMessageInfo()).replaceAll("update-version-file", LanguageUtil.get(pageContext, "update-version-file"));
+							}
+						} catch(Exception e) {
+							_log.error(e);
+						}
 					%>
 					
 					<liferay-util:buffer var="info">
@@ -271,11 +286,11 @@
 									<div class='<%= "text-align-right span1 " + cssStatusColor%>'>
 										<i class='<%="fa fa-circle sx10 " + dossier.getDossierStatus()%>'></i>
 									</div>
-									<div class="span2 bold-label">
+									<div class="span4 bold-label">
 										<liferay-ui:message key="reception-no"/>
 									</div>
 									
-									<div class="span9"><%=dossier.getReceptionNo() %></div>
+									<div class="span7"><%=dossier.getReceptionNo() %></div>
 								</div>
 							</c:when>
 							
@@ -284,10 +299,10 @@
 									<div class='<%= "text-align-right span1 " + cssStatusColor%>'>
 										<i class='<%="fa fa-circle sx10 " + dossier.getDossierStatus()%>'></i>
 									</div>
-									<div class="span2 bold-label">
+									<div class="span4 bold-label">
 										<liferay-ui:message key="reception-no"/>
 									</div>
-									<div class="span9"><%=dossier.getReceptionNo() %></div>
+									<div class="span7"><%=dossier.getReceptionNo() %></div>
 								</div>
 							</c:otherwise>
 						</c:choose>
@@ -366,6 +381,14 @@
 										<%= PortletUtil.getDossierStatusLabel(dossier.getDossierStatus(), locale) %>
 									</c:otherwise>
 								</c:choose>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div class="span5 bold-label">
+								<liferay-ui:message key="note"/>
+							</div>
+							<div class='<%="span7 " + cssStatusColor %>'>
+								<liferay-ui:message key="<%= noteContent  %>"/>
 							</div>
 						</div>
 					</liferay-util:buffer>

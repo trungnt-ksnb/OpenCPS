@@ -133,8 +133,18 @@
 				/>
 			</portlet:renderURL>
 
-			<liferay-ui:icon cssClass="search-container-action fa edit"
-				image="edit" message="edit-on-action" url="<%=updateDossierURL.toString()%>" />
+			<c:choose>
+				<c:when test="<%=dossier.getDossierStatus().equals(
+						PortletConstants.DOSSIER_STATUS_WAITING) %>">
+					<liferay-ui:icon cssClass="search-container-action fa edit"
+					image="edit" message="edit-on-action" url="<%=updateDossierURL.toString() + \"#\" +renderResponse.getNamespace() +\"tab=\"+ renderResponse.getNamespace() + \"result\"%>" />
+				</c:when>
+				<c:otherwise>
+					<liferay-ui:icon cssClass="search-container-action fa edit"
+						image="edit" message="edit-on-action" url="<%=updateDossierURL.toString() %>" />
+				</c:otherwise>
+			</c:choose>
+
 			<c:if
 				test="<%=dossier.getDossierStatus().equals(
 								PortletConstants.DOSSIER_STATUS_NEW)%>">
@@ -199,7 +209,10 @@
 		</c:if>
 	</c:when>
 
-	<c:when test="<%= BackendUtils.isDossierCancel(dossier.getDossierId()) %>">
+	<c:when test="<%= BackendUtils.isDossierCancel(dossier.getDossierId())
+					&& !Validator.equals(dossier.getDossierStatus(), PortletConstants.DOSSIER_STATUS_DONE) 
+					&& !Validator.equals(dossier.getDossierStatus(), PortletConstants.DOSSIER_STATUS_DENIED)
+					&& !Validator.equals(dossier.getDossierStatus(), PortletConstants.DOSSIER_STATUS_CANCELED) %>">
 		<portlet:actionURL var="cancelDossierURL" name="cancelDossier">
 			<portlet:param name="<%=DossierDisplayTerms.DOSSIER_ID%>"
 				value="<%=String.valueOf(dossier.getDossierId())%>" />

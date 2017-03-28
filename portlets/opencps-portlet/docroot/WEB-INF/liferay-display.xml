@@ -21,6 +21,7 @@
 		<portlet id="27"/>
 		<portlet id="28"/>
 		<portlet id="30"/>
+		<portlet id="23"/>
 	</category>	
 
 	<category name="org.opencps.frontoffice">
@@ -47,6 +48,7 @@
 		<portlet id="33"></portlet>
 		<portlet id="34"></portlet>
 		<portlet id="35"></portlet>
+		<portlet id="36"></portlet>
 	</category>
-	
+
 </display>

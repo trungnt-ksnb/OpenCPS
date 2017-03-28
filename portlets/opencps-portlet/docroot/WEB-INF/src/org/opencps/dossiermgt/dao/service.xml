@@ -194,6 +194,10 @@
 			<finder-column name="serviceInfoId"/>
 			<finder-column name="groupId" />
 		</finder>
+        <finder name="G_SL" return-type="Collection">
+            <finder-column name="groupId"></finder-column>
+            <finder-column name="serviceLevel"></finder-column>
+        </finder>
 
 	</entity>
 	
@@ -247,6 +251,7 @@
         <column name="estimateDatetime" type="Date"/>
         <column name="finishDatetime" type="Date"/>
         <column name="dossierStatus" type="String"/>
+        <column name="dossierSubStatus" type="String"/>
         <column name="dossierSource" type="int"/>
         <column name="keypayRedirectUrl" type="String"/>
         <column name="delayStatus" type="int"></column>

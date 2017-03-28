@@ -28,6 +28,7 @@
 <%@page import="org.opencps.dossiermgt.model.Dossier"%>
 <%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
 <%@page import="javax.portlet.PortletMode"%>
+<%@page import="org.opencps.holidayconfig.util.HolidayCheckUtils"%>
 <%@page import="org.opencps.processmgt.NoSuchWorkflowOutputException"%>
 <%@page import="org.opencps.util.PortletPropsValues"%>
 <%@page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil"%>
@@ -130,7 +131,7 @@
 	Date estimateDate = null;
 	
 	if(workflow != null && workflow.getGenerateDeadline() && Validator.isNotNull(receiveDate) && Validator.isNotNull(deadlinePattern)){
-		estimateDate = HolidayUtils.getEndDate(receiveDate, deadlinePattern);
+		estimateDate = HolidayCheckUtils.getEndDate(receiveDate, deadlinePattern);
 	}
 	
 	PortletUtil.SplitDate spd = null;
@@ -715,7 +716,10 @@
 		var url = '<%=getDataAjax%>';
 		
 		var nanoTime = $('#<portlet:namespace/>nanoTimePDF').val();
-		
+		var offsetX = '<%= offsetX %>';
+		var offsetY = '<%= offsetY %>';
+		var imageZoom = '<%= imageZoom %>';
+		var showSignatureInfo = '<%= showSignatureInfo %>';
 		url = url + "&nanoTimePDF="+nanoTime;
 		
 		var listFileToSigner = $("#<portlet:namespace/>listFileToSigner").val().split(","); 
@@ -734,6 +738,10 @@
 					<portlet:namespace/>dossierId: $("#<portlet:namespace/>dossierId").val(),
 					<portlet:namespace/>dossierPartId: listDossierPartToSigner[i],
 					<portlet:namespace/>dossierFileId: listDossierFileToSigner[i],
+					<portlet:namespace/>offsetX: offsetX,
+					<portlet:namespace/>offsetY: offsetY,
+					<portlet:namespace/>imageZoom: imageZoom,
+					<portlet:namespace/>showSignatureInfo: showSignatureInfo,
 					<portlet:namespace/>type: 'getComputerHash'
 				},
 				success : function(data) {

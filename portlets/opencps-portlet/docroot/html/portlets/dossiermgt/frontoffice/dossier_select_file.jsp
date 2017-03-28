@@ -309,11 +309,11 @@
 
 					<liferay-util:buffer var="boundCol1">
 						<div class="row-fluid">
-							<div class="span5 bold-label">
+							<div class="span6 bold-label">
 								<liferay-ui:message key="template-file-no"/>
 							</div>
 
-							<div class="span7">
+							<div class="span6">
 								<a href="<%=templateFileURL %>" target="_blank">
 									<%=Validator.isNotNull(templateFileNo) ? templateFileNo : StringPool.DASH %>
 								</a>
@@ -322,28 +322,40 @@
 						</div>
 						
 						<div class="row-fluid">
-							<div class="span5 bold-label">
+							<div class="span6 bold-label">
 								<liferay-ui:message key="dossier-file-no"/>
 							</div>
-							<div class="span7"><%=Validator.isNotNull(dossierFile.getDossierFileNo()) ? dossierFile.getDossierFileNo() : StringPool.DASH %></div>
+							<div class="span6"><%=Validator.isNotNull(dossierFile.getDossierFileNo()) ? dossierFile.getDossierFileNo() : StringPool.DASH %></div>
+						</div>
+						
+						<div class="row-fluid">
+							<div class="span6 bold-label">
+								<liferay-ui:message key="dossier-file-createdate"/>
+							</div>
+							<div class="span6">
+							
+								<%=Validator.isNotNull(dossierFile.getModifiedDate()) ? 
+										DateTimeUtil.convertDateToString(dossierFile.getModifiedDate() , DateTimeUtil._VN_DATE_TIME_FORMAT): StringPool.DASH %>
+							
+							</div>
 						</div>
 					</liferay-util:buffer>
 					
 					<liferay-util:buffer var="boundCol2">
 						<div class="row-fluid">
-							<div class="span5 bold-label">
+							<div class="span4 bold-label">
 								<liferay-ui:message key="dossier-file-date"/>
 							</div>
-							<div class="span7"><%=Validator.isNotNull(dossierFile.getDossierFileDate()) ? 
+							<div class="span8"><%=Validator.isNotNull(dossierFile.getDossierFileDate()) ? 
 									DateTimeUtil.convertDateToString(dossierFile.getDossierFileDate(), DateTimeUtil._VN_DATE_FORMAT) :
 										StringPool.DASH %>
 							</div>
 						</div>
 						<div class="row-fluid">
-							<div class="span5 bold-label">
+							<div class="span4 bold-label">
 								<liferay-ui:message key="dossier-file-name"/>
 							</div>
-							<div class="span7">
+							<div class="span8">
 								<a href="<%=dossierFileURL %>" target="_blank">
 									<%=Validator.isNotNull(dossierFile.getDisplayName()) ? dossierFile.getDisplayName() : StringPool.DASH %>
 								</a>
@@ -355,17 +367,17 @@
 					
 					<liferay-util:buffer var="boundCol3">
 						<div class="row-fluid">
-							<div class="span5 bold-label">
+							<div class="span6 bold-label">
 								<liferay-ui:message key="reception-no"/>
 							</div>
-							<div class="span7"><%=Validator.isNotNull(dossier) ? dossier.getReceptionNo() : StringPool.DASH %></div>
+							<div class="span6"><%=Validator.isNotNull(dossier) ? dossier.getReceptionNo() : StringPool.DASH %></div>
 						</div>
 						
 						<div class="row-fluid">
-							<div class="span5 bold-label">
+							<div class="span6 bold-label">
 								<liferay-ui:message key="dossier-no"/>
 							</div>
-							<div class="span7">
+							<div class="span6">
 								<a href="<%=viewDossierUrlNomal %>" target="_blank">
 									<%=(dossierFile.getDossierId() > 0) ? String.valueOf(dossierFile.getDossierId()) : StringPool.DASH %>
 								</a>

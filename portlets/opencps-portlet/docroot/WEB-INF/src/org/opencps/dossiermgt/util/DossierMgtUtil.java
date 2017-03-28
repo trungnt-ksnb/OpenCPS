@@ -17,11 +17,14 @@
 
 package org.opencps.dossiermgt.util;
 
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Stack;
 
+import org.apache.commons.io.IOUtils;
 import org.opencps.dossiermgt.comparator.DossierSubmitDateComparator;
 import org.opencps.dossiermgt.comparator.DossierTemplateNameComparator;
 import org.opencps.dossiermgt.comparator.DossierTemplateNoComparator;
@@ -32,6 +35,7 @@ import org.opencps.dossiermgt.model.DossierPart;
 import org.opencps.dossiermgt.model.ServiceConfig;
 import org.opencps.dossiermgt.search.DossierDisplayTerms;
 import org.opencps.dossiermgt.search.DossierTemplateDisplayTerms;
+import org.opencps.dossiermgt.service.DossierFileLocalServiceUtil;
 import org.opencps.dossiermgt.service.DossierFileLogLocalServiceUtil;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
 import org.opencps.dossiermgt.service.DossierPartLocalServiceUtil;
@@ -46,10 +50,14 @@ import org.opencps.servicemgt.service.TemplateFileLocalServiceUtil;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.WebKeys;
 
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -460,8 +468,116 @@ public class DossierMgtUtil {
 		return processOrder;
 
 	}
+	
+	public static String base64File(long dossierFileId) {
+		String base64FileContent = StringPool.BLANK;
+		DossierFile dossierFile = null;
+		try {
+			 if(dossierFileId > 0) {
+				  dossierFile = DossierFileLocalServiceUtil.getDossierFile(dossierFileId);
+				  DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(dossierFile.getFileEntryId());
+				  
+				  InputStream is = fileEntry.getContentStream();
+				  
+				  byte[] bytes = IOUtils.toByteArray(is);
+				  
+				   base64FileContent = Base64.encode(bytes);
+				  
+				 // _log.info("base64FileContent : " + base64FileContent);
+				  
+			 }
+		 } catch (Exception e) {
+			 _log.error(e);
+		 }
+		
+		return base64FileContent;
+	}
+	
+	public static String getFileName(long dossierFileId) {
+		String fileName = StringPool.BLANK;
+		DossierFile dossierFile = null;
+		try {
+			 if(dossierFileId > 0) {
+				  dossierFile = DossierFileLocalServiceUtil.getDossierFile(dossierFileId);
+				  DLFileEntry fileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(dossierFile.getFileEntryId());
+				  fileName = fileEntry.getTitle();
+			 }
+		 } catch (Exception e) {
+			 _log.error(e);
+		 }
+		
+		return fileName;
+	}
+	
+	/**
+	 * @param receptionNo
+	 * @return
+	 */
+	public static Dossier getDossierByReceptionNo(String receptionNo) {
+		
+		Dossier dossier = null;
+		
+		if (Validator.isNotNull(receptionNo)) {
+			try {
+				dossier = DossierLocalServiceUtil.getDossierByReceptionNo(receptionNo);
+			} catch (Exception e) {
+				_log.debug(e);
+			}
+		}
+		
+		return dossier;
+	}
+	
+	/**
+	 * @param dossierId
+	 * @return
+	 */
+	public static Dossier getDossierByDossierId(long dossierId) {
+		
+		Dossier dossier = null;
+		
+		if (dossierId != 0) {
+			try {
+				dossier = DossierLocalServiceUtil.getDossier(dossierId);
+			} catch (Exception e) {
+				_log.debug(e);
+			}
+		}
+		
+		return dossier;
+	}
+	
+	public static Dossier searchDossier(String keywords) {
+		Dossier dossier = null;
+
+		dossier = getDossierByReceptionNo(keywords);
+		
+		if (Validator.isNull(dossier)) {
+			
+			long dossierId = convertStringToLong(keywords);
+			
+			dossier = getDossierByDossierId(dossierId);
+			
+		}
+		
+		return dossier;
+	}
+	
+	private static long convertStringToLong(String input) {
+		long output = 0;
+		
+		try {
+			output = Long.valueOf(input);
+		} catch (Exception e) {
+			
+		}
+		
+		return output;
+	}
 
 	private static Log _log = LogFactoryUtil.getLog(DossierMgtUtil.class
 			.getName());
 
 }
+
+

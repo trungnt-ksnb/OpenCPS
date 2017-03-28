@@ -17,7 +17,9 @@
 
 package org.opencps.processmgt.service.persistence;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,6 +35,7 @@ import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.CalendarUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
@@ -874,7 +877,17 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 	 */
 	public int countProcessOrderKeyWords(
 		long serviceInfoId, long processStepId, long loginUserId,
-		long assignToUserId, String keyWords, String dossierSubStatus) {
+		long assignToUserId, String keyWords, String dossierSubStatus, 
+		String processOrderStage, Date fromDate, Date toDate, String domainCode) {
+		
+		Timestamp fromDate_TS = null;
+		Timestamp toDate_TS = null;
+		if (Validator.isNotNull(fromDate)){
+			fromDate_TS = CalendarUtil.getTimestamp(fromDate);
+		}
+		if (Validator.isNotNull(toDate)){
+			toDate_TS = CalendarUtil.getTimestamp(toDate);
+		}
 
 		Session session = null;
 		try {
@@ -907,6 +920,22 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 							StringPool.BLANK);
 			}
 			
+			if(Boolean.valueOf(processOrderStage)){
+				sql = StringUtil
+						.replace(sql, "OR opencps_processorder.assignToUserId = ?",
+							"OR opencps_processorder.assignToUserId = ? OR 1=1");
+			}
+			
+			if (Validator.isNull(fromDate_TS) && Validator.isNull(toDate_TS)) {
+				sql = StringUtil
+						.replace(sql, "AND (opencps_dossier.receiveDatetime BETWEEN ? AND ?)",
+							StringPool.BLANK);
+			}
+			if(Validator.isNull(domainCode)){
+				sql = StringUtil
+						.replace(sql, "AND opencps_serviceinfo.domainCode= ?", StringPool.BLANK);
+			}
+			
 			SQLQuery q = session
 				.createSQLQuery(sql);
 			q
@@ -930,6 +959,12 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 
 			qPos
 				.add(loginUserId);
+
+			qPos
+				.add(Boolean.valueOf(processOrderStage));
+			
+			qPos
+				.add(loginUserId);
 			
 			if(Validator.isNotNull(dossierSubStatus)){
 				qPos
@@ -947,6 +982,14 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 					.add(keyWords);
 			}
 			
+			if (Validator.isNotNull(fromDate_TS) && Validator.isNotNull(toDate_TS)) {
+				qPos.add(fromDate_TS);
+				qPos.add(toDate_TS);
+			}
+			if(Validator.isNotNull(domainCode)){
+				qPos
+					.add(domainCode);
+			}
 			Iterator<Integer> itr = q
 				.iterate();
 
@@ -986,11 +1029,21 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 	 * @param orderByComparator
 	 * @return
 	 */
-	public List searchProcessOrderKeyWords(long serviceInfoId,
+	public List searchProcessOrderKeyWords(
+			long serviceInfoId, long processStepId, long loginUserId, 
+			long assignToUserId, String keyWords, String dossierSubStatus, 
+			String processOrderStage, Date fromDate, Date toDate, String domainCode,
+			int start, int end, OrderByComparator orderByComparator) {
 
-		long processStepId, long loginUserId, long assignToUserId, String keyWords, String dossierSubStatus, int start,
-		int end, OrderByComparator orderByComparator) {
-
+		Timestamp fromDate_TS = null;
+		Timestamp toDate_TS = null;
+		if (Validator.isNotNull(fromDate)){
+			fromDate_TS = CalendarUtil.getTimestamp(fromDate);
+		}
+		if (Validator.isNotNull(toDate)){
+			toDate_TS = CalendarUtil.getTimestamp(toDate);
+		}
+		
 		Session session = null;
 		try {
 			session = openSession();
@@ -1020,6 +1073,23 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 				sql = StringUtil
 						.replace(sql, "AND opencps_processstep.dossierSubStatus = ?",
 							StringPool.BLANK);
+			}
+			
+			if(Boolean.valueOf(processOrderStage)){
+				sql = StringUtil
+						.replace(sql, "OR opencps_processorder.assignToUserId = ?",
+							"OR opencps_processorder.assignToUserId = ? OR 1=1");
+			}
+			
+			if (Validator.isNull(fromDate_TS) && Validator.isNull(toDate_TS)) {
+				sql = StringUtil
+						.replace(sql, "AND (opencps_dossier.receiveDatetime BETWEEN ? AND ?)",
+							StringPool.BLANK);
+			}
+			
+			if(Validator.isNull(domainCode)){
+				sql = StringUtil
+						.replace(sql, "AND opencps_serviceinfo.domainCode= ?", StringPool.BLANK);
 			}
 			
 			sql = CustomSQLUtil.replaceOrderBy(sql, orderByComparator);
@@ -1072,6 +1142,12 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 
 			qPos
 				.add(loginUserId);
+
+			qPos
+				.add(Boolean.valueOf(processOrderStage));
+			
+			qPos
+				.add(loginUserId);
 			
 			if(Validator.isNotNull(dossierSubStatus)){
 				qPos
@@ -1088,7 +1164,17 @@ public class ProcessOrderFinderImpl extends BasePersistenceImpl<ProcessOrder>
 				qPos
 					.add(keyWords);
 			}
-
+			
+			if (Validator.isNotNull(fromDate_TS) && Validator.isNotNull(toDate_TS)) {
+				qPos.add(fromDate_TS);
+				qPos.add(toDate_TS);
+			}
+			
+			if(Validator.isNotNull(domainCode)){
+				qPos
+					.add(domainCode);
+			}
+			
 			Iterator<Object[]> itr = (Iterator<Object[]>) QueryUtil
 				.list(q, getDialect(), start, end).iterator();
 

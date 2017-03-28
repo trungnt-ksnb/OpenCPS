@@ -34,6 +34,9 @@
 	ServiceConfig serviceConfig = (ServiceConfig)request.getAttribute(WebKeys.SERVICE_CONFIG_ENTRY);
 %>
 <div class="ocps-dossier-info">
+<%-- <div class="header-title custom-title pdl20">
+		<liferay-ui:message key="dossier_info"/>
+</div> --%>
 <table class="table table-bordered dossier-info-table">
 	<tr>
 		<td width="150">
@@ -41,6 +44,14 @@
 		</td>
 		<td >
 			<%=dossier != null ? dossier.getDossierId() :  StringPool.BLANK %>
+		</td>
+	</tr>
+	<tr>
+		<td >
+			<liferay-ui:message key="reception-no"/>
+		</td>
+		<td >
+			<%= dossier != null &&  Validator.isNotNull(dossier.getReceptionNo())? dossier.getReceptionNo() :  StringPool.BLANK %>
 		</td>
 	</tr>
 	<tr>
@@ -101,14 +112,6 @@
 	</tr>
 	<tr>
 		<td >
-			<liferay-ui:message key="reception-no"/>
-		</td>
-		<td >
-			<%= dossier != null &&  Validator.isNotNull(dossier.getReceptionNo())? dossier.getReceptionNo() :  StringPool.BLANK %>
-		</td>
-	</tr>
-	<tr>
-		<td >
 			<liferay-ui:message key="estimate-date"/>
 		</td>
 		<td >
@@ -133,7 +136,7 @@
 	</tr>
 	<tr>
 		<td >
-			<liferay-ui:message key="modified-date"/>
+			<liferay-ui:message key="modified-date-dossier"/>
 		</td>
 		<td >
 			<%= ProcessOrderUtils.getDossierDate(dossier.getDossierId(), 4, "dd/MM/yyyy hh:mm") %>

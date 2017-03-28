@@ -1,6 +1,4 @@
-<%@page import="java.util.LinkedHashMap"%>
-<%@page import="java.util.HashSet"%>
-<%@page import="java.util.Set"%>
+
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -19,11 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 %>
-<%@page import="org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil"%>
+
 <%@page import="org.opencps.processmgt.model.ProcessWorkflow"%>
-<%@page import="org.opencps.processmgt.model.ProcessOrder"%>
-<%@page import="org.opencps.util.DateTimeUtil"%>
-<%@page import="org.opencps.holidayconfig.util.HolidayUtils"%>
+<%@page import="org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil"%>
+<%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
 <%@page import="java.util.Date"%>
 <%@page import="org.opencps.processmgt.util.ProcessOrderUtils"%>
 <%@page import="org.opencps.util.MessageKeys"%>
@@ -35,6 +32,13 @@
 <%@page import="org.opencps.processmgt.service.ProcessOrderLocalServiceUtil"%>
 <%@page import="org.opencps.processmgt.search.ProcessOrderDisplayTerms"%>
 <%@page import="org.opencps.holidayconfig.util.HolidayCheckUtils"%>
+<%@page import="org.opencps.util.DateTimeUtil"%>
+<%@page import="org.opencps.dossiermgt.service.DossierLocalServiceUtil"%>
+<%@page import="org.opencps.dossiermgt.model.Dossier"%>
+<%@page import="org.opencps.processmgt.permissions.ProcessOrderPermission"%>
+<%@page import="java.util.LinkedHashMap"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.Set"%>
 
 <%@ include file="../../init.jsp"%>
 
@@ -63,7 +67,7 @@
 	
 	int totalCount = 0;
 	
-	RowChecker rowChecker = new RowChecker(liferayPortletResponse);
+	RowChecker rowChecker = null;
 	
 	List<String> headerNames = new ArrayList<String>();
 	
@@ -74,6 +78,26 @@
 	String headers = StringUtil.merge(headerNames, StringPool.COMMA);
 	
 	String dossierSubStatus = ParamUtil.getString(request, "dossierSubStatus");
+	
+	String processOrderStage = ParamUtil.getString(request, "processOrderStage", "false");
+	
+	String tabs1 = ParamUtil.getString(request, "tabs1", ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS);
+	
+	long serviceInfoId = ParamUtil.getLong(request, "serviceInfoId");
+	
+	long processStepId = ParamUtil.getLong(request, "processStepId");
+	
+	iteratorURL.setParameter("dossierSubStatus", dossierSubStatus);
+	iteratorURL.setParameter("processOrderStage", processOrderStage);
+	boolean isShowRowChecker = false;
+	if(ProcessOrderPermission.contains(permissionChecker, scopeGroupId, ActionKeys.ASSIGN_PROCESS_ORDER) && 
+			tabs1.equals(ProcessUtils.TOP_TABS_PROCESS_ORDER_WAITING_PROCESS) &&
+			serviceInfoId > 0 && processStepId > 0){
+		
+		rowChecker = new RowChecker(liferayPortletResponse);
+		isShowRowChecker = true;
+		
+	}
 %>
 
 <c:if test="<%=stopRefresh %>">
@@ -84,6 +108,13 @@
 
 <aui:form name="fm">
 	<div class="opencps-searchcontainer-wrapper">
+		
+		<div class="opcs-serviceinfo-list-label">
+			<div class="title_box">
+			    <p class="file_manage_title ds"><liferay-ui:message key="title-danh-sach-process-order" /></p>
+				<p class="count"></p>
+			</div>
+		</div>
 		<liferay-ui:search-container 
 				searchContainer="<%= new ProcessOrderSearch(renderRequest, SearchContainer.DEFAULT_DELTA, iteratorURL) %>"
 				
@@ -94,10 +125,6 @@
 					<%
 						ProcessOrderSearchTerms searchTerms = (ProcessOrderSearchTerms)searchContainer.getSearchTerms();
 					
-						long serviceInfoId = searchTerms.getServiceInfoId();
-						
-						long processStepId = searchTerms.getProcessStepId();
-						
 						long assignToUserId = themeDisplay.getUserId();
 						try{
 							
@@ -107,25 +134,8 @@
 						}catch(Exception e){
 							_log.error(e);
 						}
-						Set<String> setToReturn = new HashSet<String>();
-						Set<String> set1 = new HashSet<String>();
-						//remove duplicates process orders
-						Map<String, ProcessOrderBean> cleanMapList = new LinkedHashMap<String, ProcessOrderBean>();
-						for (int i = 0; i < processOrders.size(); i++) {
-							System.out.println(!set1.add(processOrders.get(i).getProcessOrderId()+""));
-							System.out.println("-->"+processOrders.get(i).getProcessOrderId()+"");
-							if (!set1.add(processOrders.get(i).getProcessOrderId()+"")) {
-								setToReturn.add(processOrders.get(i).getProcessOrderId()+"");
-							}
-							ProcessOrderBean aasb = processOrders.get(i);
-							aasb.set_testDuplicate((String[])setToReturn.toArray(new String[setToReturn.size()]));
-							cleanMapList.put(processOrders.get(i).getProcessOrderId()+"", aasb);
-						}
-						
-						processOrders = new ArrayList<ProcessOrderBean>(cleanMapList.values());
-						
-						int aso = totalCount - cleanMapList.size();
-						total = totalCount - aso;
+
+						total = totalCount;
 						results = processOrders;
 						
 						pageContext.setAttribute("results", results);
@@ -172,8 +182,9 @@
 								new Date(), processOrder.getDaysDuration(),themeDisplay.getLocale());
 						
 						//String deadLine = Validator.isNotNull(processOrder.getDealine()) ? processOrder.getDealine() : StringPool.DASH;
-						
-						String href = "location.href='" + processURL.toString()+"'";
+						String redirectURL = processURL.toString() + "#" +renderResponse.getNamespace() +"tab="+ renderResponse.getNamespace() + redirectToPageProcessCfg ;
+								
+						String href = "location.href='" + redirectURL+"'";
 						
 						String cssStatusColor = "status-color-" + processOrder.getDossierStatus();
 					%>
@@ -184,11 +195,29 @@
 								<div class='<%= "text-align-right span1 " + cssStatusColor%>'>
 									<i class='<%="fa fa-circle sx10 " + processOrder.getDossierStatus()%>'></i>
 								</div>
-								<div class="span2 bold">
-									 <liferay-ui:message key="reception-no"/>
+								<div class="span4 bold">
+									<liferay-ui:message key="reception-no"/>
 								</div>
-								<div class="span9">
+								<div class="span7">
 									<%=processOrder.getReceptionNo() %>
+								</div>
+							</div>
+							
+							<%
+							Dossier dossier = DossierLocalServiceUtil.getDossier(processOrder.getDossierId());
+							%>
+							
+							<div class="row-fluid">
+								<div class="span1"></div>
+								<div class="span4 bold-label">
+									<liferay-ui:message key="submit-date-time"/>
+								</div>
+								<div class="span7">
+									<%=
+										Validator.isNotNull(dossier.getSubmitDatetime()) ? 
+										DateTimeUtil.convertDateToString(dossier.getSubmitDatetime(), DateTimeUtil._VN_DATE_TIME_FORMAT): 
+										DateTimeUtil._EMPTY_DATE_TIME  
+									%>
 								</div>
 							</div>
 							
@@ -249,6 +278,9 @@
 					<%
 						
 						String actionBtn = LanguageUtil.get(portletConfig, themeDisplay.getLocale(), "action");
+						if((processOrder.isReadOnly() || (processOrder.getAssignToUsesrId() != 0 &&  processOrder.getAssignToUsesrId() != user.getUserId()))){
+							actionBtn = LanguageUtil.get(portletConfig, themeDisplay.getLocale(), "view");
+						}
 						row.setClassName("opencps-searchcontainer-row");
 						row.addText(generalInfo);
 						row.addText(detail);
@@ -284,10 +316,10 @@ AUI().ready(function(A){
 	
 	var processDossier = A.one("#<portlet:namespace />processDossier");
 	var isMultiAssignvar = '<%= isMultiAssign %>';
-	
+	var isShowRowChecker = '<%= isShowRowChecker%>';
 	console.log(isMultiAssignvar);
 	console.log(processDossier);
-	if(isMultiAssignvar == 'false' && processDossier) {
+	if(isMultiAssignvar == 'false' && processDossier && isShowRowChecker == 'false') {
 		processDossier.hide();
 	}
 	

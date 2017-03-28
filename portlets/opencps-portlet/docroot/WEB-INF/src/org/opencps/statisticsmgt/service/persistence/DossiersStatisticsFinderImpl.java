@@ -19,11 +19,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.opencps.dossiermgt.model.DossierFile;
+import org.opencps.datamgt.model.DictItem;
+import org.opencps.datamgt.service.DictItemLocalServiceUtil;
 import org.opencps.statisticsmgt.bean.DossierStatisticsBean;
+import org.opencps.statisticsmgt.bean.FieldDatasShema;
 import org.opencps.statisticsmgt.model.DossiersStatistics;
+import org.opencps.statisticsmgt.model.impl.DossiersStatisticsImpl;
 import org.opencps.statisticsmgt.util.StatisticsUtil;
 import org.opencps.statisticsmgt.util.StatisticsUtil.StatisticsFieldNumber;
+import org.opencps.util.DictItemUtil;
 
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -32,6 +36,7 @@ import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -39,67 +44,64 @@ import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
 /**
- * The implementation of the dossiers statistics local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are
- * added, rerun ServiceBuilder to copy their definitions into the
+ * The implementation of the dossiers statistics local service. <p> All custom
+ * service methods should be put in this class. Whenever methods are added,
+ * rerun ServiceBuilder to copy their definitions into the
  * {@link org.opencps.statisticsmgt.service.DossiersStatisticsLocalService}
- * interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security
- * checks based on the propagated JAAS credentials because this service can only
- * be accessed from within the same VM.
- * </p>
+ * interface. <p> This is a local service. Methods of this service will not have
+ * security checks based on the propagated JAAS credentials because this service
+ * can only be accessed from within the same VM. </p>
  *
  * @author trungnt
  * @see org.opencps.statisticsmgt.service.base.DossiersStatisticsLocalServiceBaseImpl
  * @see org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil
  */
-public class DossiersStatisticsFinderImpl extends
-		BasePersistenceImpl<DossiersStatistics> implements
-		DossiersStatisticsFinder {
+public class DossiersStatisticsFinderImpl
+	extends BasePersistenceImpl<DossiersStatistics>
+	implements DossiersStatisticsFinder {
+
 	/*
-	 * NOTE FOR DEVELOPERS:
-	 * 
-	 * Never reference this interface directly. Always use {@link
+	 * NOTE FOR DEVELOPERS: Never reference this interface directly. Always use
+	 * {@link
 	 * org.opencps.statisticsmgt.service.DossiersStatisticsLocalServiceUtil} to
 	 * access the dossiers statistics local service.
 	 */
 
-	private static final String SQL_STATISTICS_COLUMN_NAMES_0 = DossiersStatisticsFinder.class
-			.getName() + ".[COLUMN-NAMES-0]";
+	private static final String SQL_STATISTICS_COLUMN_NAMES_0 =
+		DossiersStatisticsFinder.class.getName() + ".[COLUMN-NAMES-0]";
 
-	private static final String SQL_STATISTICS_DATA_TYPES_0 = DossiersStatisticsFinder.class
-			.getName() + ".[DATA-TYPES-0]";
+	private static final String SQL_STATISTICS_DATA_TYPES_0 =
+		DossiersStatisticsFinder.class.getName() + ".[DATA-TYPES-0]";
 
-	private static final String SQL_STATISTICS_COLUMN_NAMES_1 = DossiersStatisticsFinder.class
-			.getName() + ".[COLUMN-NAMES-1]";
+	private static final String SQL_STATISTICS_COLUMN_NAMES_1 =
+		DossiersStatisticsFinder.class.getName() + ".[COLUMN-NAMES-1]";
 
-	private static final String SQL_STATISTICS_DATA_TYPES_1 = DossiersStatisticsFinder.class
-			.getName() + ".[DATA-TYPES-1]";
+	private static final String SQL_STATISTICS_DATA_TYPES_1 =
+		DossiersStatisticsFinder.class.getName() + ".[DATA-TYPES-1]";
 
-	private static final String SQL_STATISTICS_COLUMN_NAMES_2 = DossiersStatisticsFinder.class
-			.getName() + ".[COLUMN-NAMES-2]";
+	private static final String SQL_STATISTICS_COLUMN_NAMES_2 =
+		DossiersStatisticsFinder.class.getName() + ".[COLUMN-NAMES-2]";
 
-	private static final String SQL_STATISTICS_DATA_TYPES_2 = DossiersStatisticsFinder.class
-			.getName() + ".[DATA-TYPES-2]";
+	private static final String SQL_STATISTICS_DATA_TYPES_2 =
+		DossiersStatisticsFinder.class.getName() + ".[DATA-TYPES-2]";
 
-	private static final String SQL_GENERAL_STATISTICS = DossiersStatisticsFinder.class
-			.getName() + ".generalStatistics";
+	private static final String SQL_GENERAL_STATISTICS =
+		DossiersStatisticsFinder.class.getName() + ".generalStatistics";
 
-	private static final String SQL_STATISTICS_BY_DOMAIN = DossiersStatisticsFinder.class
-			.getName() + ".statisticsByDomain";
+	private static final String SQL_STATISTICS_BY_DOMAIN =
+		DossiersStatisticsFinder.class.getName() + ".statisticsByDomain";
 
-	private static final String SQL_STATISTICS_BY_GOVAGENCY = DossiersStatisticsFinder.class
-			.getName() + ".statisticsByGovagency";
+	private static final String SQL_STATISTICS_BY_GOVAGENCY =
+		DossiersStatisticsFinder.class.getName() + ".statisticsByGovagency";
 
-	private static final String SQL_STATISTICS_MONTHS = DossiersStatisticsFinder.class
-			.getName() + ".getMonths";
+	private static final String SQL_STATISTICS_MONTHS =
+		DossiersStatisticsFinder.class.getName() + ".getMonths";
 
-	private static final String SQL_GET_STATS_BY_GOV_DOMAIN = DossiersStatisticsFinder.class
-			.getName() + ".getStatsByGovAndDomain";
+	private static final String SQL_GET_STATS_BY_GOV_DOMAIN =
+		DossiersStatisticsFinder.class.getName() + ".getStatsByGovAndDomain";
+
+	private static final String SQL_GET_STATISTICS =
+		DossiersStatisticsFinder.class.getName() + ".getStatistics";
 
 	/**
 	 * @param groupId
@@ -109,32 +111,33 @@ public class DossiersStatisticsFinderImpl extends
 	 * @param delayStatus
 	 * @return
 	 */
-	public List generalStatistics(long groupId, int month, int year,
-			String field, int delayStatus) {
+	public List generalStatistics(
+		long groupId, int month, int year, String field, int delayStatus) {
+
 		Session session = null;
 		try {
 			session = openSession();
 
 			String sql = CustomSQLUtil.get(SQL_GENERAL_STATISTICS);
 
-			String definedColumnNames = CustomSQLUtil
-					.get(SQL_STATISTICS_COLUMN_NAMES_0);
+			String definedColumnNames =
+				CustomSQLUtil.get(SQL_STATISTICS_COLUMN_NAMES_0);
 
-			String definedCondition = StatisticsUtil.getFilterCondition(field,
-					delayStatus);
+			String definedCondition =
+				StatisticsUtil.getFilterCondition(field, delayStatus);
 
 			sql = StringUtil.replace(sql, "$COLUMNS$", definedColumnNames);
 
 			sql = StringUtil.replace(sql, "$FILTER$", definedCondition);
 
-			// _log.info(sql);
-
-			String definedColumnDataTypes = CustomSQLUtil
-					.get(SQL_STATISTICS_DATA_TYPES_0);
+			String definedColumnDataTypes =
+				CustomSQLUtil.get(SQL_STATISTICS_DATA_TYPES_0);
 
 			String[] columnNames = StringUtil.split(definedColumnNames);
 
 			String[] columnDataTypes = StringUtil.split(definedColumnDataTypes);
+
+			_log.info(sql);
 
 			SQLQuery q = session.createSQLQuery(sql);
 
@@ -148,23 +151,20 @@ public class DossiersStatisticsFinderImpl extends
 				qPos.add(delayStatus);
 			}
 
-			if (!field
-					.equals(StatisticsFieldNumber.ProcessingNumber.toString())
-					&& !field.equals(StatisticsFieldNumber.DelayingNumber
-							.toString())) {
-				qPos.add(month);
+			qPos.add(month);
 
-				qPos.add(year);
-			}
+			qPos.add(year);
 
 			Iterator<Integer> itr = q.iterate();
 
-			List<DossierStatisticsBean> statisticsBeans = new ArrayList<DossierStatisticsBean>();
+			List<DossierStatisticsBean> statisticsBeans =
+				new ArrayList<DossierStatisticsBean>();
 
 			if (itr.hasNext()) {
 				Integer count = itr.next();
 
-				DossierStatisticsBean statisticsBean = new DossierStatisticsBean();
+				DossierStatisticsBean statisticsBean =
+					new DossierStatisticsBean();
 
 				statisticsBean.setMonth(month);
 
@@ -173,8 +173,8 @@ public class DossiersStatisticsFinderImpl extends
 				statisticsBean.setYear(year);
 				String columnName = columnNames[0];
 				String coulmnDataType = columnDataTypes[0];
-				Method method = StatisticsUtil.getMethod(columnName,
-						coulmnDataType, field);
+				Method method =
+					StatisticsUtil.getMethod(columnName, coulmnDataType, field);
 				if (method != null) {
 					method.invoke(statisticsBean, count.intValue());
 				}
@@ -184,9 +184,11 @@ public class DossiersStatisticsFinderImpl extends
 			}
 
 			return statisticsBeans;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			_log.error(e);
-		} finally {
+		}
+		finally {
 			closeSession(session);
 		}
 		return null;
@@ -200,19 +202,20 @@ public class DossiersStatisticsFinderImpl extends
 	 * @param delayStatus
 	 * @return
 	 */
-	public List statisticsByDomain(long groupId, int month, int year,
-			String field, int delayStatus) {
+	public List statisticsByDomain(
+		long groupId, int month, int year, String field, int delayStatus) {
+
 		Session session = null;
 		try {
 			session = openSession();
 
 			String sql = CustomSQLUtil.get(SQL_STATISTICS_BY_DOMAIN);
 
-			String definedColumnNames = CustomSQLUtil
-					.get(SQL_STATISTICS_COLUMN_NAMES_1);
+			String definedColumnNames =
+				CustomSQLUtil.get(SQL_STATISTICS_COLUMN_NAMES_1);
 
-			String definedCondition = StatisticsUtil.getFilterCondition(field,
-					delayStatus);
+			String definedCondition =
+				StatisticsUtil.getFilterCondition(field, delayStatus);
 
 			sql = StringUtil.replace(sql, "$COLUMNS$", definedColumnNames);
 
@@ -220,8 +223,8 @@ public class DossiersStatisticsFinderImpl extends
 
 			// _log.info(sql);
 
-			String definedColumnDataTypes = CustomSQLUtil
-					.get(SQL_STATISTICS_DATA_TYPES_1);
+			String definedColumnDataTypes =
+				CustomSQLUtil.get(SQL_STATISTICS_DATA_TYPES_1);
 
 			String[] columnNames = StringUtil.split(definedColumnNames);
 
@@ -239,24 +242,21 @@ public class DossiersStatisticsFinderImpl extends
 				qPos.add(delayStatus);
 			}
 
-			if (!field
-					.equals(StatisticsFieldNumber.ProcessingNumber.toString())
-					&& !field.equals(StatisticsFieldNumber.DelayingNumber
-							.toString())) {
-				qPos.add(month);
+			qPos.add(month);
 
-				qPos.add(year);
-			}
+			qPos.add(year);
 
-			Iterator<Object[]> itr = (Iterator<Object[]>) QueryUtil.list(q,
-					getDialect(), QueryUtil.ALL_POS, QueryUtil.ALL_POS)
-					.iterator();
+			Iterator<Object[]> itr =
+				(Iterator<Object[]>) QueryUtil.list(
+					q, getDialect(), QueryUtil.ALL_POS, QueryUtil.ALL_POS).iterator();
 
-			List<DossierStatisticsBean> statisticsBeans = new ArrayList<DossierStatisticsBean>();
+			List<DossierStatisticsBean> statisticsBeans =
+				new ArrayList<DossierStatisticsBean>();
 
 			if (itr.hasNext()) {
 				while (itr.hasNext()) {
-					DossierStatisticsBean statisticsBean = new DossierStatisticsBean();
+					DossierStatisticsBean statisticsBean =
+						new DossierStatisticsBean();
 
 					statisticsBean.setMonth(month);
 
@@ -270,7 +270,8 @@ public class DossiersStatisticsFinderImpl extends
 						for (int i = 0; i < objects.length; i++) {
 							String columnName = columnNames[i];
 							String coulmnDataType = columnDataTypes[i];
-							Method method = StatisticsUtil.getMethod(
+							Method method =
+								StatisticsUtil.getMethod(
 									columnName, coulmnDataType, field);
 							if (method != null) {
 								method.invoke(statisticsBean, objects[i]);
@@ -284,9 +285,11 @@ public class DossiersStatisticsFinderImpl extends
 			}
 
 			return statisticsBeans;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			_log.error(e);
-		} finally {
+		}
+		finally {
 			closeSession(session);
 		}
 		return null;
@@ -300,19 +303,20 @@ public class DossiersStatisticsFinderImpl extends
 	 * @param delayStatus
 	 * @return
 	 */
-	public List statisticsByGovAgency(long groupId, int month, int year,
-			String field, int delayStatus) {
+	public List statisticsByGovAgency(
+		long groupId, int month, int year, String field, int delayStatus) {
+
 		Session session = null;
 		try {
 			session = openSession();
 
 			String sql = CustomSQLUtil.get(SQL_STATISTICS_BY_GOVAGENCY);
 
-			String definedColumnNames = CustomSQLUtil
-					.get(SQL_STATISTICS_COLUMN_NAMES_2);
+			String definedColumnNames =
+				CustomSQLUtil.get(SQL_STATISTICS_COLUMN_NAMES_2);
 
-			String definedCondition = StatisticsUtil.getFilterCondition(field,
-					delayStatus);
+			String definedCondition =
+				StatisticsUtil.getFilterCondition(field, delayStatus);
 
 			sql = StringUtil.replace(sql, "$COLUMNS$", definedColumnNames);
 
@@ -320,8 +324,8 @@ public class DossiersStatisticsFinderImpl extends
 
 			// _log.info(sql);
 
-			String definedColumnDataTypes = CustomSQLUtil
-					.get(SQL_STATISTICS_DATA_TYPES_2);
+			String definedColumnDataTypes =
+				CustomSQLUtil.get(SQL_STATISTICS_DATA_TYPES_2);
 
 			String[] columnNames = StringUtil.split(definedColumnNames);
 
@@ -339,24 +343,21 @@ public class DossiersStatisticsFinderImpl extends
 				qPos.add(delayStatus);
 			}
 
-			if (!field
-					.equals(StatisticsFieldNumber.ProcessingNumber.toString())
-					&& !field.equals(StatisticsFieldNumber.DelayingNumber
-							.toString())) {
-				qPos.add(month);
+			qPos.add(month);
 
-				qPos.add(year);
-			}
+			qPos.add(year);
 
-			Iterator<Object[]> itr = (Iterator<Object[]>) QueryUtil.list(q,
-					getDialect(), QueryUtil.ALL_POS, QueryUtil.ALL_POS)
-					.iterator();
+			Iterator<Object[]> itr =
+				(Iterator<Object[]>) QueryUtil.list(
+					q, getDialect(), QueryUtil.ALL_POS, QueryUtil.ALL_POS).iterator();
 
-			List<DossierStatisticsBean> statisticsBeans = new ArrayList<DossierStatisticsBean>();
+			List<DossierStatisticsBean> statisticsBeans =
+				new ArrayList<DossierStatisticsBean>();
 
 			if (itr.hasNext()) {
 				while (itr.hasNext()) {
-					DossierStatisticsBean statisticsBean = new DossierStatisticsBean();
+					DossierStatisticsBean statisticsBean =
+						new DossierStatisticsBean();
 
 					Object[] objects = itr.next();
 
@@ -370,7 +371,8 @@ public class DossiersStatisticsFinderImpl extends
 						for (int i = 0; i < objects.length; i++) {
 							String columnName = columnNames[i];
 							String coulmnDataType = columnDataTypes[i];
-							Method method = StatisticsUtil.getMethod(
+							Method method =
+								StatisticsUtil.getMethod(
 									columnName, coulmnDataType, field);
 							if (method != null) {
 								method.invoke(statisticsBean, objects[i]);
@@ -383,15 +385,18 @@ public class DossiersStatisticsFinderImpl extends
 			}
 
 			return statisticsBeans;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			_log.error(e);
-		} finally {
+		}
+		finally {
 			closeSession(session);
 		}
 		return null;
 	}
 
 	public List<Integer> getStatisticsMonths(long groupId, int year) {
+
 		Session session = null;
 		List<Integer> months = new ArrayList<Integer>();
 		try {
@@ -399,7 +404,7 @@ public class DossiersStatisticsFinderImpl extends
 
 			String sql = CustomSQLUtil.get(SQL_STATISTICS_MONTHS);
 
-			_log.info(sql);
+			// _log.info(sql);
 
 			SQLQuery q = session.createSQLQuery(sql);
 
@@ -423,9 +428,11 @@ public class DossiersStatisticsFinderImpl extends
 					months.add(month);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			_log.error(e);
-		} finally {
+		}
+		finally {
 			closeSession(session);
 		}
 
@@ -437,46 +444,50 @@ public class DossiersStatisticsFinderImpl extends
 	 * @param groupId
 	 * @param month
 	 * @param year
+	 * @param period
 	 * @param govCode
 	 * @param domainCode
 	 * @param level
-	 * @param notNullGov
-	 * @param notNullDomain
 	 * @return
 	 */
-	public List<DossiersStatistics> getStatsByGovAndDomain(long groupId,
-			int month, int year, String govCode, String domainCode, int level,
-			boolean notNullGov, boolean notNullDomain) {
+	public List<DossiersStatistics> getStattistics(
+		long groupId, int startMonth, int startYear, int period,
+		String govCode, String domainCode, int level) {
+
 		Session session = null;
 
 		try {
 			session = openSession();
 
-			String sql = CustomSQLUtil.get(SQL_GET_STATS_BY_GOV_DOMAIN);
+			String sql = CustomSQLUtil.get(SQL_GET_STATISTICS);
 
-			_log.info(sql);
-			
-			if (notNullDomain) {
-				sql = StringUtil.replace(sql,
-						"(opencps_dossierstatistics.domainCode = ?)",
-						"(opencps_dossierstatistics.domainCode != '')");
-			}
+			// _log.info(sql);
 
-			if (notNullGov) {
-				sql = StringUtil.replace(sql,
-						"(opencps_dossierstatistics.govAgencyCode = ?)",
-						"(opencps_dossierstatistics.govAgencyCode != '')");
-			}
-
-			if (month <= 0) {
-				sql = StringUtil.replace(sql,
-						"AND (opencps_dossierstatistics.month = ?)",
+			if (Validator.isNull(domainCode)) {
+				sql =
+					StringUtil.replace(
+						sql, "AND (opencps_dossierstatistics.domainCode = ?)",
 						StringPool.BLANK);
 			}
 
+			if (Validator.isNull(govCode)) {
+				sql =
+					StringUtil.replace(
+						sql,
+						"AND (opencps_dossierstatistics.govAgencyCode = ?)",
+						StringPool.BLANK);
+			}
+
+			String conditions =
+				StatisticsUtil.getPeriodConditions(
+					startMonth, startYear, period);
+
+			sql = StringUtil.replace(sql, "$FILTER$", conditions);
+			_log.info(sql);
+
 			SQLQuery q = session.createSQLQuery(sql);
 
-			q.addEntity("dossiersStatistics", DossiersStatistics.class);
+			q.addEntity("DossiersStatistics", DossiersStatisticsImpl.class);
 
 			QueryPos qPos = QueryPos.getInstance(q);
 
@@ -490,20 +501,152 @@ public class DossiersStatisticsFinderImpl extends
 				qPos.add(govCode);
 			}
 
-			qPos.add(year);
+			qPos.add(level);
 
-			return (List<DossiersStatistics>) QueryUtil.list(q, getDialect(),
-					QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+			return (List<DossiersStatistics>) QueryUtil.list(
+				q, getDialect(), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			_log.error(e);
-		} finally {
+		}
+		finally {
 			closeSession(session);
 		}
 
 		return null;
 	}
 
-	private Log _log = LogFactoryUtil.getLog(DossiersStatisticsFinderImpl.class
-			.getName());
+	/**
+	 * @param groupId
+	 * @param month
+	 * @param year
+	 * @param govCode
+	 * @param domainCode
+	 * @param level
+	 * @param notNullGov
+	 * @param notNullDomain
+	 * @return
+	 */
+	public List<DossiersStatistics> getStatsByGovAndDomain(
+		long groupId, int startMonth, int startYear, int period,
+		String govCodes, String domainCodes, int level, int domainDeepLevel) {
+
+		//Get tree dictitem by code
+		//List<DictItem> dictItems = new ArrayList<DictItem>();
+		
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			String sql = CustomSQLUtil.get(SQL_GET_STATS_BY_GOV_DOMAIN);
+
+			// _log.info(sql);
+
+			if (Validator.isNull(govCodes)) {
+				sql =
+					StringUtil.replace(
+						sql, "(opencps_dossierstatistics.govAgencyCode = ?)",
+						"(opencps_dossierstatistics.govAgencyCode = '')");
+			}
+			else {
+				if (govCodes.equalsIgnoreCase("all")) {
+					sql =
+						StringUtil.replace(
+							sql,
+							"(opencps_dossierstatistics.govAgencyCode = ?)",
+							"(opencps_dossierstatistics.govAgencyCode != '')");
+				}
+				else {
+					String[] arrGovCode = StringUtil.split(govCodes);
+					List<String> tmp = new ArrayList<String>();
+
+					if (arrGovCode != null && arrGovCode.length > 0) {
+						for (int g = 0; g < arrGovCode.length; g++) {
+							if (Validator.isNotNull(arrGovCode[g])) {
+								tmp.add(StringPool.APOSTROPHE + arrGovCode[g] +
+									StringPool.APOSTROPHE);
+							}
+						}
+					}
+
+					sql =
+						StringUtil.replace(
+							sql,
+							"(opencps_dossierstatistics.govAgencyCode = ?)",
+							"(opencps_dossierstatistics.govAgencyCode IN (" +
+								StringUtil.merge(tmp) + "))");
+				}
+			}
+
+			if (Validator.isNull(domainCodes)) {
+				sql =
+					StringUtil.replace(
+						sql, "(opencps_dossierstatistics.domainCode = ?)",
+						"(opencps_dossierstatistics.domainCode = '')");
+			}
+			else {
+				if (domainCodes.equalsIgnoreCase("all")) {
+					sql =
+						StringUtil.replace(
+							sql, "(opencps_dossierstatistics.domainCode = ?)",
+							"(opencps_dossierstatistics.domainCode != '')");
+				}
+				else {
+					String[] arrDomainCode = StringUtil.split(domainCodes);
+					List<String> tmp = new ArrayList<String>();
+
+					if (arrDomainCode != null && arrDomainCode.length > 0) {
+						for (int d = 0; d < arrDomainCode.length; d++) {
+							if (Validator.isNotNull(arrDomainCode[d])) {
+								tmp.add(StringPool.APOSTROPHE +
+									arrDomainCode[d] + StringPool.APOSTROPHE);
+
+							}
+						}
+					}
+
+					sql =
+						StringUtil.replace(
+							sql, "(opencps_dossierstatistics.domainCode = ?)",
+							"(opencps_dossierstatistics.domainCode IN (" +
+								StringUtil.merge(tmp) + "))");
+				}
+			}
+
+			String conditions =
+				StatisticsUtil.getPeriodConditions(
+					startMonth, startYear, period);
+
+			sql = StringUtil.replace(sql, "$FILTER$", conditions);
+
+			_log.info(sql);
+
+			SQLQuery q = session.createSQLQuery(sql);
+
+			q.addEntity("DossiersStatistics", DossiersStatisticsImpl.class);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			qPos.add(groupId);
+
+			qPos.add(level);
+
+			return (List<DossiersStatistics>) QueryUtil.list(
+				q, getDialect(), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+
+		}
+		catch (Exception e) {
+			_log.error(e);
+		}
+		finally {
+			closeSession(session);
+		}
+
+		return null;
+	}
+
+	private Log _log =
+		LogFactoryUtil.getLog(DossiersStatisticsFinderImpl.class.getName());
 }
