@@ -245,6 +245,21 @@
 				</aui:select>
 			</aui:col>
 		</aui:row>
+		<aui:row cssClass="input-file">
+			<%
+				String attachFileXY = StringPool.BLANK;
+				attachFileXY =  "<a class=\"detail-terms-links\">"+LanguageUtil.get(pageContext, "term-detail-tai-day")+"</a>";
+			%>
+			<aui:input 
+				type="file" 
+				name="signImageId" 
+				label='<%= LanguageUtil.get(pageContext, "business-attach-file-xy") %>'
+			>
+				<aui:validator name="acceptFiles">
+					'<%= StringUtil.merge(PortletPropsValues.ACCOUNTMGT_FILESIGNIMG_TYPE) %>'
+				</aui:validator>
+			</aui:input>
+		</aui:row>
 	</c:otherwise>
 </c:choose>
 

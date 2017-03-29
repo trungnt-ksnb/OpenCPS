@@ -60,7 +60,7 @@ public class MsgOutBackOffice implements MessageListener {
 	public void receive(Message message)
 		throws MessageListenerException {
 
-		_log.info("####################MsgOutBackOffice: Started receive message bus");
+		/*_log.info("####################MsgOutBackOffice: Started receive message bus");
 
 		SendToBackOfficeMsg toBackOffice =
 			(SendToBackOfficeMsg) message.get("toBackOffice");
@@ -218,7 +218,7 @@ public class MsgOutBackOffice implements MessageListener {
 					}
 				}
 			}
-		}
+		}*/
 
 	}
 

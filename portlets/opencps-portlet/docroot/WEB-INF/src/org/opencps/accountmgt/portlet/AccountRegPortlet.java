@@ -21,17 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
-import net.sourceforge.jtds.jdbc.DateTime;
 
 import org.opencps.accountmgt.DuplicateBusinessEmailException;
 import org.opencps.accountmgt.DuplicateBusinessIdNumberException;
@@ -70,8 +66,8 @@ import org.opencps.util.PortletPropsValues;
 import org.opencps.util.PortletUtil;
 import org.opencps.util.WebKeys;
 
-import com.liferay.portal.DuplicateUserEmailAddressException;
 import com.liferay.portal.ContactBirthdayException;
+import com.liferay.portal.DuplicateUserEmailAddressException;
 import com.liferay.portal.UserPasswordException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -867,6 +863,14 @@ public class AccountRegPortlet extends MVCPortlet {
 		
 		return false;
 		
+	}
+	public static boolean isFileTypeSignImg(String sourceFileName) {
+		for(String str : PortletPropsValues.ACCOUNTMGT_FILESIGNIMG_TYPE) {
+			if(sourceFileName.endsWith(str)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private Log _log = LogFactoryUtil.getLog(AccountRegPortlet.class.getName());
