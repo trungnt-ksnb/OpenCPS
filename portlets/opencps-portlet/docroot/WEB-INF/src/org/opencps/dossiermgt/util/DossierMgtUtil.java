@@ -19,7 +19,6 @@ package org.opencps.dossiermgt.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -285,6 +284,7 @@ public class DossierMgtUtil {
 	 * @param dossierpartId
 	 * @return
 	 */
+	@Deprecated
 	public static List<DossierPart> getTreeDossierPart(long dossierpartId) {
 
 		List<DossierPart> dossierPartsResult = new ArrayList<DossierPart>();
@@ -538,7 +538,79 @@ public class DossierMgtUtil {
 		
 		return fileName;
 	}
-
+	
+	@Deprecated
+	public static int  getLevelDossierPart(long dossierPartId) 
+			throws PortalException, SystemException {
+		int level = 1;
+		long dossierPartParentId = 0;
+		DossierPart dossierPart = DossierPartLocalServiceUtil.getDossierPart(dossierPartId);
+		dossierPartParentId = dossierPart.getParentId();
+		if(dossierPartParentId > 0) {
+			DossierPart dossierPartParent = DossierPartLocalServiceUtil.getDossierPart(dossierPartParentId);
+			getLevelDossierPart(dossierPartParent.getDossierpartId());
+			level ++;
+		}
+		
+		return level;
+	}
+	
+	public static double getMaxSibLingDossierPartInDepth(long dossierTemplateId ,long dossierPartParentId)
+			throws SystemException {
+		List<DossierPart> dossierParts = DossierPartLocalServiceUtil
+				.getDossierPartsByT_P(dossierTemplateId, dossierPartParentId);
+		double maxSibling = 0;
+		for(DossierPart dossierPart : dossierParts) {
+			if(dossierPart.getSibling() > maxSibling) {
+				maxSibling = dossierPart.getSibling();
+			}
+		}
+		
+		return maxSibling;
+		
+	}
+	
+	/**
+	 * @param dossierPartRoots
+	 * @param temp
+	 * @return
+	 * @throws SystemException
+	 */
+	public static List<DossierPart> getDossierPartsTreeIndexShort(List<DossierPart> dossierPartRoots, 
+			List<DossierPart> temp) throws SystemException {
+		for(DossierPart dossierPart : dossierPartRoots) {
+			List<DossierPart> dossierPartChirlds = DossierPartLocalServiceUtil
+					.getDossierPartsByT_P_Order(dossierPart.getDossierTemplateId(),
+							dossierPart.getDossierpartId());
+			temp.add(dossierPart);
+			getDossierPartsTreeIndexShort(dossierPartChirlds, temp);
+		}
+		
+		return temp;
+	}
+	
+	public static List<DossierPart> getTreeDossierPart(long dossierPartId, 
+			List<DossierPart> temp) throws SystemException {
+		
+		DossierPart dossierPartRoot = DossierPartLocalServiceUtil.fetchDossierPart(dossierPartId);
+		if(temp.size() == 0) {
+			temp.add(dossierPartRoot);
+		}
+		if(Validator.isNotNull(dossierPartRoot)) {
+			
+			List<DossierPart> dossierPartChirlds = DossierPartLocalServiceUtil
+					.getDossierPartsByT_P_Order(dossierPartRoot.getDossierTemplateId(),
+							dossierPartRoot.getDossierpartId());
+			
+			for(DossierPart dossierPart : dossierPartChirlds) {
+				temp.add(dossierPart);
+				getTreeDossierPart(dossierPart.getDossierpartId(), temp);
+			}
+		}
+		return temp;
+	}
+	
+	
 	private static Log _log = LogFactoryUtil.getLog(DossierMgtUtil.class
 			.getName());
 
