@@ -35,6 +35,7 @@
 		<column name="attachFile" type="long" />
 		<column name="mappingUserId" type="long" />
 		<column name="accountStatus" type="int" />
+		<column name="signImageId" type="long" />
 
 	
 		<!-- Order -->
@@ -133,6 +134,8 @@
 		<column name="mappingOrganizationId" type="long" />
 		<column name="mappingUserId" type="long" />
 		<column name="accountStatus" type="int" />
+		<column name="signImageId" type="long" />
+		
 		
 		<!-- Order -->
 		<order by="desc">

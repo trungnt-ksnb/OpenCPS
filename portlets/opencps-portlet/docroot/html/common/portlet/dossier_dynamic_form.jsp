@@ -1,6 +1,4 @@
 
-<%@page import="org.opencps.processmgt.util.ReportUtils"%>
-<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -19,7 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 %>
-
+<%@page import="org.opencps.dossiermgt.util.DossierMgtUtil"%>
+<%@page import="com.liferay.portal.kernel.json.JSONObject"%>
 <%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
 <%@page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil"%>
 <%@page import="com.liferay.portal.kernel.servlet.SessionErrors"%>
@@ -50,6 +49,11 @@
 <%@ include file="/init.jsp"%>
 
 <%
+	String signatureType = ParamUtil.getString(request, "signatureType");
+	String textPositionWithImageSign = ParamUtil.getString(request, "textPositionWithImageSign", "overlaps");
+	double offsetX = ParamUtil.getDouble(request, "offsetX");
+	double offsetY = ParamUtil.getDouble(request, "offsetY");
+	String characterAttachs = ParamUtil.getString(request, "characterAttachs", "text");
 	
 	boolean success = false;
 
@@ -75,14 +79,7 @@
 
 	String groupName = ParamUtil.getString(request, DossierFileDisplayTerms.GROUP_NAME);
 	
-	String modalDialogId = ParamUtil.getString(request, "modalDialogId");
-	
-	String redirectURL = ParamUtil.getString(request, "redirectURL");
-	
 	String sampleData = StringPool.BLANK;
-	
-	String base64Str = StringPool.BLANK;
-	String fileName = StringPool.BLANK;
 	
 	String[] docTypes = StringUtil.split(ParamUtil.getString(request, "reportTypes", ".pdf"));
 	
@@ -151,12 +148,15 @@
 	String alpacaSchema = dossierPart != null && Validator.isNotNull(dossierPart.getFormScript()) ? 
 	      dossierPart.getFormScript().replaceAll("\\?p_auth=REPLACEKEY", "/group-id/"+ themeDisplay.getScopeGroupId()+"?p_auth="+auTock) : StringPool.BLANK;
 
-
+	int signCheck = 0;
+	
 	DossierFile dossierFile = null;
 	
 	if(dossierFileId > 0){
 		try{
 			dossierFile = DossierFileLocalServiceUtil.getDossierFile(dossierFileId);
+			
+			signCheck = dossierFile.getSignCheck();
 		}catch(Exception e){
 			
 		}
@@ -173,6 +173,16 @@
 	if(renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.PROCESS_ORDER_PORTLET + StringPool.UNDERLINE)){
 		portleName = WebKeys.PROCESS_ORDER_PORTLET;
 	}
+	
+	long signImageId = 0;
+	
+	if(accountType.equalsIgnoreCase("Business")) {
+		signImageId = business.getSignImageId();
+	} else if(accountType.equalsIgnoreCase("Citizen")) {
+		signImageId = citizen.getSignImageId();
+	}
+	
+	JSONObject signImageInfo = DossierMgtUtil.getSignImageAsBase64(signImageId);
 	
 %>
 
@@ -230,34 +240,32 @@
 	
 				</aui:nav-item>
 			</aui:nav>
-			
-			<%
-				String signUrl = PortletPropsValues.OPENCPS_SERVLET_EXPORT_FILE_URL + dossierFileId + "&sign=" + "true" +"&docType=.doc"; 
-			%>
 		</c:if>
 	</aui:fieldset>
 </aui:form>
 <portlet:resourceURL var="getDataAjax"></portlet:resourceURL>
 
-<%-- <c:if test="<%= portleName.equals(WebKeys.DOSSIER_MGT_PORTLET) && dossierFileId > 0 %>">
+<c:if test="<%= portleName.equals(WebKeys.DOSSIER_MGT_PORTLET) && dossierFileId > 0 && signCheck != 1 %>">
 	<aui:button value="sign" onclick="signatureFrontOffice()" />
-</c:if> --%>
+</c:if>
 
 <aui:script>
 	var url = '<%= getDataAjax %>';
 	var alpacaSchema = <%=Validator.isNotNull(alpacaSchema) ? alpacaSchema : PortletConstants.UNKNOW_ALPACA_SCHEMA%>;
 	var formData = '<%=formData%>';
 	var dossierFileId = '<%=dossierFileId%>';
+	var offsetX = '<%= offsetX %>';
+	var offsetY = '<%= offsetY %>';
 	/* function pluginload(loaded)
 	{
 		if(!loaded) {
 			alert('Loading plugin is failed!');
-		} 
+		}
 	}
 	
 	function callbackPathFile(jsondata) {
 		alert("data    " + jsondata.data);
-	}
+	} */
 	
 	
 	//function to test
@@ -266,17 +274,159 @@
 		if(jsondata.code == 0)
 		{
 			alert('suc:' + jsondata.data.path);
-			PDFSigningHelper.openFile(jsondata.data.path);
+			window.parent.PDFSigningHelper.openFile(jsondata.data.path);
 		}
 		else
 		{
 			alert('error with code:' + jsondata.errormsg);
 		}
-	} */
+	}
 	
 	function signatureFrontOffice(){
 		
-		/* var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
+		var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
+		var imgSrcName = '<%= Validator.isNotNull(user) ? user.getScreenName() : StringPool.BLANK %>';
+		$.ajax({
+			
+			type : 'POST',
+			url : url,
+			data : {
+				<portlet:namespace/>dossierFileId: dossierFileId,
+				<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_REQUEST_DATA%>'
+			},
+			success : function(datares) {
+				var signImageInfo = JSON.parse('<%= signImageInfo %>');
+				var jsonDataResponse = JSON.parse(datares);
+				
+				var fileName = jsonDataResponse.fileName;
+				var base64String = jsonDataResponse.base64ContentString;
+				var condauImageSrc = signImageInfo.signImageName
+				var imgContentBase64Str = signImageInfo.signImageAsBase64;
+				
+						if(base64String != '' && fileName != '') {
+							
+							window.parent.PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
+								window.parent.PDFSigningHelper.getCertIndex( function(dataJSON) {
+									
+									if(dataJSON.data != '-1') {
+										var signatureTypeVal = '<%= signatureType %>';
+										var characterAttachs = '<%= characterAttachs %>';
+										var characterAttachArray = characterAttachs.split(',');
+										//both image and text
+										if (characterAttachArray.indexOf('image') != -1 && characterAttachArray.indexOf('text') != -1) {
+											overlapText();
+											if(imgContentBase64Str != 'undefined' && condauImageSrc != 'undefined') {
+
+												window.parent.PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
+													signatureTypeChoosen(jsondata, imgJsondata, author, dataJSON, signatureTypeVal);
+												});
+											} else {
+												alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "no-sign-image-please-upload-it-in-your-profile") %>');
+												Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
+						            			<portlet:namespace/>closeDialog();
+											}
+											
+										} 
+										
+										// has image
+										// if configuration contain image value
+										else if(characterAttachArray.indexOf('image') != -1) {
+											if(imgContentBase64Str != 'undefined' && condauImageSrc != 'undefined') {
+												signatureTypeChoosen(jsondata, imgJsondata, author, dataJSON, signatureTypeVal);
+											} else {
+												alert('<%= LanguageUtil.get(themeDisplay.getLocale(), "no-sign-image-please-upload-it-in-your-profile") %>');
+												Liferay.Util.getOpener().Liferay.fire('turnOffOverlaymask');
+						            			<portlet:namespace/>closeDialog();
+											}
+										} 
+										
+										// text
+										// if configuration contain text value
+										else if (characterAttachArray.indexOf('text') != -1) {
+											overlapText();
+											
+											var jsonImgObject = {};
+											jsonImgObject.data = "";
+											signatureTypeChoosen(jsondata, jsonImgObject, author, dataJSON, signatureTypeVal);
+										}
+											
+									}
+								});
+							});
+						}
+			}
+		});
+	}
+	
+	function overlapText() {
+		var textPositionWithImageSign = '<%= textPositionWithImageSign %>';
+		if(textPositionWithImageSign == 'overlaps') {
+			window.parent.PDFSigningHelper.setSignatureInfo(1,1);
+		} else if(textPositionWithImageSign == 'noOverlaps') {
+			window.parent.PDFSigningHelper.setSignatureInfo(1,0);
+		}
+	}
+	
+	function signatureTypeChoosen(jsondata, imgJsondata, author, dataJSON, signatureTypeVal) {
+		
+		if(signatureTypeVal == 'selectPoint') {
+			window.parent.PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
+					author, "", dataJSON.data , "", function(jsondataSigned) {
+				if(jsondataSigned.code == 0)
+				{
+					updateData(jsondataSigned);
+					
+				}
+				
+			});	
+		} else if(signatureTypeVal == 'fixAtPoint') {
+			window.parent.PDFSigningHelper.signPDFAtPoint(jsondata.data, imgJsondata.data, author, 
+					"", parseFloat(offsetX), parseFloat(offsetY), 0, dataJSON.data, "", function(jsondataSigned) {
+				if(jsondataSigned.code == 0) {
+					updateData(jsondataSigned);
+				}
+			});
+		}
+	}
+	
+	function updateData(jsondataSigned) {
+		
+		window.parent.PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+			AUI().use('aui-io-request', function(A){
+		    	$.ajax({
+		    		type : 'POST',
+					url : url,
+					data : {
+						<portlet:namespace/>dataSigned: jsondataBase64.data.toString(),
+						<portlet:namespace/>dossierFileId: dossierFileId,
+						<portlet:namespace/>functionCase: '<%= PortletConstants.SIGNATURE_UPDATE_DATA_AFTER_SIGN %>'
+					},
+					success : function(datares) {
+						if(datares) {
+							
+							var jsonDataResponse = JSON.parse(datares);
+							
+							if(jsonDataResponse.msg == 'success') {
+								// open file on client after signed success
+								window.parent.PDFSigningHelper.openFile(jsondataSigned.data.path);
+								
+								// close dialog when signed success
+								var ns = '<portlet:namespace/>';
+								ns = ns.substring(1, ns.length);
+								closeDialog('<portlet:namespace/>dossier-dynamic-form', ns);
+							}
+						}
+					}
+		    	});
+	   		 });
+		});
+	}
+	
+	
+	//backup
+	/* function signatureFrontOffice(){
+		
+		var author = '<%= Validator.isNotNull(user) ? user.getFullName() : StringPool.BLANK %>';
 		var imgSrcName = '<%= Validator.isNotNull(user) ? user.getScreenName() : StringPool.BLANK %>';
 		$.ajax({
 			
@@ -297,21 +447,21 @@
 				
 				if(imgContentBase64Str != '' && condauImageSrc != '') {
 					
-					PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
+					window.parent.PDFSigningHelper.writeBase64ToFile(condauImageSrc, imgContentBase64Str, function(imgJsondata) {
 						
 						if(base64String != '' && fileName != '') {
 							
-							PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
+							window.parent.PDFSigningHelper.writeBase64ToFile(fileName, base64String, function(jsondata) {
 								
-								PDFSigningHelper.getCertIndex( function(dataJSON) {
+								window.parent.PDFSigningHelper.getCertIndex( function(dataJSON) {
 									
 									if(dataJSON.data != '-1') {
 										
-										PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
+										window.parent.PDFSigningHelper.signPDFWithSelectedPoint(jsondata.data, imgJsondata.data,
 												author, "", dataJSON.data , "", function(jsondataSigned) {
 											if(jsondataSigned.code == 0)
 											{
-												PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
+												window.parent.PDFSigningHelper.readFileasBase64(jsondataSigned.data.path, function(jsondataBase64) {
 													
 													
 													AUI().use('aui-io-request', function(A){
@@ -330,7 +480,7 @@
 																	
 																	if(jsonDataResponse.msg == 'success') {
 																		// open file on client after signed success
-																		PDFSigningHelper.openFile(jsondataSigned.data.path);
+																		window.parent.PDFSigningHelper.openFile(jsondataSigned.data.path);
 																		
 																		// close dialog when signed success
 																		var ns = '<portlet:namespace/>';
@@ -355,11 +505,11 @@
 					});
 				}
 			}
-		}); */
-	}
+		});
+	} */
 	
 	AUI().ready(function(A){
-		/* PDFSigningHelper.init(pluginload); */
+	//	window.parent.PDFSigningHelper.init(pluginload);
 		
 		if(alpacaSchema.options != 'undefined' && alpacaSchema.schema != 'undefined'){
 			

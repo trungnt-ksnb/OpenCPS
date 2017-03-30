@@ -32,7 +32,13 @@
 		<liferay-util:include 
 			page="/html/common/portlet/dossier_upload_file.jsp" 
 			servletContext="<%=application %>"
-		/>
+		>
+			<portlet:param name="offsetX" value="<%=String.valueOf(offsetX) %>"/>
+			<portlet:param name="offsetY" value="<%=String.valueOf(offsetY) %>"/>
+			<portlet:param name="signatureType" value="<%=signatureType %>"/>
+			<portlet:param name="characterAttachs" value="<%=StringUtil.merge(characterAttachs) %>"/>
+			<portlet:param name="textPositionWithImageSign" value="<%=textPositionWithImageSign %>"/>
+		</liferay-util:include>
 	</liferay-ui:section>
 	<liferay-ui:section >
 		
