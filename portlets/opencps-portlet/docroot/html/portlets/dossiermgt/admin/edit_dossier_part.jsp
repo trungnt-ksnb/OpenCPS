@@ -52,18 +52,16 @@
 	
 	String isAddChilds = ParamUtil.getString(request, "isAddChild");
 	String backURL = ParamUtil.getString(request, "backURL");
-	
+	boolean isHasSign = false; 
 	try {
 		if(dossierPart != null) {
+			isHasSign = dossierPart.getHasSign();
 			dossierPartParent = DossierPartLocalServiceUtil
 							.getDossierPart(dossierPart.getParentId());
 		}
 	}catch(Exception e) {
 		
 	}
-	
-	
-	
 %>
 
 <liferay-ui:header
@@ -187,7 +185,7 @@
 	</aui:row>
 	
 	<aui:row>
-		<aui:col width="30">
+		<aui:col width="25">
 			<aui:select name="<%=DossierPartDisplayTerms.DOSSIERPART_PARTTYPE %>" required="true" cssClass="input100">
 				<aui:option value="<%=StringPool.BLANK %>">
 					<liferay-ui:message key="root" />
@@ -204,15 +202,23 @@
 			</aui:select>
 		</aui:col>
 		
-		<aui:col width="30">
+		<aui:col width="25">
 			<aui:input cssClass="input100" name="<%=DossierPartDisplayTerms.DOSSIERPART_TEMPLATEFILENO %>" />	
 		</aui:col>
 		
-		<aui:col width="30">
+		<aui:col width="25">
 			<aui:input
 			name="<%=DossierPartDisplayTerms.DOSSIERPART_REQUIRED %>"
 			type="checkbox"	
 			checked="<%= !Validator.isNotNull(isAddChilds) && Validator.isNotNull(dossierPart) ? dossierPart.getRequired() : false %>"
+		/>
+		</aui:col>
+		
+		<aui:col width="25">
+			<aui:input
+			name="<%=DossierPartDisplayTerms.DOSSIERPART_HASSING %>"
+			type="checkbox"	
+			value="<%=isHasSign%>"
 		/>
 		</aui:col>
 	</aui:row>

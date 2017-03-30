@@ -17,6 +17,7 @@
 
 package org.opencps.dossiermgt.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ import java.util.Locale;
 import java.util.Stack;
 
 import org.apache.commons.io.IOUtils;
+import org.opencps.accountmgt.model.Business;
+import org.opencps.accountmgt.model.Citizen;
 import org.opencps.dossiermgt.comparator.DossierSubmitDateComparator;
 import org.opencps.dossiermgt.comparator.DossierTemplateNameComparator;
 import org.opencps.dossiermgt.comparator.DossierTemplateNoComparator;
@@ -50,6 +53,8 @@ import org.opencps.servicemgt.service.TemplateFileLocalServiceUtil;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.WebKeys;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -466,6 +471,32 @@ public class DossierMgtUtil {
 
 		return processOrder;
 
+	}
+	
+	
+	public static JSONObject getSignImageAsBase64(long signImageId) {
+		
+		JSONObject signImageInfo = JSONFactoryUtil.createJSONObject();
+		String signImageAsBase64 = StringPool.BLANK;
+		String signImageName = StringPool.BLANK;
+		try {
+			if(signImageId > 0) {
+				DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil.getDLFileEntry(signImageId);
+				
+				InputStream is = dlFileEntry.getContentStream();
+				signImageName = dlFileEntry.getTitle();
+				byte [] bytes = IOUtils.toByteArray(is);
+				signImageAsBase64 = Base64.encode(bytes);
+				
+				signImageInfo.put("signImageAsBase64", signImageAsBase64);
+				signImageInfo.put("signImageName", signImageName);
+			}
+		} catch (Exception e) {
+			_log.error(e);
+		}
+		
+		
+		return signImageInfo;
 	}
 	
 	public static String base64File(long dossierFileId) {
