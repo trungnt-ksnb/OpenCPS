@@ -50,7 +50,7 @@ public class DossierPartLocalServiceImpl
 		long dossierTemplateId, String partNo, String partName, String partTip,
 		int partType, long parentId, double sibling, String formScript,
 		String formReport, String sampleData, boolean required,
-		String templateFileNo, long userId, boolean hasSign, ServiceContext serviceContext)
+		String templateFileNo, long userId, ServiceContext serviceContext)
 		throws SystemException, NoSuchDossierPartException {
 
 		long dossierPartId =
@@ -80,8 +80,7 @@ public class DossierPartLocalServiceImpl
 		dossierPart.setRequired(required);
 		dossierPart.setTemplateFileNo(templateFileNo);
 		dossierPart.setTreeIndex(treeIndex);
-		dossierPart.setHasSign(hasSign);
-		
+
 		return dossierPartPersistence.update(dossierPart);
 	}
 
@@ -139,8 +138,7 @@ public class DossierPartLocalServiceImpl
 		dossierPart.setSampleData(sampleData);
 		dossierPart.setRequired(required);
 		dossierPart.setTemplateFileNo(templateFileNo);
-		dossierPart.setHasSign(hasSign);
-		
+
 		return dossierPartPersistence.update(dossierPart);
 	}
 

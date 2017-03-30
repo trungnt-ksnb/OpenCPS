@@ -178,6 +178,7 @@
 		<field name="mappingOrganizationId" type="long" />
 		<field name="mappingUserId" type="long" />
 		<field name="accountStatus" type="int" />
+		<field name="signImageId" type="long" />
 	</model>
 	<model name="org.opencps.accountmgt.model.BusinessAccount">
 		<field name="businessAccountId" type="long" />
@@ -225,6 +226,7 @@
 		<field name="attachFile" type="long" />
 		<field name="mappingUserId" type="long" />
 		<field name="accountStatus" type="int" />
+		<field name="signImageId" type="long" />
 	</model>
 	<model name="org.opencps.servicemgt.model.ServiceFileTemplate">
 		<field name="serviceinfoId" type="long" />
