@@ -45,7 +45,7 @@ public class MsgInBackOffice implements MessageListener {
 
 	private void _doReceive(Message message) {
 
-		_log.info("####################MsgInBackOffice: Started receive jms message");
+		/*_log.info("####################MsgInBackOffice: Started receive jms message");
 
 		long[] companyIds = PortalUtil.getCompanyIds();
 
@@ -110,7 +110,7 @@ public class MsgInBackOffice implements MessageListener {
 				}
 
 			}
-		}
+		}*/
 
 	}
 

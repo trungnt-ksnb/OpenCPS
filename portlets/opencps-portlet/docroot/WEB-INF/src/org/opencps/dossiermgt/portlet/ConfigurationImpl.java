@@ -71,12 +71,34 @@ public class ConfigurationImpl implements ConfigurationAction {
 			updateDossier(preferences, actionRequest, actionResponse);
 		} else if (tabs2.equals("dossier-file-list")) {
 			updateDossierFileList(preferences, actionRequest, actionResponse);
+		} else if(tabs2.equals("digital-signature")) {
+			updateSignatureConfig(preferences, actionRequest, actionResponse);
 		}
 
 		preferences.store();
 
 		SessionMessages.add(actionRequest, "potlet-config-saved");
 
+	}
+	
+	protected void updateSignatureConfig(PortletPreferences preferences,
+			ActionRequest actionRequest, ActionResponse actionResponse)
+			throws ReadOnlyException {
+		
+		double offsetX = ParamUtil.getDouble(actionRequest, "offsetX");
+		double offsetY = ParamUtil.getDouble(actionRequest, "offsetY");
+		
+		String signatureType = ParamUtil.getString(actionRequest, "signatureType");
+		String textPositionWithImageSign = ParamUtil.getString(actionRequest, "textPositionWithImageSign", "overlaps");
+		String [] characterAttachs = ParamUtil.getParameterValues(actionRequest, "characterAttach");
+		
+		preferences.setValue("characterAttachs",
+				String.valueOf(StringUtil.merge(characterAttachs)));
+		preferences.setValue("offsetX", String.valueOf(offsetX));
+		preferences.setValue("offsetY", String.valueOf(offsetY));
+		preferences.setValue("signatureType", signatureType);
+		preferences.setValue("textPositionWithImageSign", textPositionWithImageSign);
+		
 	}
 
 	protected void updateDossier(PortletPreferences preferences,
@@ -163,7 +185,7 @@ public class ConfigurationImpl implements ConfigurationAction {
 	protected void updateDossierList(PortletPreferences preferences,
 			ActionRequest actionRequest, ActionResponse actionResponse)
 			throws ReadOnlyException {
-
+		
 		String itemCode_cfg = ParamUtil
 				.getString(actionRequest, "itemCode_cfg");
 
@@ -190,7 +212,7 @@ public class ConfigurationImpl implements ConfigurationAction {
 		
 		String[] reportTypes = ParamUtil.getParameterValues(actionRequest,
 				"reportType", new String[] { ".pdf" });
-
+		
 		String[] dossierStatusCodes = ParamUtil.getParameterValues(
 				actionRequest, "dossierStatusCodes");
 		
@@ -216,7 +238,7 @@ public class ConfigurationImpl implements ConfigurationAction {
 		
 		preferences.setValue("reportTypes",
 				String.valueOf(StringUtil.merge(reportTypes)));
-
+		
 	}
 
 	protected void updateDossierFileList(PortletPreferences preferences,
