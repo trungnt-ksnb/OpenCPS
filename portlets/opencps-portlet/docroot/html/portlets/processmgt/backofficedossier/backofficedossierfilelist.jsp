@@ -1,3 +1,4 @@
+<%@page import="com.liferay.portal.kernel.util.OrderByComparator"%>
 <%@page import="org.opencps.util.PortletConstants"%>
 <%
 /**
@@ -47,7 +48,7 @@
 	
 	PortletURL iteratorURL = renderResponse.createRenderURL();
 	iteratorURL.setParameter("mvcPath", templatePath + "backofficedossierfilelist.jsp");
-	iteratorURL.setParameter("tab1", ProcessMgtUtil.TOP_TABS_DOSSIERFILELIST);
+	iteratorURL.setParameter("tabs1", ProcessMgtUtil.TOP_TABS_DOSSIERFILELIST);
 	iteratorURL.setParameter(ProcessDisplayTerms.PROCESS_DOSSIERTEMPLATE_ID, (dossierTemplateId > 0)?String.valueOf(dossierTemplateId):StringPool.BLANK);
 	iteratorURL.setParameter("onlyViewFileResult", String.valueOf(onlyViewFileResult));
 
