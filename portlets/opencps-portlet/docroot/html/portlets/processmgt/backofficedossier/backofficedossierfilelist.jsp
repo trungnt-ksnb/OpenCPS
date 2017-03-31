@@ -63,7 +63,6 @@
 	//headerNames.add("subjectname");
 	
 	String headers = StringUtil.merge(headerNames, StringPool.COMMA);
-	
 %>
 <div class="opencps-searchcontainer-wrapper">
 	<div class="opcs-serviceinfo-list-label">
