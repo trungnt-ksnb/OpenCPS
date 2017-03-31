@@ -229,9 +229,9 @@
 						 <liferay-ui:message key="reception-no"/>
 					</div>
 					<div class="span8">
-						<a href="<%=urlDownload%>" target="_blank">
-							<%=Validator.isNotNull(dossier.getReceptionNo()) ? dossier.getReceptionNo() : StringPool.DASH %>
-						</a>
+							<c:if test="<%= Validator.isNotNull(dossier)%>">
+								<%= dossier.getReceptionNo() %>
+							</c:if>
 					</div>
 				</div>
 				
