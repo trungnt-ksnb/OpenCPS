@@ -41,7 +41,6 @@ public class NotificationStatusConfigSearch extends SearchContainer<DictItem> {
 		headerNames.add("status");
 		headerNames.add("create-date");
 		headerNames.add("modified-date");
-		headerNames.add("inuse");
 
 	}
 

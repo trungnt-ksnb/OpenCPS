@@ -40,54 +40,39 @@
 		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
 			value="<%=String.valueOf(notificationStatusConfig.getNotiStatusConfigId())%>" />
 		<portlet:param name="backURL" value="<%=currentURL%>" />
-	</portlet:renderURL>
-	<liferay-ui:icon image="edit"
-		cssClass="search-container-action fa edit" message="edit"
+	</portlet:renderURL>	
+	<aui:icon cssClass="icon-edit" label="edit"
 		url="<%=editNotificationConfigURL.toString()%>" />
 </c:if>
 
 
-<portlet:renderURL var="viewNotiEventConfigURL">
-	<portlet:param name="mvcPath"
-		value='<%=templatePath +"backoffice/event/notification_event_config_list.jsp"%>'/>
-	<portlet:param name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
-		value="<%=String.valueOf(notificationStatusConfig.getNotiStatusConfigId())%>" />
-	<portlet:param name="backURL" value="<%=currentURL%>" />
-</portlet:renderURL>
-<liferay-ui:icon image="edit"
-	cssClass="search-container-action fa view" message="view"
-	url="<%=viewNotiEventConfigURL.toString()%>" />
-
-
 <c:if test="<%=notificationStatusConfig.getIsSendNotification() == true%>">
-	<portlet:actionURL var="deactiveNotificationConfigURL" name="changeNotificationStatusConfig">
-	
-		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
-			value="<%=String.valueOf(notificationStatusConfig.getNotiStatusConfigId())%>" />
-		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.IS_SEND_NOTIFICATION%>"
-			value="false" />
-			
-	</portlet:actionURL>
-
-	<liferay-ui:icon
-		cssClass="search-container-action fa fa-eye-slash ocps-btn ocps-red"
-		image="deactive"
-	 	url="<%=deactiveNotificationConfigURL.toString()%>"></liferay-ui:icon>
-
-</c:if>
-
-<c:if test="<%=notificationStatusConfig.getIsSendNotification() == false%>">
 	<portlet:actionURL var="activeNotificationConfigURL" name="changeNotificationStatusConfig">
 	
 		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
 			value="<%=String.valueOf(notificationStatusConfig.getNotiStatusConfigId())%>" />
 			
 		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.IS_SEND_NOTIFICATION%>"
-			value="true" />
+			value="false" />
 	</portlet:actionURL>
-	<liferay-ui:icon
-		image="active"
-		cssClass="search-container-action fa fa-eye ocps-btn ocps-green"
-		url="<%=activeNotificationConfigURL.toString()%>" ></liferay-ui:icon>
+
+	<aui:icon cssClass="icon-eye-close"
+		label="inactive" url="<%=activeNotificationConfigURL.toString()%>"/>
+
+</c:if>
+
+<c:if test="<%=notificationStatusConfig.getIsSendNotification() == false%>">
+	
+	<portlet:actionURL var="deactiveNotificationConfigURL" name="changeNotificationStatusConfig">
+	
+		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
+			value="<%=String.valueOf(notificationStatusConfig.getNotiStatusConfigId())%>" />
+		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.IS_SEND_NOTIFICATION%>"
+			value="true" />
+			
+	</portlet:actionURL>
+
+	<aui:icon cssClass="icon-eye-open"
+		label="active" url="<%=deactiveNotificationConfigURL.toString()%>" />
 </c:if>
 

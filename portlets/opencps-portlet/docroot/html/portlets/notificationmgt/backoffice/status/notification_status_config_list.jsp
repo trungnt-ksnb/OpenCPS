@@ -84,11 +84,6 @@
 						row.addText(DateTimeUtil.convertDateToString(
 								notificationStatusConfig.getModifiedDate(),
 								DateTimeUtil._VN_DATE_TIME_FORMAT), editURL);
-						
-						row.addText(
-								String.valueOf(notificationStatusConfig.getIsSendNotification() == true ? LanguageUtil
-										.get(pageContext, "active") : LanguageUtil
-										.get(pageContext, "inactive")), editURL);
 
 						
 							row.addJSP(

@@ -1,3 +1,4 @@
+
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -19,7 +20,8 @@
 
 <%@ include file="../../init.jsp"%>
 
-<h1>Event Test</h1>
+<h1>Redirect</h1>
+
 
 <%!private static Log _log = LogFactoryUtil
-			.getLog("html.portlets.notificationmgt.backoffice.event.notification_event_config_list");%>
+			.getLog("html.portlets.notificationmgt.backoffice.redirect.notification_redirect_config_list");%>
