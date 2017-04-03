@@ -212,6 +212,8 @@
 				(opencps_dossier_file.dossierFileType = ?)
 			AND
 				(opencps_dossierpart.dossierTemplateId = ?)
+				
+			ORDER BY opencps_dossier_file.createDate DESC
 		]]>
 	</sql>
 	

@@ -90,7 +90,8 @@ public class DossierPartLocalServiceImpl
 		String partName, String partTip, int partType, long parentId,
 		double sibling, String formScript, String formReport,
 		String sampleData, boolean required, String templateFileNo,
-		long userId, ServiceContext serviceContext)
+
+		long userId,boolean hasSign, ServiceContext serviceContext)
 		throws SystemException, NoSuchDossierPartException {
 
 		DossierPart dossierPartBeforeUpdateSibling =
