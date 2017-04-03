@@ -1361,8 +1361,9 @@ public class StatisticsUtil {
 	 * @return
 	 */
 	public static JSONArray sortByCodes(JSONArray jsonArray, String[] codes) {
-		JSONArray temp = jsonArray;
+
 		if (codes != null && codes.length > 0 && jsonArray != null) {
+			JSONArray temp = JSONFactoryUtil.createJSONArray();
 			for (int c = 0; c < codes.length; c++) {
 				for (int j = 0; j < jsonArray.length(); j++) {
 					JSONObject object = jsonArray.getJSONObject(j);
@@ -1372,9 +1373,12 @@ public class StatisticsUtil {
 					}
 				}
 			}
+			return temp;
+		}
+		else {
+			return jsonArray;
 		}
 
-		return temp;
 	}
 
 	/**
