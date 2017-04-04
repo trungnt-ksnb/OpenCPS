@@ -37,7 +37,7 @@ ivy-settings.xml
 ivy.xml
 ivy.xml.MD5
 layouttpl/
-lib/
+lib/*
 misc/
 modules/
 osgi/
@@ -74,7 +74,6 @@ portlets/opencps-portlet/docroot/WEB-INF/.gitignore
 portlets/opencps-portlet/docroot/WEB-INF/classes/
 portlets/opencps-portlet/docroot/WEB-INF/service/
 portlets/opencps-portlet/docroot/WEB-INF/sql/
-portlets/opencps-portlet/docroot/WEB-INF/lib/
 portlets/opencps-portlet/docroot/css/.sass-cache/
 portlets/opencps-portlet/docroot/WEB-INF/src/META-INF
 portlets/opencps-portlet/docroot/WEB-INF/src/service.properties
