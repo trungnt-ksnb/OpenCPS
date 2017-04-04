@@ -37,7 +37,7 @@ ivy-settings.xml
 ivy.xml
 ivy.xml.MD5
 layouttpl/
-
+lib/*
 misc/
 modules/
 osgi/
