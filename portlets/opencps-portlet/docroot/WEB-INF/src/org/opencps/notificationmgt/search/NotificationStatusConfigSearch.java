@@ -55,9 +55,6 @@ public class NotificationStatusConfigSearch extends SearchContainer<DictItem> {
 				DEFAULT_CUR_PARAM, delta, iteratorURL, headerNames,
 				EMPTY_RESULTS_MESSAGE);
 
-		// PortletConfig portletConfig = (PortletConfig)
-		// portletRequest.getAttribute(JavaConstants.JAVAX_PORTLET_CONFIG);
-
 		NotificationStatusConfigDisplayTerms displayTerms = (NotificationStatusConfigDisplayTerms) getDisplayTerms();
 
 		iteratorURL.setParameter(NotificationStatusConfigDisplayTerms.CREATE_DATE,

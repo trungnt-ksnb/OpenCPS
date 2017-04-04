@@ -1,4 +1,5 @@
-
+<%@page import="org.opencps.notificationmgt.search.NotificationEventConfigDisplayTerms"%>
+<%@page import="com.liferay.portal.security.permission.PermissionCheckerFactoryUtil"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -18,42 +19,23 @@
 	 */
 %>
 
-<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
-<%@page import="com.liferay.portal.kernel.log.Log"%>
-
-<%@page import="org.opencps.util.ActionKeys"%>
-<%@page import="javax.portlet.PortletURL"%>
-<%@page import="org.opencps.util.PortletUtil"%>
-<%@page import="com.liferay.portal.kernel.language.LanguageUtil"%>
-<%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
-<%@page import="javax.portlet.PortletRequest"%>
-<%@page import="com.liferay.portal.kernel.language.UnicodeLanguageUtil"%>
-<%@page
-	import="org.opencps.notificationmgt.permisson.NotificationStatusConfigPermission"%>
-<%@page
-	import="org.opencps.notificationmgt.search.NotificationStatusConfigDisplayTerms"%>
-
-
 <%@ include file="../../init.jsp"%>
 
 <%
-	isPermisson = NotificationStatusConfigPermission.contains(
-			permissionChecker, scopeGroupId,
-			ActionKeys.EDIT_NOTIFICATION_CONFIG);
-
-	long notiStatusConfigId = ParamUtil.getLong(request,NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID,0);
+	
+long notiStatusConfigId = ParamUtil.getLong(request,NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID,0);
 %>
 
 
 <aui:nav-bar cssClass="opencps-toolbar custom-toolbar">
 	<aui:nav id="toolbarContainer"
 		cssClass="nav-button-container  nav-display-style-buttons pull-left">
-		<c:if test="<%=isPermisson%>">
+		<c:if test="<%=true%>">
 
-			<portlet:renderURL var="addNotificationConfigURL" windowState="<%=LiferayWindowState.POP_UP.toString() %>">
+			<portlet:renderURL var="addNotiEventConfigURL" windowState="<%=LiferayWindowState.POP_UP.toString() %>">
 				<portlet:param name="mvcPath"
 					value="/html/portlets/notificationmgt/backoffice/event/notification_event_config_edit.jsp" />
-				<portlet:param name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID %>" value="<%=String.valueOf(notiStatusConfigId) %>"/>
+				<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID %>" value="<%=String.valueOf(notiStatusConfigId) %>"/>
 			</portlet:renderURL>
 
 			<aui:button 
@@ -63,7 +45,7 @@
 								"add-notification-event-config"))%>'
 				id="popup_id"
 				useDialog="true"
-				href="<%=addNotificationConfigURL.toString()%>"
+				href="<%=addNotiEventConfigURL.toString()%>"
 			 />
 		</c:if>
 	</aui:nav>

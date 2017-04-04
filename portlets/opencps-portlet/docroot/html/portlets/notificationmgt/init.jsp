@@ -46,6 +46,7 @@
 <%@page import="javax.portlet.PortletRequest"%>
 <%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
 <%@page import="org.opencps.util.ActionKeys"%>
+<%@page import="com.liferay.portal.kernel.dao.search.DisplayTerms"%>
 
 <%
 	PortletPreferences preferences = renderRequest.getPreferences();
