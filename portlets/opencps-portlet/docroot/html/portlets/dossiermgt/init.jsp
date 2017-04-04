@@ -41,6 +41,8 @@
 	/* dossier list  */
 	String dossierListDisplayStyle = preferences.getValue("dossierListDisplayStyle", "default");
 	
+	String textPositionWithImageSign = preferences.getValue("textPositionWithImageSign","overlaps");
+	
 	String suggestionDossierStatus = preferences.getValue("suggestionDossierStatus",StringPool.BLANK);
 	
 	boolean hiddenTreeNodeEqualNone = GetterUtil.getBoolean(preferences.getValue("hiddenTreeNodeEqualNone", "false"), false);
@@ -59,6 +61,8 @@
 	
 	String itemCode_cfg = GetterUtil.getString(portletPreferences.getValue("itemCode_cfg", ""));
 	String[] reportTypes = StringUtil.split(preferences.getValue("reportTypes", ".pdf"));
+	
+	String[] characterAttachs = StringUtil.split(preferences.getValue("characterAttachs", "text"));
 	/* dossier  */
 	String dossierDisplayStyle = preferences.getValue("dossierDisplayStyle", "default");
 	
@@ -78,7 +82,7 @@
 	boolean showDossierSuggestionButton = GetterUtil.getBoolean(preferences.getValue("showDossierSuggestionButton", "true"), true);
 	
 	String uploadFileTypes = preferences.getValue("uploadFileTypes", "pdf,doc,docx,xls,png");
-
+	
 	
 	float maxTotalUploadFileSize = GetterUtil.getFloat(preferences.getValue("maxTotalUploadFileSize", StringPool.BLANK));
 	
@@ -96,6 +100,8 @@
 	
 	String dossierFileListOrderByType = preferences.getValue("dossierFileListOrderByType", WebKeys.ORDER_BY_DESC);
 	
+	String signatureType = preferences.getValue("signatureType", "selectPoint");
+	
 	boolean hideTabDossierFile = GetterUtil.getBoolean(preferences.getValue("hideTabDossierFile", "false"), false);
 	
 	//String orderFieldDossierFile = preferences.getValue("orderFieldDossierFile",StringPool.BLANK);
@@ -103,6 +109,9 @@
 	//String orderBydDossierFile = preferences.getValue("orderBydDossierFile",StringPool.BLANK);
 	
 	long plidRes = GetterUtil.getLong(preferences.getValue("plid", "0"), 0);
+	
+	double offsetX = GetterUtil.getDouble(preferences.getValue("offsetX", "0"), 0);
+	double offsetY = GetterUtil.getDouble(preferences.getValue("offsetY", "0"), 0);
 	
 	boolean displayRecentlyResultWhenSearch = GetterUtil.getBoolean(preferences.getValue("displayRecentlyResultWhenSearch", "false"), false);
 	
