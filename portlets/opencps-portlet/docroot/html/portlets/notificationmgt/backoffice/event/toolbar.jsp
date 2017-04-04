@@ -1,5 +1,3 @@
-<%@page import="org.opencps.notificationmgt.search.NotificationEventConfigDisplayTerms"%>
-<%@page import="com.liferay.portal.security.permission.PermissionCheckerFactoryUtil"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software

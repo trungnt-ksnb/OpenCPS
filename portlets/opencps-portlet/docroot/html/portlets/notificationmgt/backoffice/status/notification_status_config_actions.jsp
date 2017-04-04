@@ -32,8 +32,7 @@
 %>
 
 <c:if
-	test="<%=NotificationStatusConfigPermission.contains(permissionChecker,
-						scopeGroupId, ActionKeys.EDIT_NOTIFICATION_CONFIG)%>">
+	test="<%=true%>">
 	<portlet:renderURL var="editNotificationConfigURL">
 		<portlet:param name="mvcPath"
 			value='<%=templatePath +"backoffice/status/notification_status_config_edit.jsp"%>'/>
@@ -41,6 +40,7 @@
 			value="<%=String.valueOf(notificationStatusConfig.getNotiStatusConfigId())%>" />
 		<portlet:param name="backURL" value="<%=currentURL%>" />
 	</portlet:renderURL>	
+	
 	<aui:icon cssClass="icon-edit" label="edit"
 		url="<%=editNotificationConfigURL.toString()%>" />
 </c:if>

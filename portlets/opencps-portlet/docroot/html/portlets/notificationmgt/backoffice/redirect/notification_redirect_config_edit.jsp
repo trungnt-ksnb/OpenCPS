@@ -1,4 +1,19 @@
-<%@ include file="../../init.jsp"%>
+
+<%@page import="org.opencps.notificationmgt.search.NotificationStatusConfigDisplayTerms"%>
+<%@page import="org.opencps.notificationmgt.service.NotificationRedirectConfigLocalServiceUtil"%>
+<%@page import="org.opencps.notificationmgt.model.impl.NotificationRedirectConfigImpl"%>
+<%@page import="org.opencps.notificationmgt.model.NotificationRedirectConfig"%>
+<%@page import="com.liferay.portal.service.LayoutLocalServiceUtil"%>
+<%@page import="com.liferay.portal.model.Layout"%>
+<%@page import="org.opencps.util.LayoutView"%>
+<%@page import="org.opencps.util.LayoutLister"%>
+<%@page import="org.opencps.notificationmgt.service.NotificationEventConfigLocalServiceUtil"%>
+<%@page import="org.opencps.notificationmgt.model.impl.NotificationEventConfigImpl"%>
+<%@page import="org.opencps.notificationmgt.model.NotificationEventConfig"%>
+<%@page import="org.opencps.notificationmgt.search.NotificationEventConfigDisplayTerms"%>
+<%@page import="net.sf.jasperreports.util.NoWriteFieldHandler"%>
+<%@page import="org.opencps.util.PortletUtil"%>
+<%@page import="java.util.Date"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -17,7 +32,16 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
-
+<%@page import="org.opencps.util.MessageKeys"%>
+<%@page import="org.opencps.util.WebKeys"%>
+<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
+<%@page import="com.liferay.portal.kernel.log.Log"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
+<%@page import="javax.portlet.PortletRequest"%>
+<%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
+<%@ include file="../../init.jsp"%>
 
 <portlet:actionURL var="updateNotificationEventConfigURL" name="updateNotificationEventConfig" />
 
@@ -146,26 +170,6 @@
 							label="inuse" 
 							value="<%=Validator.isNotNull(notiRedirectConfig) ?notiRedirectConfig.isActive():false %>"></aui:input>
 				
-			
-			
-<%-- 			<aui:select name="<%=NotificationEventConfigDisplayTerms.JSP_REDIRECT %>"> --%>
-<%-- 				<aui:option  --%>
-<%-- 					selected="<%=Validator.isNotNull(notiRedirectConfig) ? notiRedirectConfig.getJspRedirect().equals("/html/portlets/processmgt/processorder/process_order_detail.jsp"):false %>"  --%>
-<%-- 					value='<%=HtmlUtil.escape("/html/portlets/processmgt/processorder/process_order_detail.jsp") %>'/> --%>
-<%-- 				<aui:option --%>
-<%-- 					selected="<%=Validator.isNotNull(notiRedirectConfig) ? notiRedirectConfig.getJspRedirect().equals("/html/portlets/dossiermgt/frontoffice/edit_dossier.jsp"):false %>" --%>
-<%-- 					value='<%=HtmlUtil.escape("/html/portlets/dossiermgt/frontoffice/edit_dossier.jsp") %>' --%>
-<%-- 					/> --%>
-<%-- 				<aui:option --%>
-<%-- 					selected="<%=Validator.isNotNull(notiRedirectConfig) ? notiRedirectConfig.getJspRedirect().equals("/html/portlets/paymentmgt/frontoffice/frontofficepaymentdetail.jsp"):false %>" --%>
-<%-- 					value='<%=HtmlUtil.escape("/html/portlets/paymentmgt/frontoffice/frontofficepaymentdetail.jsp") %>' --%>
-<%-- 				 	/> --%>
-<%-- 				<aui:option --%>
-<%-- 					selected="<%=Validator.isNotNull(notiRedirectConfig) ? notiRedirectConfig.getJspRedirect().equals("/html/portlets/paymentmgt/backoffice/backofficepaymentdetail.jsp"):false %>" --%>
-<%-- 					value='<%=HtmlUtil.escape("/html/portlets/paymentmgt/backoffice/backofficepaymentdetail.jsp") %>' --%>
-<%-- 				 	/> --%>
-<%-- 			</aui:select> --%>
-
 				<aui:button type="submit" name="submit" icon="icon-save" />
 			</aui:fieldset>
 		</aui:form>

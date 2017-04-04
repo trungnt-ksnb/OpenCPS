@@ -1,7 +1,3 @@
-
-<%@page import="org.opencps.notificationmgt.search.NotificationEventConfigDisplayTerms"%>
-<%@page import="org.opencps.notificationmgt.permisson.NotificationEventConfigPermission"%>
-<%@page import="org.opencps.notificationmgt.model.NotificationEventConfig"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -21,7 +17,6 @@
 	 */
 %>
 <%@page import="org.opencps.util.WebKeys"%>
-<%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
 <%@ include file="../../init.jsp"%>
 
 
@@ -33,8 +28,7 @@
 %>
 
 <c:if
-	test="<%=NotificationEventConfigPermission.contains(permissionChecker,
-						scopeGroupId, ActionKeys.EDIT_NOTIFICATION_CONFIG)%>">
+	test="<%=true%>">
 	<portlet:renderURL var="editNotificationConfigURL">
 		<portlet:param name="mvcPath"
 			value='<%=templatePath +"backoffice/event/notification_event_config_edit.jsp"%>'/>
@@ -42,28 +36,13 @@
 			value="<%=String.valueOf(notificationEventConfig.getNotiStatusConfigId())%>" />
 		<portlet:param name="backURL" value="<%=currentURL%>" />
 	</portlet:renderURL>
-	<liferay-ui:icon image="edit"
-		cssClass="search-container-action fa edit" message="edit"
-		url="<%=editNotificationConfigURL.toString()%>" />
-</c:if>
-
-<c:if
-	test="<%=NotificationEventConfigPermission.contains(permissionChecker,
-						scopeGroupId, ActionKeys.VIEW)%>">
-	<portlet:renderURL var="editNotificationConfigURL">
-		<portlet:param name="mvcPath"
-			value='<%=templatePath +"backoffice/event/notification_event_config_edit.jsp"%>'/>
-		<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID%>"
-			value="<%=String.valueOf(notificationEventConfig.getNotiStatusConfigId())%>" />
-		<portlet:param name="backURL" value="<%=currentURL%>" />
-	</portlet:renderURL>
-	<liferay-ui:icon image="edit"
-		cssClass="search-container-action fa view" message="view"
+	
+	<aui:icon cssClass="icon-edit" label="edit"
 		url="<%=editNotificationConfigURL.toString()%>" />
 </c:if>
 
 <c:if test="<%=notificationEventConfig.isActive() == true%>">
-	<portlet:actionURL var="deactiveNotiEventConfigURL" name="changeNotiEventConfig">
+	<portlet:actionURL var="activeNotiEventConfigURL" name="changeNotiEventConfig">
 	
 		<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID%>"
 			value="<%=String.valueOf(notificationEventConfig.getNotiStatusConfigId())%>" />
@@ -72,25 +51,20 @@
 			
 	</portlet:actionURL>
 
-	<liferay-ui:icon
-		cssClass="search-container-action fa fa-eye-slash ocps-btn ocps-red"
-		image="deactive"
-	 	url="<%=deactiveNotiEventConfigURL.toString()%>"></liferay-ui:icon>
-
+	<aui:icon cssClass="icon-eye-close"
+		label="inactive" url="<%=activeNotiEventConfigURL.toString()%>"/>
 </c:if>
 
 <c:if test="<%=notificationEventConfig.isActive() == false%>">
-	<portlet:actionURL var="activeNotiEventConfigURL" name="changeNotiEventConfig">
+	<portlet:actionURL var="deactiveNotiEventConfigURL" name="changeNotiEventConfig">
 	
 		<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID%>"
-			value="<%=String.valueOf(notificationEventConfig.getNotiStatusConfigId())%>" />
-			
+			value="<%=String.valueOf(notificationEventConfig.getNotiStatusConfigId())%>" />	
 		<portlet:param name="<%=NotificationEventConfigDisplayTerms.ACTIVE%>"
 			value="true" />
+			
 	</portlet:actionURL>
-	<liferay-ui:icon
-		image="active"
-		cssClass="search-container-action fa fa-eye ocps-btn ocps-green"
-		url="<%=activeNotiEventConfigURL.toString()%>" ></liferay-ui:icon>
+	<aui:icon cssClass="icon-eye-open"
+		label="active" url="<%=deactiveNotiEventConfigURL.toString()%>" />
 </c:if>
 
