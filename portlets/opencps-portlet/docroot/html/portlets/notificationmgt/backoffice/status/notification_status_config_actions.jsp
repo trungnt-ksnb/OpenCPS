@@ -1,6 +1,3 @@
-<%@page import="org.opencps.notificationmgt.search.NotificationStatusConfigDisplayTerms"%>
-<%@page import="org.opencps.notificationmgt.permisson.NotificationStatusConfigPermission"%>
-<%@page import="org.opencps.notificationmgt.model.NotificationStatusConfig"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -19,8 +16,6 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
-<%@page import="org.opencps.util.WebKeys"%>
-<%@page import="com.liferay.portal.kernel.dao.search.ResultRow"%>
 <%@ include file="../../init.jsp"%>
 
 
@@ -29,50 +24,64 @@
 			.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 	NotificationStatusConfig notificationStatusConfig = (NotificationStatusConfig) row.getObject();
 	
+	String iteratorURL = row.getParameter(WebKeys.REDIRECT_URL).toString();
+	
 %>
 
 <c:if
 	test="<%=true%>">
-	<portlet:renderURL var="editNotificationConfigURL">
+	<portlet:renderURL var="editNotificationConfigURL" windowState="<%=LiferayWindowState.POP_UP.toString() %>">
+	
 		<portlet:param name="mvcPath"
 			value='<%=templatePath +"backoffice/status/notification_status_config_edit.jsp"%>'/>
-		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
-			value="<%=String.valueOf(notificationStatusConfig.getNotiStatusConfigId())%>" />
-		<portlet:param name="backURL" value="<%=currentURL%>" />
-	</portlet:renderURL>	
+		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS%>"
+			value="<%=String.valueOf(notificationStatusConfig.getDossierNextStatus())%>" />
+	</portlet:renderURL>
 	
-	<aui:icon cssClass="icon-edit" label="edit"
-		url="<%=editNotificationConfigURL.toString()%>" />
+	<aui:button
+		cssClass="btn-default" 
+		icon="icon-edit"
+		value="edit"
+		useDialog="true"
+		href="<%=editNotificationConfigURL.toString()%>" />	
+	
 </c:if>
 
 
-<c:if test="<%=notificationStatusConfig.getIsSendNotification() == true%>">
-	<portlet:actionURL var="activeNotificationConfigURL" name="changeNotificationStatusConfig">
-	
-		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
-			value="<%=String.valueOf(notificationStatusConfig.getNotiStatusConfigId())%>" />
-			
-		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.IS_SEND_NOTIFICATION%>"
-			value="false" />
-	</portlet:actionURL>
-
-	<aui:icon cssClass="icon-eye-close"
-		label="inactive" url="<%=activeNotificationConfigURL.toString()%>"/>
-
-</c:if>
-
-<c:if test="<%=notificationStatusConfig.getIsSendNotification() == false%>">
-	
+<c:if test="<%=notificationStatusConfig.getActive() == true%>">
 	<portlet:actionURL var="deactiveNotificationConfigURL" name="changeNotificationStatusConfig">
 	
-		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
-			value="<%=String.valueOf(notificationStatusConfig.getNotiStatusConfigId())%>" />
-		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.IS_SEND_NOTIFICATION%>"
-			value="true" />
+		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS%>"
+			value="<%=String.valueOf(notificationStatusConfig.getDossierNextStatus())%>" />	
+		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.ACTIVE%>"
+			value="false" />
+		<portlet:param name="<%=WebKeys.REDIRECT_URL %>" value="<%=iteratorURL%>" />
 			
 	</portlet:actionURL>
 
-	<aui:icon cssClass="icon-eye-open"
-		label="active" url="<%=deactiveNotificationConfigURL.toString()%>" />
+	<aui:button 
+		cssClass="btn-success" 
+		icon="icon-eye-close"
+		value="inactive"
+		href="<%=deactiveNotificationConfigURL.toString()%>" />
+
+</c:if>
+
+<c:if test="<%=notificationStatusConfig.getActive() == false%>">
+	
+	<portlet:actionURL var="activeNotificationConfigURL" name="changeNotificationStatusConfig">
+	
+		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS%>"
+			value="<%=String.valueOf(notificationStatusConfig.getDossierNextStatus())%>" />
+		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.ACTIVE%>"
+			value="true" />
+		<portlet:param name="<%=WebKeys.REDIRECT_URL %>" value="<%=iteratorURL%>" />	
+	</portlet:actionURL>
+
+	<aui:button
+		cssClass="btn-danger" 
+		icon="icon-eye-close"
+		value="inactive"
+		href="<%=activeNotificationConfigURL.toString()%>" />
 </c:if>
 

@@ -41,6 +41,7 @@ public class NotificationStatusConfigSearch extends SearchContainer<DictItem> {
 		headerNames.add("status");
 		headerNames.add("create-date");
 		headerNames.add("modified-date");
+		headerNames.add("action");
 
 	}
 
@@ -74,8 +75,8 @@ public class NotificationStatusConfigSearch extends SearchContainer<DictItem> {
 				NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS,
 				String.valueOf(displayTerms.getDossierNextStatus()));
 		iteratorURL.setParameter(
-				NotificationStatusConfigDisplayTerms.IS_SEND_NOTIFICATION,
-				String.valueOf(displayTerms.isSendNotification));
+				NotificationStatusConfigDisplayTerms.ACTIVE,
+				String.valueOf(displayTerms.active));
 
 	}
 

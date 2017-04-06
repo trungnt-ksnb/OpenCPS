@@ -25,46 +25,63 @@
 			.getAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
 	NotificationEventConfig notificationEventConfig = (NotificationEventConfig) row.getObject();
 	
+	String iteratorURL = row.getParameter(WebKeys.REDIRECT_URL).toString();
+	
+	
 %>
 
 <c:if
 	test="<%=true%>">
-	<portlet:renderURL var="editNotificationConfigURL">
+	<portlet:renderURL var="editNotificationConfigURL" windowState="<%=LiferayWindowState.POP_UP.toString() %>">
 		<portlet:param name="mvcPath"
 			value='<%=templatePath +"backoffice/event/notification_event_config_edit.jsp"%>'/>
 		<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID%>"
-			value="<%=String.valueOf(notificationEventConfig.getNotiStatusConfigId())%>" />
-		<portlet:param name="backURL" value="<%=currentURL%>" />
+			value="<%=String.valueOf(notificationEventConfig.getNotiEventConfigId())%>" />
 	</portlet:renderURL>
-	
-	<aui:icon cssClass="icon-edit" label="edit"
-		url="<%=editNotificationConfigURL.toString()%>" />
+		
+	<aui:button
+		cssClass="btn-default" 
+		icon="icon-edit"
+		value="edit"
+		useDialog="true"
+		href="<%=editNotificationConfigURL.toString()%>" />
 </c:if>
 
 <c:if test="<%=notificationEventConfig.isActive() == true%>">
-	<portlet:actionURL var="activeNotiEventConfigURL" name="changeNotiEventConfig">
-	
-		<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID%>"
-			value="<%=String.valueOf(notificationEventConfig.getNotiStatusConfigId())%>" />
-		<portlet:param name="<%=NotificationEventConfigDisplayTerms.ACTIVE%>"
-			value="false" />
-			
-	</portlet:actionURL>
-
-	<aui:icon cssClass="icon-eye-close"
-		label="inactive" url="<%=activeNotiEventConfigURL.toString()%>"/>
-</c:if>
-
-<c:if test="<%=notificationEventConfig.isActive() == false%>">
 	<portlet:actionURL var="deactiveNotiEventConfigURL" name="changeNotiEventConfig">
 	
 		<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID%>"
-			value="<%=String.valueOf(notificationEventConfig.getNotiStatusConfigId())%>" />	
+			value="<%=String.valueOf(notificationEventConfig.getNotiEventConfigId())%>" />
 		<portlet:param name="<%=NotificationEventConfigDisplayTerms.ACTIVE%>"
-			value="true" />
+			value="false" />
+		<portlet:param name="<%=WebKeys.REDIRECT_URL %>" value="<%=iteratorURL%>" />
 			
 	</portlet:actionURL>
-	<aui:icon cssClass="icon-eye-open"
-		label="active" url="<%=deactiveNotiEventConfigURL.toString()%>" />
+	
+	<aui:button
+		cssClass="btn-success"  
+		icon="icon-eye-close"
+		value="inactive"
+		href="<%=deactiveNotiEventConfigURL.toString()%>" />
+		
+</c:if>
+
+<c:if test="<%=notificationEventConfig.isActive() == false%>">
+
+	<portlet:actionURL var="activeNotiEventConfigURL" name="changeNotiEventConfig">
+	
+		<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID%>"
+			value="<%=String.valueOf(notificationEventConfig.getNotiEventConfigId())%>" />	
+		<portlet:param name="<%=NotificationEventConfigDisplayTerms.ACTIVE%>"
+			value="true" />
+		<portlet:param name="<%=WebKeys.REDIRECT_URL %>" value="<%=iteratorURL%>" />
+			
+	</portlet:actionURL>
+	
+	<aui:button 
+		cssClass="btn-danger" 
+		icon="icon-eye-close"
+		value="inactive"
+		href="<%=activeNotiEventConfigURL.toString()%>" />
 </c:if>
 

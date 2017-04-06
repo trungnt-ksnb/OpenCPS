@@ -28,55 +28,43 @@ import org.opencps.accountmgt.model.Citizen;
 import org.opencps.backend.util.PaymentRequestGenerator;
 import org.opencps.dossiermgt.bean.AccountBean;
 import org.opencps.dossiermgt.model.Dossier;
-import org.opencps.dossiermgt.model.ServiceConfig;
 import org.opencps.dossiermgt.model.impl.DossierImpl;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
-import org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil;
 import org.opencps.notificationmgt.engine.UserNotificationHandler;
 import org.opencps.notificationmgt.message.SendNotificationMessage;
 import org.opencps.notificationmgt.model.NotificationEventConfig;
-import org.opencps.notificationmgt.model.NotificationRedirectConfig;
 import org.opencps.notificationmgt.model.NotificationStatusConfig;
 import org.opencps.notificationmgt.service.NotificationEventConfigLocalServiceUtil;
-import org.opencps.notificationmgt.service.NotificationRedirectConfigLocalServiceUtil;
 import org.opencps.notificationmgt.service.NotificationStatusConfigLocalServiceUtil;
 import org.opencps.paymentmgt.model.PaymentFile;
+import org.opencps.processmgt.model.ProcessOrder;
 import org.opencps.processmgt.model.ProcessStep;
 import org.opencps.processmgt.model.ProcessWorkflow;
 import org.opencps.processmgt.model.StepAllowance;
+import org.opencps.processmgt.service.ProcessOrderLocalServiceUtil;
 import org.opencps.processmgt.service.ProcessStepLocalServiceUtil;
 import org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil;
 import org.opencps.processmgt.service.StepAllowanceLocalServiceUtil;
 import org.opencps.processmgt.util.ProcessUtils;
 import org.opencps.usermgt.model.Employee;
-import org.opencps.usermgt.service.EmployeeLocalServiceUtil;
 import org.opencps.util.AccountUtil;
-import org.opencps.util.MessageBusKeys;
 import org.opencps.util.PortletPropsValues;
 import org.opencps.util.SendMailUtils;
 
-import com.liferay.portal.NoSuchLayoutFriendlyURLException;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.messaging.Message;
-import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.User;
-import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.service.UserNotificationEventLocalServiceUtil;
 import com.liferay.util.portlet.PortletProps;
 
@@ -88,8 +76,6 @@ public class NotificationUtils {
 
 	private static Log _log = LogFactoryUtil.getLog(NotificationUtils.class);
 
-	protected static String CITIZEN = "CITIZEN";
-	protected static String EMPLOYEE = "EMPLOYEE";
 
 	public static void addUserNotificationEvent(
 			SendNotificationMessage message, JSONObject payloadJSON,
@@ -110,42 +96,29 @@ public class NotificationUtils {
 	}
 
 	public static JSONObject createNotification(
-			SendNotificationMessage message, String event, String group,
-			long userIdDelivery, boolean privatePage, long groupId) {
+			SendNotificationMessage message,
+			SendNotificationMessage.InfomationList info) {
 
 		JSONObject payloadJSONObject = JSONFactoryUtil.createJSONObject();
-		Locale locale = new Locale("vi", "VN");
 
-		long plId = 0;
+		long plId = Long.valueOf(message.getPlId());
 		StringBuffer title = new StringBuffer();
 		StringBuffer content = new StringBuffer();
 
 		try {
 
 			title.append("[").append(message.getDossierId()).append("]")
-					.append(LanguageUtil.get(locale, event));
-
-			Layout layOut = null;
-			try {
-				layOut = LayoutLocalServiceUtil.getFriendlyURLLayout(groupId,
-						true, group);
-			} catch (NoSuchLayoutFriendlyURLException e) {
-
-			}
-
-			if (Validator.isNotNull(layOut)) {
-				plId = layOut.getPlid();
-			}
+					.append(message.getEventName());
 
 			Dossier dossiser = null;
+			long dossierId = Long.valueOf(message.getDossierId());
 
-			if (message.getDossierId() > 0) {
+			if (dossierId > 0) {
 
-				dossiser = DossierLocalServiceUtil.getDossier(message
-						.getDossierId());
+				dossiser = DossierLocalServiceUtil.getDossier(dossierId);
 
 				content.append(dossiser.getReceptionNo()).append("<br>")
-						.append(message.getNotificationContent());
+						.append(message.getEventName());
 			}
 
 		} catch (Exception e) {
@@ -155,18 +128,18 @@ public class NotificationUtils {
 		payloadJSONObject.put("processOrderId", message.getProcessOrderId());
 		payloadJSONObject.put("dossierId", message.getDossierId());
 		payloadJSONObject.put("paymentFileId", message.getPaymentFileId());
-		payloadJSONObject.put("userIdDelivery", userIdDelivery);
+		payloadJSONObject.put("patternConfig", message.getPatternConfig());
+		payloadJSONObject.put("userIdDelivery", info.getUserId());
 		payloadJSONObject.put("title", title.toString());
 		payloadJSONObject.put("notificationText", content.toString());
 		payloadJSONObject.put("plId", plId);
-		payloadJSONObject.put("friendlyUrl", group);
-		payloadJSONObject.put("groupId", groupId);
+		payloadJSONObject.put("mvcPath", message.getJspRedirect());
 
 		return payloadJSONObject;
 	}
 
 	public static void sendEmailNotification(SendNotificationMessage message,
-			String email, long dossierId, String userName) {
+			SendNotificationMessage.InfomationList info) {
 
 		String fromAddress = StringPool.BLANK;
 		String fromName = StringPool.BLANK;
@@ -178,6 +151,8 @@ public class NotificationUtils {
 		Locale locale = new Locale("vi", "VN");
 
 		try {
+			
+			long dossierId = Long.valueOf(message.getDossierId());
 
 			Dossier dossier = new DossierImpl();
 
@@ -191,7 +166,7 @@ public class NotificationUtils {
 					: StringPool.BLANK;
 			fromName = PrefsPropsUtil.getString(dossier.getCompanyId(),
 					PropsKeys.ADMIN_EMAIL_FROM_NAME);
-			to = email;
+			to = info.getEmailAddress();
 			subject = PortletPropsValues.SUBJECT_TO_CUSTOMER;
 			if (Validator.isNull(dossier.getReceptionNo())) {
 				body = PortletPropsValues.CONTENT_TO_CUSTOMER_WITHOUT_RECEPTION_NO;
@@ -202,20 +177,20 @@ public class NotificationUtils {
 					+ "]");
 
 			body = StringUtil.replace(body, "[receiverUserName]", "["
-					+ userName + "]");
+					+ info.getFullName() + "]");
 			body = StringUtil.replace(body, "{OpenCPS}", fromName);
 			body = StringUtil.replace(body, "{dossierId}",
 					String.valueOf(message.getDossierId()));
 			body = StringUtil.replace(body, "{receptionNo}",
 					dossier.getReceptionNo());
 			body = StringUtil.replace(body, "{event}",
-					PortletProps.get(message.getNotificationEventName()));
+					PortletProps.get(message.getEventName()));
 			body = StringUtil.replace(body, "{message}",
-					message.getNotificationContent());
+					message.getEventName());
 
-			_log.info("fromAddress:" + fromAddress);
-			_log.info("subject:" + subject);
-			_log.info("to:" + to);
+			_log.info("+++fromAddress:" + fromAddress);
+			_log.info("+++subject:" + subject);
+			_log.info("+++to:" + to);
 
 			SendMailUtils.sendEmail(fromAddress, fromName, to,
 					StringPool.BLANK, subject, body, htmlFormat);
@@ -228,144 +203,7 @@ public class NotificationUtils {
 			PaymentFile paymentFile) {
 
 		try {
-			List<SendNotificationMessage> lsNotification = new ArrayList<SendNotificationMessage>();
 
-			// ADD EVENT VAN THU
-			SendNotificationMessage notiMsg = new SendNotificationMessage();
-			notiMsg.setDossierId(dossier.getDossierId());
-			notiMsg.setNotificationEventName(NotificationEventKeys.OFFICIALS.EVENT10);
-			notiMsg.setPaymentFileId(paymentFile.getPaymentFileId());
-			notiMsg.setType("SMS, INBOX, EMAIL");
-
-			SendNotificationMessage.InfoList infoEmploy = new SendNotificationMessage.InfoList();
-
-			List<SendNotificationMessage.InfoList> infoListEmploy = new ArrayList<SendNotificationMessage.InfoList>();
-
-			ServiceConfig serviceConfig = ServiceConfigLocalServiceUtil
-					.fetchServiceConfig(dossier.getServiceConfigId());
-
-			List<ProcessWorkflow> processWorkflowList = ProcessWorkflowLocalServiceUtil
-					.searchWorkflow(serviceConfig.getServiceProcessId(),
-							QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-
-			ProcessWorkflow processWorkflow = null;
-
-			Employee employee = null;
-
-			MainLoop: for (int i = 0; i < processWorkflowList.size(); i++) {
-
-				processWorkflow = processWorkflowList.get(i);
-
-				if (processWorkflow.getPaymentFee().trim().length() > 0
-						&& processWorkflow.getRequestPayment()) {
-
-					List<String> emailList = getEmailFromPattern(processWorkflow
-							.getPaymentFee());
-
-					User user = null;
-					String email = StringPool.BLANK;
-					if (emailList.size() > 0) {
-						for (int k = 0; k < emailList.size(); k++) {
-							email = emailList.get(k);
-
-							if (Validator.isEmailAddress(email.trim())) {
-								_log.info("email:" + email);
-								user = UserLocalServiceUtil
-										.getUserByEmailAddress(
-												dossier.getCompanyId(), email);
-								_log.info("user:" + user.getUserId());
-
-								employee = EmployeeLocalServiceUtil
-										.getEmployeeByEmail(
-												dossier.getGroupId(), email);
-
-								if (Validator.isNotNull(user)
-										&& Validator.isNotNull(employee)) {
-
-									infoEmploy.setUserId(user.getUserId());
-									infoEmploy.setUserMail(employee.getEmail());
-									infoEmploy
-											.setUserPhone(employee.getTelNo());
-									infoEmploy.setGroupId(dossier.getGroupId());
-									infoEmploy
-											.setGroup(NotificationEventKeys.GROUP4);
-									infoEmploy.setFullName(employee
-											.getFullName());
-								}
-								infoListEmploy.add(infoEmploy);
-								break MainLoop;
-							}
-						}
-
-					}
-				}
-
-			}
-			notiMsg.setInfoList(infoListEmploy);
-
-			lsNotification.add(notiMsg);
-
-			// ADD EVENT CONG DAN
-
-			AccountBean accountBean = AccountUtil.getAccountBean(
-					dossier.getUserId(), dossier.getGroupId(), null);
-
-			Citizen citizen = null;
-			Business bussines = null;
-
-			if (accountBean.isCitizen()) {
-				citizen = (Citizen) accountBean.getAccountInstance();
-			}
-			if (accountBean.isBusiness()) {
-				bussines = (Business) accountBean.getAccountInstance();
-			}
-			notiMsg = new SendNotificationMessage();
-			notiMsg.setDossierId(dossier.getDossierId());
-			notiMsg.setNotificationEventName(NotificationEventKeys.USERS_AND_ENTERPRISE.EVENT10);
-			notiMsg.setPaymentFileId(paymentFile.getPaymentFileId());
-			notiMsg.setType("SMS, INBOX, EMAIL");
-
-			SendNotificationMessage.InfoList info = new SendNotificationMessage.InfoList();
-
-			List<SendNotificationMessage.InfoList> infoList = new ArrayList<SendNotificationMessage.InfoList>();
-
-			if (Validator.isNotNull(citizen)) {
-				info.setUserId(citizen.getUserId());
-				info.setUserMail(citizen.getEmail());
-				info.setUserPhone(citizen.getTelNo());
-				info.setFullName(citizen.getFullName());
-
-			} else if (Validator.isNotNull(bussines)) {
-				info.setUserId(bussines.getUserId());
-				info.setUserMail(bussines.getEmail());
-				info.setUserPhone(bussines.getTelNo());
-				info.setFullName(bussines.getName());
-
-			}
-
-			info.setGroup(NotificationEventKeys.GROUP3);
-			info.setGroupId(dossier.getGroupId());
-			infoList.add(info);
-
-			Locale vnLocale = new Locale("vi", "VN");
-
-			notiMsg.setNotificationContent(LanguageUtil.get(vnLocale,
-					"payment-order-done"));
-			notiMsg.setInfoList(infoList);
-
-			lsNotification.add(notiMsg);
-
-			_log.info("=====lsNotification.size():" + lsNotification.size());
-			if (lsNotification.size() > 0) {
-
-				Message msgNoti = new Message();
-
-				msgNoti.put(MessageBusKeys.Message.NOTIFICATIONS,
-						lsNotification);
-
-				MessageBusUtil.sendMessage(
-						MessageBusKeys.Destination.NOTIFICATIONS, msgNoti);
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -386,7 +224,7 @@ public class NotificationUtils {
 
 	}
 
-	public List<SendNotificationMessage> sendNotification(
+	public static List<SendNotificationMessage> sendNotification(
 			long processWorkflowId, long dossierId, long paymentFileId,
 			long processOrderId) {
 
@@ -398,14 +236,18 @@ public class NotificationUtils {
 
 				ProcessWorkflow processWorkflow = null;
 				Dossier dossier = null;
+				ProcessOrder processOrder = null;
 
 				try {
 					processWorkflow = ProcessWorkflowLocalServiceUtil
 							.fetchProcessWorkflow(processWorkflowId);
 
 					dossier = DossierLocalServiceUtil.fetchDossier(dossierId);
+					
+					processOrder = ProcessOrderLocalServiceUtil.findBy_Dossier(dossierId);
+					
 
-				} catch (SystemException e) {
+				} catch (Exception e) {
 
 				}
 
@@ -447,14 +289,20 @@ public class NotificationUtils {
 
 						if (Validator.isNotNull(postProcessStep)) {
 
-							notificationList = getListNoties(processWorkflow,
-									dossier, paymentFileId, processOrderId,
+							notificationList = getListNoties(
+									processWorkflow,
+									dossier,
+									paymentFileId,
+									Validator.isNotNull(processOrder) ? processOrder
+											.getProcessOrderId() : 0,
 									postProcessStep, isPay);
 
 						}
 					}
 
 				}
+			}else{
+				_log.warn("");
 			}
 		} catch (Exception e) {
 			_log.error(e);
@@ -463,7 +311,7 @@ public class NotificationUtils {
 		return notificationList;
 	}
 
-	private List<SendNotificationMessage> getListNoties(
+	private static List<SendNotificationMessage> getListNoties(
 			ProcessWorkflow processWorkflow, Dossier dossier,
 			long paymentFileId, long processOrderId, ProcessStep processStep,
 			boolean isPayment) {
@@ -493,51 +341,40 @@ public class NotificationUtils {
 
 						for (NotificationEventConfig notiEventConfig : notiEventConfigs) {
 
-							NotificationRedirectConfig notiRedirectConfig = null;
+							if (notiEventConfig.getPattern().toLowerCase()
+									.contains(PortletKeys.CITIZEN)) {
 
-							notiRedirectConfig = NotificationRedirectConfigLocalServiceUtil
-									.getNotificationRedirectConfig(
-											notiEventConfig
-													.getNotiEventConfigId(),
-											true);
+								/*
+								 * Xac dinh user chu ho so can notice
+								 */
+								SendNotificationMessage notiMsgCitizen = new SendNotificationMessage();
 
-							if (Validator.isNotNull(notiRedirectConfig)) {
+								notiMsgCitizen = setMessageCitizens(
+										dossier.getUserId(),
+										dossier.getGroupId(),
+										dossier.getDossierId(), 
+										paymentFileId,
+										processOrderId,
+										notiEventConfig);
 
-								if (notiEventConfig.getPattern().toUpperCase()
-										.contains(CITIZEN)) {
+								notificationList.add(notiMsgCitizen);
+							} else if (notiEventConfig.getPattern()
+									.toLowerCase().contains(PortletKeys.EMPLOYEE)) {
 
-									/*
-									 * Xac dinh user chu ho so can notice
-									 */
-									SendNotificationMessage notiMsgCitizen = new SendNotificationMessage();
+								/*
+								 * Xac dinh danh sach can bo lien quan den ho so
+								 * can notice
+								 */
 
-									notiMsgCitizen = setMessageCitizens(
-											dossier.getUserId(),
-											dossier.getGroupId(),
-											dossier.getDossierId(),
-											paymentFileId, notiEventConfig,
-											notiRedirectConfig);
+								SendNotificationMessage notiMsgEmploy = new SendNotificationMessage();
 
-									notificationList.add(notiMsgCitizen);
-								} else if (notiEventConfig.getPattern()
-										.toUpperCase().contains(EMPLOYEE)) {
+								notiMsgEmploy = setMessageEmployee(
+										processWorkflow, dossier.getDossierId(),
+										dossier.getGroupId(),
+										processOrderId, paymentFileId,
+										notiEventConfig);
 
-									/*
-									 * Xac dinh danh sach can bo lien quan den
-									 * ho so can notice
-									 */
-
-									SendNotificationMessage notiMsgEmploy = new SendNotificationMessage();
-
-									notiMsgEmploy = setMessageEmployee(
-											processWorkflow,
-											dossier.getUserId(),
-											processOrderId, paymentFileId,
-											notiEventConfig, notiRedirectConfig);
-
-									notificationList.add(notiMsgEmploy);
-								}
-
+								notificationList.add(notiMsgEmploy);
 							}
 						}
 					}
@@ -556,7 +393,7 @@ public class NotificationUtils {
 	 * @param assignToUserId
 	 * @return
 	 */
-	private List<Employee> getListEmploy(ProcessWorkflow processWorkflow,
+	private static List<Employee> getListEmploy(ProcessWorkflow processWorkflow,
 			long groupId) {
 
 		List<Employee> ls = new ArrayList<>();
@@ -584,10 +421,9 @@ public class NotificationUtils {
 
 	}
 
-	private SendNotificationMessage setMessageCitizens(long userId,
+	private static SendNotificationMessage setMessageCitizens(long userId,
 			long groupId, long dossierId, long paymentFileId,
-			NotificationEventConfig notiEventConfig,
-			NotificationRedirectConfig notiRedirectConfig) {
+			long processOrderId, NotificationEventConfig notiEventConfig) {
 
 		AccountBean accountBean = AccountUtil.getAccountBean(userId, groupId,
 				null);
@@ -599,19 +435,16 @@ public class NotificationUtils {
 
 		if (accountBean.isCitizen() || accountBean.isBusiness()) {
 
-			notiMsgCitizen.setDossierId(dossierId);
-			notiMsgCitizen.setPaymentFileId(paymentFileId);
+			notiMsgCitizen.setDossierId(String.valueOf(dossierId));
+			notiMsgCitizen.setPaymentFileId(String.valueOf(paymentFileId));
+			notiMsgCitizen.setProcessOrderId(String.valueOf(processOrderId));
+			notiMsgCitizen.setEventName(notiEventConfig.getEventName());
+			notiMsgCitizen.setPatternConfig(notiEventConfig.getPattern());
+			notiMsgCitizen.setPlId(notiEventConfig.getPlId());
+			notiMsgCitizen.setJspRedirect(notiEventConfig.getJspRedirect());
 
-			SendNotificationMessage.InfoList citizenInfo = new SendNotificationMessage.InfoList();
-			List<SendNotificationMessage.InfoList> citizenInfoList = new ArrayList<SendNotificationMessage.InfoList>();
-
-			notiMsgCitizen.setType(notiEventConfig.getPattern());
-			notiMsgCitizen.setNotificationContent(notiEventConfig
-					.getDescription());
-			notiMsgCitizen.setNotificationEventName(notiEventConfig
-					.getEventName());
-
-			citizenInfo.setPlid(String.valueOf(notiRedirectConfig.getPlId()));
+			SendNotificationMessage.InfomationList citizenInfo = new SendNotificationMessage.InfomationList();
+			List<SendNotificationMessage.InfomationList> citizenInfoList = new ArrayList<SendNotificationMessage.InfomationList>();
 
 			if (accountBean.isCitizen()) {
 				citizen = (Citizen) accountBean.getAccountInstance();
@@ -620,53 +453,56 @@ public class NotificationUtils {
 			}
 
 			if (Validator.isNotNull(citizen)) {
-				citizenInfo.setUserId(citizen.getUserId());
-				citizenInfo.setUserMail(citizen.getEmail());
-				citizenInfo.setUserPhone(citizen.getTelNo());
+
+				citizenInfo.setUserId(String.valueOf(citizen.getUserId()));
+				citizenInfo.setEmailAddress(citizen.getEmail());
 				citizenInfo.setFullName(citizen.getFullName());
+				citizenInfo.setPhoneNumber(citizen.getTelNo());
 
 			} else if (Validator.isNotNull(bussines)) {
-				citizenInfo.setUserId(bussines.getUserId());
-				citizenInfo.setUserMail(bussines.getEmail());
-				citizenInfo.setUserPhone(bussines.getTelNo());
+
+				citizenInfo.setUserId(String.valueOf(bussines.getUserId()));
+				citizenInfo.setEmailAddress(bussines.getEmail());
 				citizenInfo.setFullName(bussines.getName());
+				citizenInfo.setPhoneNumber(bussines.getTelNo());
 			}
-			citizenInfo.setGroupId(groupId);
+
 			citizenInfoList.add(citizenInfo);
-			
-			notiMsgCitizen.setInfoList(citizenInfoList);
+
+			notiMsgCitizen.setInfomationList(citizenInfoList);
 
 		}
 
 		return notiMsgCitizen;
 	}
 
-	private SendNotificationMessage setMessageEmployee(
-			ProcessWorkflow processWorkflow, long groupId, long processOrderId,
-			long paymentFileId, NotificationEventConfig notiEventConfig,
-			NotificationRedirectConfig notiRedirectConfig) {
+	private static SendNotificationMessage setMessageEmployee(
+			ProcessWorkflow processWorkflow, long dossierId,long groupId,
+			long processOrderId, long paymentFileId,
+			NotificationEventConfig notiEventConfig) {
 
 		List<Employee> coordinateEmployeeList = getListEmploy(processWorkflow,
 				groupId);
 
 		SendNotificationMessage notiMsgEmploy = new SendNotificationMessage();
-		List<SendNotificationMessage.InfoList> infoEmployList = new ArrayList<SendNotificationMessage.InfoList>();
 
-		notiMsgEmploy.setDossierId(groupId);
-		notiMsgEmploy.setProcessOrderId(processOrderId);
-		notiMsgEmploy.setPaymentFileId(paymentFileId);
-		notiMsgEmploy.setNotificationEventName(notiEventConfig.getEventName());
-		notiMsgEmploy.setNotificationContent(notiEventConfig.getDescription());
-		notiMsgEmploy.setType(notiEventConfig.getPattern());
+		List<SendNotificationMessage.InfomationList> infoEmployList = new ArrayList<SendNotificationMessage.InfomationList>();
+		SendNotificationMessage.InfomationList coordinateInfoEmploy = new SendNotificationMessage.InfomationList();
+
+		notiMsgEmploy.setDossierId(String.valueOf(dossierId));
+		notiMsgEmploy.setProcessOrderId(String.valueOf(processOrderId));
+		notiMsgEmploy.setPaymentFileId(String.valueOf(paymentFileId));
+		notiMsgEmploy.setEventName(notiEventConfig.getEventName());
+		notiMsgEmploy.setPatternConfig(notiEventConfig.getPattern());
+		notiMsgEmploy.setPlId(notiEventConfig.getPlId());
+		notiMsgEmploy.setJspRedirect(notiEventConfig.getJspRedirect());
 
 		for (Employee employee : coordinateEmployeeList) {
 
-			SendNotificationMessage.InfoList coordinateInfoEmploy = new SendNotificationMessage.InfoList();
-
-			coordinateInfoEmploy.setUserId(employee.getMappingUserId());
-			coordinateInfoEmploy.setUserMail(employee.getEmail());
-			coordinateInfoEmploy.setUserPhone(employee.getTelNo());
-			coordinateInfoEmploy.setGroupId(groupId);
+			coordinateInfoEmploy.setUserId(String.valueOf(employee
+					.getMappingUserId()));
+			coordinateInfoEmploy.setEmailAddress(employee.getEmail());
+			coordinateInfoEmploy.setPhoneNumber(employee.getTelNo());
 			coordinateInfoEmploy.setFullName(employee.getFullName());
 
 			boolean flag = false;
@@ -686,17 +522,12 @@ public class NotificationUtils {
 			} catch (SystemException e) {
 				_log.error(e);
 			}
-			if (flag) {
 
-				coordinateInfoEmploy.setPlid(String.valueOf(notiRedirectConfig
-						.getPlId()));
-
-				infoEmployList.add(coordinateInfoEmploy);
-			}
+			infoEmployList.add(coordinateInfoEmploy);
 
 		}
 		// /////////////////////////////////////////////
-		notiMsgEmploy.setInfoList(infoEmployList);
+		notiMsgEmploy.setInfomationList(infoEmployList);
 
 		return notiMsgEmploy;
 

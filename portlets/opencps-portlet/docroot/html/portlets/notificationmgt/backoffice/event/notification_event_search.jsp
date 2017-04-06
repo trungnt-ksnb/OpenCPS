@@ -1,35 +1,65 @@
-<%--
-/**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
- *
- * The contents of this file are subject to the terms of the applicable 
- * Liferay software end user license agreement ("License Agreement")
- * found on www.liferay.com/legal/eulas. You may also contact Liferay, Inc.
- * for a copy of the License Agreement. You may not use this file except in
- * compliance with the License Agreement. 
- * See the License Agreement for the specific language governing
- * permissions and limitations under the License Agreement, including 
- * but not limited to distribution rights of the Software.
- *
- */
---%>
-
-
-<%@ include file="../../init.jsp" %>
 <%
-SearchContainer searchContainer = (SearchContainer)request.getAttribute("liferay-ui:search:searchContainer");
-DisplayTerms displayTerms = searchContainer.getDisplayTerms();
+	/**
+	 * OpenCPS is the open source Core Public Services software
+	 * Copyright (C) 2016-present OpenCPS community
+	 * 
+	 * This program is free software: you can redistribute it and/or modify
+	 * it under the terms of the GNU Affero General Public License as published by
+	 * the Free Software Foundation, either version 3 of the License, or
+	 * any later version.
+	 * 
+	 * This program is distributed in the hope that it will be useful,
+	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	 * GNU Affero General Public License for more details.
+	 * You should have received a copy of the GNU Affero General Public License
+	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
+	 */
+%>
+<%@ include file="../../init.jsp" %>
+
+<%
+	SearchContainer searchContainer = (SearchContainer)request.getAttribute("liferay-ui:search:searchContainer");
+	
+	DisplayTerms displayTerms = searchContainer.getDisplayTerms();
+
+	List<NotificationStatusConfig> notiStatusConfigs = new ArrayList<NotificationStatusConfig>();
+
+	long notiStatusConfigId = ParamUtil.getLong(request,
+			NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID, 0);
+	
+	notiStatusConfigs = NotificationStatusConfigLocalServiceUtil
+			.getNotificationStatusConfigs(QueryUtil.ALL_POS,
+					QueryUtil.ALL_POS);
+
 %>
 <liferay-ui:search-toggle
 	buttonLabel="Student Search"
 	displayTerms="<%= displayTerms %>"
-	id="toggle_id_student_search">
-	<aui:input label="First Name" name="firstName" />
-	<aui:input label="Last Name" name="lastName" />
-	<aui:input label="studentAge" name="studentAge"  />
-	<aui:select name="studentGender">
-	<aui:option label="Male" value="1"></aui:option>
-	<aui:option label="Female" value="0"></aui:option>
+	id="toggle_id_noti_vent_search">
+	
+	<aui:select  name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
+				label="noti-status-config-id">
+				<%
+					for (NotificationStatusConfig notiStatusConfig : notiStatusConfigs) {
+							
+						boolean statusSelect = false;
+						
+						if(notiStatusConfigId == notiStatusConfig.getNotiStatusConfigId()){
+							statusSelect = true;
+						}
+						
+							
+				%>
+
+					<aui:option selected="<%=statusSelect%>"
+						value="<%=notiStatusConfig.getNotiStatusConfigId()%>"
+					>
+						<%=notiStatusConfig.getDossierNextStatus()%>
+					</aui:option>
+
+				<%
+					}
+				%>
 	</aui:select>
-	<aui:input label="studentAddress" name="studentAddress" />
 </liferay-ui:search-toggle>

@@ -41,15 +41,15 @@
 <portlet:actionURL var="updateNofificationStatusConfigURL" name="updateNotificationStatusConfig" />
 
 <%
-	long notificationConfigId = ParamUtil.getLong(request,NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID,0);
-	String backURL = ParamUtil.getString(request, WebKeys.BACK_URL,StringPool.BLANK);
+	String dossierNextStatus = ParamUtil.getString(request,NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS,StringPool.BLANK);
 
 	NotificationStatusConfig notificationConfig = new NotificationStatusConfigImpl();
 
-	if (notificationConfigId > 0) {
+	if (dossierNextStatus.trim().length() > 0) {
 
 		try {
-			notificationConfig = NotificationStatusConfigLocalServiceUtil.getNotificationStatusConfig(notificationConfigId);
+			notificationConfig = NotificationStatusConfigLocalServiceUtil
+					.getByDossierNextStatus(dossierNextStatus);
 		} catch (Exception e) {
 			_log.error(e);
 		}
@@ -83,12 +83,7 @@
 
 			<aui:model-context bean="<%=notificationConfig%>"
 				model="<%=NotificationStatusConfig.class%>" />
-			<aui:input name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
-				type="hidden" />
-			<aui:input name="<%=WebKeys.BACK_URL%>" type="hidden"
-				value="<%=backURL%>" />
-			<aui:input name="<%=WebKeys.CURRENT_URL%>" type="hidden"
-				value="<%=currentURL%>" />
+				
 			<aui:fieldset>
 
 				<aui:select name="<%=NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS%>"
@@ -102,10 +97,10 @@
 					<%} %>
 				</aui:select>
 				
-				<aui:input name="<%=NotificationStatusConfigDisplayTerms.IS_SEND_NOTIFICATION%>" 
+				<aui:input name="<%=NotificationStatusConfigDisplayTerms.ACTIVE%>" 
 							type="checkbox" 
 							label="inuse" 
-							value="<%=Validator.isNotNull(notificationConfig) ?notificationConfig.getIsSendNotification():false %>"></aui:input>
+							value="<%=Validator.isNotNull(notificationConfig) ?notificationConfig.getActive():false %>"></aui:input>
 				
 			</aui:fieldset>
 

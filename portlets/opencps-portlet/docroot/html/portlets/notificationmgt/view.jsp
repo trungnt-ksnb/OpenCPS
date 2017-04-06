@@ -21,7 +21,7 @@
 
 <%
 	
-	String[] names = new String[]{PortletKeys.TOP_TABS_NOTI_CONFIG_STATUS, PortletKeys.TOP_TABS_NOTI_CONFIG_EVENT,PortletKeys.TOP_TABS_NOTI_CONFIG_REDIRECT};
+	String[] names = new String[]{PortletKeys.TOP_TABS_NOTI_CONFIG_STATUS, PortletKeys.TOP_TABS_NOTI_CONFIG_EVENT};
 
 	String tabValue = ParamUtil.getString(request, "tabs1", PortletKeys.TOP_TABS_NOTI_CONFIG_STATUS);
 	
@@ -42,9 +42,5 @@
 
 	<c:if test='<%= tabValue.equalsIgnoreCase(PortletKeys.TOP_TABS_NOTI_CONFIG_EVENT)%>' >
 		<jsp:include page="/html/portlets/notificationmgt/backoffice/event/notification_event_config_list.jsp" flush="true" />
-	</c:if>
-	
-	<c:if test='<%= tabValue.equalsIgnoreCase(PortletKeys.TOP_TABS_NOTI_CONFIG_REDIRECT)%>' >
-		<jsp:include page="/html/portlets/notificationmgt/backoffice/redirect/notification_redirect_config_list.jsp" flush="true" />
 	</c:if>
 </liferay-ui:tabs>	

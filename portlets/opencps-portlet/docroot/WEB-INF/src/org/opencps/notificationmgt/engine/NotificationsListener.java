@@ -37,7 +37,7 @@ package org.opencps.notificationmgt.engine;
 import java.util.List;
 
 import org.opencps.notificationmgt.message.SendNotificationMessage;
-import org.opencps.notificationmgt.message.SendNotificationMessage.InfoList;
+import org.opencps.notificationmgt.message.SendNotificationMessage.InfomationList;
 import org.opencps.notificationmgt.utils.NotificationEventKeys;
 import org.opencps.notificationmgt.utils.NotificationUtils;
 import org.opencps.util.MessageBusKeys;
@@ -48,7 +48,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.Message;
 import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.MessageListenerException;
-import com.liferay.portal.kernel.util.StringPool;
 
 /**
  * @author nhanhoang
@@ -75,58 +74,40 @@ public class NotificationsListener implements MessageListener {
 			
 			_log.info("=====notifications.size():" + notifications.size());
 
-			String event = StringPool.BLANK;
-			String group = StringPool.BLANK;
-			String email = StringPool.BLANK;
-			String userName = StringPool.BLANK;;
-			String phone = StringPool.BLANK;
-			long groupId = 0;
-			long dossierId = 0;
-
 			/*
-			 * 1 notification message co the gui cho nhieu user, 1 user co the
-			 * nhan notice theo nhieu kenh
+			 * 1 notification message co the gui cho nhieu user,
+			 * user co the nhan noti theo 3 kenh email,inbox,sms
 			 */
 
 			for (SendNotificationMessage item : notifications) {
 
-				String sendType = item.getType().toUpperCase(); 
+				String patternConfig = item.getPatternConfig().toLowerCase(); 
 
-				event = item.getNotificationEventName();
-
-				List<InfoList> infoList = item.getInfoList();
+				List<InfomationList> infoList = item.getInfomationList();
 				
 				_log.info("=====infoList.size():" + infoList.size());
+				
+				if(patternConfig.contains(NotificationEventKeys.EMAIL)){
+					
+					for(InfomationList info:infoList){
+						
+						NotificationUtils.sendEmailNotification(item,info);
+						
+					}
+					
+				}else if(patternConfig.contains(NotificationEventKeys.INBOX)){
+					
+					for (InfomationList info : infoList) {
 
-				for (InfoList info : infoList) {
+						JSONObject payloadJSON = NotificationUtils
+								.createNotification(item,info);
 
-						if (sendType.contains(NotificationEventKeys.EMAIL)) {
-							email = info.getUserMail();
-							dossierId = item.getDossierId();
-							userName = info.getFullName();
+						NotificationUtils.addUserNotificationEvent(item,
+								payloadJSON, payloadJSON.getLong("userIdDelivery"));
 
-							NotificationUtils.sendEmailNotification(item, email,dossierId,userName);
-
-						}
-						if (sendType.contains(NotificationEventKeys.INBOX)) {
-
-							group = info.getGroup();
-							groupId = info.getGroupId();
-
-							long userId = info.getUserId();
-
-							JSONObject payloadJSON =
-								NotificationUtils.createNotification(
-									item, event, group, userId, true,groupId);
-
-							NotificationUtils.addUserNotificationEvent(item, payloadJSON, userId);
-							_log.info("addUserNotificationEvent Success");
-							_log.info("payloadJSON:"+payloadJSON);
-						}
-						if (sendType.contains(NotificationEventKeys.SMS)) {
-							phone = info.getUserPhone();
-
-						}
+					}
+					
+				}else if(patternConfig.contains(NotificationEventKeys.SMS)){
 					
 				}
 

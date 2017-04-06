@@ -18,30 +18,26 @@
 	 */
 %>
 
-
-<portlet:actionURL var="updateNotificationEventConfigURL" name="updateNotificationEventConfig" />
-
 <%
 	long notiEventConfigId = ParamUtil.getLong(request,NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID,0);
 	String backURL = ParamUtil.getString(request, WebKeys.BACK_URL,StringPool.BLANK);
-	
-	long notiStatusConfigId = ParamUtil.getLong(request,NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID,0);
 
-	NotificationEventConfig notiEventConfig = new NotificationEventConfigImpl();
-	NotificationRedirectConfig notiRedirectConfig = new NotificationRedirectConfigImpl();
+	NotificationEventConfig notiEventConfig = null;
 
 	if (notiEventConfigId > 0) {
 
 		try {
 			notiEventConfig = NotificationEventConfigLocalServiceUtil.fetchNotificationEventConfig(notiEventConfigId);
 			
-			if(Validator.isNotNull(notiEventConfig)){
-				
-				notiRedirectConfig = NotificationRedirectConfigLocalServiceUtil.fetchNotificationRedirectConfig(notiEventConfig.getNotiEventConfigId());
-			}
 		} catch (Exception e) {
-			_log.error(e);
+			
 		}
+	}
+	
+	boolean eventConfig = false;
+	
+	if(Validator.isNotNull(notiEventConfig)){
+		eventConfig = true;
 	}
 	
 	LayoutLister layoutLister = new LayoutLister();
@@ -51,11 +47,16 @@
 	LayoutView layoutView  = layoutLister.getLayoutView(layout.getGroupId(), layout.isPrivateLayout(), rootNodeName, locale);
 	
 	List layoutList = layoutView.getList();
+	
+	List<NotificationStatusConfig> notiStatusConfigs = new ArrayList<NotificationStatusConfig>();
+	
+	notiStatusConfigs = NotificationStatusConfigLocalServiceUtil.getNotificationStatusConfigs(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+	
 %>
 
 <liferay-ui:header
-	title='<%=Validator.isNull(notiEventConfig) ? "add-notification-status-config"
-					: "update-notification-status-config"%>' />
+	title='<%=eventConfig? "add-notification-event-config"
+					: "update-notification-event-config"%>' />
 
 
 <div class=" opencps-bound-wrapper pd20 default-box-shadow"">
@@ -69,69 +70,120 @@
 		
 		<liferay-ui:success key="<%= MessageKeys.NOTIFICATION_STATUS_UPDATE_SUCESS%>" 
 		message="<%= MessageKeys.NOTIFICATION_STATUS_UPDATE_SUCESS%>"/>
+		
+		<portlet:actionURL var="updateNotificationEventConfigURL" name="updateNotificationEventConfig" />
 
 		<aui:form action="<%=updateNotificationEventConfigURL.toString()%>"
 			method="post" name="fm">
 
 			<aui:model-context bean="<%=notiEventConfig%>"
 				model="<%=NotificationEventConfig.class%>" />
+				
 			<aui:input name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID%>"
 				type="hidden"
-				value="<%=String.valueOf(notiEventConfig.getNotiEventConfigId()) %>" />
+				value="<%=eventConfig ? String.valueOf(notiEventConfig.getNotiEventConfigId()):StringPool.BLANK %>" />
 				
-			<aui:input name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
-				type="hidden" 
-				value="<%=String.valueOf(notiStatusConfigId) %>"/>
 			<aui:input name="<%=WebKeys.BACK_URL%>" type="hidden"
 				value="<%=backURL%>" />
+				
 			<aui:input name="<%=WebKeys.CURRENT_URL%>" type="hidden"
 				value="<%=currentURL%>" />
+				
+			<aui:select  name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
+				label="noti-status-config-id">
+				<%
+					for (NotificationStatusConfig notiStatusConfig : notiStatusConfigs) {
+							
+						boolean statusSelect = false;
+						
+							if (eventConfig) {
+
+								if (notiStatusConfig.getNotiStatusConfigId() == notiEventConfig
+										.getNotiStatusConfigId()) {
+									
+									statusSelect = true;
+								}
+							}
+				%>
+
+				<aui:option selected="<%=true%>"
+					value="<%=notiStatusConfig
+										.getNotiStatusConfigId()%>"><%=notiStatusConfig
+										.getDossierNextStatus()%></aui:option>
+
+				<%
+				}
+				%>
+			</aui:select>
+			
 			<aui:fieldset>
 			
-				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.EVENT_NAME %>" value="<%=notiEventConfig.getEventName() %>"/>
+				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.EVENT_NAME %>" value="<%=eventConfig ? notiEventConfig.getEventName():StringPool.BLANK %>"/>
 				
-				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.DESCRIPTION %>" value="<%=notiEventConfig.getDescription() %>"/>
+				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.DESCRIPTION %>" value="<%=eventConfig ? notiEventConfig.getDescription() :StringPool.BLANK %>"/>
 				
-				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.PATTERN %>" value="<%=notiEventConfig.getPattern() %>"/>
+				<aui:select name="<%=NotificationEventConfigDisplayTerms.PATTERN %>">
+					<aui:option value="<%=PortletKeys.EMPLOYEE %>" 
+						selected="<%=eventConfig && notiEventConfig.getPattern().equals(PortletKeys.EMPLOYEE) ?true:false %>"
+					>
+						<%=LanguageUtil.get(themeDisplay.getLocale(), "employee")%>
+					</aui:option>
+					<aui:option value="<%=PortletKeys.CITIZEN %>" 
+						selected="<%=eventConfig && notiEventConfig.getPattern().equals(PortletKeys.CITIZEN) ?true:false %>"
+					>
+						<%=LanguageUtil.get(themeDisplay.getLocale(), "citizen")+StringPool.COMMA+LanguageUtil.get(themeDisplay.getLocale(), "business")%>
+					</aui:option>
+				</aui:select>
 	
 				<aui:select label="root-layout" name="<%=NotificationEventConfigDisplayTerms.NOTICE_REDIRECT_CONFIG_ID %>">
 					<aui:option value="" />
 
 				<%
-				for (int i = 0; i < layoutList.size(); i++) {
-	
-					// id | parentId | ls | obj id | name | img | depth
-	
-					String layoutDesc = (String)layoutList.get(i);
-	
-					String[] nodeValues = StringUtil.split(layoutDesc, '|');
-	
-					long objId = GetterUtil.getLong(nodeValues[3]);
-					String name = HtmlUtil.escape(nodeValues[4]);
-	
-					int depth = 0;
-	
-					if (i != 0) {
-						depth = GetterUtil.getInteger(nodeValues[6]);
-					}
-	
-					for (int j = 0; j < depth; j++) {
-						name = "-&nbsp;" + name;
-					}
-	
-					Layout curRootLayout = null;
-	
-					try {
-						curRootLayout = LayoutLocalServiceUtil.getLayout(objId);
-					}
-					catch (Exception e) {
-					}
-	
-					if (curRootLayout != null) {
+					for (int i = 0; i < layoutList.size(); i++) {
+					
+							// id | parentId | ls | obj id | name | img | depth
+					
+							String layoutDesc = (String)layoutList.get(i);
+					
+							String[] nodeValues = StringUtil.split(layoutDesc, '|');
+					
+							long objId = GetterUtil.getLong(nodeValues[3]);
+							String name = HtmlUtil.escape(nodeValues[4]);
+					
+							int depth = 0;
+					
+							if (i != 0) {
+								depth = GetterUtil.getInteger(nodeValues[6]);
+							}
+					
+							for (int j = 0; j < depth; j++) {
+								name = "-&nbsp;" + name;
+							}
+					
+							Layout curRootLayout = null;
+					
+							try {
+								curRootLayout = LayoutLocalServiceUtil.getLayout(objId);
+							}
+							catch (Exception e) {
+							}
+					
+							if (curRootLayout != null) {
+								
+								boolean select = false;
+								
+								if(eventConfig){
+									
+											if (curRootLayout.getPlid() == Long
+													.valueOf(notiEventConfig.getPlId())) {
+
+												select = true;
+											}
+										}
 				%>
 	
 					<aui:option label="<%= name %>" 
-						selected="<%=Validator.isNotNull(notiRedirectConfig)? curRootLayout.getPlid() ==notiRedirectConfig.getPlId():false %>" 
+						selected="<%=select%>" 
 						value="<%= curRootLayout.getPlid() %>" />
 	
 				<%
@@ -144,28 +196,8 @@
 				<aui:input name="<%=NotificationEventConfigDisplayTerms.ACTIVE%>" 
 							type="checkbox" 
 							label="inuse" 
-							value="<%=Validator.isNotNull(notiRedirectConfig) ?notiRedirectConfig.isActive():false %>"></aui:input>
-				
-			
-			
-<%-- 			<aui:select name="<%=NotificationEventConfigDisplayTerms.JSP_REDIRECT %>"> --%>
-<%-- 				<aui:option  --%>
-<%-- 					selected="<%=Validator.isNotNull(notiRedirectConfig) ? notiRedirectConfig.getJspRedirect().equals("/html/portlets/processmgt/processorder/process_order_detail.jsp"):false %>"  --%>
-<%-- 					value='<%=HtmlUtil.escape("/html/portlets/processmgt/processorder/process_order_detail.jsp") %>'/> --%>
-<%-- 				<aui:option --%>
-<%-- 					selected="<%=Validator.isNotNull(notiRedirectConfig) ? notiRedirectConfig.getJspRedirect().equals("/html/portlets/dossiermgt/frontoffice/edit_dossier.jsp"):false %>" --%>
-<%-- 					value='<%=HtmlUtil.escape("/html/portlets/dossiermgt/frontoffice/edit_dossier.jsp") %>' --%>
-<%-- 					/> --%>
-<%-- 				<aui:option --%>
-<%-- 					selected="<%=Validator.isNotNull(notiRedirectConfig) ? notiRedirectConfig.getJspRedirect().equals("/html/portlets/paymentmgt/frontoffice/frontofficepaymentdetail.jsp"):false %>" --%>
-<%-- 					value='<%=HtmlUtil.escape("/html/portlets/paymentmgt/frontoffice/frontofficepaymentdetail.jsp") %>' --%>
-<%-- 				 	/> --%>
-<%-- 				<aui:option --%>
-<%-- 					selected="<%=Validator.isNotNull(notiRedirectConfig) ? notiRedirectConfig.getJspRedirect().equals("/html/portlets/paymentmgt/backoffice/backofficepaymentdetail.jsp"):false %>" --%>
-<%-- 					value='<%=HtmlUtil.escape("/html/portlets/paymentmgt/backoffice/backofficepaymentdetail.jsp") %>' --%>
-<%-- 				 	/> --%>
-<%-- 			</aui:select> --%>
-
+							value="<%=eventConfig ?notiEventConfig.isActive():false %>"></aui:input>
+							
 				<aui:button type="submit" name="submit" icon="icon-save" />
 			</aui:fieldset>
 		</aui:form>

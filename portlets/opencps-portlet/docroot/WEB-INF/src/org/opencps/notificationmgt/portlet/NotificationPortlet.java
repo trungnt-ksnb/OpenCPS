@@ -27,6 +27,8 @@ import javax.portlet.PortletURL;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
 
+import org.opencps.notificationmgt.NoSuchNotificationEventConfigException;
+import org.opencps.notificationmgt.NoSuchNotificationStatusConfigException;
 import org.opencps.notificationmgt.model.NotificationEventConfig;
 import org.opencps.notificationmgt.model.NotificationStatusConfig;
 import org.opencps.notificationmgt.search.NotificationEventConfigDisplayTerms;
@@ -37,13 +39,13 @@ import org.opencps.util.MessageKeys;
 import org.opencps.util.WebKeys;
 
 import com.liferay.counter.service.CounterLocalServiceUtil;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.WindowStateFactory;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
@@ -61,18 +63,12 @@ public class NotificationPortlet extends MVCPortlet {
 			ActionResponse actionResponse) throws IOException,
 			WindowStateException {
 
-		long notificationConfigId = ParamUtil.getLong(actionRequest,
-				NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID);
 		String dossierNextStatus = ParamUtil.getString(actionRequest,
 				NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS);
-		boolean isSendNotification = ParamUtil.getBoolean(actionRequest,
-				NotificationStatusConfigDisplayTerms.IS_SEND_NOTIFICATION,
+		boolean active = ParamUtil.getBoolean(actionRequest,
+				NotificationStatusConfigDisplayTerms.ACTIVE,
 				false);
 
-		String currentURL = ParamUtil.getString(actionRequest,
-				WebKeys.CURRENT_URL);
-
-		String backURL = ParamUtil.getString(actionRequest, WebKeys.BACK_URL);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
 				.getAttribute(WebKeys.THEME_DISPLAY);
@@ -82,12 +78,10 @@ public class NotificationPortlet extends MVCPortlet {
 		try {
 
 			try {
-				notificationConfig = NotificationStatusConfigLocalServiceUtil
-						.fetchNotificationStatusConfig(notificationConfigId);
 
 				notificationConfig = NotificationStatusConfigLocalServiceUtil
 						.getByDossierNextStatus(dossierNextStatus);
-			} catch (SystemException e) {
+			} catch (Exception e) {
 
 			}
 
@@ -105,7 +99,7 @@ public class NotificationPortlet extends MVCPortlet {
 				notificationConfig.setModifiedDate(new Date());
 
 				notificationConfig.setDossierNextStatus(dossierNextStatus);
-				notificationConfig.setIsSendNotification(isSendNotification);
+				notificationConfig.setActive(active);
 
 				NotificationStatusConfigLocalServiceUtil
 						.addNotificationStatusConfig(notificationConfig);
@@ -120,7 +114,7 @@ public class NotificationPortlet extends MVCPortlet {
 				notificationConfig.setModifiedDate(new Date());
 
 				notificationConfig.setDossierNextStatus(dossierNextStatus);
-				notificationConfig.setIsSendNotification(isSendNotification);
+				notificationConfig.setActive(active);
 
 				NotificationStatusConfigLocalServiceUtil
 						.updateNotificationStatusConfig(notificationConfig);
@@ -161,12 +155,18 @@ public class NotificationPortlet extends MVCPortlet {
 	public void changeNotificationStatusConfig(ActionRequest actionRequest,
 			ActionResponse actionResponse) throws IOException {
 
-		long notificationConfigId = ParamUtil.getLong(actionRequest,
-				NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID);
+		String dossierNextStatus = ParamUtil.getString(actionRequest,
+				NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS);
 
-		boolean isSendNotification = ParamUtil.getBoolean(actionRequest,
-				NotificationStatusConfigDisplayTerms.IS_SEND_NOTIFICATION,
+		boolean active = ParamUtil.getBoolean(actionRequest,
+				NotificationStatusConfigDisplayTerms.ACTIVE,
 				false);
+		
+		_log.info("dossierNextStatus:"+dossierNextStatus);
+		_log.info("active:"+active);
+		
+		String redirectUrl = ParamUtil.getString(actionRequest,
+				WebKeys.REDIRECT_URL, StringPool.BLANK);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
 				.getAttribute(WebKeys.THEME_DISPLAY);
@@ -177,9 +177,9 @@ public class NotificationPortlet extends MVCPortlet {
 
 			try {
 				notificationConfig = NotificationStatusConfigLocalServiceUtil
-						.fetchNotificationStatusConfig(notificationConfigId);
+						.getByDossierNextStatus(dossierNextStatus);
 
-			} catch (SystemException e) {
+			} catch (Exception e) {
 
 			}
 
@@ -190,7 +190,7 @@ public class NotificationPortlet extends MVCPortlet {
 				notificationConfig.setUserId(themeDisplay.getUserId());
 				notificationConfig.setModifiedDate(new Date());
 
-				notificationConfig.setIsSendNotification(isSendNotification);
+				notificationConfig.setActive(active);
 
 				NotificationStatusConfigLocalServiceUtil
 						.updateNotificationStatusConfig(notificationConfig);
@@ -204,18 +204,26 @@ public class NotificationPortlet extends MVCPortlet {
 			_log.error(e);
 			SessionMessages.add(actionRequest,
 					MessageKeys.NOTIFICATION_STATUS_SYSTEM_EXCEPTION_OCCURRED);
+		}finally{
+			actionResponse.sendRedirect(redirectUrl);
 		}
 
 	}
 
 	public void changeNotiEventConfig(ActionRequest actionRequest,
-			ActionResponse actionResponse) throws IOException {
+			ActionResponse actionResponse) throws IOException, WindowStateException {
 
 		long notiEventConfigId = ParamUtil.getLong(actionRequest,
 				NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID);
 
 		boolean active = ParamUtil.getBoolean(actionRequest,
 				NotificationEventConfigDisplayTerms.ACTIVE, false);
+		
+		_log.info("active:"+active);
+		_log.info("notiEventConfigId:"+notiEventConfigId);
+		
+		String redirectUrl = ParamUtil.getString(actionRequest,
+				WebKeys.REDIRECT_URL, StringPool.BLANK);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
 				.getAttribute(WebKeys.THEME_DISPLAY);
@@ -226,9 +234,9 @@ public class NotificationPortlet extends MVCPortlet {
 
 			try {
 				notiEventConfig = NotificationEventConfigLocalServiceUtil
-						.fetchNotificationEventConfig(notiEventConfigId);
+						.getNotificationEventConfig(notiEventConfigId);
 
-			} catch (SystemException e) {
+			} catch (NoSuchNotificationEventConfigException e) {
 
 			}
 
@@ -248,11 +256,16 @@ public class NotificationPortlet extends MVCPortlet {
 						MessageKeys.NOTIFICATION_EVENT_UPDATE_SUCESS);
 
 			}
+			
+			
 
 		} catch (Exception e) {
 			_log.error(e);
 			SessionMessages.add(actionRequest,
 					MessageKeys.NOTIFICATION_EVENT_SYSTEM_EXCEPTION_OCCURRED);
+		} finally{
+			
+			actionResponse.sendRedirect(redirectUrl);
 		}
 
 	}
@@ -276,6 +289,8 @@ public class NotificationPortlet extends MVCPortlet {
 				NotificationEventConfigDisplayTerms.DESCRIPTION);
 		String pattern = ParamUtil.getString(actionRequest,
 				NotificationEventConfigDisplayTerms.PATTERN);
+		
+		String plId = ParamUtil.getString(actionRequest, NotificationEventConfigDisplayTerms.NOTICE_REDIRECT_CONFIG_ID);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
 				.getAttribute(WebKeys.THEME_DISPLAY);
@@ -286,9 +301,9 @@ public class NotificationPortlet extends MVCPortlet {
 
 			try {
 				notiEventConfig = NotificationEventConfigLocalServiceUtil
-						.fetchNotificationEventConfig(notiEventConfigId);
+						.getNotificationEventConfig(notiEventConfigId);
 
-			} catch (SystemException e) {
+			} catch (NoSuchNotificationEventConfigException e) {
 
 			}
 
@@ -304,6 +319,7 @@ public class NotificationPortlet extends MVCPortlet {
 				notiEventConfig.setDescription(description);
 				notiEventConfig.setActive(active);
 				notiEventConfig.setPattern(pattern);
+				notiEventConfig.setPlId(plId);
 
 				NotificationEventConfigLocalServiceUtil
 						.updateNotificationEventConfig(notiEventConfig);
@@ -329,6 +345,7 @@ public class NotificationPortlet extends MVCPortlet {
 				notiEventConfig.setDescription(description);
 				notiEventConfig.setActive(active);
 				notiEventConfig.setPattern(pattern);
+				notiEventConfig.setPlId(plId);
 
 				NotificationEventConfigLocalServiceUtil
 						.addNotificationEventConfig(notiEventConfig);
