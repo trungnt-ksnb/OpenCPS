@@ -308,3 +308,14 @@ div[class*="img-"] {
 	background: url("../images/custom/img-BGTVT-CDK-1.png") center center no-repeat;
 	background-size: cover;
 }
+
+.portlet-boundary_13_WAR_opencpsportlet_ .ocps-dossier-process .header-title.custom-title{
+position: absolute;
+top: -30px;
+}
+
+.portlet-boundary_13_WAR_opencpsportlet_ .taglib-header {
+position: absolute;
+top: -30px;
+width: 100%;
+}
