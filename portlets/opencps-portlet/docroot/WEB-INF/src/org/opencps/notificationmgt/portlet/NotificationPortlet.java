@@ -28,7 +28,6 @@ import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
 
 import org.opencps.notificationmgt.NoSuchNotificationEventConfigException;
-import org.opencps.notificationmgt.NoSuchNotificationStatusConfigException;
 import org.opencps.notificationmgt.model.NotificationEventConfig;
 import org.opencps.notificationmgt.model.NotificationStatusConfig;
 import org.opencps.notificationmgt.search.NotificationEventConfigDisplayTerms;
@@ -136,8 +135,8 @@ public class NotificationPortlet extends MVCPortlet {
 					themeDisplay.getLayout().getPlid(),
 					PortletRequest.RENDER_PHASE);
 			redirectURL.setParameter(
-					NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID,
-					String.valueOf(notificationConfig.getNotiStatusConfigId()));
+					NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS,
+					String.valueOf(notificationConfig.getDossierNextStatus()));
 			WindowState state = WindowStateFactory
 					.getWindowState(LiferayWindowState.POP_UP.toString());
 			redirectURL.setWindowState(state);
@@ -161,9 +160,6 @@ public class NotificationPortlet extends MVCPortlet {
 		boolean active = ParamUtil.getBoolean(actionRequest,
 				NotificationStatusConfigDisplayTerms.ACTIVE,
 				false);
-		
-		_log.info("dossierNextStatus:"+dossierNextStatus);
-		_log.info("active:"+active);
 		
 		String redirectUrl = ParamUtil.getString(actionRequest,
 				WebKeys.REDIRECT_URL, StringPool.BLANK);
@@ -218,9 +214,6 @@ public class NotificationPortlet extends MVCPortlet {
 
 		boolean active = ParamUtil.getBoolean(actionRequest,
 				NotificationEventConfigDisplayTerms.ACTIVE, false);
-		
-		_log.info("active:"+active);
-		_log.info("notiEventConfigId:"+notiEventConfigId);
 		
 		String redirectUrl = ParamUtil.getString(actionRequest,
 				WebKeys.REDIRECT_URL, StringPool.BLANK);
@@ -318,7 +311,7 @@ public class NotificationPortlet extends MVCPortlet {
 				notiEventConfig.setEventName(eventName);
 				notiEventConfig.setDescription(description);
 				notiEventConfig.setActive(active);
-				notiEventConfig.setPattern(pattern);
+				notiEventConfig.setPattern(pattern.toUpperCase());
 				notiEventConfig.setPlId(plId);
 
 				NotificationEventConfigLocalServiceUtil
@@ -344,7 +337,7 @@ public class NotificationPortlet extends MVCPortlet {
 				notiEventConfig.setEventName(eventName);
 				notiEventConfig.setDescription(description);
 				notiEventConfig.setActive(active);
-				notiEventConfig.setPattern(pattern);
+				notiEventConfig.setPattern(pattern.toUpperCase());
 				notiEventConfig.setPlId(plId);
 
 				NotificationEventConfigLocalServiceUtil

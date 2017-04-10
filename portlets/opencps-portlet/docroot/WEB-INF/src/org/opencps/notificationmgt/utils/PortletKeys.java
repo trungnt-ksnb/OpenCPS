@@ -28,6 +28,6 @@ public class PortletKeys{
 	public static final String TOP_TABS_NOTI_CONFIG_EVENT = "noti_config_event_tab";
 	public static final String TOP_TABS_NOTI_CONFIG_REDIRECT = "noti_config_redirect_tab";
 	
-	public static final String CITIZEN = "citizen";
-	public static final String EMPLOYEE = "employee";
+	public static final String CITIZEN = "CITIZEN";
+	public static final String EMPLOYEE = "EMPLOYEE";
 }

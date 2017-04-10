@@ -16,7 +16,6 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
-<%@page import="org.opencps.util.WebKeys"%>
 <%@ include file="../../init.jsp"%>
 
 
@@ -47,7 +46,7 @@
 		href="<%=editNotificationConfigURL.toString()%>" />
 </c:if>
 
-<c:if test="<%=notificationEventConfig.isActive() == true%>">
+<c:if test="<%=notificationEventConfig.getActive() == true%>">
 	<portlet:actionURL var="deactiveNotiEventConfigURL" name="changeNotiEventConfig">
 	
 		<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID%>"
@@ -60,13 +59,13 @@
 	
 	<aui:button
 		cssClass="btn-success"  
-		icon="icon-eye-close"
-		value="inactive"
+		icon="icon-eye-open"
+		value="active"
 		href="<%=deactiveNotiEventConfigURL.toString()%>" />
 		
 </c:if>
 
-<c:if test="<%=notificationEventConfig.isActive() == false%>">
+<c:if test="<%=notificationEventConfig.getActive() == false%>">
 
 	<portlet:actionURL var="activeNotiEventConfigURL" name="changeNotiEventConfig">
 	

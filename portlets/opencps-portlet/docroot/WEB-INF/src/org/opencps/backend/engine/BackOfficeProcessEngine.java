@@ -475,7 +475,7 @@ public class BackOfficeProcessEngine implements MessageListener {
 				}
 				
 				lsNotification = NotificationUtils.sendNotification(
-						processWorkflowId,
+						processWorkflow.getProcessWorkflowId(),
 						Validator.isNotNull(dossier) ? dossier.getDossierId()
 								: 0,
 						Validator.isNotNull(paymentFile) ? paymentFile

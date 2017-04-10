@@ -90,7 +90,7 @@
 				value="<%=currentURL%>" />
 				
 			<aui:select  name="<%=NotificationStatusConfigDisplayTerms.NOTICE_CONFIG_ID%>"
-				label="noti-status-config-id">
+				label="noti-status-config">
 				<%
 					for (NotificationStatusConfig notiStatusConfig : notiStatusConfigs) {
 							
@@ -107,9 +107,11 @@
 				%>
 
 				<aui:option selected="<%=true%>"
-					value="<%=notiStatusConfig
-										.getNotiStatusConfigId()%>"><%=notiStatusConfig
-										.getDossierNextStatus()%></aui:option>
+					value="<%=notiStatusConfig.getNotiStatusConfigId()%>"
+				>
+					<%=DataMgtUtils.getDictItemName(themeDisplay.getScopeGroupId(),PortletPropsValues.DATAMGT_MASTERDATA_DOSSIER_STATUS
+									,notiStatusConfig.getDossierNextStatus(), locale)%>
+				</aui:option>
 
 				<%
 				}
@@ -122,18 +124,8 @@
 				
 				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.DESCRIPTION %>" value="<%=eventConfig ? notiEventConfig.getDescription() :StringPool.BLANK %>"/>
 				
-				<aui:select name="<%=NotificationEventConfigDisplayTerms.PATTERN %>">
-					<aui:option value="<%=PortletKeys.EMPLOYEE %>" 
-						selected="<%=eventConfig && notiEventConfig.getPattern().equals(PortletKeys.EMPLOYEE) ?true:false %>"
-					>
-						<%=LanguageUtil.get(themeDisplay.getLocale(), "employee")%>
-					</aui:option>
-					<aui:option value="<%=PortletKeys.CITIZEN %>" 
-						selected="<%=eventConfig && notiEventConfig.getPattern().equals(PortletKeys.CITIZEN) ?true:false %>"
-					>
-						<%=LanguageUtil.get(themeDisplay.getLocale(), "citizen")+StringPool.COMMA+LanguageUtil.get(themeDisplay.getLocale(), "business")%>
-					</aui:option>
-				</aui:select>
+				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.PATTERN %>" value="<%=eventConfig ? notiEventConfig.getPattern() :StringPool.BLANK %>"
+					placeholder="citizen|email|sms|inbox"/>
 	
 				<aui:select label="root-layout" name="<%=NotificationEventConfigDisplayTerms.NOTICE_REDIRECT_CONFIG_ID %>">
 					<aui:option value="" />

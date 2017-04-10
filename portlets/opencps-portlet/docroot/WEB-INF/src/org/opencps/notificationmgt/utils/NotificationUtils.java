@@ -37,6 +37,7 @@ import org.opencps.notificationmgt.model.NotificationStatusConfig;
 import org.opencps.notificationmgt.service.NotificationEventConfigLocalServiceUtil;
 import org.opencps.notificationmgt.service.NotificationStatusConfigLocalServiceUtil;
 import org.opencps.paymentmgt.model.PaymentFile;
+import org.opencps.processmgt.NoSuchProcessStepDossierPartException;
 import org.opencps.processmgt.model.ProcessOrder;
 import org.opencps.processmgt.model.ProcessStep;
 import org.opencps.processmgt.model.ProcessWorkflow;
@@ -283,7 +284,7 @@ public class NotificationUtils {
 						try {
 							postProcessStep = ProcessStepLocalServiceUtil
 									.fetchProcessStep(postProcessStepId);
-						} catch (SystemException e) {
+						} catch (Exception e) {
 
 						}
 
@@ -302,7 +303,7 @@ public class NotificationUtils {
 
 				}
 			}else{
-				_log.warn("");
+				_log.warn("===processWorkflowId:"+processWorkflowId);
 			}
 		} catch (Exception e) {
 			_log.error(e);
@@ -341,7 +342,7 @@ public class NotificationUtils {
 
 						for (NotificationEventConfig notiEventConfig : notiEventConfigs) {
 
-							if (notiEventConfig.getPattern().toLowerCase()
+							if (notiEventConfig.getPattern().toUpperCase()
 									.contains(PortletKeys.CITIZEN)) {
 
 								/*
@@ -359,7 +360,7 @@ public class NotificationUtils {
 
 								notificationList.add(notiMsgCitizen);
 							} else if (notiEventConfig.getPattern()
-									.toLowerCase().contains(PortletKeys.EMPLOYEE)) {
+									.toUpperCase().contains(PortletKeys.EMPLOYEE)) {
 
 								/*
 								 * Xac dinh danh sach can bo lien quan den ho so

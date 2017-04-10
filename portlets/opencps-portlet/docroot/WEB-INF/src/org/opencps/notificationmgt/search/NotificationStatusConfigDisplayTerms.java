@@ -37,7 +37,7 @@ public class NotificationStatusConfigDisplayTerms extends DisplayTerms {
 
 	public static final String DOSSIER_CURRENT_STATUS = "dossierCurrentStatus";
 	
-	public static final String ACTIVE = "isSendNotificaton";
+	public static final String ACTIVE = "active";
 
 	public static final String CREATE_DATE = "createDate";
 

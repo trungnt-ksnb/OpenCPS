@@ -107,7 +107,7 @@ public class UserNotificationHandler extends BaseUserNotificationHandler {
 		LiferayPortletURL viewURL = null;
 		Layout layOut = null;
 
-		if (pattern.equals(PortletKeys.EMPLOYEE) && paymentFileId <= 0
+		if (pattern.toUpperCase().contains(PortletKeys.EMPLOYEE) && paymentFileId <= 0
 				&& processOrderId > 0) {
 
 			viewURL = liferayPortletResponse
@@ -119,7 +119,7 @@ public class UserNotificationHandler extends BaseUserNotificationHandler {
 			viewURL.setPlid(plId);
 			viewURL.setWindowState(WindowState.NORMAL);
 
-		} else if (pattern.equals(PortletKeys.CITIZEN) && paymentFileId <= 0
+		} else if (pattern.toUpperCase().contains(PortletKeys.CITIZEN) && paymentFileId <= 0
 				&& dossierId > 0) {
 
 			viewURL = liferayPortletResponse
@@ -132,7 +132,7 @@ public class UserNotificationHandler extends BaseUserNotificationHandler {
 			viewURL.setPlid(plId);
 			viewURL.setWindowState(WindowState.NORMAL);
 
-		} else if (pattern.equals(PortletKeys.EMPLOYEE) && paymentFileId > 0) {
+		} else if (pattern.toUpperCase().contains(PortletKeys.EMPLOYEE) && paymentFileId > 0) {
 
 			viewURL = liferayPortletResponse
 					.createRenderURL(WebKeys.PAYMENT_MANAGER_PORTLET);
@@ -143,7 +143,7 @@ public class UserNotificationHandler extends BaseUserNotificationHandler {
 			viewURL.setPlid(plId);
 			viewURL.setWindowState(WindowState.NORMAL);
 
-		} else if (pattern.equals(PortletKeys.CITIZEN) && paymentFileId > 0) {
+		} else if (pattern.toUpperCase().contains(PortletKeys.CITIZEN) && paymentFileId > 0) {
 
 			viewURL = liferayPortletResponse
 					.createRenderURL(WebKeys.PAYMENT_MGT_PORTLET);

@@ -1,14 +1,3 @@
-<%@page import="org.opencps.datamgt.model.DictItem"%>
-<%@page import="org.opencps.datamgt.service.DictCollectionLocalServiceUtil"%>
-<%@page import="org.opencps.datamgt.model.impl.DictCollectionImpl"%>
-<%@page import="org.opencps.datamgt.model.DictCollection"%>
-<%@page import="org.opencps.notificationmgt.service.NotificationStatusConfigLocalServiceUtil"%>
-<%@page import="org.opencps.notificationmgt.model.impl.NotificationStatusConfigImpl"%>
-<%@page import="org.opencps.notificationmgt.model.NotificationStatusConfig"%>
-<%@page import="org.opencps.notificationmgt.search.NotificationStatusConfigDisplayTerms"%>
-<%@page import="net.sf.jasperreports.util.NoWriteFieldHandler"%>
-<%@page import="org.opencps.util.PortletUtil"%>
-<%@page import="java.util.Date"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -27,15 +16,6 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
-<%@page import="org.opencps.util.MessageKeys"%>
-<%@page import="org.opencps.util.WebKeys"%>
-<%@page import="com.liferay.portal.kernel.log.LogFactoryUtil"%>
-<%@page import="com.liferay.portal.kernel.log.Log"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
-<%@page import="com.liferay.portal.kernel.portlet.LiferayWindowState"%>
-<%@page import="javax.portlet.PortletRequest"%>
-<%@page import="com.liferay.portlet.PortletURLFactoryUtil"%>
 <%@ include file="../../init.jsp"%>
 
 <portlet:actionURL var="updateNofificationStatusConfigURL" name="updateNotificationStatusConfig" />

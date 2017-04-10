@@ -86,7 +86,7 @@
 			
 			row.addText(notiEventConfig.getDescription());
 			
-			row.addText(LanguageUtil.get(themeDisplay.getLocale(), notiEventConfig.getPattern()));
+			row.addText(notiEventConfig.getPattern());
 			
 			row.addText(DateTimeUtil.convertDateToString(notiEventConfig.getCreateDate(),DateTimeUtil._VN_DATE_TIME_FORMAT));
 			

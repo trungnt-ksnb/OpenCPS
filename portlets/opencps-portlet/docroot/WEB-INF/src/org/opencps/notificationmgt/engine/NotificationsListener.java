@@ -87,7 +87,7 @@ public class NotificationsListener implements MessageListener {
 				
 				_log.info("=====infoList.size():" + infoList.size());
 				
-				if(patternConfig.contains(NotificationEventKeys.EMAIL)){
+				if(patternConfig.toUpperCase().contains(NotificationEventKeys.EMAIL)){
 					
 					for(InfomationList info:infoList){
 						
@@ -95,7 +95,7 @@ public class NotificationsListener implements MessageListener {
 						
 					}
 					
-				}else if(patternConfig.contains(NotificationEventKeys.INBOX)){
+				}else if(patternConfig.toUpperCase().contains(NotificationEventKeys.INBOX)){
 					
 					for (InfomationList info : infoList) {
 
@@ -107,7 +107,7 @@ public class NotificationsListener implements MessageListener {
 
 					}
 					
-				}else if(patternConfig.contains(NotificationEventKeys.SMS)){
+				}else if(patternConfig.toUpperCase().contains(NotificationEventKeys.SMS)){
 					
 				}
 

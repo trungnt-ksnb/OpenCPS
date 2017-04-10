@@ -61,8 +61,8 @@
 
 	<aui:button 
 		cssClass="btn-success" 
-		icon="icon-eye-close"
-		value="inactive"
+		icon="icon-eye-open"
+		value="active"
 		href="<%=deactiveNotificationConfigURL.toString()%>" />
 
 </c:if>
