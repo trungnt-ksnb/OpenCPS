@@ -37,7 +37,6 @@ import org.opencps.notificationmgt.model.NotificationStatusConfig;
 import org.opencps.notificationmgt.service.NotificationEventConfigLocalServiceUtil;
 import org.opencps.notificationmgt.service.NotificationStatusConfigLocalServiceUtil;
 import org.opencps.paymentmgt.model.PaymentFile;
-import org.opencps.processmgt.NoSuchProcessStepDossierPartException;
 import org.opencps.processmgt.model.ProcessOrder;
 import org.opencps.processmgt.model.ProcessStep;
 import org.opencps.processmgt.model.ProcessWorkflow;
@@ -351,6 +350,7 @@ public class NotificationUtils {
 								SendNotificationMessage notiMsgCitizen = new SendNotificationMessage();
 
 								notiMsgCitizen = setMessageCitizens(
+										processWorkflow,
 										dossier.getUserId(),
 										dossier.getGroupId(),
 										dossier.getDossierId(), 
@@ -422,7 +422,8 @@ public class NotificationUtils {
 
 	}
 
-	private static SendNotificationMessage setMessageCitizens(long userId,
+	private static SendNotificationMessage setMessageCitizens(ProcessWorkflow processWorkflow,
+			long userId,
 			long groupId, long dossierId, long paymentFileId,
 			long processOrderId, NotificationEventConfig notiEventConfig) {
 
@@ -439,7 +440,7 @@ public class NotificationUtils {
 			notiMsgCitizen.setDossierId(String.valueOf(dossierId));
 			notiMsgCitizen.setPaymentFileId(String.valueOf(paymentFileId));
 			notiMsgCitizen.setProcessOrderId(String.valueOf(processOrderId));
-			notiMsgCitizen.setEventName(notiEventConfig.getEventName());
+			notiMsgCitizen.setEventName(processWorkflow.getActionName());
 			notiMsgCitizen.setPatternConfig(notiEventConfig.getPattern());
 			notiMsgCitizen.setPlId(notiEventConfig.getPlId());
 			notiMsgCitizen.setJspRedirect(notiEventConfig.getJspRedirect());
@@ -493,7 +494,7 @@ public class NotificationUtils {
 		notiMsgEmploy.setDossierId(String.valueOf(dossierId));
 		notiMsgEmploy.setProcessOrderId(String.valueOf(processOrderId));
 		notiMsgEmploy.setPaymentFileId(String.valueOf(paymentFileId));
-		notiMsgEmploy.setEventName(notiEventConfig.getEventName());
+		notiMsgEmploy.setEventName(processWorkflow.getActionName());
 		notiMsgEmploy.setPatternConfig(notiEventConfig.getPattern());
 		notiMsgEmploy.setPlId(notiEventConfig.getPlId());
 		notiMsgEmploy.setJspRedirect(notiEventConfig.getJspRedirect());
