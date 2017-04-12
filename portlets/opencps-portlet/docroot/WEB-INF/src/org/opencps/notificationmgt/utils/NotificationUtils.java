@@ -40,18 +40,15 @@ import org.opencps.paymentmgt.model.PaymentFile;
 import org.opencps.processmgt.model.ProcessOrder;
 import org.opencps.processmgt.model.ProcessStep;
 import org.opencps.processmgt.model.ProcessWorkflow;
-import org.opencps.processmgt.model.StepAllowance;
 import org.opencps.processmgt.service.ProcessOrderLocalServiceUtil;
 import org.opencps.processmgt.service.ProcessStepLocalServiceUtil;
 import org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil;
-import org.opencps.processmgt.service.StepAllowanceLocalServiceUtil;
 import org.opencps.processmgt.util.ProcessUtils;
 import org.opencps.usermgt.model.Employee;
 import org.opencps.util.AccountUtil;
 import org.opencps.util.PortletPropsValues;
 import org.opencps.util.SendMailUtils;
 
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -61,9 +58,7 @@ import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Role;
 import com.liferay.portal.model.User;
-import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserNotificationEventLocalServiceUtil;
 import com.liferay.util.portlet.PortletProps;
@@ -191,6 +186,7 @@ public class NotificationUtils {
 			_log.info("+++fromAddress:" + fromAddress);
 			_log.info("+++subject:" + subject);
 			_log.info("+++to:" + to);
+			_log.info("+++body:" + body);
 
 			SendMailUtils.sendEmail(fromAddress, fromName, to,
 					StringPool.BLANK, subject, body, htmlFormat);
@@ -441,7 +437,7 @@ public class NotificationUtils {
 			notiMsgCitizen.setPaymentFileId(String.valueOf(paymentFileId));
 			notiMsgCitizen.setProcessOrderId(String.valueOf(processOrderId));
 			
-			if(notiEventConfig.getPattern().toUpperCase().contains(PortletKeys.EVENT_NAME_CUSTOM)){
+			if(notiEventConfig.getPattern().toUpperCase().contains(PortletKeys.USE_EVENT_DESCRIPTION)){
 				notiMsgCitizen.setEventName(notiEventConfig.getDescription());
 			}else{
 				notiMsgCitizen.setEventName(processWorkflow.getActionName());
@@ -510,14 +506,17 @@ public class NotificationUtils {
 		notiMsgEmploy.setJspRedirect(notiEventConfig.getJspRedirect());
 
 		for (Employee employee : coordinateEmployeeList) {
+			
+			if(!employee.getEmail().contains(notiEventConfig.getUserExcept())){
 
-			coordinateInfoEmploy.setUserId(String.valueOf(employee
-					.getMappingUserId()));
-			coordinateInfoEmploy.setEmailAddress(employee.getEmail());
-			coordinateInfoEmploy.setPhoneNumber(employee.getTelNo());
-			coordinateInfoEmploy.setFullName(employee.getFullName());
-
-			infoEmployList.add(coordinateInfoEmploy);
+				coordinateInfoEmploy.setUserId(String.valueOf(employee
+						.getMappingUserId()));
+				coordinateInfoEmploy.setEmailAddress(employee.getEmail());
+				coordinateInfoEmploy.setPhoneNumber(employee.getTelNo());
+				coordinateInfoEmploy.setFullName(employee.getFullName());
+	
+				infoEmployList.add(coordinateInfoEmploy);
+			}
 
 		}
 		// /////////////////////////////////////////////

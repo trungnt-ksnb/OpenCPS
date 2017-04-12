@@ -73,6 +73,7 @@
 		<column name="eventName" type="String"></column>
 		<column name="description" type="String"></column>
 		<column name="pattern" type="String"></column>
+		<column name="userExcept" type="String"></column>
 		<column name="plId" type="String"></column>
 		<column name="jspRedirect" type="String"></column>
 		<column name="active" type="boolean"></column>

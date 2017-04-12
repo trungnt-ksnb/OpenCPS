@@ -871,6 +871,7 @@
 		</field>
 		<field name="description" type="String" />
 		<field name="pattern" type="String" />
+		<field name="userExcept" type="String" />
 		<field name="plId" type="String" />
 		<field name="jspRedirect" type="String" />
 		<field name="active" type="boolean" />

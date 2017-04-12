@@ -52,6 +52,38 @@
 	
 	notiStatusConfigs = NotificationStatusConfigLocalServiceUtil.getNotificationStatusConfigs(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 	
+	///////////////////////////////////////////
+	String[] emailListException = StringUtil.split(notiEventConfig.getUserExcept());
+	
+	List leftList = new ArrayList();
+	
+	List<Employee> employees = new ArrayList<Employee>();
+	employees = EmployeeLocalServiceUtil.getEmployees(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+	
+	for(Employee employee1:employees){
+		if(!ArrayUtil.contains(emailListException, employee1.getEmail())){
+			KeyValuePair keyValuePair =  new KeyValuePair(employee1.getEmail(), employee1.getEmail());
+			leftList.add(keyValuePair);
+		}
+	}
+	
+	List rightList = new ArrayList();
+	
+	if(Validator.isNotNull(emailListException)){
+		
+		for(int i=0;i<emailListException.length;i++){
+			
+			try{
+				Employee employee2 = EmployeeLocalServiceUtil.getEmployeeByEmail(themeDisplay.getScopeGroupId(), emailListException[i]);
+				KeyValuePair keyValuePair =  new KeyValuePair(employee2.getEmail(), employee2.getEmail());
+				rightList.add(keyValuePair);
+			}catch(Exception e){
+				continue;
+			}
+		}
+		
+	}
+	////////////////////////////////////////////////
 %>
 
 <liferay-ui:header
@@ -74,6 +106,7 @@
 		<portlet:actionURL var="updateNotificationEventConfigURL" name="updateNotificationEventConfig" />
 
 		<aui:form action="<%=updateNotificationEventConfigURL.toString()%>"
+			onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "getValueRightBox();" %>'> 
 			method="post" name="fm">
 
 			<aui:model-context bean="<%=notiEventConfig%>"
@@ -120,15 +153,22 @@
 			
 			<aui:fieldset>
 			
-				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.EVENT_NAME %>" value="<%=eventConfig ? notiEventConfig.getEventName():StringPool.BLANK %>"/>
+				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.EVENT_NAME %>" 
+				value="<%=eventConfig ? notiEventConfig.getEventName():StringPool.BLANK %>"
+				title="event-name"/>
 				
-				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.DESCRIPTION %>" value="<%=eventConfig ? notiEventConfig.getDescription() :StringPool.BLANK %>"/>
+				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.DESCRIPTION %>" 
+				value="<%=eventConfig ? notiEventConfig.getDescription() :StringPool.BLANK %>"
+				title="description"/>
 				
-				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.PATTERN %>" value="<%=eventConfig ? notiEventConfig.getPattern() :StringPool.BLANK %>"
-					placeholder="citizen|employee|email|sms|inbox|use_event_description" ><liferay-ui:icon-help message="tooltip-one"></liferay-ui:icon-help></aui:input>
+				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.PATTERN %>" 
+				value="<%=eventConfig ? notiEventConfig.getPattern() :StringPool.BLANK %>"
+				title="pattern">
+					<liferay-ui:icon-help message="tooltip-one"/>
+				</aui:input>
 				
 	
-				<aui:select label="root-layout" name="<%=NotificationEventConfigDisplayTerms.NOTICE_REDIRECT_CONFIG_ID %>">
+				<aui:select label="page-redirect" name="<%=NotificationEventConfigDisplayTerms.NOTICE_REDIRECT_CONFIG_ID %>">
 					<aui:option value="" />
 
 				<%
@@ -186,6 +226,20 @@
 
 				</aui:select>
 				
+				<aui:fieldset label="dossier-status-treemenu-display">
+						<liferay-ui:input-move-boxes
+							leftBoxName="availableEmployeeUser"
+							leftList="<%= leftList %>"
+							leftReorder="true"
+							leftTitle="employee-list"
+							rightBoxName="userExceptList"
+							rightList="<%= rightList %>"
+							rightTitle="employee-except"
+							rightReorder="true"
+						
+						/>
+				</aui:fieldset>
+				<aui:input name="userExceptListValues" type="hidden"></aui:input>
 				<aui:input name="<%=NotificationEventConfigDisplayTerms.ACTIVE%>" 
 							type="checkbox" 
 							label="inuse" 
@@ -196,6 +250,19 @@
 		</aui:form>
 	</div>
 </div>
+
+<aui:script>
+	
+	Liferay.provide(window, '<portlet:namespace />getValueRightBox', function() {
+		var A = AUI();
+		var userExceptList = Liferay.Util.listSelect(document.<portlet:namespace />fm.<portlet:namespace />userExceptList);
+		var userExceptListValues = A.one('#<portlet:namespace />userExceptListValues');
+		 console.log("userExceptList:"+userExceptList);
+		 console.log("userExceptListValues:"+userExceptListValues);
+		userExceptListValues.val(userExceptList);
+		submitForm(document.<portlet:namespace />fm);
+	}, ['liferay-util-list-fields']);
+</aui:script>
 
 <%!private Log _log = LogFactoryUtil
 			.getLog("html.portlets.notificationmgt.backoffice.notification_status_config_edit");%>

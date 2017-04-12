@@ -30,5 +30,5 @@ public class PortletKeys{
 	
 	public static final String CITIZEN = "CITIZEN";
 	public static final String EMPLOYEE = "EMPLOYEE";
-	public static final String USE_EVENT_DESCRIPTION = "use_event_description";
+	public static final String USE_EVENT_DESCRIPTION = "USE_EVENT_DESCRIPTION";
 }

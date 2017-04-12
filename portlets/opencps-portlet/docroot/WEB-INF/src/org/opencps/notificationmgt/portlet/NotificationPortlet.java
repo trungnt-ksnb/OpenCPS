@@ -45,6 +45,7 @@ import com.liferay.portal.kernel.portlet.WindowStateFactory;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
@@ -283,6 +284,8 @@ public class NotificationPortlet extends MVCPortlet {
 		String pattern = ParamUtil.getString(actionRequest,
 				NotificationEventConfigDisplayTerms.PATTERN);
 		
+		String[] userExceptionList = ParamUtil.getParameterValues(actionRequest, NotificationEventConfigDisplayTerms.USER_EXCEPT_LIST);
+		
 		String plId = ParamUtil.getString(actionRequest, NotificationEventConfigDisplayTerms.NOTICE_REDIRECT_CONFIG_ID);
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
@@ -313,6 +316,7 @@ public class NotificationPortlet extends MVCPortlet {
 				notiEventConfig.setActive(active);
 				notiEventConfig.setPattern(pattern.toUpperCase());
 				notiEventConfig.setPlId(plId);
+				notiEventConfig.setUserExcept(String.valueOf(StringUtil.merge(userExceptionList)));
 
 				NotificationEventConfigLocalServiceUtil
 						.updateNotificationEventConfig(notiEventConfig);
@@ -339,6 +343,7 @@ public class NotificationPortlet extends MVCPortlet {
 				notiEventConfig.setActive(active);
 				notiEventConfig.setPattern(pattern.toUpperCase());
 				notiEventConfig.setPlId(plId);
+				notiEventConfig.setUserExcept(String.valueOf(StringUtil.merge(userExceptionList)));
 
 				NotificationEventConfigLocalServiceUtil
 						.addNotificationEventConfig(notiEventConfig);
