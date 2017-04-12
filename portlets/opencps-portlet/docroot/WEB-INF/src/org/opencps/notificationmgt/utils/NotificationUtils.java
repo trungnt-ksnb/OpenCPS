@@ -440,7 +440,12 @@ public class NotificationUtils {
 			notiMsgCitizen.setDossierId(String.valueOf(dossierId));
 			notiMsgCitizen.setPaymentFileId(String.valueOf(paymentFileId));
 			notiMsgCitizen.setProcessOrderId(String.valueOf(processOrderId));
-			notiMsgCitizen.setEventName(processWorkflow.getActionName());
+			
+			if(notiEventConfig.getPattern().toUpperCase().contains(PortletKeys.EVENT_NAME_CUSTOM)){
+				notiMsgCitizen.setEventName(notiEventConfig.getDescription());
+			}else{
+				notiMsgCitizen.setEventName(processWorkflow.getActionName());
+			}
 			notiMsgCitizen.setPatternConfig(notiEventConfig.getPattern());
 			notiMsgCitizen.setPlId(notiEventConfig.getPlId());
 			notiMsgCitizen.setJspRedirect(notiEventConfig.getJspRedirect());
@@ -494,7 +499,12 @@ public class NotificationUtils {
 		notiMsgEmploy.setDossierId(String.valueOf(dossierId));
 		notiMsgEmploy.setProcessOrderId(String.valueOf(processOrderId));
 		notiMsgEmploy.setPaymentFileId(String.valueOf(paymentFileId));
-		notiMsgEmploy.setEventName(processWorkflow.getActionName());
+		
+		if(notiEventConfig.getPattern().toUpperCase().contains(PortletKeys.USE_EVENT_DESCRIPTION)){
+			notiMsgEmploy.setEventName(notiEventConfig.getDescription());
+		}else{
+			notiMsgEmploy.setEventName(processWorkflow.getActionName());
+		}
 		notiMsgEmploy.setPatternConfig(notiEventConfig.getPattern());
 		notiMsgEmploy.setPlId(notiEventConfig.getPlId());
 		notiMsgEmploy.setJspRedirect(notiEventConfig.getJspRedirect());
@@ -506,24 +516,6 @@ public class NotificationUtils {
 			coordinateInfoEmploy.setEmailAddress(employee.getEmail());
 			coordinateInfoEmploy.setPhoneNumber(employee.getTelNo());
 			coordinateInfoEmploy.setFullName(employee.getFullName());
-
-			boolean flag = false;
-			try {
-				List<Role> listRole = RoleLocalServiceUtil
-						.getUserRoles(employee.getMappingUserId());
-				for (Role role : listRole) {
-					StepAllowance stepAllowance = StepAllowanceLocalServiceUtil
-							.getStepAllowance(
-									processWorkflow.getPostProcessStepId(),
-									role.getRoleId());
-					if (Validator.isNotNull(stepAllowance)) {
-						flag = true;
-						break;
-					}
-				}
-			} catch (SystemException e) {
-				_log.error(e);
-			}
 
 			infoEmployList.add(coordinateInfoEmploy);
 

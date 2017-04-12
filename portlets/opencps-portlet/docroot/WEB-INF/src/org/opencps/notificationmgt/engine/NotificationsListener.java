@@ -95,7 +95,9 @@ public class NotificationsListener implements MessageListener {
 						
 					}
 					
-				}else if(patternConfig.toUpperCase().contains(NotificationEventKeys.INBOX)){
+				}
+				
+				if(patternConfig.toUpperCase().contains(NotificationEventKeys.INBOX)){
 					
 					for (InfomationList info : infoList) {
 
@@ -107,7 +109,9 @@ public class NotificationsListener implements MessageListener {
 
 					}
 					
-				}else if(patternConfig.toUpperCase().contains(NotificationEventKeys.SMS)){
+				}
+				
+				if(patternConfig.toUpperCase().contains(NotificationEventKeys.SMS)){
 					
 				}
 

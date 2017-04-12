@@ -125,7 +125,8 @@
 				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.DESCRIPTION %>" value="<%=eventConfig ? notiEventConfig.getDescription() :StringPool.BLANK %>"/>
 				
 				<aui:input type="text" name="<%=NotificationEventConfigDisplayTerms.PATTERN %>" value="<%=eventConfig ? notiEventConfig.getPattern() :StringPool.BLANK %>"
-					placeholder="citizen|email|sms|inbox"/>
+					placeholder="citizen|employee|email|sms|inbox|use_event_description" ><liferay-ui:icon-help message="tooltip-one"></liferay-ui:icon-help></aui:input>
+				
 	
 				<aui:select label="root-layout" name="<%=NotificationEventConfigDisplayTerms.NOTICE_REDIRECT_CONFIG_ID %>">
 					<aui:option value="" />
