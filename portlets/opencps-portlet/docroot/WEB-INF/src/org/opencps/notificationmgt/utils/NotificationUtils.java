@@ -30,6 +30,7 @@ import org.opencps.dossiermgt.bean.AccountBean;
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.model.impl.DossierImpl;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
+import org.opencps.notficationmgt.fac.SendNotificationMessageFactory;
 import org.opencps.notificationmgt.engine.UserNotificationHandler;
 import org.opencps.notificationmgt.message.SendNotificationMessage;
 import org.opencps.notificationmgt.model.NotificationEventConfig;
@@ -71,7 +72,6 @@ public class NotificationUtils {
 
 	private static Log _log = LogFactoryUtil.getLog(NotificationUtils.class);
 
-
 	public static void addUserNotificationEvent(
 			SendNotificationMessage message, JSONObject payloadJSON,
 			long userIdDelivery) {
@@ -92,7 +92,7 @@ public class NotificationUtils {
 
 	public static JSONObject createNotification(
 			SendNotificationMessage message,
-			SendNotificationMessage.InfomationList info) {
+			SendNotificationMessage.Infomations.Infomation info) {
 
 		JSONObject payloadJSONObject = JSONFactoryUtil.createJSONObject();
 
@@ -102,9 +102,6 @@ public class NotificationUtils {
 
 		try {
 
-			title.append("[").append(message.getDossierId()).append("]")
-					.append(message.getEventName());
-
 			Dossier dossiser = null;
 			long dossierId = Long.valueOf(message.getDossierId());
 
@@ -112,8 +109,16 @@ public class NotificationUtils {
 
 				dossiser = DossierLocalServiceUtil.getDossier(dossierId);
 
-				content.append(dossiser.getReceptionNo()).append("<br>")
-						.append(message.getEventName());
+				title.append(StringUtil.replace(
+						PortletPropsValues.NOTIFICATION_INBOX_TITLE,
+						new String[] { "{receptionNo}", "{dossierId}" },
+						new String[] { dossiser.getReceptionNo(),
+								String.valueOf(dossierId) }));
+
+				content.append(StringUtil.replace(
+						PortletPropsValues.NOTIFICATION_INBOX_BODY,
+						new String[] { "{actionName}" },
+						new String[] { message.getEventName() }));
 			}
 
 		} catch (Exception e) {
@@ -134,7 +139,7 @@ public class NotificationUtils {
 	}
 
 	public static void sendEmailNotification(SendNotificationMessage message,
-			SendNotificationMessage.InfomationList info) {
+			SendNotificationMessage.Infomations.Infomation info) {
 
 		String fromAddress = StringPool.BLANK;
 		String fromName = StringPool.BLANK;
@@ -146,7 +151,7 @@ public class NotificationUtils {
 		Locale locale = new Locale("vi", "VN");
 
 		try {
-			
+
 			long dossierId = Long.valueOf(message.getDossierId());
 
 			Dossier dossier = new DossierImpl();
@@ -171,8 +176,8 @@ public class NotificationUtils {
 			subject = StringUtil.replace(subject, "[OpenCPS]", "[" + fromName
 					+ "]");
 
-			body = StringUtil.replace(body, "[receiverUserName]", "["
-					+ info.getFullName() + "]");
+			body = StringUtil.replace(body, "[receiverUserName]",
+					"[" + info.getFullName() + "]");
 			body = StringUtil.replace(body, "{OpenCPS}", fromName);
 			body = StringUtil.replace(body, "{dossierId}",
 					String.valueOf(message.getDossierId()));
@@ -180,8 +185,8 @@ public class NotificationUtils {
 					dossier.getReceptionNo());
 			body = StringUtil.replace(body, "{event}",
 					PortletProps.get(message.getEventName()));
-			body = StringUtil.replace(body, "{message}",
-					message.getEventName());
+			body = StringUtil
+					.replace(body, "{message}", message.getEventName());
 
 			_log.info("+++fromAddress:" + fromAddress);
 			_log.info("+++subject:" + subject);
@@ -239,9 +244,9 @@ public class NotificationUtils {
 							.fetchProcessWorkflow(processWorkflowId);
 
 					dossier = DossierLocalServiceUtil.fetchDossier(dossierId);
-					
-					processOrder = ProcessOrderLocalServiceUtil.findBy_Dossier(dossierId);
-					
+
+					processOrder = ProcessOrderLocalServiceUtil
+							.findBy_Dossier(dossierId);
 
 				} catch (Exception e) {
 
@@ -297,8 +302,8 @@ public class NotificationUtils {
 					}
 
 				}
-			}else{
-				_log.warn("===processWorkflowId:"+processWorkflowId);
+			} else {
+				_log.warn("===processWorkflowId:" + processWorkflowId);
 			}
 		} catch (Exception e) {
 			_log.error(e);
@@ -343,33 +348,35 @@ public class NotificationUtils {
 								/*
 								 * Xac dinh user chu ho so can notice
 								 */
-								SendNotificationMessage notiMsgCitizen = new SendNotificationMessage();
+								SendNotificationMessageFactory notiFactory = new SendNotificationMessageFactory();
+								SendNotificationMessage notiMsgCitizen = notiFactory
+										.createSendNotificationMessage();
 
 								notiMsgCitizen = setMessageCitizens(
-										processWorkflow,
-										dossier.getUserId(),
+										processWorkflow, dossier.getUserId(),
 										dossier.getGroupId(),
-										dossier.getDossierId(), 
-										paymentFileId,
-										processOrderId,
-										notiEventConfig);
+										dossier.getDossierId(), paymentFileId,
+										processOrderId, notiEventConfig);
 
 								notificationList.add(notiMsgCitizen);
 							} else if (notiEventConfig.getPattern()
-									.toUpperCase().contains(PortletKeys.EMPLOYEE)) {
+									.toUpperCase()
+									.contains(PortletKeys.EMPLOYEE)) {
 
 								/*
 								 * Xac dinh danh sach can bo lien quan den ho so
 								 * can notice
 								 */
 
-								SendNotificationMessage notiMsgEmploy = new SendNotificationMessage();
+								SendNotificationMessageFactory notiFactory = new SendNotificationMessageFactory();
+								SendNotificationMessage notiMsgEmploy = notiFactory
+										.createSendNotificationMessage();
 
 								notiMsgEmploy = setMessageEmployee(
-										processWorkflow, dossier.getDossierId(),
-										dossier.getGroupId(),
-										processOrderId, paymentFileId,
-										notiEventConfig);
+										processWorkflow,
+										dossier.getDossierId(),
+										dossier.getGroupId(), processOrderId,
+										paymentFileId, notiEventConfig);
 
 								notificationList.add(notiMsgEmploy);
 							}
@@ -390,8 +397,8 @@ public class NotificationUtils {
 	 * @param assignToUserId
 	 * @return
 	 */
-	private static List<Employee> getListEmploy(ProcessWorkflow processWorkflow,
-			long groupId) {
+	private static List<Employee> getListEmploy(
+			ProcessWorkflow processWorkflow, long groupId) {
 
 		List<Employee> ls = new ArrayList<>();
 
@@ -418,10 +425,10 @@ public class NotificationUtils {
 
 	}
 
-	private static SendNotificationMessage setMessageCitizens(ProcessWorkflow processWorkflow,
-			long userId,
-			long groupId, long dossierId, long paymentFileId,
-			long processOrderId, NotificationEventConfig notiEventConfig) {
+	private static SendNotificationMessage setMessageCitizens(
+			ProcessWorkflow processWorkflow, long userId, long groupId,
+			long dossierId, long paymentFileId, long processOrderId,
+			NotificationEventConfig notiEventConfig) {
 
 		AccountBean accountBean = AccountUtil.getAccountBean(userId, groupId,
 				null);
@@ -429,31 +436,37 @@ public class NotificationUtils {
 		Citizen citizen = null;
 		Business bussines = null;
 
-		SendNotificationMessage notiMsgCitizen = new SendNotificationMessage();
+		SendNotificationMessageFactory notiFactory = new SendNotificationMessageFactory();
+		SendNotificationMessage notiMsgCitizen = notiFactory
+				.createSendNotificationMessage();
 
 		if (accountBean.isCitizen() || accountBean.isBusiness()) {
 
 			notiMsgCitizen.setDossierId(String.valueOf(dossierId));
 			notiMsgCitizen.setPaymentFileId(String.valueOf(paymentFileId));
 			notiMsgCitizen.setProcessOrderId(String.valueOf(processOrderId));
-			
-			if(notiEventConfig.getPattern().toUpperCase().contains(PortletKeys.USE_EVENT_DESCRIPTION)){
+
+			if (notiEventConfig.getPattern().toUpperCase()
+					.contains(PortletKeys.USE_EVENT_DESCRIPTION)) {
 				notiMsgCitizen.setEventName(notiEventConfig.getDescription());
-			}else{
+			} else {
 				notiMsgCitizen.setEventName(processWorkflow.getActionName());
 			}
 			notiMsgCitizen.setPatternConfig(notiEventConfig.getPattern());
 			notiMsgCitizen.setPlId(notiEventConfig.getPlId());
 			notiMsgCitizen.setJspRedirect(notiEventConfig.getJspRedirect());
 
-			SendNotificationMessage.InfomationList citizenInfo = new SendNotificationMessage.InfomationList();
-			List<SendNotificationMessage.InfomationList> citizenInfoList = new ArrayList<SendNotificationMessage.InfomationList>();
+			SendNotificationMessage.Infomations citizenInfos = notiFactory
+					.createSendNotificationMessageInfomations();
 
 			if (accountBean.isCitizen()) {
 				citizen = (Citizen) accountBean.getAccountInstance();
 			} else if (accountBean.isBusiness()) {
 				bussines = (Business) accountBean.getAccountInstance();
 			}
+
+			SendNotificationMessage.Infomations.Infomation citizenInfo = notiFactory
+					.createSendNotificationMessageInfomationsInfomation();
 
 			if (Validator.isNotNull(citizen)) {
 
@@ -470,9 +483,9 @@ public class NotificationUtils {
 				citizenInfo.setPhoneNumber(bussines.getTelNo());
 			}
 
-			citizenInfoList.add(citizenInfo);
+			citizenInfos.getInfomation().add(citizenInfo);
 
-			notiMsgCitizen.setInfomationList(citizenInfoList);
+			notiMsgCitizen.setInfomations(citizenInfos);
 
 		}
 
@@ -480,25 +493,31 @@ public class NotificationUtils {
 	}
 
 	private static SendNotificationMessage setMessageEmployee(
-			ProcessWorkflow processWorkflow, long dossierId,long groupId,
+			ProcessWorkflow processWorkflow, long dossierId, long groupId,
 			long processOrderId, long paymentFileId,
 			NotificationEventConfig notiEventConfig) {
 
 		List<Employee> coordinateEmployeeList = getListEmploy(processWorkflow,
 				groupId);
 
-		SendNotificationMessage notiMsgEmploy = new SendNotificationMessage();
+		_log.info("+++++coordinateEmployeeList.size():"
+				+ coordinateEmployeeList.size());
 
-		List<SendNotificationMessage.InfomationList> infoEmployList = new ArrayList<SendNotificationMessage.InfomationList>();
-		SendNotificationMessage.InfomationList coordinateInfoEmploy = new SendNotificationMessage.InfomationList();
+		SendNotificationMessageFactory notiFactory = new SendNotificationMessageFactory();
+		SendNotificationMessage notiMsgEmploy = notiFactory
+				.createSendNotificationMessage();
+
+		SendNotificationMessage.Infomations infoEmployList = notiFactory
+				.createSendNotificationMessageInfomations();
 
 		notiMsgEmploy.setDossierId(String.valueOf(dossierId));
 		notiMsgEmploy.setProcessOrderId(String.valueOf(processOrderId));
 		notiMsgEmploy.setPaymentFileId(String.valueOf(paymentFileId));
-		
-		if(notiEventConfig.getPattern().toUpperCase().contains(PortletKeys.USE_EVENT_DESCRIPTION)){
+
+		if (notiEventConfig.getPattern().toUpperCase()
+				.contains(PortletKeys.USE_EVENT_DESCRIPTION)) {
 			notiMsgEmploy.setEventName(notiEventConfig.getDescription());
-		}else{
+		} else {
 			notiMsgEmploy.setEventName(processWorkflow.getActionName());
 		}
 		notiMsgEmploy.setPatternConfig(notiEventConfig.getPattern());
@@ -506,21 +525,25 @@ public class NotificationUtils {
 		notiMsgEmploy.setJspRedirect(notiEventConfig.getJspRedirect());
 
 		for (Employee employee : coordinateEmployeeList) {
-			
-			if(!employee.getEmail().contains(notiEventConfig.getUserExcept())){
+
+			_log.info("+++++employee.getEmail():" + employee.getEmail());
+
+			if (!employee.getEmail().trim()
+					.contains(notiEventConfig.getUserExcept())) {
+
+				SendNotificationMessage.Infomations.Infomation coordinateInfoEmploy = notiFactory
+						.createSendNotificationMessageInfomationsInfomation();
 
 				coordinateInfoEmploy.setUserId(String.valueOf(employee
 						.getMappingUserId()));
 				coordinateInfoEmploy.setEmailAddress(employee.getEmail());
 				coordinateInfoEmploy.setPhoneNumber(employee.getTelNo());
 				coordinateInfoEmploy.setFullName(employee.getFullName());
-	
-				infoEmployList.add(coordinateInfoEmploy);
-			}
 
+				infoEmployList.getInfomation().add(coordinateInfoEmploy);
+			}
 		}
-		// /////////////////////////////////////////////
-		notiMsgEmploy.setInfomationList(infoEmployList);
+		notiMsgEmploy.setInfomations(infoEmployList);
 
 		return notiMsgEmploy;
 

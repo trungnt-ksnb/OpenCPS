@@ -46,7 +46,6 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.TicketLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.SubscriptionSender;
-import com.liferay.util.ContentUtil;
 import com.liferay.util.PwdGenerator;
 
 /**
@@ -312,7 +311,7 @@ public class MessageBusUtil {
 	}
 
 	public static void sendEmailNotification(SendNotificationMessage message,
-			SendNotificationMessage.InfomationList info,
+			SendNotificationMessage.Infomations.Infomation info,
 			ServiceContext serviceContext) throws PortalException,
 			SystemException {
 

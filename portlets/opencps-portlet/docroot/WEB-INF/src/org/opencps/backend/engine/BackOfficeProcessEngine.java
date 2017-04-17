@@ -23,15 +23,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.opencps.accountmgt.model.Business;
-import org.opencps.accountmgt.model.Citizen;
 import org.opencps.backend.message.SendToBackOfficeMsg;
 import org.opencps.backend.message.SendToEngineMsg;
 import org.opencps.backend.util.BackendUtils;
 import org.opencps.backend.util.DossierNoGenerator;
 import org.opencps.backend.util.PaymentRequestGenerator;
 import org.opencps.backend.util.PaymentUrlGenerator;
-import org.opencps.dossiermgt.bean.AccountBean;
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.model.DossierLog;
 import org.opencps.dossiermgt.model.ServiceConfig;
@@ -40,7 +37,6 @@ import org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil;
 import org.opencps.dossiermgt.util.ActorBean;
 import org.opencps.holidayconfig.util.HolidayCheckUtils;
 import org.opencps.notificationmgt.message.SendNotificationMessage;
-import org.opencps.notificationmgt.utils.NotificationEventKeys;
 import org.opencps.notificationmgt.utils.NotificationUtils;
 import org.opencps.paymentmgt.model.PaymentFile;
 import org.opencps.paymentmgt.model.impl.PaymentFileImpl;
@@ -48,20 +44,14 @@ import org.opencps.paymentmgt.service.PaymentFileLocalServiceUtil;
 import org.opencps.processmgt.model.ProcessOrder;
 import org.opencps.processmgt.model.ProcessStep;
 import org.opencps.processmgt.model.ProcessWorkflow;
-import org.opencps.processmgt.model.StepAllowance;
 import org.opencps.processmgt.model.impl.ProcessStepImpl;
 import org.opencps.processmgt.service.ProcessOrderLocalServiceUtil;
 import org.opencps.processmgt.service.ProcessWorkflowLocalServiceUtil;
-import org.opencps.processmgt.service.StepAllowanceLocalServiceUtil;
 import org.opencps.processmgt.util.ProcessMgtUtil;
 import org.opencps.processmgt.util.ProcessUtils;
-import org.opencps.usermgt.model.Employee;
-import org.opencps.util.AccountUtil;
 import org.opencps.util.PortletConstants;
 import org.opencps.util.WebKeys;
 
-import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.Message;
@@ -71,9 +61,6 @@ import com.liferay.portal.kernel.messaging.MessageListenerException;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Role;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.RoleLocalServiceUtil;
 
 /**
  * @author khoavd
