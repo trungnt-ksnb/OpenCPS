@@ -176,7 +176,7 @@ public class NotificationUtils {
 			subject = StringUtil.replace(subject, "[OpenCPS]", "[" + fromName
 					+ "]");
 
-			body = StringUtil.replace(body, "[receiverUserName]",
+			body = StringUtil.replace(body, "{receiverUserName}",
 					"[" + info.getFullName() + "]");
 			body = StringUtil.replace(body, "{OpenCPS}", fromName);
 			body = StringUtil.replace(body, "{dossierId}",
