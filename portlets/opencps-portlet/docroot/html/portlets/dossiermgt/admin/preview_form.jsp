@@ -31,14 +31,15 @@
 <%@ include file="/init.jsp"%>
 
 <%
-	long dossierPartId = ParamUtil.getLong(request, DossierPartDisplayTerms.DOSSIERPART_DOSSIERPARTID,0);
+	long dossierPartId = ParamUtil.getLong(request,
+			DossierPartDisplayTerms.DOSSIERPART_DOSSIERPARTID, 0);
 
 	String formData = StringPool.BLANK;
 	String sampleData = StringPool.BLANK;
 	String alpacaSchema = StringPool.BLANK;
 
 	String auTock = AuthTokenUtil.getToken(request);
-	
+
 	if (dossierPartId > 0) {
 
 		DossierPart dossierPart = DossierPartLocalServiceUtil
@@ -67,12 +68,11 @@
 	
 	<aui:fieldset>
 		<c:if test="<%=Validator.isNotNull(alpacaSchema) %>">
-						<aui:button type="button" value="save" name="save" cssClass="saveForm"/>
+			<aui:button type="button" value="save" name="save" cssClass="saveForm"/>
 		</c:if>
 	</aui:fieldset>
 
 </aui:form>
-
 
 <aui:script>
 
@@ -131,10 +131,5 @@ AUI().ready(function(A){
 	var el = $("#dynamicForm");
 	
 	Alpaca(el, alpacaSchema);
-	
-	
 });
 </aui:script>
-
-
-
