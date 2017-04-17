@@ -80,6 +80,9 @@ public class PortletPropsValues {
 	public static final String[] ACCOUNTMGT_FILE_TYPE = GetterUtil
 			.getStringValues(PortletProps
 					.getArray(PortletPropsKeys.ACCOUNTMGT_FILE_TYPE));
+	public static final String[] ACCOUNTMGT_FILESIGNIMG_TYPE = GetterUtil
+			.getStringValues(PortletProps
+					.getArray(PortletPropsKeys.ACCOUNTMGT_FILESIGNIMG_TYPE));
 	public static final long ACCOUNTMGT_FILE_SIZE = GetterUtil
 			.getLong(PortletProps.get(PortletPropsKeys.ACCOUNTMGT_FILE_SIZE));
 	// User Management
@@ -315,5 +318,8 @@ public class PortletPropsValues {
 	
 	public static final String DM_USER_GROUP_NOTIFY = PortletProps
 			.get(PortletPropsKeys.DM_USER_GROUP_NOTIFY);
+	
+	public static final String DM_POSTAL_GATE = PortletProps
+			.get(PortletPropsKeys.DM_POSTAL_GATE);
 
 }

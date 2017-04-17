@@ -64,6 +64,7 @@ public class PortletPropsKeys {
 	public static final String DATAMGT_MASTERDATA_USER_GROUP_NOTIFY = "opencps.datamgt.masterdata.notification.user.group";
 	// validate file
 	public static final String ACCOUNTMGT_FILE_TYPE = "opencps.accountmgt.file.type";
+	public static final String ACCOUNTMGT_FILESIGNIMG_TYPE = "opencps.accountmgt.filesignimg.type";
 	public static final String ACCOUNTMGT_FILE_SIZE ="opencps.accountmgt.file.size";
 	// User Management
 	public static final String USERMGT_JOBPOS_LEADER = "opencps.usermgt.jobpos.leader";
@@ -149,5 +150,6 @@ public class PortletPropsKeys {
 	public static final String HOLIDAYCONFIG_DESCRIPTION_LENGTH = "opencps.holidayconfig.description.lengths";
 	
 	public static final String DM_USER_GROUP_NOTIFY = "opencps.datamgt.masterdata.notification.user.group";
+	public static final String DM_POSTAL_GATE = "opencps.datamgt.masterdata.postalgate";
 	
 }
