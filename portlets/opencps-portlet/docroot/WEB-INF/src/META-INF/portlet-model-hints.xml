@@ -396,6 +396,7 @@
 		<field name="processName" type="String" />
 		<field name="description" type="String" />
 		<field name="dossierTemplateId" type="long" />
+		<field name="paymentConfigId" type="long" />
 	</model>
 	<model name="org.opencps.processmgt.model.StepAllowance">
 		<field name="stepAllowanceId" type="long" />
@@ -705,6 +706,7 @@
 		<field name="paymentGateType" type="long" />
 		<field name="status" type="boolean" />
 		<field name="returnUrl" type="String" />
+		<field name="paymentConfigNo" type="String" />
 	</model>
 	<model name="org.opencps.paymentmgt.model.PaymentFile">
 		<field name="uuid" type="String" />

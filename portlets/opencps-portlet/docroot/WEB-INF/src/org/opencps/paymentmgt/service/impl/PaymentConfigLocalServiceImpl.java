@@ -20,6 +20,7 @@ package org.opencps.paymentmgt.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.opencps.paymentmgt.NoSuchPaymentConfigException;
 import org.opencps.paymentmgt.model.PaymentConfig;
 import org.opencps.paymentmgt.service.base.PaymentConfigLocalServiceBaseImpl;
 
@@ -156,6 +157,13 @@ public class PaymentConfigLocalServiceImpl extends PaymentConfigLocalServiceBase
 		throws SystemException {
 
 		return paymentConfigPersistence.findByGovAgencyAndStatusList(groupId, govAgencyOrganizationId, status);
+
+	}
+	
+	public PaymentConfig getPaymentConfigBy(long paymentConfigId, boolean status)
+			throws NoSuchPaymentConfigException, SystemException {
+
+		return paymentConfigPersistence.findByP_S(paymentConfigId, status);
 
 	}
 }

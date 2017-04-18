@@ -625,6 +625,8 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 		
 		long dossierTemplateId = ParamUtil.getLong(actionRequest, "dossierTemplateId");
 		
+		long paymentConfigId = ParamUtil.getLong(actionRequest, "paymentConfigId");
+		
 		SessionMessages.add(
 		    actionRequest, PortalUtil.getPortletId(actionRequest) +
 		        SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
@@ -638,7 +640,7 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 
 				// Add ServiceProcess
 				ServiceProcessLocalServiceUtil.addProcess(
-				    processNo, processName, description, dossierTemplateId, serviceContext);
+				    processNo, processName, description, dossierTemplateId,paymentConfigId, serviceContext);
 				// Redirect page
 
 				if (Validator.isNotNull(redirectURL)) {
@@ -653,7 +655,7 @@ public class ProcessMgtAdminPortlet extends MVCPortlet {
 				// Update ServiceProcess
 
 				ServiceProcessLocalServiceUtil.updateProcess(
-				    serviceProcessId, processNo, processName, dossierTemplateId, description);
+				    serviceProcessId, processNo, processName, dossierTemplateId, description,paymentConfigId);
 
 				// Redirect page
 				if (Validator.isNotNull(redirectURL)) {

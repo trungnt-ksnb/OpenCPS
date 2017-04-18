@@ -96,7 +96,7 @@ public class ServiceProcessLocalServiceImpl
 	 */
 	public ServiceProcess updateProcess(
 	    long serviceProcessId, String processNo, String processName,
-	    long dossierTemplateId, String description)
+	    long dossierTemplateId, String description,long paymentConfigId)
 	    throws PortalException, SystemException {
 
 		ServiceProcess serviceProcess =
@@ -108,6 +108,7 @@ public class ServiceProcessLocalServiceImpl
 			serviceProcess.setProcessName(processName);
 			serviceProcess.setDescription(description);
 			serviceProcess.setDossierTemplateId(dossierTemplateId);
+			serviceProcess.setPaymentConfigId(paymentConfigId);
 
 			serviceProcessPersistence.update(serviceProcess);
 		}
@@ -129,7 +130,7 @@ public class ServiceProcessLocalServiceImpl
 	 */
 	public ServiceProcess addProcess(
 	    String processNo, String processName, String description,
-	    long dossierTemplateId, ServiceContext context)
+	    long dossierTemplateId,long paymentConfigId, ServiceContext context)
 	    throws PortalException, SystemException {
 
 		long serviceProcessId =
@@ -151,6 +152,7 @@ public class ServiceProcessLocalServiceImpl
 			serviceProcess.setProcessName(processName);
 			serviceProcess.setDescription(description);
 			serviceProcess.setDossierTemplateId(dossierTemplateId);
+			serviceProcess.setPaymentConfigId(paymentConfigId);
 			
 			serviceProcessPersistence.update(serviceProcess);
 		}

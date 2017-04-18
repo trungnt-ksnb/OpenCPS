@@ -1,4 +1,9 @@
 
+<%@page import="org.opencps.paymentmgt.service.PaymentConfigLocalServiceUtil"%>
+<%@page import="org.opencps.paymentmgt.model.PaymentConfig"%>
+<%@page import="com.liferay.portal.kernel.dao.orm.QueryUtil"%>
+<%@page import="org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil"%>
+<%@page import="org.opencps.dossiermgt.model.ServiceConfig"%>
 <%
 /**
  * OpenCPS is the open source Core Public Services software
@@ -27,6 +32,9 @@
 <%
 	ServiceProcess serviceProcess = (ServiceProcess) request.getAttribute(WebKeys.SERVICE_PROCESS_ENTRY);
 	List<DossierTemplate> dossierTemplates = ProcessUtils.getDossierTemplate(renderRequest);
+	
+	List<PaymentConfig> paymentConfigs = new ArrayList<PaymentConfig>();
+	paymentConfigs = PaymentConfigLocalServiceUtil.getPaymentConfigs(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 %>
 
 <aui:model-context bean="<%= serviceProcess %>" model="<%= ServiceProcess.class %>"/>
@@ -61,6 +69,29 @@
 				for (DossierTemplate dt : dossierTemplates) {
 			%>
 				<aui:option value="<%= Long.toString(dt.getDossierTemplateId()) %>"><%= dt.getTemplateName() %></aui:option>
+			<%
+				}
+			%>
+		</aui:select>
+	</aui:col>
+</aui:row>
+
+<aui:row cssClass="nav-content-row">
+	<aui:col width="100">
+		<aui:select name="paymentConfigId" showEmptyOption="true">
+			<%
+				for (PaymentConfig paymentConfig : paymentConfigs) {
+
+					boolean selected = false;
+
+					if (paymentConfig.getPaymentConfigId() == serviceProcess
+							.getPaymentConfigId()) {
+
+						selected = true;
+
+					}
+			%>
+				<aui:option selected="<%=selected %>" value="<%= paymentConfig.getPaymentConfigId() %>"><%= paymentConfig.getPaymentConfigNo() %></aui:option>
 			<%
 				}
 			%>

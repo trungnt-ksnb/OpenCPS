@@ -451,8 +451,8 @@ public class BackOfficeProcessEngine implements MessageListener {
 					if (paymentMethods.contains(PaymentRequestGenerator.PAY_METHOD_KEYPAY)) {
 
 						paymentFile =
-								PaymentUrlGenerator.generatorPayURL(
-								processWorkflow.getGroupId(), govAgencyOrganizationId,
+								PaymentUrlGenerator.generatorPayURLwithServiceProcess(
+								processWorkflow.getGroupId(), serviceProcessId,
 								paymentFile.getPaymentFileId(), processWorkflow.getPaymentFee(),
 								toEngineMsg.getDossierId());
 
