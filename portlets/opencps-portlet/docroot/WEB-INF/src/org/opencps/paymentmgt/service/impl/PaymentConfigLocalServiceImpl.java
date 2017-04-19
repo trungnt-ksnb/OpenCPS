@@ -55,7 +55,7 @@ public class PaymentConfigLocalServiceImpl extends PaymentConfigLocalServiceBase
 		String invoiceTemplateNo, String invoiceIssueNo, String invoiceLastNo, String bankInfo,
 		String placeInfo, String keypayDomain, String keypayVersion, String keypayMerchantCode,
 		String keypaySecureKey, String reportTemplate, long paymentGateType, boolean paymentStatus,
-		long userId,String returnUrl, ServiceContext serviceContext)
+		long userId,String returnUrl, String paymentConfigNo, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		long paymentConfigId = CounterLocalServiceUtil.increment(PaymentConfig.class.getName());
@@ -86,6 +86,8 @@ public class PaymentConfigLocalServiceImpl extends PaymentConfigLocalServiceBase
 		paymentConfig.setPaymentGateType(paymentGateType);
 		paymentConfig.setStatus(paymentStatus);
 		paymentConfig.setReturnUrl(returnUrl);
+		paymentConfig.setPaymentConfigNo(paymentConfigNo);
+		
 		return paymentConfigPersistence.update(paymentConfig);
 
 	}
@@ -96,6 +98,7 @@ public class PaymentConfigLocalServiceImpl extends PaymentConfigLocalServiceBase
 		String invoiceLastNo, String bankInfo, String placeInfo, String keypayDomain,
 		String keypayVersion, String keypayMerchantCode, String keypaySecureKey,
 		String reportTemplate, long paymentGateType, boolean paymentStatus, long userId,String returnUrl,
+		String paymentConfigNo,
 		ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
@@ -125,6 +128,7 @@ public class PaymentConfigLocalServiceImpl extends PaymentConfigLocalServiceBase
 		paymentConfig.setPaymentGateType(paymentGateType);
 		paymentConfig.setStatus(paymentStatus);
 		paymentConfig.setReturnUrl(returnUrl);
+		paymentConfig.setPaymentConfigNo(paymentConfigNo);
 
 		return paymentConfigPersistence.update(paymentConfig);
 
@@ -164,6 +168,13 @@ public class PaymentConfigLocalServiceImpl extends PaymentConfigLocalServiceBase
 			throws NoSuchPaymentConfigException, SystemException {
 
 		return paymentConfigPersistence.findByP_S(paymentConfigId, status);
+
+	}
+	public List<PaymentConfig> getPaymentConfigListStatus(
+			boolean status)
+			throws SystemException {
+
+		return paymentConfigPersistence.findByStatus(status);
 
 	}
 }

@@ -34,7 +34,7 @@
 	List<DossierTemplate> dossierTemplates = ProcessUtils.getDossierTemplate(renderRequest);
 	
 	List<PaymentConfig> paymentConfigs = new ArrayList<PaymentConfig>();
-	paymentConfigs = PaymentConfigLocalServiceUtil.getPaymentConfigs(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
+	paymentConfigs = PaymentConfigLocalServiceUtil.getPaymentConfigListStatus(true);
 %>
 
 <aui:model-context bean="<%= serviceProcess %>" model="<%= ServiceProcess.class %>"/>
@@ -78,7 +78,7 @@
 
 <aui:row cssClass="nav-content-row">
 	<aui:col width="100">
-		<aui:select name="paymentConfigId" showEmptyOption="true">
+		<aui:select name="paymentConfigId" showEmptyOption="true" label="payment-config-no">
 			<%
 				for (PaymentConfig paymentConfig : paymentConfigs) {
 

@@ -140,6 +140,10 @@
 			<finder-column name="paymentConfigId"></finder-column>
 			<finder-column name="status"></finder-column>
 		</finder>
+		
+		<finder name="Status" return-type="Collection">
+			<finder-column name="status"></finder-column>
+		</finder>
 
 	</entity>
 	<entity name="PaymentGateConfig" local-service="true"
