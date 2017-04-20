@@ -38,6 +38,8 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="javax.portlet.PortletRequest"%>
+<%@page import="java.util.Locale"%>
+<%@page import="java.text.NumberFormat"%>
 
 <%@page import="org.opencps.util.PortletPropsValues"%>
 <%@page import="org.opencps.util.DataMgtUtils"%>
@@ -57,3 +59,11 @@
 <%@page import="org.opencps.paymentmgt.model.PaymentFile"%>
 <%@page import="org.opencps.datamgt.model.impl.DictItemImpl"%>
 <%@page import="org.opencps.datamgt.service.DictItemLocalServiceUtil"%>
+<%@page import="org.opencps.servicemgt.model.ServiceInfo"%>
+<%@page import="org.opencps.dossiermgt.model.Dossier"%>
+<%@page import="org.opencps.paymentmgt.service.PaymentFileLocalServiceUtil"%>
+<%@page import="org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil"%>
+<%@page import="org.opencps.dossiermgt.service.DossierLocalServiceUtil"%>
+<%@page import="org.opencps.servicemgt.model.impl.ServiceInfoImpl"%>
+<%@page import="org.opencps.dossiermgt.model.impl.DossierImpl"%>
+<%@page import="org.opencps.paymentmgt.model.impl.PaymentFileImpl"%>
