@@ -98,3 +98,18 @@
 		</aui:select>
 	</aui:col>
 </aui:row>
+<aui:row cssClass="nav-content-row">
+	<aui:col width="100">
+		<aui:input name="paymentFee" label="payment-fee" cssClass="input100">
+			
+		</aui:input>
+	</aui:col>
+</aui:row>
+<aui:row>
+	<aui:col>
+		<aui:input name="isRequestPayment" label="create-payment-file" type="checkbox" 
+			value="<%=serviceProcess.getIsRequestPayment() %>">
+			
+		</aui:input>
+	</aui:col>
+</aui:row>

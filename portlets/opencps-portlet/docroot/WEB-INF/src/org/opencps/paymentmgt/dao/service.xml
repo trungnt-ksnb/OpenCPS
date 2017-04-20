@@ -45,6 +45,11 @@
 		<column name="paymentGateResponseData" type="String" />
 		<column name="paymentGateCheckCode" type="int" />
 		<column name="paymentGateCheckResponseData" type="String" />
+		
+		<order by="desc">
+			<order-column name="createDate" />
+			<order-column name="paymentFileId" />
+		</order>
 
 		<finder name="GoodCode" return-type="PaymentFile">
 			<finder-column name="groupId"></finder-column>

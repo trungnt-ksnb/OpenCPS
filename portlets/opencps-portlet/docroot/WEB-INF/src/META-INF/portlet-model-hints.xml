@@ -397,6 +397,8 @@
 		<field name="description" type="String" />
 		<field name="dossierTemplateId" type="long" />
 		<field name="paymentConfigId" type="long" />
+		<field name="paymentFee" type="String" />
+		<field name="isRequestPayment" type="boolean" />
 	</model>
 	<model name="org.opencps.processmgt.model.StepAllowance">
 		<field name="stepAllowanceId" type="long" />
