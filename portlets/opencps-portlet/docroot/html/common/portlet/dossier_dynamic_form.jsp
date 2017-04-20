@@ -203,7 +203,8 @@
 	<aui:input name="<%=DossierDisplayTerms.FILE_GROUP_ID %>" type="hidden" value="<%=fileGroupId%>"/>
 	<aui:input name="<%=DossierFileDisplayTerms.DOSSIER_FILE_TYPE %>" type="hidden" value="<%=String.valueOf(renderResponse.getNamespace().equals(StringPool.UNDERLINE + WebKeys.DOSSIER_MGT_PORTLET + StringPool.UNDERLINE) ? PortletConstants.DOSSIER_FILE_TYPE_INPUT : PortletConstants.DOSSIER_FILE_TYPE_OUTPUT) %>"/>
 	<aui:input name="groupDossierPartId" type="hidden" value="<%=groupDossierPartId%>"/>
-	
+	<aui:input name="<%=DossierFileDisplayTerms.FORM_SCHEMA %>" type="hidden" value=""/>
+	<aui:input name="<%=DossierFileDisplayTerms.FORM_TYPE %>" type="hidden" value=""/>
 	<div id="dynamicForm"></div>
 	<aui:fieldset>
 		<c:choose>
