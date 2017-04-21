@@ -17,7 +17,6 @@
 
 package org.opencps.backend.engine;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,12 +37,12 @@ import org.opencps.dossiermgt.model.ServiceConfig;
 import org.opencps.dossiermgt.service.DossierLogLocalServiceUtil;
 import org.opencps.dossiermgt.service.ServiceConfigLocalServiceUtil;
 import org.opencps.dossiermgt.util.ActorBean;
+import org.opencps.dossiermgt.util.DossierMgtUtil;
 import org.opencps.holidayconfig.util.HolidayCheckUtils;
 import org.opencps.notificationmgt.message.SendNotificationMessage;
 import org.opencps.notificationmgt.utils.NotificationEventKeys;
 import org.opencps.paymentmgt.model.PaymentFile;
 import org.opencps.paymentmgt.model.impl.PaymentFileImpl;
-import org.opencps.paymentmgt.service.PaymentFileLocalServiceUtil;
 import org.opencps.processmgt.model.ProcessOrder;
 import org.opencps.processmgt.model.ProcessStep;
 import org.opencps.processmgt.model.ProcessWorkflow;
@@ -426,37 +425,12 @@ public class BackOfficeProcessEngine implements MessageListener {
 
 				// Update Paying
 				if (processWorkflow.getRequestPayment()) {
-
-					int totalPayment =
-						PaymentRequestGenerator.getTotalPayment(
-							processWorkflow.getPaymentFee(), dossier.getDossierId());
-
-					List<String> paymentMethods =
-						PaymentRequestGenerator.getPaymentMethod(processWorkflow.getPaymentFee());
-
-					String paymentOptions = StringUtil.merge(paymentMethods);
-
-					List<String> paymentMessages =
-						PaymentRequestGenerator.getMessagePayment(processWorkflow.getPaymentFee());
-
-					String paymentName =
-						(paymentMessages.size() != 0) ? paymentMessages.get(0) : StringPool.BLANK;
-
-					paymentFile =
-						PaymentFileLocalServiceUtil.addPaymentFile(
-							toEngineMsg.getDossierId(), toEngineMsg.getFileGroupId(), ownerUserId,
-							ownerOrganizationId, govAgencyOrganizationId, paymentName, new Date(),
-							(double) totalPayment, paymentName, StringPool.BLANK, paymentOptions);
-
-					if (paymentMethods.contains(PaymentRequestGenerator.PAY_METHOD_KEYPAY)) {
-
-						paymentFile =
-								PaymentUrlGenerator.generatorPayURL(
-								processWorkflow.getGroupId(), govAgencyOrganizationId,
-								paymentFile.getPaymentFileId(), processWorkflow.getPaymentFee(),
-								toEngineMsg.getDossierId());
-
-					}
+					
+					paymentFile = DossierMgtUtil.generatePaymentFile(
+							processWorkflow.getPaymentFee(),
+							dossier.getDossierId(), ownerUserId,
+							ownerOrganizationId, govAgencyOrganizationId,
+							toEngineMsg.getFileGroupId(),serviceProcessId);
 
 					citizenEvents.add(NotificationEventKeys.USERS_AND_ENTERPRISE.EVENT5);
 
@@ -464,24 +438,6 @@ public class BackOfficeProcessEngine implements MessageListener {
 
 					toBackOffice.setRequestCommand(WebKeys.DOSSIER_LOG_PAYMENT_REQUEST);
 					toBackOffice.setPaymentFile(paymentFile);
-
-					Locale vnLocale = new Locale("vi", "VN");
-
-					NumberFormat vnFormat = NumberFormat.getCurrencyInstance(vnLocale);
-
-					// setPayment message in pattern in message Info
-
-					StringBuffer sb = new StringBuffer();
-
-					sb.append(paymentMessages.get(0));
-					sb.append(StringPool.SPACE);
-					sb.append(StringPool.OPEN_PARENTHESIS);
-					sb.append(vnFormat.format(totalPayment));
-					sb.append(StringPool.CLOSE_PARENTHESIS);
-					sb.append(StringPool.SEMICOLON);
-					sb.append(toEngineMsg.getActionNote());
-
-					toBackOffice.setMessageInfo(sb.toString());
 
 				}
 				else {
