@@ -321,5 +321,8 @@ public class PortletPropsValues {
 	
 	public static final String DM_POSTAL_GATE = PortletProps
 			.get(PortletPropsKeys.DM_POSTAL_GATE);
+	
+	public static final String DM_PAYMENT_GATE = PortletProps
+			.get(PortletPropsKeys.DM_PAYMENT_GATE);
 
 }
