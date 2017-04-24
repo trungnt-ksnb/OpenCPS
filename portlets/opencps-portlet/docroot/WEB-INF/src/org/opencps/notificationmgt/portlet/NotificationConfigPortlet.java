@@ -55,9 +55,9 @@ import com.liferay.util.bridges.mvc.MVCPortlet;
 /**
  * @author nhanhoang
  */
-public class NotificationPortlet extends MVCPortlet {
+public class NotificationConfigPortlet extends MVCPortlet {
 
-	private static Log _log = LogFactoryUtil.getLog(NotificationPortlet.class);
+	private static Log _log = LogFactoryUtil.getLog(NotificationConfigPortlet.class);
 
 	public void updateNotificationStatusConfig(ActionRequest actionRequest,
 			ActionResponse actionResponse) throws IOException,

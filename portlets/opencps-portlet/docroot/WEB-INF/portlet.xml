@@ -1006,15 +1006,15 @@
 		<portlet-name>28</portlet-name>
 		<display-name>Notifications</display-name>
 		<portlet-class>
-			org.opencps.notificationmgt.portlet.NotificationPortlet
+			org.opencps.notificationmgt.portlet.NotificationConfigPortlet
 		</portlet-class>
 		<init-param>
 			<name>view-template</name>
-			<value>/html/portlets/notificationmgt/view.jsp</value>
+			<value>/html/portlets/notificationmgt/backoffice/view.jsp</value>
 		</init-param>
 		<init-param>
 			<name>template-path</name>
-			<value>/html/portlets/notificationmgt/</value>
+			<value>/html/portlets/notificationmgt/backoffice/</value>
 		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>

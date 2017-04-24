@@ -16,7 +16,7 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
-<%@ include file="../../init.jsp"%>
+<%@ include file="../init.jsp"%>
 
 
 <%
@@ -33,7 +33,7 @@
 	test="<%=true%>">
 	<portlet:renderURL var="editNotificationConfigURL" windowState="<%=LiferayWindowState.POP_UP.toString() %>">
 		<portlet:param name="mvcPath"
-			value='<%=templatePath +"backoffice/event/notification_event_config_edit.jsp"%>'/>
+			value='<%=templatePath +"event/notification_event_config_edit.jsp"%>'/>
 		<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID%>"
 			value="<%=String.valueOf(notificationEventConfig.getNotiEventConfigId())%>" />
 	</portlet:renderURL>
