@@ -133,6 +133,7 @@ public class PortletPropsKeys {
 	public static final String OPENCPS_KEYPAY_CURRENT_LOCATE = "opencps.keypay.current.locale";
 	public static final String OPENCPS_KEYPAY_COUNTRY_CODE = "opencps.keypay.country.code";
 	public static final String OPENCPS_KEYPAY_INTERNAL_BANK = "opencps.keypay.internal.bank";
+	public static final String DM_PAYMENT_GATE = "opencps.paymentmgt.paymentgate";
 
 	
 	public static final String OPENCPS_KEYPAY_SERVICE_CODE = "opencps.keypay.service.code";
