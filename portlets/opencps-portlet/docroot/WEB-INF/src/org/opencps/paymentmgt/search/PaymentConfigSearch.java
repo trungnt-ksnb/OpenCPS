@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-package org.opencps.notificationmgt.search;
+package org.opencps.paymentmgt.search;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,72 +34,62 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
  * @author nhanhoang
  *
  */
-public class NotificationEventConfigSearch extends SearchContainer<DictItem> {
+public class PaymentConfigSearch extends SearchContainer<DictItem> {
 	static List<String> headerNames = new ArrayList<String>();
 	static {
 		headerNames.add("row-index");
-		headerNames.add("status");
-		headerNames.add("event-name");
-		headerNames.add("description");
-		headerNames.add("noti-types");
 		headerNames.add("create-date");
 		headerNames.add("modified-date");
+		headerNames.add("payment-config-no");
+		headerNames.add("payment-gate-type");
 		headerNames.add("action");
-
 	}
 
-	public static final String EMPTY_RESULTS_MESSAGE = "no-notification-event-config-where-found";
+	public static final String EMPTY_RESULTS_MESSAGE = "no-payment-config-where-found";
 
-	public NotificationEventConfigSearch(PortletRequest portletRequest, int delta,
+	public PaymentConfigSearch(PortletRequest portletRequest, int delta,
 			PortletURL iteratorURL) {
 
 		super(portletRequest,
-				new NotificationEventConfigDisplayTerms(portletRequest),
-				new NotificationEventConfigSearchTerms(portletRequest),
+				new PaymentConfigDisplayTerms(portletRequest),
+				new PaymentConfigSearchTerms(portletRequest),
 				DEFAULT_CUR_PARAM, delta, iteratorURL, headerNames,
 				EMPTY_RESULTS_MESSAGE);
 
-		NotificationEventConfigDisplayTerms displayTerms = (NotificationEventConfigDisplayTerms) getDisplayTerms();
+		PaymentConfigDisplayTerms displayTerms = (PaymentConfigDisplayTerms) getDisplayTerms();
 
-		iteratorURL.setParameter(NotificationEventConfigDisplayTerms.CREATE_DATE,
+		iteratorURL.setParameter(PaymentConfigDisplayTerms.CREATE_DATE,
 				DateTimeUtil.convertDateToString(displayTerms.getCreateDate(),
 						DateTimeUtil._VN_DATE_TIME_FORMAT));
-		iteratorURL.setParameter(NotificationEventConfigDisplayTerms.MODIFIED_DATE,
+		iteratorURL.setParameter(PaymentConfigDisplayTerms.MODIFIED_DATE,
 				DateTimeUtil.convertDateToString(
 						displayTerms.getModifiedDate(),
 						DateTimeUtil._VN_DATE_TIME_FORMAT));
-		iteratorURL.setParameter(NotificationEventConfigDisplayTerms.USER_ID,
+		iteratorURL.setParameter(PaymentConfigDisplayTerms.USER_ID,
 				String.valueOf(displayTerms.getUserId()));
 
-		
 		iteratorURL.setParameter(
-				NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID,
-				String.valueOf(displayTerms.getNotiEventConfigId()));
+				PaymentConfigDisplayTerms.PAYMENT_CONFIG_ID,
+				String.valueOf(displayTerms.getPaymentConfigId()));
 		iteratorURL.setParameter(
-				NotificationEventConfigDisplayTerms.NOTICE_STATUS_CONFIG_ID,
-				String.valueOf(displayTerms.getNotiStatusConfigId()));
+				PaymentConfigDisplayTerms.PAYMENT_CONFIG_NO,
+				String.valueOf(displayTerms.getPaymentConfigNo()));
 		iteratorURL.setParameter(
-				NotificationEventConfigDisplayTerms.EVENT_NAME,
-				String.valueOf(displayTerms.getEventName()));
+				PaymentConfigDisplayTerms.PAYMENT_GATE_TYPE,
+				String.valueOf(displayTerms.getPaymentGateTypes()));
 		iteratorURL.setParameter(
-				NotificationEventConfigDisplayTerms.DESCRIPTION,
-				String.valueOf(displayTerms.getDescription()));
-		iteratorURL.setParameter(
-				NotificationEventConfigDisplayTerms.PATTERN,
-				String.valueOf(displayTerms.getPattern()));
-		iteratorURL.setParameter(
-				NotificationEventConfigDisplayTerms.ACTIVE,
-				String.valueOf(displayTerms.isActive()));
+				PaymentConfigDisplayTerms.PAYMENT_STATUS,
+				String.valueOf(displayTerms.getStatus()));
 
 	}
 
-	public NotificationEventConfigSearch(PortletRequest portletRequest,
+	public PaymentConfigSearch(PortletRequest portletRequest,
 			PortletURL iteratorURL) {
 
 		this(portletRequest, DEFAULT_DELTA, iteratorURL);
 	}
 
 	private static Log _log = LogFactoryUtil
-			.getLog(NotificationEventConfigSearch.class);
+			.getLog(PaymentConfigSearch.class);
 
 }

@@ -396,6 +396,9 @@
 		<field name="processName" type="String" />
 		<field name="description" type="String" />
 		<field name="dossierTemplateId" type="long" />
+		<field name="paymentConfigId" type="long" />
+		<field name="paymentFee" type="String" />
+		<field name="isRequestPayment" type="boolean" />
 	</model>
 	<model name="org.opencps.processmgt.model.StepAllowance">
 		<field name="stepAllowanceId" type="long" />
@@ -705,6 +708,7 @@
 		<field name="paymentGateType" type="long" />
 		<field name="status" type="boolean" />
 		<field name="returnUrl" type="String" />
+		<field name="paymentConfigNo" type="String" />
 	</model>
 	<model name="org.opencps.paymentmgt.model.PaymentFile">
 		<field name="uuid" type="String" />
@@ -866,9 +870,14 @@
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
 		<field name="notiStatusConfigId" type="long" />
-		<field name="eventName" type="String" />
+		<field name="eventName" type="String">
+			<hint name="max-length">255</hint>
+		</field>
 		<field name="description" type="String" />
 		<field name="pattern" type="String" />
+		<field name="userExcept" type="String" />
+		<field name="plId" type="String" />
+		<field name="jspRedirect" type="String" />
 		<field name="active" type="boolean" />
 	</model>
 	<model name="org.opencps.notificationmgt.model.NotificationRedirectConfig">
@@ -894,7 +903,7 @@
 		<field name="modifiedDate" type="Date" />
 		<field name="dossierCurrentStatus" type="String" />
 		<field name="dossierNextStatus" type="String" />
-		<field name="isSendNotification" type="boolean" />
+		<field name="active" type="boolean" />
 	</model>
 	<model name="org.opencps.postal.model.PostalConfig">
 		<field name="postalConfigId" type="long" />
