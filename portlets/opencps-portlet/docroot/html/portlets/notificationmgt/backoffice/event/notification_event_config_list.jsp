@@ -17,7 +17,7 @@
 	 */
 %>
 
-<%@ include file="../../init.jsp"%>
+<%@ include file="../init.jsp"%>
 
 <liferay-util:include page='<%=templatePath + "backoffice/event/toolbar.jsp"%>'
 	servletContext="<%=application%>" />
@@ -95,7 +95,7 @@
 			row.addJSP(
 					"center",
 					SearchEntry.DEFAULT_VALIGN,
-					templatePath+"backoffice/event/notification_event_config_actions.jsp",
+					templatePath+"event/notification_event_config_actions.jsp",
 					config.getServletContext(), request, response);
 			row.setParameter(WebKeys.REDIRECT_URL, iteratorURL);
 						
