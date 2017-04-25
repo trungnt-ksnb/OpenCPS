@@ -1427,9 +1427,44 @@
 			<role-name>user</role-name>
 		</security-role-ref>
 	</portlet>
+	<portlet>
+		<portlet-name>38</portlet-name>
+		<display-name>Lucene Menu</display-name>
+		<portlet-class>
+			org.opencps.lucenequery.portlet.LuceneMenuPortlet
+		</portlet-class>
+		<init-param>
+			<name>view-template</name>
+			<value>/html/portlets/lucenequery/menu/view.jsp</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>view</portlet-mode>
+		</supports>
+		<resource-bundle>content.Language_38</resource-bundle>
+		<portlet-info>
+			<title>Lucene Menu</title>
+			<short-title>38</short-title>
+			<keywords></keywords>
+		</portlet-info>
+		<security-role-ref>
+			<role-name>administrator</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>guest</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>power-user</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>user</role-name>
+		</security-role-ref>
+	</portlet>
 	<public-render-parameter>
 		<identifier>active</identifier>
 		<qname>active</qname>
 	</public-render-parameter>
 	
+
 </portlet-app>
