@@ -116,6 +116,7 @@
 	action="<%=updateDossierURL.toString() %>"
 	cssClass="bg-white"
 >
+	<div class="opencps-form-navigator-container">
 		<liferay-ui:form-navigator 
 			backURL="<%= currentURL %>"
 			categoryNames= "<%= DossierMgtUtil._DOSSIER_CATEGORY_NAMES %>"	
@@ -125,6 +126,7 @@
 			jspPath='<%=templatePath + "dossier_common/" %>'
 			displayStyle="left-navigator"
 			>	
+		</liferay-ui:form-navigator>
 	</div>
 </aui:form>
 
