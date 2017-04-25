@@ -103,6 +103,9 @@
 			}
 		}
 		//Lay thong tin co quan thuc hien theo serviceinfoId tu man hinh thu tuc hanh chinh END
+		
+		
+		
 	} catch (Exception e) {
 		//nothing to do
 	}
@@ -144,6 +147,23 @@
 					<span><%=serviceInfo.getServiceName() %></span>
 				</a>
 			</c:if>
+		</aui:col>
+	</aui:row>
+	<aui:row>
+		<aui:col width="50">
+			<aui:select name="administrationCode" label="co-quan-thuc-hien" cssClass="submit-online input100">
+				<%
+					if(listAdmin!=null && !listAdmin.isEmpty()){
+						for(DictItem d : listAdmin){
+							%>
+								<aui:option value="<%=d.getItemCode() %>">
+									<%=d.getItemName(themeDisplay.getLocale(),true) %>
+								</aui:option>
+							<%
+						}
+					}
+				%>
+			</aui:select>
 		</aui:col>
 	</aui:row>
 	<aui:row>
