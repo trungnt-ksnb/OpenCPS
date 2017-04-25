@@ -16,7 +16,7 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
-<%@ include file="../../init.jsp"%>
+<%@ include file="../init.jsp"%>
 
 
 <%
@@ -33,7 +33,7 @@
 	<portlet:renderURL var="editNotificationConfigURL" windowState="<%=LiferayWindowState.POP_UP.toString() %>">
 	
 		<portlet:param name="mvcPath"
-			value='<%=templatePath +"backoffice/status/notification_status_config_edit.jsp"%>'/>
+			value='<%=templatePath +"status/notification_status_config_edit.jsp"%>'/>
 		<portlet:param name="<%=NotificationStatusConfigDisplayTerms.DOSSIER_NEXT_STATUS%>"
 			value="<%=String.valueOf(notificationStatusConfig.getDossierNextStatus())%>" />
 	</portlet:renderURL>

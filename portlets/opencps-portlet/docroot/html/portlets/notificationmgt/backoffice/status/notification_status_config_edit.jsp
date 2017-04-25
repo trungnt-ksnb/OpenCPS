@@ -16,7 +16,7 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
-<%@ include file="../../init.jsp"%>
+<%@ include file="../init.jsp"%>
 
 <portlet:actionURL var="updateNofificationStatusConfigURL" name="updateNotificationStatusConfig" />
 

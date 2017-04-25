@@ -30,8 +30,8 @@ import org.opencps.dossiermgt.bean.AccountBean;
 import org.opencps.dossiermgt.model.Dossier;
 import org.opencps.dossiermgt.model.impl.DossierImpl;
 import org.opencps.dossiermgt.service.DossierLocalServiceUtil;
-import org.opencps.notficationmgt.fac.SendNotificationMessageFactory;
 import org.opencps.notificationmgt.engine.UserNotificationHandler;
+import org.opencps.notificationmgt.fac.SendNotificationMessageFactory;
 import org.opencps.notificationmgt.message.SendNotificationMessage;
 import org.opencps.notificationmgt.model.NotificationEventConfig;
 import org.opencps.notificationmgt.model.NotificationStatusConfig;
@@ -187,11 +187,6 @@ public class NotificationUtils {
 					PortletProps.get(message.getEventName()));
 			body = StringUtil
 					.replace(body, "{message}", message.getEventName());
-
-			_log.info("+++fromAddress:" + fromAddress);
-			_log.info("+++subject:" + subject);
-			_log.info("+++to:" + to);
-			_log.info("+++body:" + body);
 
 			SendMailUtils.sendEmail(fromAddress, fromName, to,
 					StringPool.BLANK, subject, body, htmlFormat);
@@ -500,9 +495,6 @@ public class NotificationUtils {
 		List<Employee> coordinateEmployeeList = getListEmploy(processWorkflow,
 				groupId);
 
-		_log.info("+++++coordinateEmployeeList.size():"
-				+ coordinateEmployeeList.size());
-
 		SendNotificationMessageFactory notiFactory = new SendNotificationMessageFactory();
 		SendNotificationMessage notiMsgEmploy = notiFactory
 				.createSendNotificationMessage();
@@ -525,8 +517,6 @@ public class NotificationUtils {
 		notiMsgEmploy.setJspRedirect(notiEventConfig.getJspRedirect());
 
 		for (Employee employee : coordinateEmployeeList) {
-
-			_log.info("+++++employee.getEmail():" + employee.getEmail());
 
 			if (!employee.getEmail().trim()
 					.contains(notiEventConfig.getUserExcept())) {

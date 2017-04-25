@@ -17,7 +17,7 @@
 	 */
 %>
 
-<%@ include file="../../init.jsp"%>
+<%@ include file="../init.jsp"%>
 
 <%
 	long notiStatusConfigId = ParamUtil.getLong(request,
@@ -39,7 +39,7 @@
 
 			<portlet:renderURL var="addNotiEventConfigURL" windowState="<%=LiferayWindowState.POP_UP.toString() %>">
 				<portlet:param name="mvcPath"
-					value="/html/portlets/notificationmgt/backoffice/event/notification_event_config_edit.jsp" />
+					value='<%=templatePath +"event/notification_event_config_edit.jsp"%>' />
 				<portlet:param name="<%=NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID %>" value="<%=String.valueOf(notiStatusConfigId) %>"/>
 			</portlet:renderURL>
 

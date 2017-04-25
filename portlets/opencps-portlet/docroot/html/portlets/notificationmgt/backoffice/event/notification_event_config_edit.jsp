@@ -1,4 +1,3 @@
-<%@ include file="../../init.jsp"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -17,6 +16,7 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
+<%@ include file="../init.jsp"%>
 
 <%
 	long notiEventConfigId = ParamUtil.getLong(request,NotificationEventConfigDisplayTerms.NOTICE_EVENT_CONFIG_ID,0);
