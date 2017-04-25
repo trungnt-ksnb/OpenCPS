@@ -50,6 +50,8 @@ import org.opencps.accountmgt.model.Business;
 import org.opencps.accountmgt.model.Citizen;
 import org.opencps.backend.message.UserActionMsg;
 import org.opencps.backend.util.BackendUtils;
+import org.opencps.backend.util.PaymentRequestGenerator;
+import org.opencps.backend.util.PaymentUrlGenerator;
 import org.opencps.datamgt.model.DictCollection;
 import org.opencps.datamgt.model.DictItem;
 import org.opencps.datamgt.service.DictCollectionLocalServiceUtil;
@@ -78,6 +80,7 @@ import org.opencps.dossiermgt.OutOfLengthDossierContactNameException;
 import org.opencps.dossiermgt.OutOfLengthDossierContactTelNoException;
 import org.opencps.dossiermgt.OutOfLengthDossierSubjectIdException;
 import org.opencps.dossiermgt.OutOfLengthDossierSubjectNameException;
+import org.opencps.dossiermgt.PaymentFileUnfinishedException;
 import org.opencps.dossiermgt.PermissionDossierException;
 import org.opencps.dossiermgt.RequiredDossierPartException;
 import org.opencps.dossiermgt.UnknownDossierFileFormTypeException;
@@ -87,6 +90,7 @@ import org.opencps.dossiermgt.model.DossierFile;
 import org.opencps.dossiermgt.model.DossierPart;
 import org.opencps.dossiermgt.model.DossierTemplate;
 import org.opencps.dossiermgt.model.ServiceConfig;
+import org.opencps.dossiermgt.model.impl.ServiceConfigImpl;
 import org.opencps.dossiermgt.search.DossierDisplayTerms;
 import org.opencps.dossiermgt.search.DossierFileDisplayTerms;
 import org.opencps.dossiermgt.service.DossierFileLocalServiceUtil;
@@ -101,7 +105,12 @@ import org.opencps.dossiermgt.util.ActorBean;
 import org.opencps.dossiermgt.util.DossierMgtUtil;
 import org.opencps.jasperreport.util.JRReportUtil;
 import org.opencps.jasperreport.util.JRReportUtil.DocType;
+import org.opencps.paymentmgt.model.PaymentFile;
+import org.opencps.paymentmgt.model.impl.PaymentFileImpl;
 import org.opencps.processmgt.model.ProcessStep;
+import org.opencps.processmgt.model.ServiceProcess;
+import org.opencps.processmgt.model.impl.ServiceProcessImpl;
+import org.opencps.processmgt.service.ServiceProcessLocalServiceUtil;
 import org.opencps.processmgt.util.ReportUtils;
 import org.opencps.servicemgt.model.ServiceInfo;
 import org.opencps.servicemgt.service.ServiceInfoLocalServiceUtil;
@@ -2771,6 +2780,22 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 						actor.getActorName(),
 						DossierMgtFrontOfficePortlet.class.getName()
 								+ ".updateDossier()", 0, 0, false);
+				
+				ServiceConfig serviceConfig = new ServiceConfigImpl();
+				serviceConfig = ServiceConfigLocalServiceUtil
+						.getServiceConfig(serviceConfigId);
+
+				ServiceProcess serviceProcess = new ServiceProcessImpl();
+				serviceProcess = ServiceProcessLocalServiceUtil
+						.getServiceProcess(serviceConfig.getServiceProcessId());
+
+				if (serviceProcess.getIsRequestPayment()) {
+
+					DossierMgtUtil.generatePaymentFile(
+							serviceProcess.getPaymentFee(),
+							dossier.getDossierId(), serviceContext.getUserId(),
+							ownerOrganizationId, govAgencyOrganizationId, 0,serviceProcess.getServiceProcessId());
+				}
 
 			} else {
 				dossier = DossierLocalServiceUtil.updateDossier(dossierId,
@@ -3083,6 +3108,8 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 		boolean isUpdateStatusSuccessFlag = false;
 
 		try {
+			DossierMgtUtil.validatePaymentFileException(dossierId);
+			
 			ServiceContext serviceContext = ServiceContextFactory
 					.getInstance(actionRequest);
 
@@ -3211,7 +3238,8 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
 			if (e instanceof NoSuchDossierException
 					|| e instanceof NoSuchDossierTemplateException
-					|| e instanceof RequiredDossierPartException) {
+					|| e instanceof RequiredDossierPartException
+					|| e instanceof PaymentFileUnfinishedException) {
 
 				SessionErrors.add(actionRequest, e.getClass());
 
@@ -3219,8 +3247,6 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 				SessionErrors.add(actionRequest,
 						MessageKeys.DOSSIER_SYSTEM_EXCEPTION_OCCURRED);
 			}
-
-			_log.error(e);
 		} finally {
 			if (!isUpdateStatusSuccessFlag) {
 

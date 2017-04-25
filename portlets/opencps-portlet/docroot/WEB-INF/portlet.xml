@@ -779,7 +779,7 @@
 		<init-param>
 			<name>view-template</name>
 			<value>
-				/html/portlets/paymentmgt/paymentconfig/edit_paymentconfig.jsp
+				/html/portlets/paymentmgt/paymentconfig/view.jsp
 			</value>
 		</init-param>
 		<init-param>
