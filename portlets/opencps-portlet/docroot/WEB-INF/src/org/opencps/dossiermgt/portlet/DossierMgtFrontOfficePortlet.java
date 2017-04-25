@@ -144,6 +144,7 @@ import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.security.auth.AuthTokenUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -1482,6 +1483,12 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
 			String formData = dossierFile.getFormData();
 			String jrxmlTemplate = dossierPart.getFormReport();
+			
+			//get old version from dossierFile
+			
+			if(Validator.isNotNull(dossierFile.getFormReport())){
+				jrxmlTemplate = dossierFile.getFormReport();
+			}
 
 			// Validate json string
 
@@ -2056,6 +2063,12 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
 			String formData = dossierFile.getFormData();
 			String jrxmlTemplate = dossierPart.getFormReport();
+			
+			//get old version from dossierFile
+			
+			if(Validator.isNotNull(dossierFile.getFormReport())){
+				jrxmlTemplate = dossierFile.getFormReport();
+			}
 
 			// Validate json string
 
@@ -2273,6 +2286,12 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 
 			String formData = dossierFile.getFormData();
 			String jrxmlTemplate = dossierPart.getFormReport();
+			
+			//get old version from dossierFile
+			
+			if(Validator.isNotNull(dossierFile.getFormReport())){
+				jrxmlTemplate = dossierFile.getFormReport();
+			}
 
 			// Validate json string
 
@@ -3247,6 +3266,9 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 		String formSchema = ParamUtil.getString(actionRequest,
 				DossierFileDisplayTerms.FORM_SCHEMA);
 
+		String formDataAlternative = ParamUtil.getString(actionRequest,
+				DossierFileDisplayTerms.FORM_DATA_ATERNATIVE);
+
 		String redirectURL = ParamUtil.getString(actionRequest, "redirectURL");
 
 		long fileEntryId = 0;
@@ -3268,7 +3290,13 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 				DossierFileDisplayTerms.GROUP_NAME);
 
 		String regexStr = StringPool.BLANK;
+
 		Date dossierFileDate = null;
+
+		HttpServletRequest request = PortalUtil
+				.getHttpServletRequest(actionRequest);
+
+		String auTock = AuthTokenUtil.getToken(request);
 
 		try {
 			validateDynamicFormData(dossierId, dossierPartId, accountBean,
@@ -3310,7 +3338,7 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 						templateFileNo, groupName, fileGroupId,
 						groupDossierPartId, accountBean.getOwnerUserId(),
 						accountBean.getOwnerOrganizationId(), displayName,
-						formData, formType, formSchema, fileEntryId,
+						formDataAlternative, formType, formSchema, fileEntryId,
 						dossierFileMark, dossierFileType, dossierFileNo,
 						dossierFileDate, original, syncStatus, serviceContext);
 			} else {
@@ -4057,18 +4085,11 @@ public class DossierMgtFrontOfficePortlet extends MVCPortlet {
 				throw new UnknownDossierFileFormTypeException();
 			}
 
-			if (Validator.isNull(formSchema)) {
-				throw new DossierFileFormSchemaEmptyException();
-			}
 			/*
-			 * else { try {
-			 * 
-			 * JSONObject object = JSONFactoryUtil
-			 * .createJSONObject(formSchema);
-			 * 
-			 * } catch (Exception e) { throw new
-			 * DossierFileFormSchemaFormatException(); } }
+			 * if (Validator.isNull(formSchema)) { throw new
+			 * DossierFileFormSchemaEmptyException(); }
 			 */
+
 		}
 	}
 

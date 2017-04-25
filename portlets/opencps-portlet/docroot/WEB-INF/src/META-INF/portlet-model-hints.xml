@@ -519,6 +519,8 @@
 		<field name="signInfo" type="String" />
 		<field name="formSchema" type="String" />
 		<field name="formType" type="String" />
+		<field name="formScript" type="String" />
+		<field name="formReport" type="String" />
 	</model>
 	<model name="org.opencps.dossiermgt.model.DossierFileLog">
 		<field name="dossierFileLogId" type="long" />
@@ -983,5 +985,16 @@
 		<field name="donHangNoiHuyen" type="boolean" />
 		<field name="maTinhNhan" type="int" />
 		<field name="emailNguoiNhan" type="String" />
+	</model>
+	<model name="org.opencps.lucenequery.model.LuceneQueryPattern">
+		<field name="patternId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createdDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="name" type="String" />
+		<field name="pattern" type="String" />
+		<field name="url" type="String" />
 	</model>
 </model-hints>

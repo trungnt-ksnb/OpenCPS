@@ -485,6 +485,8 @@
         <column name="signInfo" type="String" />
         <column name="formSchema" type="String"></column>
         <column name="formType" type="String"></column>
+        <column name="formScript" type="String"></column>
+        <column name="formReport" type="String"></column>
         <order>
         	<order-column name="modifiedDate" order-by="desc" />
         </order>

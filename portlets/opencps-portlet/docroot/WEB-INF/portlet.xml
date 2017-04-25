@@ -1361,6 +1361,10 @@
 			<name>view-template</name>
 			<value>/html/portlets/lucenequery/admin/lucenequerylist.jsp</value>
 		</init-param>
+		<init-param>
+			<name>template-path</name>
+			<value>/html/portlets/lucenequery/admin/</value>
+		</init-param>
 		<expiration-cache>0</expiration-cache>
 		<supports>
 			<mime-type>text/html</mime-type>
