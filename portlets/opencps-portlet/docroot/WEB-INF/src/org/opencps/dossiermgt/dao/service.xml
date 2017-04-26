@@ -644,29 +644,60 @@
         </finder>
 
     </entity>
-    <entity name="ServiceOption" local-service="true" table="opencps_service_option">
-        <column name="serviceOptionId" type="long" primary="true"></column>
-        
-        <!-- Audit fields -->
+
+	<entity name="ServiceOption" local-service="true"
+		table="opencps_service_option">
+		<column name="serviceOptionId" type="long" primary="true"/>
+
+		<!-- Audit fields -->
 
 		<column name="companyId" type="long" />
 		<column name="groupId" type="long" />
 		<column name="userId" type="long" />
 		<column name="createDate" type="Date" />
 		<column name="modifiedDate" type="Date" />
-        <column name="serviceConfigId" type="long"></column>
-        <column name="optionCode" type="String"></column>
-        <column name="optionName" type="String"></column>
-        <column name="optionOrder" type="int"></column>
-        <column name="autoSelect" type="String"></column>
-        <column name="dossierTemplateId" type="long"></column>
-        <column name="serviceProcessId" type="long"></column>
-        <finder name="G_SCID_DTID" return-type="ServiceOption">
-            <finder-column name="groupId"></finder-column>
-            <finder-column name="serviceConfigId"></finder-column>
-            <finder-column name="dossierTemplateId"></finder-column>
-        </finder>
-    </entity>
+		
+		<!-- Data -->
+		<column name="serviceConfigId" type="long"/>
+		<column name="optionCode" type="String"/>
+		<column name="optionName" type="String"/>
+		<column name="optionOrder" type="int"/>
+		<column name="autoSelect" type="String"/>
+		<column name="dossierTemplateId" type="long"/>
+		<column name="serviceProcessId" type="long"/>
+		
+		<!-- Finder -->
+		<finder name="G_SCID_DTID" return-type="ServiceOption">
+			<finder-column name="groupId"/>
+			<finder-column name="serviceConfigId"/>
+			<finder-column name="dossierTemplateId"/>
+		</finder>
+	</entity>
+
+	<entity name="BusinessRegister" local-service="true"
+		table="opencps_business_register">
+		<column name="businessRegisterId" type="long" primary="true"/>
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="groupId" type="long" />
+		<column name="userId" type="long" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Data -->
+		<column name="ownerOrganizationId" type="long" />
+		<column name="dossierTemplateId" type="String"/>
+		<column name="serviceProcessId" type="String"/>
+		<column name="dossierId" type="int"/>
+		<column name="validStatus" type="String"/>
+		
+		<!-- Finder -->
+		<finder name="OOI" return-type="BusinessRegister">
+			<finder-column name="ownerOrganizationId"/>
+		</finder>
+	</entity>
 
 	<exceptions>
 		<exception>OutOfLengthDossierTemplateName</exception>
