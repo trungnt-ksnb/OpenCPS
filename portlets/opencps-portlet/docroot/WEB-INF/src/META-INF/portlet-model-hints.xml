@@ -415,6 +415,19 @@
 		<field name="postback" type="boolean" />
 		<field name="pattern" type="String" />
 	</model>
+	<model name="org.opencps.dossiermgt.model.BusinessRegister">
+		<field name="businessRegisterId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="userId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="ownerOrganizationId" type="long" />
+		<field name="dossierTemplateId" type="String" />
+		<field name="serviceProcessId" type="String" />
+		<field name="dossierId" type="int" />
+		<field name="validStatus" type="String" />
+	</model>
 	<model name="org.opencps.dossiermgt.model.Dossier">
 		<field name="dossierId" type="long" />
 		<field name="companyId" type="long" />
