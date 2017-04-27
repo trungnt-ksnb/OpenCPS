@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.opencps.lucenequery.LuceneQueryFormatException;
 import org.opencps.lucenequery.LuceneQuerySyntaxException;
+import org.opencps.lucenequery.menu.bean.LuceneMenuSchema;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -14,6 +15,7 @@ import com.liferay.portal.kernel.search.BooleanQuery;
 import com.liferay.portal.kernel.search.BooleanQueryFactoryUtil;
 import com.liferay.portal.kernel.search.ParseException;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -23,6 +25,9 @@ import com.liferay.portal.kernel.util.Validator;
  *
  */
 public class LuceneQueryUtil {
+
+	private static Log _log = LogFactoryUtil.getLog(LuceneQueryUtil.class
+			.getName());
 
 	/**
 	 * @param query
@@ -141,7 +146,7 @@ public class LuceneQueryUtil {
 	 * @return
 	 * @throws ParseException
 	 */
-	protected static List<BooleanQuery> createBooleanQueries(
+	public static List<BooleanQuery> createBooleanQueries(
 			List<String> subQueries, List<Object> params,
 			SearchContext searchContext) throws ParseException {
 		List<BooleanQuery> booleanQueries = new ArrayList<BooleanQuery>();
@@ -154,7 +159,8 @@ public class LuceneQueryUtil {
 					for (int t = 0; t < terms.length; t++) {
 						int paramPossition = subQueries.indexOf(subQuery)
 								* terms.length + t;
-						String term = terms[t].trim().toLowerCase();
+						// String term = terms[t].trim().toLowerCase();
+						String term = terms[t].trim();
 						String key = StringPool.BLANK;
 						if (term.contains((StringPool.EQUAL.toLowerCase()))) {
 							key = term
@@ -191,8 +197,73 @@ public class LuceneQueryUtil {
 		}
 		return booleanQueries;
 	}
+	
+	/**
+	 * @param subQueries
+	 * @param params
+	 * @param paramNames
+	 * @param searchContext
+	 * @return
+	 * @throws ParseException
+	 */
+	public static List<BooleanQuery> createBooleanQueries(
+			List<String> subQueries, List<Object> params,
+			List<String> paramNames,
+			SearchContext searchContext) throws ParseException {
+		List<BooleanQuery> booleanQueries = new ArrayList<BooleanQuery>();
+		if (subQueries != null) {
+			for (String subQuery : subQueries) {
+				String[] terms = StringUtil.split(subQuery);
+				if (terms != null && terms.length > 0) {
+					BooleanQuery query = BooleanQueryFactoryUtil
+							.create(searchContext);
+					for (int t = 0; t < terms.length; t++) {
+						int paramPossition = subQueries.indexOf(subQuery)
+								* terms.length + t;
+						// String term = terms[t].trim().toLowerCase();
+						String term = terms[t].trim();
+						String key = StringPool.BLANK;
+						if (term.contains((StringPool.EQUAL.toLowerCase()))) {
+							key = term
+									.substring(
+											0,
+											term.indexOf(StringPool.EQUAL
+													.toLowerCase())).trim();
+							addExactTerm(query, key, params.get(paramPossition));
+						} else if (term.contains(StringPool.LIKE.toLowerCase())) {
+							key = term
+									.substring(
+											0,
+											term.indexOf(StringPool.LIKE
+													.toLowerCase())).trim();
 
-	protected static List<BooleanClauseOccur> getBooleanClauseOccurs(
+							query.addTerm(key, params.get(paramPossition)
+									.toString(), true);
+
+						} else if (term.contains(StringPool.BETWEEN
+								.toLowerCase())) {
+							key = term.substring(
+									0,
+									term.indexOf(StringPool.BETWEEN
+											.toLowerCase())).trim();
+							query = addRangeTerm(query, key,
+									params.get(paramPossition));
+						}
+						
+						if(Validator.isNotNull(key)){
+							paramNames.add(key);
+						}
+
+					}
+
+					booleanQueries.add(query);
+				}
+			}
+		}
+		return booleanQueries;
+	}
+
+	public static List<BooleanClauseOccur> getBooleanClauseOccurs(
 			String pattern, List<String> subQueries) {
 		// System.out.println(pattern);
 		List<BooleanClauseOccur> booleanClauseOccurs = new ArrayList<BooleanClauseOccur>();
@@ -223,17 +294,47 @@ public class LuceneQueryUtil {
 		if (conditions != null && conditions.length > 0) {
 			for (int c = 0; c < conditions.length; c++) {
 				// System.out.println(conditions[c]);
-				if (conditions[c].toLowerCase().equals("and")) {
+				if (conditions[c].equalsIgnoreCase("and")) {
 					booleanClauseOccurs.add(BooleanClauseOccur.MUST);
-				} else if (conditions[c].toLowerCase().equals("or")) {
+				} else if (conditions[c].equalsIgnoreCase("or")) {
 					booleanClauseOccurs.add(BooleanClauseOccur.SHOULD);
-				} else if (conditions[c].toLowerCase().equals("not")) {
+				} else if (conditions[c].equalsIgnoreCase("not")) {
 					booleanClauseOccurs.add(BooleanClauseOccur.MUST_NOT);
 				}
 			}
 		}
 
 		return booleanClauseOccurs;
+	}
+
+	/**
+	 * @param levels
+	 * @param names
+	 * @param patterns
+	 * @param params
+	 * @param paramTypes
+	 * @return
+	 */
+	public static List<LuceneMenuSchema> getLuceneMenuSchemas(String[] levels,
+			String[] names, String[] patterns, String[] params,
+			String[] paramTypes) {
+		List<LuceneMenuSchema> luceneMenuSchemas = new ArrayList<LuceneMenuSchema>();
+		if (levels != null && names != null && patterns != null
+				&& params != null && paramTypes != null) {
+			int length = levels.length;
+			if (names.length == length && patterns.length == length
+					&& params.length == length && paramTypes.length == length) {
+				for (int i = 0; i < length; i++) {
+					int level = GetterUtil.getInteger(levels[i]);
+					LuceneMenuSchema luceneMenuSchema = new LuceneMenuSchema(
+							names[i], level, patterns[i], params[i],
+							paramTypes[i]);
+					luceneMenuSchemas.add(luceneMenuSchema);
+				}
+			}
+		}
+
+		return luceneMenuSchemas;
 	}
 
 	/**
@@ -295,24 +396,29 @@ public class LuceneQueryUtil {
 		List<String> splitIndexs = getSplitIndex(pattern);
 
 		if (splitIndexs != null) {
-			for (String splitIndex : splitIndexs) {
+			if (splitIndexs.isEmpty()) {
+				subQueries.add(pattern);
+			} else {
+				for (String splitIndex : splitIndexs) {
 
-				int[] splitIndexsTemp = StringUtil.split(splitIndex,
-						StringPool.DASH, 0);
-				String subQuery = pattern.substring(splitIndexsTemp[0],
-						splitIndexsTemp[1] + 1);
-				if (subQuery.contains("[and]") || subQuery.contains("[or]")
-						|| subQuery.contains("[not]")) {
-					getSubQueries(subQuery, subQueries);
-				} else {
-					subQuery = subQuery.replaceAll("\\(", StringPool.BLANK);
+					int[] splitIndexsTemp = StringUtil.split(splitIndex,
+							StringPool.DASH, 0);
+					String subQuery = pattern.substring(splitIndexsTemp[0],
+							splitIndexsTemp[1] + 1);
+					if (subQuery.contains("[and]") || subQuery.contains("[or]")
+							|| subQuery.contains("[not]")) {
+						getSubQueries(subQuery, subQueries);
+					} else {
+						subQuery = subQuery.replaceAll("\\(", StringPool.BLANK);
 
-					subQuery = subQuery.replaceAll("\\)", StringPool.BLANK);
+						subQuery = subQuery.replaceAll("\\)", StringPool.BLANK);
 
-					subQueries.add(subQuery);
+						subQueries.add(subQuery);
 
+					}
 				}
 			}
+
 		}
 
 		return subQueries;
@@ -322,11 +428,11 @@ public class LuceneQueryUtil {
 	 * @param pattern
 	 * @return
 	 */
-	protected static String validPattern(String pattern) {
+	public static String validPattern(String pattern) {
 		int eliminateParenthesis = 0;
 		int startParenthesisIndex = 0;
 		int endParenthesisIndex = 0;
-		pattern = pattern.trim().toLowerCase();
+		// pattern = pattern.trim().toLowerCase();
 		for (int i = 0; i < pattern.length(); i++) {
 
 			Character c = pattern.charAt(i);
@@ -364,8 +470,5 @@ public class LuceneQueryUtil {
 
 		return pattern;
 	}
-
-	private static Log _log = LogFactoryUtil.getLog(LuceneQueryUtil.class
-			.getName());
 
 }

@@ -3,7 +3,6 @@ package org.opencps.lucenequery.portlet;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
-import org.opencps.lucenequery.model.LuceneQueryPattern;
 import org.opencps.lucenequery.service.LuceneQueryPatternLocalServiceUtil;
 
 import com.liferay.portal.kernel.log.Log;
@@ -37,7 +36,7 @@ public class LuceneQueryPortlet extends MVCPortlet {
 		String name = ParamUtil.getString(actionRequest, "name");
 		String pattern = ParamUtil.getString(actionRequest, "pattern");
 		String url = ParamUtil.getString(actionRequest, "url");
-
+		long plId = ParamUtil.getLong(actionRequest, "plId");
 		try {
 			ServiceContext serviceContext = ServiceContextFactory
 					.getInstance(actionRequest);

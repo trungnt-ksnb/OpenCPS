@@ -47,10 +47,11 @@
 
 %>
 
-<div class="opencps-searchcontainer-wrapper default-box-shadow radius8">
+<div class="opencps-searchcontainer-wrapper default-box-shadow radius8" style="margin-top: 10px">
 
 	<liferay-ui:search-container 
 		searchContainer="<%= new SearchContainer(renderRequest, null, null, SearchContainer.DEFAULT_CUR_PARAM, SearchContainer.DEFAULT_DELTA, iteratorURL, null, null) %>"
+		emptyResultsMessage="no-found-pattern"
 	>
 			
 		<liferay-ui:search-container-results>
