@@ -38,10 +38,6 @@
 	List<ServiceOption> serviceOpts = ServiceOptionLocalServiceUtil.searchServiceOption(serviceInfoId, govAgencyCode);
 %>
 
-<%= serviceOpts.size() %>
-
-
-
 <aui:select name="serviceConfigId" label="dossier-template" cssClass="submit-online input100">
 	<%
 		for (ServiceOption so : serviceOpts) {

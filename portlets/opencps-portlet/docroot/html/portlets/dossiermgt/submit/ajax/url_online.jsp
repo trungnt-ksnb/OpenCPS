@@ -58,9 +58,6 @@
 	long serviceConfigId = ParamUtil.getLong(request, "serviceConfigId");
 %>
 
-
-@@@@@<%= serviceConfigId %>
-
 <aui:row cssClass="serice-des">
 	<liferay-ui:message key="service-description-dvc"/>
 </aui:row>
