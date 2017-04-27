@@ -98,11 +98,15 @@ public class LuceneQueryPatternLocalServiceImpl extends
 
 	/**
 	 * @param groupId
-	 * @param start
-	 * @param end
+	 * 
 	 * @return
 	 * @throws SystemException
 	 */
+	public List<LuceneQueryPattern> getLuceneQueryPatternsByGroupId(long groupId)
+			throws SystemException {
+		return luceneQueryPatternPersistence.findByGroupId(groupId);
+	}
+
 	public List<LuceneQueryPattern> getLuceneQueryPatternsByGroupId(
 			long groupId, int start, int end) throws SystemException {
 		return luceneQueryPatternPersistence.findByGroupId(groupId, start, end);
