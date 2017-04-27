@@ -185,10 +185,11 @@
 	<portlet:param name="backURL" value="<%=backURL1 %>"/>
 </portlet:renderURL>
 
-<%= serviceinfoId %>
 <aui:script>
 	AUI().ready(function(A) {
 		var adminCodeSel = A.one("#<portlet:namespace/>administrationCode");
+		
+		var dossierTemplateSel = A.one("#<portlet:namespace/>serviceConfigId");
 		
 		var serviceId = '<%= serviceInfoIdToDetail %>';
 		
@@ -203,11 +204,16 @@
 		if(adminCodeSel) {
 			
 			adminCodeSel.on('change',function() {
-				<portlet:namespace />getOnlineURL(adminCodeSel.val(), serviceId);
+				<portlet:namespace />getOnlineURL(adminCodeSel.val(), serviceId, 0);
 				<portlet:namespace />chooseGovAgencyCode(adminCodeSel.val());
 			});
 		}
 		
+		if (dossierTemplateSel) {
+			dossierTemplateSel.on('change', function() {
+				<portlet:namespace />getOnlineURL(adminCodeSel.val(), serviceId, dossierTemplateSel.val());
+			});
+		}
 
 	});
 	
@@ -246,7 +252,7 @@
 	
 
 	
-	Liferay.provide(window, '<portlet:namespace />getOnlineURL', function(adminCode, serviceId) {
+	Liferay.provide(window, '<portlet:namespace />getOnlineURL', function(adminCode, serviceId, serviceConfigId) {
 		var A = AUI();
 		A.io.request(
 				'<%=referToSubmitOnline.toString() %>',
@@ -255,7 +261,9 @@
 					method : 'GET',
 				    data:{    
 				    	"<portlet:namespace />administrationCode" : adminCode,
-				    	"<portlet:namespace />serviceinfoId" : serviceId
+				    	"<portlet:namespace />serviceinfoId" : serviceId,
+				    	"<portlet:namespace />serviceConfigId" : serviceConfigId,
+				    	
 				    },   
 				    on: {
 				    	success: function(event, id, obj) {

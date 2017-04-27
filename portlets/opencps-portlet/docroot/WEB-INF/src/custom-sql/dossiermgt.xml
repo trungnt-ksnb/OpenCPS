@@ -1141,15 +1141,13 @@
 	<sql id="org.opencps.dossiermgt.service.persistence.ServiceOptionFinder.searchServiceOption">	
 		<![CDATA[
 			SELECT 
-				qa_opencps.opencps_service_option.*
+				opencps_service_config.*
 			FROM
-				qa_opencps.opencps_service_config
-				LEFT JOIN
-				qa_opencps.opencps_service_option ON opencps_service_config.serviceConfigId = opencps_service_option.serviceConfigId
+				opencps_service_config
 			WHERE
 				1
-				AND serviceInfoId = ?
-				AND govAgencyCode = ?
+				AND opencps_service_config.serviceInfoId = ?
+				AND opencps_service_config.govAgencyCode = ?
 			ORDER BY opencps_service_option.optionOrder ASC
 		]]>
 	</sql>
