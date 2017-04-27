@@ -406,7 +406,6 @@
 	}
 </script>
 <aui:script use = "aui-base">
-
 	
 AUI().ready(function(A) {
 		
@@ -415,8 +414,9 @@ AUI().ready(function(A) {
 		var serviceInfoId = "<%= serviceInfoId %>";
 		
 		if(selectDomainCode){
-			/* <portlet:namespace />sentServiceInfoId(serviceInfoId); */
+			
 			<portlet:namespace />sentDomainCode(selectDomainCode.val());
+
 			selectDomainCode.on('change', function() {
 				<portlet:namespace />sentDomainCode(selectDomainCode.val());
 			});
@@ -446,7 +446,6 @@ AUI().ready(function(A) {
 							var responseServiceConfig = A.one("#<portlet:namespace/>responseServiceConfig");
 							
 							if(responseServiceConfig){
-								
 								responseServiceConfig.empty();
 								responseServiceConfig.html(res);
 							}
@@ -460,45 +459,6 @@ AUI().ready(function(A) {
 	
 		
 </aui:script>
-
-<%-- <aui:script use = "aui-base">
-	Liferay.provide(window, '<portlet:namespace/>getval', function(e) {	
-		var A = AUI();		
-		var instance = A.one(e);
-		var selectServiceInfo = instance.val();
-			<portlet:namespace />sentServiceInfoId(selectServiceInfo);
-	});
-	Liferay.provide(window, '<portlet:namespace />sentServiceInfoId', function(serviceInfoId){
-		
-		var A = AUI();
-		
-		A.io.request(
-				'<%= renderToDictItemServiceAdmin.toString() %>',
-				{
-					dataType : 'text/html',
-					method : 'GET',
-				    data:{    	
-				    	"<portlet:namespace />serviceinfoId" : serviceInfoId
-				    },   
-				    on: {
-				    	success: function(event, id, obj) {
-							var instance = this;
-							var res = instance.get('responseData');
-							
-							var serviceConfigGovNameCode = A.one("#<portlet:namespace/>serviceConfigGovNameCode");
-							
-							if(serviceConfigGovNameCode){
-								serviceConfigGovNameCode.empty();
-								serviceConfigGovNameCode.html(res);
-							}
-								
-						},
-				    	error: function(){}
-					}
-				}
-			);
-	},['aui-base','aui-io']);
-</aui:script> --%>
 
 <%!
 	private Log _log = LogFactoryUtil.getLog("html.portlets.dossiermgt.admin.edit_service_config.jsp");

@@ -18,6 +18,7 @@
 package org.opencps.dossiermgt.service.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.opencps.dossiermgt.NoSuchServiceOptionException;
 import org.opencps.dossiermgt.model.ServiceOption;
@@ -45,6 +46,14 @@ import com.liferay.portal.service.ServiceContext;
  * @author trungnt
  * @see org.opencps.dossiermgt.service.base.ServiceOptionLocalServiceBaseImpl
  * @see org.opencps.dossiermgt.service.ServiceOptionLocalServiceUtil
+ */
+/**
+ * @author khoavu
+ *
+ */
+/**
+ * @author khoavu
+ *
  */
 /**
  * @author khoavu
@@ -204,5 +213,18 @@ public class ServiceOptionLocalServiceImpl extends
 		return so;
 
 		
+	}
+	
+	/**
+	 * @param serviceInfoId
+	 * @param govAgencyCode
+	 * @return
+	 * @throws PortalException
+	 * @throws SystemException
+	 */
+	public List<ServiceOption> searchServiceOption(long serviceInfoId,
+			String govAgencyCode) throws PortalException, SystemException {
+		return serviceOptionFinder.searchServiceOption(serviceInfoId,
+				govAgencyCode);
 	}
 }
