@@ -1,4 +1,6 @@
 
+<%@page import="com.liferay.portal.model.Layout"%>
+<%@page import="com.liferay.portal.service.LayoutLocalServiceUtil"%>
 <%@page import="com.liferay.portal.kernel.util.Constants"%>
 <%@page import="org.opencps.lucenequery.service.LuceneQueryPatternLocalServiceUtil"%>
 <%@page import="org.opencps.lucenequery.model.LuceneQueryPattern"%>
@@ -44,10 +46,44 @@
 			fieldsIndexes[f] = f;
 		}
 	}
+	
+	List<Layout> privateLayouts = LayoutLocalServiceUtil.getLayouts(scopeGroupId, true);
 %>
 <liferay-portlet:actionURL var="configurationActionURL" portletConfiguration="true"/>
+
 <aui:form action="<%=configurationActionURL %>" name="fm" method="post">
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
+	
+	<aui:fieldset>
+		<aui:row>
+			<aui:col width="50">
+				<aui:input 
+					name="targetPortletName"
+					type="text" 
+					label="target-portlet-name" 
+					value="<%=targetPortletName %>" 
+					cssClass="input100"
+				/>
+			</aui:col>
+			
+			<aui:col width="50">
+				<aui:select name="layoutUUID" label="linkToPage" cssClass="input100">
+					<c:if test="<%=privateLayouts != null %>">
+					<%
+						for(Layout privateLayout : privateLayouts){
+							%>
+								<aui:option value="<%=privateLayout.getUuid() %>" selected="<%=privateLayout.getUuid().equals(layoutUUID) %>">
+									<%=privateLayout.getName(locale) %>
+								</aui:option>
+							<%
+						}
+					%>
+					</c:if>
+				</aui:select>
+			</aui:col>
+		</aui:row>
+	</aui:fieldset>
+	
 	<aui:fieldset id="dynamicMenu">
 		<%	List<LuceneQueryPattern> luceneQueryPatterns = LuceneQueryPatternLocalServiceUtil.
 					getLuceneQueryPatternsByGroupId(scopeGroupId);
@@ -62,7 +98,7 @@
 									<aui:col width="50">
 										<aui:input 
 											name='<%="level" + index %>' 
-											label="level" 
+											label="menu-item-level" 
 											type="text"
 											value="<%=luceneMenuSchema.getLevel() %>"
 											cssClass="input100"
@@ -76,7 +112,7 @@
 									<aui:col width="50">
 										<aui:input 
 											name='<%="name" + index %>' 
-											label="name" 
+											label="menu-item-name" 
 											type="text" 
 											cssClass="input100"
 											value="<%=luceneMenuSchema.getName() %>"

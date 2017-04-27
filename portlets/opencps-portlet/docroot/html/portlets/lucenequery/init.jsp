@@ -34,6 +34,10 @@
 			new String[] {});
 	String[] paramTypes = portletPreferences.getValues("paramTypes",
 			new String[] {});
+	
+	String targetPortletName = portletPreferences.getValue("targetPortletName", StringPool.BLANK);
+	
+	String layoutUUID = portletPreferences.getValue("layoutUUID", StringPool.BLANK);
 
 	List<LuceneMenuSchema> luceneMenuSchemas = LuceneQueryUtil
 			.getLuceneMenuSchemas(levels, names, patterns, params,
