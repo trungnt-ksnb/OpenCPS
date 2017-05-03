@@ -1,7 +1,4 @@
 
-<%@page import="org.opencps.lucenequery.util.LuceneQueryUtil"%>
-<%@page import="org.opencps.lucenequery.menu.bean.LuceneMenuSchema"%>
-<%@page import="java.util.List"%>
 <%
 	/**
 	 * OpenCPS is the open source Core Public Services software
@@ -20,6 +17,12 @@
 	 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 	 */
 %>
+
+
+<%@page import="org.opencps.lucenequery.util.LuceneQueryUtil"%>
+<%@page import="org.opencps.lucenequery.menu.bean.LuceneMenuSchema"%>
+<%@page import="java.util.List"%>
+
 <%@ include file="/init.jsp"%>
 
 
@@ -34,12 +37,20 @@
 			new String[] {});
 	String[] paramTypes = portletPreferences.getValues("paramTypes",
 			new String[] {});
-	
-	String targetPortletName = portletPreferences.getValue("targetPortletName", StringPool.BLANK);
-	
-	String layoutUUID = portletPreferences.getValue("layoutUUID", StringPool.BLANK);
+
+	String targetPortletName = portletPreferences.getValue(
+			"targetPortletName", StringPool.BLANK);
+
+	String layoutUUID = portletPreferences.getValue("layoutUUID",
+			StringPool.BLANK);
 
 	List<LuceneMenuSchema> luceneMenuSchemas = LuceneQueryUtil
 			.getLuceneMenuSchemas(levels, names, patterns, params,
 					paramTypes);
+
+	String[] menuGroupIds = portletPreferences.getValues(
+			"menuGroupIds", new String[] {});
+	
+	int startLevel = GetterUtil.getInteger(portletPreferences.getValue(
+			"startLevel", String.valueOf(0)), 0);
 %>

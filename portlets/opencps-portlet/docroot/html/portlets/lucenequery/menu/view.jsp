@@ -1,3 +1,8 @@
+<%@page import="org.opencps.lucenequery.util.LuceneMenuUtil"%>
+<%@page import="org.opencps.lucenequery.service.LuceneMenuLocalServiceUtil"%>
+<%@page import="org.opencps.lucenequery.model.LuceneMenu"%>
+<%@page import="org.opencps.lucenequery.service.LuceneMenuGroupLocalServiceUtil"%>
+<%@page import="org.opencps.lucenequery.model.LuceneMenuGroup"%>
 <%@page import="org.opencps.util.DateTimeUtil"%>
 <%@page import="java.util.Date"%>
 <%@page import="java.util.ArrayList"%>
@@ -29,11 +34,52 @@
 		portletName="<%=targetPortletName %>" 
 		windowState="<%=LiferayWindowState.NORMAL.toString() %>"
 	/>
+	
+	<c:if test="<%=menuGroupIds != null &&  menuGroupIds.length > 0%>">
+		<ul class="lucene-menu-wrapper">
+		<%
+			for(int i = 0; i < menuGroupIds.length; i++){
+				long menuGroupId = GetterUtil.getLong(menuGroupIds[i]);
+				List<LuceneMenu> treeMenu = new ArrayList<LuceneMenu>();
+				if(menuGroupId > 0){
+					List<LuceneMenu> rootMenuItems = new ArrayList<LuceneMenu>();
+					try{
+						rootMenuItems = LuceneMenuLocalServiceUtil.getLuceneMenusByG_MG_L(scopeGroupId, menuGroupId, startLevel);
+						treeMenu = LuceneMenuUtil.buildTreeMenu(rootMenuItems, treeMenu, scopeGroupId, menuGroupId);
+						
+					}catch(Exception e){
+						
+					}
+					
+				}
+				 if(treeMenu != null){
+					 for(LuceneMenu menuItem : treeMenu){
+						 System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + menuItem.getName() + "|" + menuItem.getLevel());
+					 }
+				 }
+			}
+		%>
+		</ul>
+	</c:if>
 
-	<ul class="lucene-menu-wrapper">
+	<%-- <ul class="lucene-menu-wrapper">
 	<%
 		SearchContext searchContext = SearchContextFactory.getInstance(request);
 		
+		
+		List<LuceneMenu> luceneMenus = new ArrayList<LuceneMenu>();
+		
+		try{
+			luceneMenus = LuceneMenuLocalServiceUtil.getLuceneMenusByG_MG_L(scopeGroupId, menuGroupId, startLevel);
+			
+		}catch(Exception e){}
+		
+		if(luceneMenuGroups != null){
+			for(LuceneMenuGroup luceneMenuGroup : luceneMenuGroups){
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.. " + luceneMenuGroup.getName());
+			}
+		}
+	
 		for(LuceneMenuSchema luceneMenuSchema : luceneMenuSchemas){
 			String pattern = luceneMenuSchema.getPattern();
 			Hits hits = null;
@@ -99,5 +145,5 @@
 			<%
 		}
 	%>
-	</ul>
+	</ul> --%>
 </c:if>

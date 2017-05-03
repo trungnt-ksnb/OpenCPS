@@ -94,7 +94,7 @@ public class ConfigurationActionImpl implements ConfigurationAction {
 		preferences.setValue("layoutUUID", layoutUUID);
 		
 		preferences.setValue("targetPortletName", targetPortletName);
-		
+
 		preferences.store();
 
 		SessionMessages.add(actionRequest, "potlet-config-saved");
